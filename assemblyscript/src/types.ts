@@ -319,6 +319,11 @@ export class Type {
     return this.isInternalReference ? this.classReference : null;
   }
 
+  get isFfiMultiReturn(): bool {
+    let classReference = this.getClass();
+    return classReference != null && classReference.prototype.internalName == "~lib/warpo/ffi/ffi.MultiReturn";
+  }
+
   /** Tests if this type represents a class. */
   get isClass(): bool {
     return this.getClass() != null;
@@ -742,18 +747,13 @@ export class Type {
 
   /** Converts this type to its respective type reference. */
   toRef(): TypeRef {
-    let classReference = this.getClass();
-    if (classReference) {
-      let prototypeInternalName = classReference.prototype.internalName;
-      let isFfiMultiReturn = prototypeInternalName == "~lib/warpo/ffi/ffi.MultiReturn";
-      if (isFfiMultiReturn) {
-        // Fixme, need a type check to avoid wrong usage of ffi.MultiReturn
-        let typeArguments = assert(classReference.typeArguments);
-        assert(typeArguments.length == 1);
-        let tupleType = typeArguments[0];
-        assert(tupleType.isTuple);
-        return Type.binaryenTuple(assert(tupleType.tupleInfo)).toRef();
-      }
+    if (this.isFfiMultiReturn) {
+      let classReference = assert(this.getClass());
+      let typeArguments = assert(classReference.typeArguments);
+      assert(typeArguments.length == 1);
+      let tupleType = typeArguments[0];
+      assert(tupleType.isTuple);
+      return Type.binaryenTuple(assert(tupleType.tupleInfo)).toRef();
     }
 
     switch (this.kind) {
