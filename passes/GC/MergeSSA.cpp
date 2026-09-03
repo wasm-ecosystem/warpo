@@ -26,10 +26,9 @@ struct AliasPath {
   std::vector<wasm::Call *> intermediateToStackCalls;
 };
 
-// To find the root-most SSA in a chain, do not stop at the first SSA: __tmptostack
-// is itself a return-parameter function, so another SSA may occur further upstream.
-// Cache the latest SSA and its path boundary, then discard the path suffix inside
-// that root when the return-parameter chain terminates.
+// Not all nodes in the return-parameter call chain are SSA nodes (e.g. leaf methods
+// that do not push to the shadow stack). Cache the latest encountered SSA node and
+// backtrack the path to that SSA boundary when the chain terminates.
 AliasPath resolveAliasPath(wasm::Expression *expr, SSAMap const &ssaMap, ReturnParamMap const &returnParamMap) {
   AliasPath path;
   wasm::Expression *lastSSAExpr = nullptr;
