@@ -159,8 +159,8 @@ std::optional<Record> RecordReader::nextRecord() {
   return {{.uuid = rawRecord->uuid, .time = scaledTime, .deltaTime = deltaTime, .fnId = rawRecord->fnId}};
 }
 
-std::map<int32_t, std::string> loadMappingStream(std::istream &stream) {
-  std::map<int32_t, std::string> functionIndexes;
+std::unordered_map<int32_t, std::string> loadMappingStream(std::istream &stream) {
+  std::unordered_map<int32_t, std::string> functionIndexes;
   std::string line;
   while (std::getline(stream, line)) {
     size_t const index = line.find(' ');
@@ -175,7 +175,7 @@ std::map<int32_t, std::string> loadMappingStream(std::istream &stream) {
   return functionIndexes;
 }
 
-std::map<int32_t, std::string> loadMappingFile(std::filesystem::path const &mappingPath) {
+std::unordered_map<int32_t, std::string> loadMappingFile(std::filesystem::path const &mappingPath) {
   std::ifstream mappingFile(mappingPath, std::ios::in);
   if (!mappingFile.is_open())
     throw std::runtime_error("Failed to open trace point mapping file: " + mappingPath.string());
@@ -199,49 +199,45 @@ static uint64_t parseModuleId(std::string_view key) {
   return val;
 }
 
-std::map<uint64_t, ModuleConfig> parseMappingJson(std::string const &jsonContent,
-                                                  std::filesystem::path const &baseDir) {
-  nlohmann::json jsonMap;
+std::unordered_map<uint64_t, ModuleConfig> parseMappingJson(std::string const &jsonContent,
+                                                            std::filesystem::path const &baseDir) {
+  nlohmann::json jsonArray;
   try {
-    jsonMap = nlohmann::json::parse(jsonContent);
+    jsonArray = nlohmann::json::parse(jsonContent);
   } catch (std::exception const &e) {
     throw std::runtime_error("Failed to parse trace point mapping JSON file: " + std::string(e.what()));
   }
 
-  if (!jsonMap.is_object())
-    throw std::runtime_error("Trace point mapping JSON must be an object mapping moduleId to module configuration.");
+  if (!jsonArray.is_array())
+    throw std::runtime_error("Trace point mapping JSON must be an array of module configurations.");
 
-  std::map<uint64_t, ModuleConfig> modules;
-  for (auto const &[key, val] : jsonMap.items()) {
-    // Support decimal ("1") and hexadecimal ("0x10") format for moduleId
-    uint64_t const moduleId = parseModuleId(key);
+  std::unordered_map<uint64_t, ModuleConfig> modules;
+  for (auto const &item : jsonArray) {
+    if (!item.is_object())
+      throw std::runtime_error("Each item in trace point mapping JSON array must be an object.");
 
-    std::string moduleName = "Module " + std::to_string(moduleId);
-    std::filesystem::path mappingPath;
-    if (val.is_string()) {
-      // Shorthand string format: "moduleId": "path/to/mapping.txt"
-      mappingPath = val.get<std::string>();
-    } else if (val.is_object()) {
-      // Object format: { "moduleName": "...", "mappingFile": "..." }
-      if (val.contains("moduleName") && val["moduleName"].is_string())
-        moduleName = val["moduleName"].get<std::string>();
+    if (!item.contains("moduleId"))
+      throw std::runtime_error("Missing 'moduleId' in trace point mapping configuration item.");
 
-      if (val.contains("mappingFile") && val["mappingFile"].is_string()) {
-        mappingPath = val["mappingFile"].get<std::string>();
-      } else if (val.contains("tracePointMappingFile") && val["tracePointMappingFile"].is_string()) {
-        mappingPath = val["tracePointMappingFile"].get<std::string>();
-      } else if (val.contains("mapping") && val["mapping"].is_string()) {
-        mappingPath = val["mapping"].get<std::string>();
-      } else {
-        throw std::runtime_error("Missing mapping file path in JSON object for moduleId " + key);
-      }
-    } else if (val.is_array() && val.size() >= 2 && val[0].is_string() && val[1].is_string()) {
-      // Array format: ["moduleName", "path/to/mapping.txt"]
-      moduleName = val[0].get<std::string>();
-      mappingPath = val[1].get<std::string>();
+    uint64_t moduleId = 0ULL;
+    auto const &modIdVal = item["moduleId"];
+    if (modIdVal.is_number_unsigned()) {
+      moduleId = modIdVal.get<uint64_t>();
+    } else if (modIdVal.is_string()) {
+      moduleId = parseModuleId(modIdVal.get<std::string>());
     } else {
-      throw std::runtime_error("Invalid format for moduleId " + key + " in trace point mapping JSON.");
+      throw std::runtime_error(
+          "Invalid 'moduleId' type in trace point mapping JSON: expected unsigned integer or string.");
     }
+
+    if (!item.contains("mappingFile") || !item["mappingFile"].is_string())
+      throw std::runtime_error("Missing or invalid 'mappingFile' in trace point mapping configuration for moduleId " +
+                               std::to_string(moduleId));
+
+    std::filesystem::path mappingPath = item["mappingFile"].get<std::string>();
+    std::string moduleName = "Module " + std::to_string(moduleId);
+    if (item.contains("moduleName") && item["moduleName"].is_string())
+      moduleName = item["moduleName"].get<std::string>();
 
     // Resolve relative path against base directory (JSON parent path)
     if (mappingPath.is_relative()) {
@@ -258,7 +254,7 @@ std::map<uint64_t, ModuleConfig> parseMappingJson(std::string const &jsonContent
   return modules;
 }
 
-std::map<uint64_t, ModuleConfig> loadMappingJsonFile(std::filesystem::path const &jsonPath) {
+std::unordered_map<uint64_t, ModuleConfig> loadMappingJsonFile(std::filesystem::path const &jsonPath) {
   std::ifstream jsonFile(jsonPath, std::ios::in);
   if (!jsonFile.is_open())
     throw std::runtime_error("Failed to open trace point mapping JSON file: " + jsonPath.string());
@@ -279,14 +275,14 @@ TraceBuilder::TraceBuilder(MappingJsonTag /*unused*/, std::filesystem::path cons
                            uint32_t maxSliceCount)
     : recordReader_{std::make_unique<RecordReader>(traceRecordFile, countToPerfettoTimestampRate)},
       maxSliceCount_{maxSliceCount == 0U ? UINT32_MAX : maxSliceCount} {
-  std::map<uint64_t, ModuleConfig> const configs = loadMappingJsonFile(tracePointMappingJsonFile);
+  std::unordered_map<uint64_t, ModuleConfig> const configs = loadMappingJsonFile(tracePointMappingJsonFile);
   for (auto const &[moduleId, config] : configs) {
     moduleNames_[moduleId] = config.name;
     moduleFunctionIndexes_[moduleId] = config.functionIndexes;
   }
 }
 
-TraceBuilder::TraceBuilder(std::map<uint64_t, ModuleConfig> modules, std::unique_ptr<RecordReader> reader,
+TraceBuilder::TraceBuilder(std::unordered_map<uint64_t, ModuleConfig> modules, std::unique_ptr<RecordReader> reader,
                            uint32_t maxSliceCount)
     : recordReader_{std::move(reader)}, maxSliceCount_{maxSliceCount == 0U ? UINT32_MAX : maxSliceCount} {
   for (auto &[moduleId, config] : modules) {
@@ -295,18 +291,24 @@ TraceBuilder::TraceBuilder(std::map<uint64_t, ModuleConfig> modules, std::unique
   }
 }
 
-TraceBuilder::TraceBuilder(std::map<int32_t, std::string> defaultFunctions, std::unique_ptr<RecordReader> reader,
-                           uint32_t maxSliceCount)
+TraceBuilder::TraceBuilder(std::unordered_map<int32_t, std::string> defaultFunctions,
+                           std::unique_ptr<RecordReader> reader, uint32_t maxSliceCount)
     : defaultFunctionIndexes_{std::move(defaultFunctions)}, recordReader_{std::move(reader)},
       maxSliceCount_{maxSliceCount == 0U ? UINT32_MAX : maxSliceCount} {}
 
 void TraceBuilder::process() {
   // Emit TrackDescriptors at the beginning to declare explicit tracks in Perfetto UI
   if (!moduleFunctionIndexes_.empty()) {
-    for (auto const &[moduleId, mapping] : moduleFunctionIndexes_) {
+    std::vector<uint64_t> moduleIds;
+    moduleIds.reserve(moduleFunctionIndexes_.size());
+    for (auto const &[moduleId, _] : moduleFunctionIndexes_) {
+      moduleIds.push_back(moduleId);
+    }
+    std::ranges::sort(moduleIds);
+    for (uint64_t const moduleId : moduleIds) {
       std::string const trackName =
           moduleNames_.count(moduleId) != 0U ? moduleNames_.at(moduleId) : ("Module " + std::to_string(moduleId));
-      writer_.writeTracePacket([moduleId = moduleId, &trackName](TracePacketWriter &tracePacketWriter) -> void {
+      writer_.writeTracePacket([moduleId, &trackName](TracePacketWriter &tracePacketWriter) -> void {
         tracePacketWriter.writeTrustedPacketSequenceId(1U);
         tracePacketWriter.writeTrackDescriptor(
             [moduleId, &trackName](TrackDescriptorWriter &trackDescriptorWriter) -> void {
@@ -344,6 +346,17 @@ void TraceBuilder::process() {
     std::optional<Record> const record = recordReader_->nextRecord();
     if (!record.has_value())
       break;
+
+    // In single-mapping mode, ensure all records belong to the same module
+    if (moduleFunctionIndexes_.empty()) {
+      if (!singleModuleUuid_.has_value()) {
+        singleModuleUuid_ = record->uuid;
+      } else if (*singleModuleUuid_ != record->uuid) {
+        throw std::runtime_error(
+            "Multiple modules detected in trace record, but only single mapping file was provided. "
+            "Use --trace-point-mapping-json-file instead.");
+      }
+    }
 
     // Route event and slice stack by record.uuid (per-module isolation)
     auto &pendingSlice = pendingSlices_[record->uuid];
@@ -489,16 +502,18 @@ namespace warpo::ut {
 namespace {
 
 std::string makeTraceRecordBinary(std::vector<std::tuple<uint64_t, uint32_t, int32_t>> const &records) {
-  std::string buffer;
-  buffer.append("___WARP_TRACE___");
-  for (auto const &[uuid, counter, fnId] : records) {
-    std::array<char, 16U> bytes{};
-    std::memcpy(&bytes[0], &uuid, sizeof(uuid));
-    std::memcpy(&bytes[8], &counter, sizeof(counter));
-    std::memcpy(&bytes[12], &fnId, sizeof(fnId));
-    buffer.append(bytes.data(), bytes.size());
+  constexpr size_t headerSize = 16U;
+  constexpr size_t recordSize = 16U;
+  std::vector<char> buffer(headerSize + records.size() * recordSize);
+  std::memcpy(buffer.data(), "___WARP_TRACE___", headerSize);
+  for (size_t i = 0; i < records.size(); ++i) {
+    auto const &[uuid, counter, fnId] = records[i];
+    char *const dest = buffer.data() + headerSize + i * recordSize;
+    std::memcpy(dest, &uuid, sizeof(uuid));
+    std::memcpy(dest + 8U, &counter, sizeof(counter));
+    std::memcpy(dest + 12U, &fnId, sizeof(fnId));
   }
-  return buffer;
+  return {buffer.data(), buffer.size()};
 }
 
 struct ParsedPacket {
@@ -567,7 +582,7 @@ std::vector<ParsedPacket> parseProtobufPackets(std::string const &data) {
 
 TEST(TraceVisualizerTest, LoadMappingStream) {
   std::istringstream stream("0 main\n1 foo_bar\n2 baz\n");
-  std::map<int32_t, std::string> const result = loadMappingStream(stream);
+  std::unordered_map<int32_t, std::string> const result = loadMappingStream(stream);
 
   EXPECT_EQ(result.size(), 3U);
   EXPECT_EQ(result.at(0), "main");
@@ -585,9 +600,7 @@ TEST(TraceVisualizerTest, RecordReaderValidation) {
   // Valid records reading & counter overflow
   {
     std::string const binData = makeTraceRecordBinary({
-        {1ULL, 100U, 1},
-        {1ULL, 200U, -1},
-        {1ULL, 50U, 2}, // wraps around
+        {1ULL, 100U, 1}, {1ULL, 200U, -1}, {1ULL, 50U, 2}, // wraps around
     });
     RecordReader reader(std::make_unique<std::istringstream>(binData), 1.0);
 
@@ -624,19 +637,21 @@ TEST(TraceVisualizerTest, ParseMappingJsonFormats) {
   std::ofstream(map1) << "1 module1_func\n";
   std::ofstream(map2) << "1 module2_func\n";
 
-  // Test standard object format (use generic_string() for cross-platform JSON path escaping)
+  // Test standard array of objects format (use generic_string() for cross-platform JSON path escaping)
   {
     std::string const jsonStr = fmt::format(
-        R"({{
-          "1": {{
+        R"([
+          {{
+            "moduleId": 1,
             "moduleName": "MyModule1",
             "mappingFile": "{}"
           }},
-          "0x10": {{
+          {{
+            "moduleId": "0x10",
             "moduleName": "MyModule16",
-            "tracePointMappingFile": "{}"
+            "mappingFile": "{}"
           }}
-        }})",
+        ])",
         map1.generic_string(), map2.generic_string());
 
     auto const modules = parseMappingJson(jsonStr, tempDir);
@@ -650,32 +665,36 @@ TEST(TraceVisualizerTest, ParseMappingJsonFormats) {
     EXPECT_EQ(modules.at(16ULL).functionIndexes.at(1), "module2_func");
   }
 
-  // Test string shorthand and array format
+  // Test optional moduleName
   {
     std::string const jsonStr = fmt::format(
-        R"({{
-          "1": "{}",
-          "2": ["CustomMod2", "{}"]
-        }})",
-        map1.generic_string(), map2.generic_string());
+        R"([
+          {{
+            "moduleId": 1,
+            "mappingFile": "{}"
+          }}
+        ])",
+        map1.generic_string());
 
     auto const modules = parseMappingJson(jsonStr, tempDir);
-    EXPECT_EQ(modules.size(), 2U);
+    EXPECT_EQ(modules.size(), 1U);
     EXPECT_EQ(modules.at(1ULL).name, "Module 1");
-    EXPECT_EQ(modules.at(2ULL).name, "CustomMod2");
   }
 
   // Test invalid json error handling
-  EXPECT_THROW(parseMappingJson("INVALID_JSON", tempDir), std::runtime_error);
-  EXPECT_THROW(parseMappingJson("[1, 2, 3]", tempDir), std::runtime_error);
-  EXPECT_THROW(parseMappingJson(R"({"not_a_num": "map.txt"})", tempDir), std::runtime_error);
-  EXPECT_THROW(parseMappingJson(R"({"1": {"unknownKey": 123}})", tempDir), std::runtime_error);
+  EXPECT_THROW((void)parseMappingJson("INVALID_JSON", tempDir), std::runtime_error);
+  EXPECT_THROW((void)parseMappingJson(R"({"1": "map.txt"})", tempDir), std::runtime_error);
+  EXPECT_THROW((void)parseMappingJson(R"([{"mappingFile": "map.txt"}])", tempDir), std::runtime_error);
+  EXPECT_THROW((void)parseMappingJson(R"([{"moduleId": "not_a_num", "mappingFile": "map.txt"}])", tempDir),
+               std::runtime_error);
+  EXPECT_THROW((void)parseMappingJson(R"([{"moduleId": 1}])", tempDir), std::runtime_error);
+  EXPECT_THROW((void)parseMappingJson(R"(["just_a_string"])", tempDir), std::runtime_error);
 
   std::filesystem::remove_all(tempDir);
 }
 
 TEST(TraceVisualizerTest, SingleModuleTraceProcessing) {
-  std::map<int32_t, std::string> const defaultFunctions = {
+  std::unordered_map<int32_t, std::string> const defaultFunctions = {
       {1, "main"},
       {2, "compute"},
   };
@@ -717,8 +736,24 @@ TEST(TraceVisualizerTest, SingleModuleTraceProcessing) {
   EXPECT_EQ(packets[4].trackEventType.value_or(0), static_cast<int32_t>(TraceEventWriter::Type::TYPE_SLICE_END));
 }
 
+TEST(TraceVisualizerTest, SingleModuleMultipleModulesInTraceFails) {
+  std::unordered_map<int32_t, std::string> const defaultFunctions = {
+      {1, "main"},
+  };
+
+  // Trace file contains records from two different modules (uuid 1 and uuid 2)
+  std::string const binData = makeTraceRecordBinary({
+      {1ULL, 100U, 1},
+      {2ULL, 200U, 1},
+  });
+
+  auto reader = std::make_unique<RecordReader>(std::make_unique<std::istringstream>(binData), 1.0);
+  TraceBuilder builder(defaultFunctions, std::move(reader));
+  EXPECT_THROW((void)builder.process(), std::runtime_error);
+}
+
 TEST(TraceVisualizerTest, MultiModuleInterleavedTraceProcessing) {
-  std::map<uint64_t, ModuleConfig> modules;
+  std::unordered_map<uint64_t, ModuleConfig> modules;
   modules[10ULL] = ModuleConfig{
       .name = "ModuleA",
       .functionIndexes = {{1, "moduleA_task"}},
@@ -773,7 +808,7 @@ TEST(TraceVisualizerTest, MultiModuleInterleavedTraceProcessing) {
 }
 
 TEST(TraceVisualizerTest, MissingEndRecovery) {
-  std::map<int32_t, std::string> const defaultFunctions = {
+  std::unordered_map<int32_t, std::string> const defaultFunctions = {
       {1, "func1"},
       {2, "func2"},
   };
@@ -802,7 +837,7 @@ TEST(TraceVisualizerTest, MissingEndRecovery) {
 }
 
 TEST(TraceVisualizerTest, MaxSliceCountLimit) {
-  std::map<int32_t, std::string> const defaultFunctions = {
+  std::unordered_map<int32_t, std::string> const defaultFunctions = {
       {1, "task"},
   };
 

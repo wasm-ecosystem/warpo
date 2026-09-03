@@ -66,16 +66,18 @@ describe("driver: trace_visualizer", () => {
     writeFileSync(map2, "1 mod2_worker\n", "utf8");
     writeFileSync(
       jsonFile,
-      JSON.stringify({
-        10: {
+      JSON.stringify([
+        {
+          moduleId: 10,
           moduleName: "PipelineModule1",
           mappingFile: "mod1_mapping.txt",
         },
-        "0x14": {
+        {
+          moduleId: "0x14",
           moduleName: "PipelineModule2",
-          tracePointMappingFile: "mod2_mapping.txt",
+          mappingFile: "mod2_mapping.txt",
         },
-      }),
+      ]),
       "utf8"
     );
 
@@ -117,6 +119,31 @@ describe("driver: trace_visualizer", () => {
         mappingFile,
         "--trace-point-mapping-json-file",
         jsonFile,
+        "--trace-point-record-file",
+        recordFile,
+        "--output-pftrace-file",
+        outputFile,
+      ],
+    });
+
+    expect(code).not.toBe(0);
+  });
+
+  it("fails when single mapping is provided but multiple modules exist in trace file", async () => {
+    const recordFile = join(tmpDir, "single_map_multi_mod_record.bin");
+    const mappingFile = join(tmpDir, "single_mapping.txt");
+    const outputFile = join(tmpDir, "single_map_multi_mod_out.pftrace");
+
+    writeFileSync(mappingFile, "1 main\n", "utf8");
+    createBinaryTraceFile(recordFile, [
+      [1, 100, 1],
+      [2, 200, 1],
+    ]);
+
+    const code = await traceVisualizer({
+      argv: [
+        "--trace-point-mapping-file",
+        mappingFile,
         "--trace-point-record-file",
         recordFile,
         "--output-pftrace-file",

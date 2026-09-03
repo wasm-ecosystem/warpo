@@ -6,10 +6,10 @@
 #include <cstdint>
 #include <filesystem>
 #include <iosfwd>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "Perfetto.hpp"
@@ -48,22 +48,22 @@ private:
   std::optional<Record> nextRecord_;
 };
 
-std::map<int32_t, std::string> loadMappingStream(std::istream &stream);
-std::map<int32_t, std::string> loadMappingFile(std::filesystem::path const &mappingPath);
+std::unordered_map<int32_t, std::string> loadMappingStream(std::istream &stream);
+std::unordered_map<int32_t, std::string> loadMappingFile(std::filesystem::path const &mappingPath);
 
 struct ModuleConfig {
   std::string name;
-  std::map<int32_t, std::string> functionIndexes;
+  std::unordered_map<int32_t, std::string> functionIndexes;
 };
 
 /// Parses JSON configuration mapping module ID to its name and mapping file path.
-/// Supports decimal or hexadecimal string IDs, object, array, and string shorthand forms.
-std::map<uint64_t, ModuleConfig>
+/// The JSON must be an array of objects, where each item contains `moduleId` and `mappingFile`.
+std::unordered_map<uint64_t, ModuleConfig>
 parseMappingJson(std::string const &jsonContent,
                  std::filesystem::path const &baseDir = std::filesystem::current_path());
 
 /// Loads and parses trace point mapping JSON file from disk.
-std::map<uint64_t, ModuleConfig> loadMappingJsonFile(std::filesystem::path const &jsonPath);
+std::unordered_map<uint64_t, ModuleConfig> loadMappingJsonFile(std::filesystem::path const &jsonPath);
 
 class TraceBuilder {
 public:
@@ -81,10 +81,10 @@ public:
                         uint32_t maxSliceCount = 0U);
 
   /// In-memory constructors for unit testing
-  explicit TraceBuilder(std::map<uint64_t, ModuleConfig> modules, std::unique_ptr<RecordReader> reader,
+  explicit TraceBuilder(std::unordered_map<uint64_t, ModuleConfig> modules, std::unique_ptr<RecordReader> reader,
                         uint32_t maxSliceCount = 0U);
 
-  explicit TraceBuilder(std::map<int32_t, std::string> defaultFunctions, std::unique_ptr<RecordReader> reader,
+  explicit TraceBuilder(std::unordered_map<int32_t, std::string> defaultFunctions, std::unique_ptr<RecordReader> reader,
                         uint32_t maxSliceCount = 0U);
 
   /// Process records and generate Perfetto TrackEvent/TrackDescriptor packets
@@ -107,15 +107,16 @@ private:
   void addFailedBeginEndEvent(uint64_t uuid, uint64_t startTime, uint64_t endTime);
 
   /// Per-module call stacks isolated by module uuid
-  std::map<uint64_t, std::vector<int32_t>> pendingSlices_;
+  std::unordered_map<uint64_t, std::vector<int32_t>> pendingSlices_;
   /// Per-module display track names in Perfetto UI
-  std::map<uint64_t, std::string> moduleNames_;
+  std::unordered_map<uint64_t, std::string> moduleNames_;
   /// Per-module function ID -> symbol name mappings
-  std::map<uint64_t, std::map<int32_t, std::string>> moduleFunctionIndexes_;
+  std::unordered_map<uint64_t, std::unordered_map<int32_t, std::string>> moduleFunctionIndexes_;
   /// Default function mappings used in single-module mode
-  std::map<int32_t, std::string> defaultFunctionIndexes_;
+  std::unordered_map<int32_t, std::string> defaultFunctionIndexes_;
   std::unique_ptr<RecordReader> recordReader_;
   uint32_t maxSliceCount_{UINT32_MAX};
+  std::optional<uint64_t> singleModuleUuid_;
 };
 
 uint64_t getCurrentCPUCounter();
