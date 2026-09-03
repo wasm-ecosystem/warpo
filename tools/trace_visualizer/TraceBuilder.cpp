@@ -600,7 +600,9 @@ TEST(TraceVisualizerTest, RecordReaderValidation) {
   // Valid records reading & counter overflow
   {
     std::string const binData = makeTraceRecordBinary({
-        {1ULL, 100U, 1}, {1ULL, 200U, -1}, {1ULL, 50U, 2}, // wraps around
+        {1ULL, 100U, 1},
+        {1ULL, 200U, -1},
+        {1ULL, 50U, 2}, // wraps around
     });
     RecordReader reader(std::make_unique<std::istringstream>(binData), 1.0);
 
