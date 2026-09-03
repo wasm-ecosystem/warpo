@@ -80,4 +80,4 @@ Fields:
 - `mappingFile` (required, `string`): Path to the `trace_points.txt` file for this module (absolute or relative to the JSON file).
 - `moduleName` (optional, `string`): Display name for the track in Perfetto UI. Defaults to `"Module <moduleId>"`.
 
-The JSON schema is available at [trace-mapping.schema.json](https://github.com/wasm-ecosystem/warpo/blob/main/tools/trace_visualizer/trace-mapping.schema.json).
+The JSON schema is available at [`tools/trace_visualizer/trace-mapping.schema.json`](/tools/trace_visualizer/trace-mapping.schema.json).

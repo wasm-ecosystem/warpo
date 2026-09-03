@@ -178,7 +178,7 @@ std::unordered_map<int32_t, std::string> loadMappingStream(std::istream &stream)
 std::unordered_map<int32_t, std::string> loadMappingFile(std::filesystem::path const &mappingPath) {
   std::ifstream mappingFile(mappingPath, std::ios::in);
   if (!mappingFile.is_open())
-    throw std::runtime_error("Failed to open trace point mapping file: " + mappingPath.string());
+    throw std::runtime_error(fmt::format("Failed to open trace point mapping file: {}", mappingPath.string()));
   return loadMappingStream(mappingFile);
 }
 
@@ -195,7 +195,7 @@ static uint64_t parseModuleId(std::string_view key) {
   uint64_t val = 0;
   auto const [ptr, ec] = std::from_chars(key.data(), key.data() + key.size(), val, base);
   if (ec != std::errc{} || ptr != key.data() + key.size())
-    throw std::runtime_error("Invalid moduleId in trace point mapping JSON: " + std::string(key));
+    throw std::runtime_error(fmt::format("Invalid moduleId in trace point mapping JSON: {}", key));
   return val;
 }
 
@@ -205,7 +205,7 @@ std::unordered_map<uint64_t, ModuleConfig> parseMappingJson(std::string const &j
   try {
     jsonArray = nlohmann::json::parse(jsonContent);
   } catch (std::exception const &e) {
-    throw std::runtime_error("Failed to parse trace point mapping JSON file: " + std::string(e.what()));
+    throw std::runtime_error(fmt::format("Failed to parse trace point mapping JSON file: {}", e.what()));
   }
 
   if (!jsonArray.is_array())
@@ -231,13 +231,13 @@ std::unordered_map<uint64_t, ModuleConfig> parseMappingJson(std::string const &j
     }
 
     if (!item.contains("mappingFile") || !item["mappingFile"].is_string())
-      throw std::runtime_error("Missing or invalid 'mappingFile' in trace point mapping configuration for moduleId " +
-                               std::to_string(moduleId));
+      throw std::runtime_error(fmt::format(
+          "Missing or invalid 'mappingFile' in trace point mapping configuration for moduleId {}", moduleId));
 
     std::filesystem::path mappingPath = item["mappingFile"].get<std::string>();
-    std::string moduleName = "Module " + std::to_string(moduleId);
-    if (item.contains("moduleName") && item["moduleName"].is_string())
-      moduleName = item["moduleName"].get<std::string>();
+    std::string const moduleName = (item.contains("moduleName") && item["moduleName"].is_string())
+                                       ? item["moduleName"].get<std::string>()
+                                       : fmt::format("Module {}", moduleId);
 
     // Resolve relative path against base directory (JSON parent path)
     if (mappingPath.is_relative()) {
@@ -247,7 +247,7 @@ std::unordered_map<uint64_t, ModuleConfig> parseMappingJson(std::string const &j
     }
 
     modules[moduleId] = ModuleConfig{
-        .name = std::move(moduleName),
+        .name = moduleName,
         .functionIndexes = loadMappingFile(mappingPath),
     };
   }
@@ -257,7 +257,7 @@ std::unordered_map<uint64_t, ModuleConfig> parseMappingJson(std::string const &j
 std::unordered_map<uint64_t, ModuleConfig> loadMappingJsonFile(std::filesystem::path const &jsonPath) {
   std::ifstream jsonFile(jsonPath, std::ios::in);
   if (!jsonFile.is_open())
-    throw std::runtime_error("Failed to open trace point mapping JSON file: " + jsonPath.string());
+    throw std::runtime_error(fmt::format("Failed to open trace point mapping JSON file: {}", jsonPath.string()));
   std::string const content((std::istreambuf_iterator<char>(jsonFile)), std::istreambuf_iterator<char>());
   return parseMappingJson(content, jsonPath.parent_path());
 }
@@ -307,7 +307,7 @@ void TraceBuilder::process() {
     std::ranges::sort(moduleIds);
     for (uint64_t const moduleId : moduleIds) {
       std::string const trackName =
-          moduleNames_.count(moduleId) != 0U ? moduleNames_.at(moduleId) : ("Module " + std::to_string(moduleId));
+          moduleNames_.count(moduleId) != 0U ? moduleNames_.at(moduleId) : fmt::format("Module {}", moduleId);
       writer_.writeTracePacket([moduleId, &trackName](TracePacketWriter &tracePacketWriter) -> void {
         tracePacketWriter.writeTrustedPacketSequenceId(1U);
         tracePacketWriter.writeTrackDescriptor(
@@ -402,7 +402,7 @@ std::string TraceBuilder::getFunctionName(uint64_t uuid, int32_t fnId) const {
   auto const fnIt = defaultFunctionIndexes_.find(fnId);
   if (fnIt != defaultFunctionIndexes_.end())
     return fnIt->second;
-  return "unknown function " + std::to_string(fnId);
+  return fmt::format("unknown function {}", fnId);
 }
 
 TraceBuilder::PopCount TraceBuilder::getPopCount(Record const &record) {

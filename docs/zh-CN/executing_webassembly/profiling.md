@@ -80,4 +80,4 @@ WebAssembly 执行引擎需要为 `builtin.tracePoint` 函数提供兼容支持�
 - `mappingFile`（必填，`string`）：该模块对应的 `trace_points.txt` 映射文件路径（支持绝对路径或相对于该 JSON 文件的相对路径）。
 - `moduleName`（可选，`string`）：在 Perfetto UI 泳道中显示的自定义名称，默认值为 `"Module <moduleId>"`。
 
-配套的 JSON Schema 定义见 [trace-mapping.schema.json](https://github.com/wasm-ecosystem/warpo/blob/main/tools/trace_visualizer/trace-mapping.schema.json)。
+配套的 JSON Schema 定义见 [`tools/trace_visualizer/trace-mapping.schema.json`](/tools/trace_visualizer/trace-mapping.schema.json)。
