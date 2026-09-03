@@ -4098,6 +4098,23 @@
    (local.get $this)
   )
  )
+ (func $call-chain/A#createAnotherObject (param $this i32) (result i32)
+  (return
+   (call $call-chain/A#constructor
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
+   )
+  )
+ )
+ (func $call-chain/A#yoo (param $this i32) (result i32)
+  (return
+   (local.get $this)
+  )
+ )
  (func $call-chain/main
   (local $a i32)
   (local.set $a
@@ -4115,11 +4132,27 @@
   (drop
    (call $call-chain/A#bar
     (call $~lib/rt/__tmptostack
-     (call $call-chain/A#foo
+     (call $call-chain/A#yoo
       (call $~lib/rt/__tmptostack
-       (call $call-chain/A#foo
+       (call $call-chain/A#yoo
         (call $~lib/rt/__tmptostack
-         (local.get $a)
+         (call $call-chain/A#createAnotherObject
+          (call $~lib/rt/__tmptostack
+           (call $call-chain/A#bar
+            (call $~lib/rt/__tmptostack
+             (call $call-chain/A#foo
+              (call $~lib/rt/__tmptostack
+               (call $call-chain/A#foo
+                (call $~lib/rt/__tmptostack
+                 (local.get $a)
+                )
+               )
+              )
+             )
+            )
+           )
+          )
+         )
         )
        )
       )
@@ -4142,7 +4175,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 80)
+     (i32.const 86)
      (i32.const 3)
     )
     (unreachable)

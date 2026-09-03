@@ -19108,14 +19108,15 @@
      i32.const 4
      i32.const 42
      call $~lib/rt/itcms/__new
-     local.tee $2
+     local.set $2
+     global.get $~lib/memory/__stack_pointer
+     local.get $2
+     i32.store offset=4 align=1
+     local.get $2
      i32.const 511
      local.get $0
      i32.sub
      i32.store
-     global.get $~lib/memory/__stack_pointer
-     local.get $2
-     i32.store offset=4 align=1
      local.get $1
      local.get $0
      local.get $2

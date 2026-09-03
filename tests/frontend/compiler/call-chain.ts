@@ -72,10 +72,16 @@ class A {
     this.num += b.b + 2;
     return this;
   }
+  createAnotherObject(): A {
+    return new A();
+  }
+  yoo(): A {
+    return this;
+  }
 }
 
 export function main(): void {
   let a = new A();
-  a.foo().foo().bar();
+  a.foo().foo().bar().createAnotherObject().yoo().yoo().bar();
   assert(a.num == 60);
 }
