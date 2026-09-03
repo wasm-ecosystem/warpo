@@ -1569,12 +1569,12 @@
   (local $1 i32)
   (local $2 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i64.const 0
-  i64.store align=1
+  i32.const 0
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 492
   i32.lt_s
@@ -1589,16 +1589,8 @@
   i32.store align=1
   local.get $2
   call $call-chain/A#foo
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store offset=4 align=1
-  local.get $0
   call $call-chain/A#foo
   local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store offset=4 align=1
   i32.const 5
   call $~lib/rt/itcms/__new
   local.set $1
@@ -1885,7 +1877,7 @@
    unreachable
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )

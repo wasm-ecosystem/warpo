@@ -7,7 +7,9 @@
 #include <optional>
 #include <unordered_map>
 
+#include "GCInfo.hpp"
 #include "MergeSSA.hpp"
+#include "ReturnParamFunctions.hpp"
 #include "SSAObj.hpp"
 #include "support/index.h"
 #include "warpo/support/DynBitSet.hpp"
@@ -15,6 +17,52 @@
 #include "wasm.h"
 
 namespace warpo::passes::gc {
+
+namespace {
+
+struct AliasPath {
+  wasm::Expression *root = nullptr;
+  std::vector<wasm::Call *> intermediateToStackCalls;
+};
+
+AliasPath resolveAliasPath(wasm::Expression *expr, ReturnParamMap const &returnParamMap) {
+  AliasPath path;
+  while (expr) {
+    if (auto *const getExpr = expr->dynCast<wasm::LocalGet>()) {
+      path.root = getExpr;
+      return path;
+    }
+    auto *const callExpr = expr->dynCast<wasm::Call>();
+    if (!callExpr) {
+      path.root = expr;
+      return path;
+    }
+    auto const it = returnParamMap.find(callExpr->target);
+    if (it == returnParamMap.end()) {
+      path.root = expr;
+      return path;
+    }
+    if (callExpr->target == FnTmpToStack || callExpr->target == FnLocalToStack) {
+      path.intermediateToStackCalls.push_back(callExpr);
+    }
+    wasm::Index const paramIndex = it->second;
+    assert(paramIndex < callExpr->operands.size());
+    expr = callExpr->operands[paramIndex];
+  }
+  return path;
+}
+
+void mergeLivenessAlongPath(LivenessMap &livenessMap, AliasPath const &aliasPath, wasm::Call *const callExpr,
+                            size_t const targetSSAIndex, size_t const tmpSSAIndex) {
+  for (wasm::Call *const intermediateCall : aliasPath.intermediateToStackCalls) {
+    livenessMap.set(intermediateCall, LivenessMap::Pos::Before, targetSSAIndex, true);
+    livenessMap.set(intermediateCall, LivenessMap::Pos::After, targetSSAIndex, true);
+  }
+  livenessMap.set(callExpr, LivenessMap::Pos::Before, targetSSAIndex, true);
+  livenessMap.mergeByColumns(targetSSAIndex, tmpSSAIndex, LivenessMap::MergeOperator::OR);
+}
+
+} // namespace
 
 class LocalIndexToSSA : private std::unordered_map<wasm::Index, DynBitset> {
   size_t size_;
@@ -58,7 +106,11 @@ void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) 
       continue;
     wasm::Call *const callExpr = ssa.value_.tmp;
 
-    if (auto *const getExpr = callExpr->operands[0]->dynCast<wasm::LocalGet>()) {
+    AliasPath const aliasPath = resolveAliasPath(callExpr->operands[0], returnParamMap_);
+    if (!aliasPath.root)
+      continue;
+
+    if (auto *const getExpr = aliasPath.root->dynCast<wasm::LocalGet>()) {
       // this tmp ssa is reference of local
       wasm::Index const localIndex = getExpr->index;
       std::optional<Liveness> const liveness = livenessMap.getLiveness(getExpr);
@@ -90,16 +142,24 @@ void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) 
           hasTarget = true;
           // because liveness for tmp will be active in call opcode. we should manually set the liveness
           livenessMap.set(getExpr, LivenessMap::Pos::After, target, true);
-          livenessMap.set(callExpr, LivenessMap::Pos::Before, target, true);
-          livenessMap.mergeByColumns(target, tmpSSAIndex, LivenessMap::MergeOperator::OR);
+          mergeLivenessAlongPath(livenessMap, aliasPath, callExpr, target, tmpSSAIndex);
         }
       }
       // local call be invalidate before local.get when enabling other optimization
       if (hasTarget) {
         invalidSSA.set(tmpSSAIndex, true);
       }
+    } else if (auto *const rootCall = aliasPath.root->dynCast<wasm::Call>()) {
+      if (rootCall->target == FnTmpToStack && ssaMap.contains(SSAValue{rootCall})) {
+        size_t const rootTmpSSAIndex = ssaMap.getIndex(SSAValue{rootCall});
+        if (rootTmpSSAIndex != tmpSSAIndex) {
+          livenessMap.set(rootCall, LivenessMap::Pos::After, rootTmpSSAIndex, true);
+          mergeLivenessAlongPath(livenessMap, aliasPath, callExpr, rootTmpSSAIndex, tmpSSAIndex);
+          invalidSSA.set(tmpSSAIndex, true);
+        }
+      }
     }
-    livenessMap.setInvalid(invalidSSA);
   }
+  livenessMap.setInvalid(invalidSSA);
 }
 } // namespace warpo::passes::gc
