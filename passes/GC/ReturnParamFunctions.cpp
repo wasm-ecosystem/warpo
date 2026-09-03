@@ -31,12 +31,12 @@ public:
   void checkReturnExpr(wasm::Expression *expr) {
     if (!allReturnsAreLocalGetsOfSameParam_)
       return;
-    if (!expr) {
+    if (expr == nullptr) {
       allReturnsAreLocalGetsOfSameParam_ = false;
       return;
     }
     auto *get = expr->dynCast<wasm::LocalGet>();
-    if (!get || get->index >= function_->getNumParams()) {
+    if (get == nullptr || get->index >= function_->getNumParams()) {
       allReturnsAreLocalGetsOfSameParam_ = false;
       return;
     }
@@ -51,7 +51,7 @@ public:
   void checkFlowValue(wasm::Expression *expr) {
     if (!allReturnsAreLocalGetsOfSameParam_)
       return;
-    if (!expr || expr->type == wasm::Type::unreachable || expr->type == wasm::Type::none)
+    if (expr == nullptr || expr->type == wasm::Type::unreachable || expr->type == wasm::Type::none)
       return;
 
     if (auto *block = expr->dynCast<wasm::Block>()) {
@@ -88,7 +88,7 @@ private:
 };
 
 std::optional<wasm::Index> checkFunction(wasm::Function *func) {
-  if (func->imported() || !func->body || func->getResults() == wasm::Type::none) {
+  if (func->imported() || func->body == nullptr || func->getResults() == wasm::Type::none) {
     return std::nullopt;
   }
 

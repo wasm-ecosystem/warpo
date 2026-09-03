@@ -27,13 +27,13 @@ struct AliasPath {
 
 AliasPath resolveAliasPath(wasm::Expression *expr, ReturnParamMap const &returnParamMap) {
   AliasPath path;
-  while (expr) {
+  while (expr != nullptr) {
     if (auto *const getExpr = expr->dynCast<wasm::LocalGet>()) {
       path.root = getExpr;
       return path;
     }
     auto *const callExpr = expr->dynCast<wasm::Call>();
-    if (!callExpr) {
+    if (callExpr == nullptr) {
       path.root = expr;
       return path;
     }
@@ -107,7 +107,7 @@ void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) 
     wasm::Call *const callExpr = ssa.value_.tmp;
 
     AliasPath const aliasPath = resolveAliasPath(callExpr->operands[0], returnParamMap_);
-    if (!aliasPath.root)
+    if (aliasPath.root == nullptr)
       continue;
 
     if (auto *const getExpr = aliasPath.root->dynCast<wasm::LocalGet>()) {
