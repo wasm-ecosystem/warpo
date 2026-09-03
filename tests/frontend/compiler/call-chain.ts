@@ -1,11 +1,75 @@
+class B {
+  b: i32;
+}
+
 class A {
   num: i32 = 0;
   foo(): A {
-    this.num += 1;
+    let b = new B();
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
+    this.num += b.b;
     return this;
   }
   bar(): A {
-    this.num += 2;
+    let b = new B();
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
+    this.num += b.b + 2;
     return this;
   }
 }
@@ -13,5 +77,5 @@ class A {
 export function main(): void {
   let a = new A();
   a.foo().foo().bar();
-  assert(a.num == 4);
+  assert(a.num == 60);
 }

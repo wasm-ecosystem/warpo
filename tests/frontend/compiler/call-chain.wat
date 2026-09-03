@@ -26,9 +26,9 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 464))
- (global $~lib/memory/__data_end i32 (i32.const 488))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33256))
- (global $~lib/memory/__heap_base i32 (i32.const 33256))
+ (global $~lib/memory/__data_end i32 (i32.const 492))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33260))
+ (global $~lib/memory/__heap_base i32 (i32.const 33260))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -39,7 +39,7 @@
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00c\00a\00l\00l\00-\00c\00h\00a\00i\00n\00.\00t\00s\00\00\00")
- (data $9 (i32.const 464) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00")
+ (data $9 (i32.const 464) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "main" (func $call-chain/main))
@@ -2924,7 +2924,24 @@
    (local.get $ptr)
   )
  )
+ (func $call-chain/B#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
  (func $call-chain/A#get:num (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $call-chain/B#get:b (param $this i32) (result i32)
   (i32.load
    (local.get $this)
   )
@@ -2936,6 +2953,19 @@
   )
  )
  (func $call-chain/A#foo (param $this i32) (result i32)
+  (local $b i32)
+  (local.set $b
+   (call $~lib/rt/__localtostack
+    (call $call-chain/B#constructor
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 5)
+      )
+     )
+    )
+   )
+  )
   (call $call-chain/A#set:num
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -2946,7 +2976,504 @@
       (local.get $this)
      )
     )
-    (i32.const 1)
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (call $call-chain/B#get:b
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
    )
   )
   (return
@@ -2954,6 +3481,19 @@
   )
  )
  (func $call-chain/A#bar (param $this i32) (result i32)
+  (local $b i32)
+  (local.set $b
+   (call $~lib/rt/__localtostack
+    (call $call-chain/B#constructor
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 5)
+      )
+     )
+    )
+   )
+  )
   (call $call-chain/A#set:num
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -2964,7 +3504,594 @@
       (local.get $this)
      )
     )
-    (i32.const 2)
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $call-chain/A#set:num
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $call-chain/A#get:num
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.add
+     (call $call-chain/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $b)
+      )
+     )
+     (i32.const 2)
+    )
    )
   )
   (return
@@ -3008,14 +4135,14 @@
        (local.get $a)
       )
      )
-     (i32.const 4)
+     (i32.const 60)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 16)
+     (i32.const 80)
      (i32.const 3)
     )
     (unreachable)
@@ -3044,33 +4171,36 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $call-chain/A
-    (block $~lib/arraybuffer/ArrayBufferView
-     (block $~lib/string/String
-      (block $~lib/arraybuffer/ArrayBuffer
-       (block $~lib/object/Object
-        (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $call-chain/A $invalid
-         (i32.load
-          (i32.sub
-           (local.get $0)
-           (i32.const 8)
+   (block $call-chain/B
+    (block $call-chain/A
+     (block $~lib/arraybuffer/ArrayBufferView
+      (block $~lib/string/String
+       (block $~lib/arraybuffer/ArrayBuffer
+        (block $~lib/object/Object
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $call-chain/A $call-chain/B $invalid
+          (i32.load
+           (i32.sub
+            (local.get $0)
+            (i32.const 8)
+           )
           )
          )
         )
+        (return)
        )
        (return)
       )
       (return)
      )
-     (return)
-    )
-    (block
-     (call $~lib/arraybuffer/ArrayBufferView~visit
-      (local.get $0)
-      (local.get $1)
+     (block
+      (call $~lib/arraybuffer/ArrayBufferView~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
      )
-     (return)
     )
+    (return)
    )
    (return)
   )
