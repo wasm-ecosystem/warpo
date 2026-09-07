@@ -23,10 +23,7 @@ public:
     }
   }
 
-  void visitReturn(wasm::Return *curr) {
-    hasExplicitReturn_ = true;
-    checkReturnExpr(curr->value);
-  }
+  void visitReturn(wasm::Return *curr) { checkReturnExpr(curr->value); }
 
   void checkReturnExpr(wasm::Expression *expr) {
     if (!allReturnsAreLocalGetsOfSameParam_)
@@ -51,7 +48,8 @@ public:
   void checkFlowValue(wasm::Expression *expr) {
     if (!allReturnsAreLocalGetsOfSameParam_)
       return;
-    if (expr == nullptr || expr->type == wasm::Type::unreachable || expr->type == wasm::Type::none)
+    if (expr == nullptr || expr->type == wasm::Type::unreachable || expr->type == wasm::Type::none ||
+        expr->is<wasm::Return>())
       return;
 
     if (auto *block = expr->dynCast<wasm::Block>()) {
@@ -61,15 +59,8 @@ public:
       return;
     }
 
-    if (expr->is<wasm::Return>()) {
-      // Explicit returns are handled by visitReturn.
-      return;
-    }
-
     checkReturnExpr(expr);
   }
-
-  bool hasExplicitReturn() const { return hasExplicitReturn_; }
 
   std::optional<wasm::Index> getUnchangedParamIndex() const {
     if (!allReturnsAreLocalGetsOfSameParam_ || !unchangedParamIndex_.has_value())
@@ -83,7 +74,6 @@ private:
   wasm::Function *function_;
   std::optional<wasm::Index> unchangedParamIndex_;
   bool allReturnsAreLocalGetsOfSameParam_ = true;
-  bool hasExplicitReturn_ = false;
   std::unordered_set<wasm::Index> modifiedParamIndices_;
 };
 
@@ -110,13 +100,9 @@ ReturnParamMap collectReturnParamFunctions(wasm::Module *m) {
   result[wasm::Name(FnTmpToStack)] = 0;
 
   for (auto const &func : m->functions) {
-    if (func->name == wasm::Name(FnLocalToStack) || func->name == wasm::Name(FnTmpToStack)) {
-      result[func->name] = 0;
-      continue;
-    }
-    if (auto paramIndex = checkFunction(func.get())) {
+    std::optional<wasm::Index> const paramIndex = checkFunction(func.get());
+    if (paramIndex.has_value())
       result[func->name] = paramIndex.value();
-    }
   }
 
   return result;
@@ -177,12 +163,10 @@ TEST(ReturnParamFunctionsTest, MixedLocalGetAndNonLocalGetReturns) {
 TEST(ReturnParamFunctionsTest, RuntimeToStackFunctionsReturnFirstParameter) {
   auto m = loadWat(R"(
     (module
-      (func $~lib/rt/__localtostack (param $a i32) (param $b i32) (result i32)
-        local.get $b
-      )
-      (func $~lib/rt/__tmptostack (param $a i32) (param $b i32) (result i32)
-        local.get $b
-      )
+      (import "as-builtin-fn" "~lib/rt/__localtostack"
+        (func $~lib/rt/__localtostack (param i32) (result i32)))
+      (import "as-builtin-fn" "~lib/rt/__tmptostack"
+        (func $~lib/rt/__tmptostack (param i32) (result i32)))
     )
   )");
   auto res = collectReturnParamFunctions(m.get());

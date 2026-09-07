@@ -67,10 +67,13 @@ AliasPath resolveAliasPath(wasm::Expression *expr, SSAMap const &ssaMap, ReturnP
 void mergeLivenessAlongPath(LivenessMap &livenessMap, AliasPath const &aliasPath, wasm::Call *const callExpr,
                             size_t const targetSSAIndex, size_t const tmpSSAIndex) {
   for (wasm::Call *const intermediateCall : aliasPath.intermediateToStackCalls) {
-    livenessMap.set(intermediateCall, LivenessMap::Pos::Before, targetSSAIndex, true);
-    livenessMap.set(intermediateCall, LivenessMap::Pos::After, targetSSAIndex, true);
+    if (livenessMap.getIndexBase(intermediateCall).has_value()) {
+      livenessMap.set(intermediateCall, LivenessMap::Pos::Before, targetSSAIndex, true);
+      livenessMap.set(intermediateCall, LivenessMap::Pos::After, targetSSAIndex, true);
+    }
   }
-  livenessMap.set(callExpr, LivenessMap::Pos::Before, targetSSAIndex, true);
+  if (livenessMap.getIndexBase(callExpr).has_value())
+    livenessMap.set(callExpr, LivenessMap::Pos::Before, targetSSAIndex, true);
   livenessMap.mergeByColumns(targetSSAIndex, tmpSSAIndex, LivenessMap::MergeOperator::OR);
 }
 
@@ -165,7 +168,8 @@ void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) 
       if (ssaMap.contains(SSAValue{rootCall})) {
         size_t const rootTmpSSAIndex = ssaMap.getIndex(SSAValue{rootCall});
         if (rootTmpSSAIndex != tmpSSAIndex) {
-          livenessMap.set(rootCall, LivenessMap::Pos::After, rootTmpSSAIndex, true);
+          if (livenessMap.getIndexBase(rootCall).has_value())
+            livenessMap.set(rootCall, LivenessMap::Pos::After, rootTmpSSAIndex, true);
           mergeLivenessAlongPath(livenessMap, aliasPath, callExpr, rootTmpSSAIndex, tmpSSAIndex);
           invalidSSA.set(tmpSSAIndex, true);
         }
@@ -280,6 +284,40 @@ TEST(MergeSSATest, TwoSubChainsWithIntermediateAndRootOptimization) {
   // Total dimension = 6. Invalidated = 4. Remaining valid = 2 ($a and createAnotherObject).
   EXPECT_EQ(livenessMap.getDimension(), 6U);
   EXPECT_EQ(livenessMap.getValidDimension(), 2U);
+}
+
+TEST(MergeSSATest, IgnoresUnreachableAliasPathExpressions) {
+  auto m = loadWat(R"(
+    (module
+      (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+      (func $forward (param $value i32) (result i32)
+        (local.get $value)
+      )
+      (func $main (result i32)
+        (block
+          (unreachable)
+          (drop
+            (call $~lib/rt/__tmptostack
+              (call $forward
+                (call $~lib/rt/__tmptostack
+                  (i32.const 42)
+                )
+              )
+            )
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  wasm::PassRunner runner{m.get()};
+  ModuleLevelSSAMap const moduleLevelSSAMap = ModuleLevelSSAMap::create(m.get());
+  std::shared_ptr<ObjLivenessInfo> const livenessInfo = ObjLivenessAnalyzer::addToPass(runner, moduleLevelSSAMap);
+  ReturnParamMap const returnParamMap = collectReturnParamFunctions(m.get());
+  MergeSSA::addToPass(runner, moduleLevelSSAMap, livenessInfo, returnParamMap);
+
+  EXPECT_NO_THROW(runner.run());
 }
 
 } // namespace warpo::passes::gc::ut
