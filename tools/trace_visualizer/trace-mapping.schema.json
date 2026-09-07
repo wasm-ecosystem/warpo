@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WARPO Trace Point Mapping Schema",
+  "description": "Schema for multi-module trace point mapping configuration in warpo_trace_visualizer.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "description": "Configuration for a single WebAssembly module trace point mapping.",
+    "properties": {
+      "moduleId": {
+        "description": "The 64-bit module identifier (unsigned integer or decimal/hex string).",
+        "oneOf": [
+          {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Decimal integer module ID."
+          },
+          {
+            "type": "string",
+            "pattern": "^(0[xX][0-9a-fA-F]+|[0-9]+)$",
+            "description": "Decimal or hex string representation of module ID (e.g. '1' or '0x10')."
+          }
+        ]
+      },
+      "mappingFile": {
+        "type": "string",
+        "description": "Path to the trace_points.txt mapping file for this module (absolute or relative to the JSON file)."
+      },
+      "moduleName": {
+        "type": "string",
+        "description": "Optional custom display name for the module track in Perfetto UI. Defaults to 'Module <moduleId>'."
+      }
+    },
+    "required": ["moduleId", "mappingFile"],
+    "additionalProperties": false
+  }
+}

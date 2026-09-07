@@ -25,6 +25,7 @@
 /debugger/out/
 
 /tests/bootstrap/tmp/*
+/tests/driver/**/tmp/*
 
 # change the format of these test cases will change the output of the test suite
 /tests/frontend/compiler/binary.ts
