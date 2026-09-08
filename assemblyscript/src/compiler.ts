@@ -7239,25 +7239,6 @@ export class Compiler extends DiagnosticEmitter {
     }
   }
 
-  /** Compiles the given arguments like a call expression according to the specified context. */
-  private compileCallExpressionLike(
-    /** Called expression. */
-    expression: Expression,
-    /** Call type arguments. */
-    typeArguments: TypeNode[] | null,
-    /** Call arguments. */
-    args: Expression[],
-    /** Diagnostic range. */
-    range: Range,
-    /** Contextual type indicating the return type the caller expects, if any. */
-    contextualType: Type,
-    /** Constraints indicating contextual conditions. */
-    constraints: Constraints = Constraints.None
-  ): ExpressionRef {
-    let call = this.createReusableCallExpression(expression, typeArguments, args, range);
-    return this.compileCallExpression(call, contextualType, constraints);
-  }
-
   private compileCallExpressionLikeWithOperands(
     expression: Expression,
     typeArguments: TypeNode[] | null,
