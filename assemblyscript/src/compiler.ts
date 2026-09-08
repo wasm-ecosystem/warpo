@@ -7217,11 +7217,11 @@ export class Compiler extends DiagnosticEmitter {
         contextualType == Type.void
       );
     }
-    this.reportUncallableExpression(target, reportNode.range);
+    this.reportInvalidCallTarget(target, reportNode.range);
     return this.module.unreachable();
   }
 
-  private reportUncallableExpression(target: Element, range: Range): void {
+  private reportInvalidCallTarget(target: Element, range: Range): void {
     this.error(
       DiagnosticCode.Cannot_invoke_an_expression_whose_type_lacks_a_call_signature_Type_0_has_no_compatible_call_signatures,
       range,
