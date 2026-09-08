@@ -185,7 +185,9 @@ void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) 
 #include <gtest/gtest.h>
 
 #include "../Runner.hpp"
+#include "LeafFunctionFilter.hpp"
 #include "ObjLivenessAnalyzer.hpp"
+#include "StackAssigner.hpp"
 
 namespace warpo::passes::gc::ut {
 
@@ -284,6 +286,88 @@ TEST(MergeSSATest, TwoSubChainsWithIntermediateAndRootOptimization) {
   // Total dimension = 6. Invalidated = 4. Remaining valid = 2 ($a and createAnotherObject).
   EXPECT_EQ(livenessMap.getDimension(), 6U);
   EXPECT_EQ(livenessMap.getValidDimension(), 2U);
+}
+
+TEST(MergeSSATest, KeepsRootLiveAcrossAllocatingForwardingCallArguments) {
+  auto m = loadWat(R"(
+    (module
+      (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
+      (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+      (func $~lib/rt/itcms/__collect
+        (nop)
+      )
+      (func $~lib/rt/itcms/__new (param $size i32) (param $id i32) (result i32)
+        (call $~lib/rt/itcms/__collect)
+        (i32.const 1)
+      )
+      (func $setA (param $this i32) (param $value i32) (result i32)
+        (drop (call $~lib/rt/itcms/__new (i32.const 4) (i32.const 4)))
+        (local.get $this)
+      )
+      (func $setB (param $this i32) (param $value i32) (result i32)
+        (drop (call $~lib/rt/itcms/__new (i32.const 4) (i32.const 5)))
+        (local.get $this)
+      )
+      (func $main (result i32)
+        (local $builder i32)
+        (local.set $builder
+          (call $~lib/rt/__localtostack
+            (call $~lib/rt/itcms/__new (i32.const 4) (i32.const 1))
+          )
+        )
+        (drop
+          (call $setB
+            (call $~lib/rt/__tmptostack
+              (call $setA
+                (call $~lib/rt/__tmptostack
+                  (local.get $builder)
+                )
+                (call $~lib/rt/__tmptostack
+                  (call $~lib/rt/itcms/__new (i32.const 4) (i32.const 2))
+                )
+              )
+            )
+            (call $~lib/rt/__tmptostack
+              (call $~lib/rt/itcms/__new (i32.const 4) (i32.const 3))
+            )
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  wasm::Function *const mainFunc = m->getFunction("main");
+  wasm::Block *const mainBody = mainFunc->body->cast<wasm::Block>();
+  wasm::LocalSet *const builderSet = mainBody->list[0]->cast<wasm::LocalSet>();
+  wasm::Call *const setB = mainBody->list[1]->cast<wasm::Drop>()->value->cast<wasm::Call>();
+  wasm::Call *const setAResultToStack = setB->operands[0]->cast<wasm::Call>();
+  wasm::Call *const setA = setAResultToStack->operands[0]->cast<wasm::Call>();
+  wasm::Call *const builderToStack = builderSet->value->cast<wasm::Call>();
+  wasm::Call *const setAArgumentToStack = setA->operands[1]->cast<wasm::Call>();
+  wasm::Call *const setBArgumentToStack = setB->operands[1]->cast<wasm::Call>();
+
+  wasm::PassRunner runner{m.get()};
+  ModuleLevelSSAMap const moduleLevelSSAMap = ModuleLevelSSAMap::create(m.get());
+  std::shared_ptr<CallGraph const> const callGraph = CallGraphBuilder::addToPass(runner);
+  std::shared_ptr<LeafFunc> const leafFunc = LeafFunctionCollector::addToPass(runner, callGraph);
+  std::shared_ptr<ObjLivenessInfo> const livenessInfo = ObjLivenessAnalyzer::addToPass(runner, moduleLevelSSAMap);
+  ReturnParamMap const returnParamMap = collectReturnParamFunctions(m.get());
+  MergeSSA::addToPass(runner, moduleLevelSSAMap, livenessInfo, returnParamMap);
+  LeafFunctionFilter::addToPass(runner, leafFunc, livenessInfo);
+  std::shared_ptr<StackPositions> const stackPositions =
+      StackAssigner::addToPass(runner, StackAssigner::Mode::GreedyConflictGraph, livenessInfo);
+  runner.run();
+
+  StackPosition const &stackPosition = stackPositions->at(mainFunc);
+  auto const builderStackPosition = stackPosition.find(builderToStack);
+  auto const setAArgumentStackPosition = stackPosition.find(setAArgumentToStack);
+  auto const setBArgumentStackPosition = stackPosition.find(setBArgumentToStack);
+  ASSERT_NE(builderStackPosition, stackPosition.end());
+  ASSERT_NE(setAArgumentStackPosition, stackPosition.end());
+  ASSERT_NE(setBArgumentStackPosition, stackPosition.end());
+  EXPECT_NE(builderStackPosition->second, setAArgumentStackPosition->second);
+  EXPECT_NE(builderStackPosition->second, setBArgumentStackPosition->second);
 }
 
 TEST(MergeSSATest, IgnoresUnreachableAliasPathExpressions) {

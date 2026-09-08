@@ -158,7 +158,8 @@ private:
 };
 
 std::optional<wasm::Index> checkFunction(wasm::Module *m, wasm::Function *func) {
-  if (func->imported() || func->body == nullptr || func->getResults() == wasm::Type::none) {
+  if (func->imported() || func->body == nullptr || func->getResults() == wasm::Type::none ||
+      func->getNumParams() == 0) {
     return std::nullopt;
   }
 
