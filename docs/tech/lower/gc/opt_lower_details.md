@@ -341,6 +341,21 @@ see [ObjLivenessAnalyzer example](examples/gc_opt_liveness_example.md).
 
 ## `MergeSSA`
 
+#### `ReturnParamFunctions`
+
+`ReturnParamFunctions` builds the map used by `MergeSSA` to follow values through
+functions that return one of their parameters unchanged. It recognizes both
+implicit and explicit return paths, and requires every returned value to be a
+`local.get` of the same parameter. A parameter that is assigned inside the
+function is rejected, because the function no longer forwards the original
+object value.
+
+The analysis also seeds the map with `__localtostack` and `__tmptostack`, whose
+first parameter is the value being forwarded. Imported functions and functions
+without a result are not analyzed. If a function has multiple return paths,
+all reachable returned values must satisfy the same-parameter rule before the
+function can be used as an alias edge by `MergeSSA`.
+
 #### Rationale
 
 Many `Tmp SSA` values are just a “move/reference” of an existing value in `Local SSA` (for example, `__tmptostack(local.get ...)` when call function with parameters). If we merge such `Tmp SSA` values into `Local SSA`, we reduce the SSA size and can further reduce the needed slot count.
