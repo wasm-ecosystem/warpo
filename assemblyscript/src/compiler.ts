@@ -7441,27 +7441,6 @@ export class Compiler extends DiagnosticEmitter {
     return exprs;
   }
 
-  private compileCallExpressions(
-    signature: Signature,
-    argumentExpressions: Expression[],
-    thisArg: ExpressionRef = 0
-  ): ExpressionRef[] {
-    let numArguments = argumentExpressions.length;
-    let numArgumentsInclThis = thisArg ? numArguments + 1 : numArguments;
-    let operands = new Array<ExpressionRef>(numArgumentsInclThis);
-    let index = 0;
-    if (thisArg) {
-      operands[0] = thisArg;
-      index = 1;
-    }
-    let parameterTypes = signature.parameterTypes;
-    for (let i = 0; i < numArguments; ++i, ++index) {
-      operands[index] = this.compileExpression(argumentExpressions[i], parameterTypes[i], Constraints.ConvImplicit);
-    }
-    assert(index == numArgumentsInclThis);
-    return operands;
-  }
-
   private assembleCallOperands(
     signature: Signature,
     existingOperands: ExpressionRef[],
@@ -7508,15 +7487,7 @@ export class Compiler extends DiagnosticEmitter {
     thisArg: ExpressionRef = 0,
     constraints: Constraints = Constraints.None
   ): ExpressionRef {
-    return this.compileCallDirectWithOperands(
-      instance,
-      [],
-      [],
-      argumentExpressions,
-      reportNode,
-      thisArg,
-      constraints
-    );
+    return this.compileCallDirectWithOperands(instance, [], [], argumentExpressions, reportNode, thisArg, constraints);
   }
 
   private compileCallDirectWithOperands(
