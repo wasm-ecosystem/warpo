@@ -118,7 +118,6 @@ export interface IVisitor {
   visitFalseExpression(node: FalseExpression): void;
   visitUnaryPostfixExpression(node: UnaryPostfixExpression): void;
   visitUnaryPrefixExpression(node: UnaryPrefixExpression): void;
-  visitCompiledExpression(node: Expression): void;
   visitSource(node: Source): void;
   visitJsonSource(node: JsonSource): void;
   visitIndexSignatureNode(node: IndexSignatureNode): void;
@@ -315,8 +314,6 @@ export class BaseVisitor implements IVisitor {
   visitUnaryPrefixExpression(node: UnaryPrefixExpression): void {
     this.visitNode(node.operand);
   }
-
-  visitCompiledExpression(node: Expression): void {}
 
   visitSource(node: Source): void {
     this.visitNodes(node.statements);
