@@ -11,10 +11,8 @@ namespace warpo::passes {
 
 /// Represents an exit / return point of a function.
 /// `expr` is the expression evaluated at this return point (e.g. Call, LocalGet, Const, etc.).
-/// `terminator` is the wrapping or immediately following node (Return, Break, Switch) if any.
 struct ReturnPoint {
   wasm::Expression *expr = nullptr;
-  wasm::Expression *terminator = nullptr;
 };
 
 /// Computes the return points of a function using CFG backward reachability.

@@ -14,25 +14,24 @@ namespace warpo::passes {
 
 namespace {
 
-void addReturnPointsFromExpr(wasm::Expression *expr, wasm::Expression *terminator,
-                             std::vector<ReturnPoint> &returnPoints) {
+void addReturnPointsFromExpr(wasm::Expression *expr, std::vector<ReturnPoint> &returnPoints) {
   if (expr == nullptr)
     return;
 
   if (auto *const ifExpr = expr->dynCast<wasm::If>()) {
-    addReturnPointsFromExpr(ifExpr->ifTrue, terminator, returnPoints);
+    addReturnPointsFromExpr(ifExpr->ifTrue, returnPoints);
     if (ifExpr->ifFalse != nullptr)
-      addReturnPointsFromExpr(ifExpr->ifFalse, terminator, returnPoints);
+      addReturnPointsFromExpr(ifExpr->ifFalse, returnPoints);
     return;
   }
 
   if (auto *const block = expr->dynCast<wasm::Block>()) {
     if (!block->list.empty())
-      addReturnPointsFromExpr(block->list.back(), terminator, returnPoints);
+      addReturnPointsFromExpr(block->list.back(), returnPoints);
     return;
   }
 
-  returnPoints.push_back(ReturnPoint{expr, terminator});
+  returnPoints.push_back(ReturnPoint{expr});
 }
 
 class CFGReturnPointFinder {
@@ -46,7 +45,7 @@ public:
     std::vector<ReturnPoint> returnPoints;
     std::unordered_set<BasicBlock const *> visited;
 
-    auto visitBB = [&](auto const &self, BasicBlock const *bb, wasm::Expression *currentTerminator) -> void {
+    auto visitBB = [&](auto const &self, BasicBlock const *bb) -> void {
       if (bb == nullptr || !visited.insert(bb).second)
         return;
 
@@ -89,44 +88,47 @@ public:
         }
       }
 
-      // If the basic block contains no valuable instruction (e.g. empty join block)
-      // or ends with a branching condition (If), the return value flows from predecessors.
+      // 1. Empty join block or branching condition (If): return value flows from predecessors.
       if (lastInst == nullptr || lastInst->is<wasm::If>()) {
         for (BasicBlock const *const pred : bb->preds())
-          self(self, pred, currentTerminator);
+          self(self, pred);
+        // 2. Explicit return: handle value return, adjacent void return, or trace predecessors.
       } else if (auto *const ret = lastInst->dynCast<wasm::Return>()) {
         if (ret->value != nullptr) {
-          addReturnPointsFromExpr(ret->value, ret, returnPoints);
+          addReturnPointsFromExpr(ret->value, returnPoints);
         } else if (secondLastInst != nullptr && secondLastInst->type != wasm::Type::unreachable) {
-          addReturnPointsFromExpr(secondLastInst, ret, returnPoints);
+          addReturnPointsFromExpr(secondLastInst, returnPoints);
         } else {
           for (BasicBlock const *const pred : bb->preds())
-            self(self, pred, ret);
+            self(self, pred);
         }
+        // 3. Break branch: handle value branch, adjacent void break, or trace predecessors.
       } else if (auto *const br = lastInst->dynCast<wasm::Break>()) {
         if (br->value != nullptr) {
-          addReturnPointsFromExpr(br->value, br, returnPoints);
+          addReturnPointsFromExpr(br->value, returnPoints);
         } else if (secondLastInst != nullptr && secondLastInst->type != wasm::Type::unreachable) {
-          addReturnPointsFromExpr(secondLastInst, br, returnPoints);
+          addReturnPointsFromExpr(secondLastInst, returnPoints);
         } else {
           for (BasicBlock const *const pred : bb->preds())
-            self(self, pred, br);
+            self(self, pred);
         }
+        // 4. Switch branch: handle value switch, adjacent void switch, or trace predecessors.
       } else if (auto *const sw = lastInst->dynCast<wasm::Switch>()) {
         if (sw->value != nullptr) {
-          addReturnPointsFromExpr(sw->value, sw, returnPoints);
+          addReturnPointsFromExpr(sw->value, returnPoints);
         } else if (secondLastInst != nullptr && secondLastInst->type != wasm::Type::unreachable) {
-          addReturnPointsFromExpr(secondLastInst, sw, returnPoints);
+          addReturnPointsFromExpr(secondLastInst, returnPoints);
         } else {
           for (BasicBlock const *const pred : bb->preds())
-            self(self, pred, sw);
+            self(self, pred);
         }
+        // 5. Fallthrough: concrete instruction (value or void) reaching exit without explicit terminator.
       } else if (lastInst->type != wasm::Type::unreachable) {
-        addReturnPointsFromExpr(lastInst, currentTerminator, returnPoints);
+        addReturnPointsFromExpr(lastInst, returnPoints);
       }
     };
 
-    visitBB(visitBB, exit, nullptr);
+    visitBB(visitBB, exit);
     return returnPoints;
   }
 };
@@ -179,8 +181,6 @@ TEST(ReturnPointsTest, ExplicitReturn) {
   ASSERT_EQ(rps.size(), 1U);
   ASSERT_TRUE(rps[0].expr->is<wasm::Const>());
   EXPECT_EQ(rps[0].expr->cast<wasm::Const>()->value.geti32(), 10);
-  ASSERT_NE(rps[0].terminator, nullptr);
-  EXPECT_TRUE(rps[0].terminator->is<wasm::Return>());
 }
 
 TEST(ReturnPointsTest, VoidCallFollowedByReturn) {
@@ -198,8 +198,6 @@ TEST(ReturnPointsTest, VoidCallFollowedByReturn) {
   ASSERT_EQ(rps.size(), 1U);
   ASSERT_TRUE(rps[0].expr->is<wasm::Call>());
   EXPECT_EQ(rps[0].expr->cast<wasm::Call>()->target, "callee");
-  ASSERT_NE(rps[0].terminator, nullptr);
-  EXPECT_TRUE(rps[0].terminator->is<wasm::Return>());
 }
 
 TEST(ReturnPointsTest, IfElseBranches) {
@@ -318,6 +316,50 @@ TEST(ReturnPointsTest, NestedBlocksTreeConvergence) {
   EXPECT_TRUE(values.contains(1));
   EXPECT_TRUE(values.contains(2));
   EXPECT_TRUE(values.contains(3));
+}
+
+TEST(ReturnPointsTest, VoidCallFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $callee)
+      (func $caller
+        call $callee
+      )
+    )
+  )");
+  auto *const func = m->getFunction("caller");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 1U);
+  ASSERT_TRUE(rps[0].expr->is<wasm::Call>());
+  EXPECT_EQ(rps[0].expr->cast<wasm::Call>()->target, "callee");
+}
+
+TEST(ReturnPointsTest, VoidIfElseFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $foo)
+      (func $goo)
+      (func $caller (param $c i32)
+        local.get $c
+        if
+          call $foo
+        else
+          call $goo
+        end
+      )
+    )
+  )");
+  auto *const func = m->getFunction("caller");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 2U);
+  std::unordered_set<wasm::Name> callees;
+  for (auto const &rp : rps) {
+    ASSERT_TRUE(rp.expr->is<wasm::Call>());
+    callees.insert(rp.expr->cast<wasm::Call>()->target);
+  }
+  EXPECT_EQ(callees.size(), 2U);
+  EXPECT_TRUE(callees.contains("foo"));
+  EXPECT_TRUE(callees.contains("goo"));
 }
 
 } // namespace warpo::passes::ut
