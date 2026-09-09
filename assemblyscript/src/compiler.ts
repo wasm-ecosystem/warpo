@@ -7273,7 +7273,7 @@ export class Compiler extends DiagnosticEmitter {
     }
   }
 
-  /** Compiles a call-like expression while reusing operands compiled by its desugaring. */
+  /** Compiles a call-like expression while reusing operands compiled during lowering. */
   private compileCallExpressionLikeWithOperands(
     /** Called expression. */
     expression: Expression,
@@ -7307,7 +7307,7 @@ export class Compiler extends DiagnosticEmitter {
     );
   }
 
-  /** Creates or updates the temporary call node used while compiling a desugared call. */
+  /** Creates or updates the temporary call node used while compiling a lowered call. */
   private createReusableCallExpression(
     /** Called expression. */
     expression: Expression,
@@ -7318,7 +7318,7 @@ export class Compiler extends DiagnosticEmitter {
     /** Diagnostic range. */
     range: Range
   ): CallExpression {
-    // Desugaring like this can happen many times. Let's cache the intermediate allocation.
+    // This lowering can happen many times. Let's cache the intermediate allocation.
     let call = this._reusableCallExpression;
     if (call) {
       call.expression = expression;
