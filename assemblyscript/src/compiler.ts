@@ -3888,11 +3888,18 @@ export class Compiler extends DiagnosticEmitter {
     return this.finalizeExpression(expr, this.currentType, contextualType, constraints, expression);
   }
 
+  /** Applies contextual conversions, integer wrapping, and source-map information to an expression. */
+  /** Applies contextual conversions, integer wrapping, and source-map information to an expression. */
   private finalizeExpression(
+    /** Expression to finalize. */
     expr: ExpressionRef,
+    /** Current expression type. */
     currentType: Type,
+    /** Contextual type indicating the return type the caller expects, if any. */
     contextualType: Type,
+    /** Constraints indicating contextual conditions. */
     constraints: Constraints,
+    /** Report node. */
     reportNode: Node
   ): ExpressionRef {
     let wrap = (constraints & Constraints.MustWrap) != 0;
@@ -3913,11 +3920,17 @@ export class Compiler extends DiagnosticEmitter {
     return expr;
   }
 
+  /** Restores the operand's current type before applying the standard expression finalization. */
   private finalizeCallOperand(
+    /** Operand expression to finalize. */
     expr: ExpressionRef,
+    /** Current operand type. */
     currentType: Type,
+    /** Contextual type indicating the type expected by the call signature. */
     contextualType: Type,
+    /** Constraints indicating contextual conditions. */
     constraints: Constraints,
+    /** Report node. */
     reportNode: Node
   ): ExpressionRef {
     this.currentType = currentType;
@@ -7150,18 +7163,33 @@ export class Compiler extends DiagnosticEmitter {
     );
   }
 
-  private resolveCallTarget(expression: Expression, flow: Flow): Element | null {
+  /** Resolves a call expression's target while preserving resolver diagnostics. */
+  private resolveCallTarget(
+    /** Called expression. */
+    expression: Expression,
+    /** Current control flow. */
+    flow: Flow
+  ): Element | null {
     return this.resolver.lookupExpression(expression, flow); // reports
   }
 
+  /** Compiles a call after its target has been resolved, dispatching direct and indirect calls. */
   private compileResolvedCall(
+    /** Resolved call target. */
     target: Element,
+    /** Called expression. */
     callee: Expression,
+    /** Call arguments. */
     argumentExpressions: Expression[],
+    /** Call expression used for diagnostics. */
     reportNode: CallExpression,
+    /** Contextual type indicating the return type the caller expects, if any. */
     contextualType: Type,
+    /** Constraints indicating contextual conditions. */
     constraints: Constraints,
+    /** Previously compiled call operands. */
     existingOperands: ExpressionRef[] = [],
+    /** Types of previously compiled call operands. */
     existingOperandTypes: Type[] = []
   ): ExpressionRef {
     let flow = this.currentFlow;
@@ -7221,7 +7249,13 @@ export class Compiler extends DiagnosticEmitter {
     return this.module.unreachable();
   }
 
-  private reportInvalidCallTarget(target: Element, range: Range): void {
+  /** Reports that a resolved call target does not have a compatible call signature. */
+  private reportInvalidCallTarget(
+    /** Resolved call target. */
+    target: Element,
+    /** Diagnostic range. */
+    range: Range
+  ): void {
     this.error(
       DiagnosticCode.Cannot_invoke_an_expression_whose_type_lacks_a_call_signature_Type_0_has_no_compatible_call_signatures,
       range,
@@ -7239,14 +7273,23 @@ export class Compiler extends DiagnosticEmitter {
     }
   }
 
+  /** Compiles a call-like expression while reusing operands compiled by its desugaring. */
   private compileCallExpressionLikeWithOperands(
+    /** Called expression. */
     expression: Expression,
+    /** Call type arguments. */
     typeArguments: TypeNode[] | null,
+    /** Previously compiled call operands. */
     operands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
     operandTypes: Type[],
+    /** Call arguments. */
     args: Expression[],
+    /** Diagnostic range. */
     range: Range,
+    /** Contextual type indicating the return type the caller expects, if any. */
     contextualType: Type,
+    /** Constraints indicating contextual conditions. */
     constraints: Constraints = Constraints.None
   ): ExpressionRef {
     let call = this.createReusableCallExpression(expression, typeArguments, args, range);
@@ -7264,10 +7307,15 @@ export class Compiler extends DiagnosticEmitter {
     );
   }
 
+  /** Creates or updates the temporary call node used while compiling a desugared call. */
   private createReusableCallExpression(
+    /** Called expression. */
     expression: Expression,
+    /** Call type arguments. */
     typeArguments: TypeNode[] | null,
+    /** Call arguments. */
     args: Expression[],
+    /** Diagnostic range. */
     range: Range
   ): CallExpression {
     // Desugaring like this can happen many times. Let's cache the intermediate allocation.
@@ -7389,10 +7437,15 @@ export class Compiler extends DiagnosticEmitter {
     }
   }
 
+  /** Packs trailing arguments into a rest-array expression when the signature requires it. */
   private normalizeCallArguments(
+    /** Call arguments. */
     argumentExpressions: Expression[],
+    /** Call signature. */
     signature: Signature,
+    /** Diagnostic node. */
     reportNode: Node,
+    /** Number of previously compiled operands. */
     numLeadingOperands: i32 = 0
   ): Expression[] {
     // if no rest args, return the original args
@@ -7422,12 +7475,19 @@ export class Compiler extends DiagnosticEmitter {
     return exprs;
   }
 
+  /** Finalizes existing and newly compiled arguments into the operand list for a call. */
   private assembleCallOperands(
+    /** Call signature. */
     signature: Signature,
+    /** Previously compiled call operands. */
     existingOperands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
     existingOperandTypes: Type[],
+    /** Call arguments. */
     argumentExpressions: Expression[],
+    /** Diagnostic node. */
     reportNode: Node,
+    /** Compiled `this` argument. */
     thisArg: ExpressionRef = 0
   ): ExpressionRef[] {
     assert(existingOperands.length == existingOperandTypes.length);
@@ -7471,13 +7531,21 @@ export class Compiler extends DiagnosticEmitter {
     return this.compileCallDirectWithOperands(instance, [], [], argumentExpressions, reportNode, thisArg, constraints);
   }
 
+  /** Compiles a direct call using both previously compiled and source arguments. */
   private compileCallDirectWithOperands(
+    /** Function to call. */
     instance: Function,
+    /** Previously compiled call operands. */
     operands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
     operandTypes: Type[],
+    /** Call arguments. */
     argumentExpressions: Expression[],
+    /** Diagnostic node. */
     reportNode: Node,
+    /** Compiled `this` argument. */
     thisArg: ExpressionRef = 0,
+    /** Constraints indicating contextual conditions. */
     constraints: Constraints = Constraints.None
   ): ExpressionRef {
     let numArguments = argumentExpressions.length + operands.length;
@@ -7973,14 +8041,23 @@ export class Compiler extends DiagnosticEmitter {
     );
   }
 
+  /** Compiles an indirect call using both previously compiled and source arguments. */
   private compileCallIndirectWithOperands(
+    /** Call signature. */
     signature: Signature,
+    /** Compiled function expression. */
     functionArg: ExpressionRef,
+    /** Previously compiled call operands. */
     operands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
     operandTypes: Type[],
+    /** Call arguments. */
     argumentExpressions: Expression[],
+    /** Diagnostic node. */
     reportNode: Node,
+    /** Compiled `this` argument. */
     thisArg: ExpressionRef = 0,
+    /** Whether the call result is immediately dropped. */
     immediatelyDropped: bool = false
   ): ExpressionRef {
     let numArguments = argumentExpressions.length + operands.length;
