@@ -15,9 +15,9 @@ namespace warpo::passes::gc {
 
 namespace {
 
-class ParamModificationAnalysis : public wasm::PostWalker<ParamModificationAnalysis> {
+class ReturnParamAnalysis : public wasm::PostWalker<ReturnParamAnalysis> {
 public:
-  explicit ParamModificationAnalysis(wasm::Function *f) : function_(f) {}
+  explicit ReturnParamAnalysis(wasm::Function *f) : function_(f) {}
 
   void visitLocalSet(wasm::LocalSet *curr) {
     if (curr->index < function_->getNumParams())
@@ -34,13 +34,6 @@ private:
 // Analyzes whether a function returns one of its parameters unchanged across all
 // reachable exit paths.
 //
-// Design:
-// The identification of all exit points (both explicit `return <expr>` and implicit
-// control-flow fallthrough, including branches exiting blocks/loops) is delegated
-// to `computeReturnPoints(m, func)` in the helper layer. This builds upon the CFG
-// reverse reachability analysis from the function's exit block.
-//
-// Here, we verify that:
 // 1. Every return point evaluates to a `local.get` of the exact same parameter index.
 // 2. That parameter is never modified by any `local.set` or `local.tee` within the
 //    entire function body.
@@ -71,7 +64,7 @@ std::optional<wasm::Index> checkFunction(wasm::Module *m, wasm::Function *func) 
   if (!unchangedParamIndex.has_value())
     return std::nullopt;
 
-  ParamModificationAnalysis modAnalysis{func};
+  ReturnParamAnalysis modAnalysis{func};
   modAnalysis.walk(func->body);
   if (modAnalysis.isParamModified(unchangedParamIndex.value()))
     return std::nullopt;
