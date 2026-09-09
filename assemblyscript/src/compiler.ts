@@ -7463,7 +7463,7 @@ export class Compiler extends DiagnosticEmitter {
 
     // make an array literal expression from the rest args
     let restStart = numParams - 1 - numLeadingOperands;
-    assert(restStart >= 0);
+    if (restStart < 0) return argumentExpressions;
     let elements = argumentExpressions.slice(restStart);
     let range = new Range(elements[0].range.start, elements[elements.length - 1].range.end);
     range.source = reportNode.range.source;
@@ -7473,6 +7473,97 @@ export class Compiler extends DiagnosticEmitter {
     const exprs = argumentExpressions.slice(0, restStart);
     exprs.push(arrExpr);
     return exprs;
+  }
+
+  /** Compiles array values into a normal array instance. */
+  private compileArrayValues(
+    /** Concrete array class. */
+    arrayInstance: Class,
+    /** Compiled array elements. */
+    values: ExpressionRef[],
+    /** Report node. */
+    reportNode: Node,
+    /** Array compilation constraints. */
+    constraints: Constraints = Constraints.None,
+    /** Temporary array local allocated before compiling the values. */
+    tempThis: Local | null = null
+  ): ExpressionRef {
+    let module = this.module;
+    let flow = this.currentFlow;
+    let program = this.program;
+    let arrayType = arrayInstance.type;
+    let elementType = arrayInstance.getTypeArgumentsTo(program.arrayPrototype)![0];
+    let length = values.length;
+    let isStatic = !elementType.isExternalReference;
+
+    for (let i = 0; i < length; ++i) {
+      let expr = values[i];
+      if (getExpressionType(expr) != elementType.toRef()) {
+        isStatic = false;
+      } else {
+        let precomp = module.runExpression(expr, ExpressionRunnerFlags.PreserveSideeffects);
+        if (precomp) {
+          values[i] = precomp;
+        } else {
+          isStatic = false;
+        }
+      }
+    }
+
+    if (isStatic) {
+      let totalOverhead = program.totalOverhead;
+      let bufferSegment = this.addStaticBuffer(elementType, values);
+      let bufferAddress = i64_add(bufferSegment.offset, i64_new(totalOverhead));
+
+      if (constraints & Constraints.PreferStatic) {
+        let arraySegment = this.addStaticArrayHeader(elementType, bufferSegment);
+        let arrayAddress = i64_add(arraySegment.offset, i64_new(totalOverhead));
+        this.currentType = arrayType;
+        return module.i32(i64_low(arrayAddress));
+      }
+      return this.makeNewArray(arrayInstance, length, bufferAddress, reportNode);
+    }
+
+    let indexedSet = arrayInstance.lookupOverload(OperatorKind.IndexedSet, true);
+    if (!indexedSet) {
+      this.error(
+        DiagnosticCode.Index_signature_in_type_0_only_permits_reading,
+        reportNode.range,
+        arrayInstance.internalName
+      );
+      this.currentType = arrayType;
+      return module.unreachable();
+    }
+    let arrayTypeRef = arrayType.toRef();
+    if (!tempThis) tempThis = flow.getTempLocal(Type.usize32);
+    let stmts = new Array<ExpressionRef>();
+    stmts.push(
+      module.local_set(
+        tempThis.index,
+        this.makeNewArray(arrayInstance, length, i64_new(0), reportNode),
+        arrayType.isManaged
+      )
+    );
+    let dataStartMember = assert(arrayInstance.getMember("dataStart"));
+    assert(dataStartMember.kind == ElementKind.PropertyPrototype);
+    let dataStartProperty = (<PropertyPrototype>dataStartMember).instance;
+    if (!dataStartProperty) return module.unreachable();
+    assert(dataStartProperty.isField && dataStartProperty.memoryOffset >= 0);
+    for (let i = 0; i < length; ++i) {
+      if (!this.canOptimizeZeroInitialization(values[i])) {
+        stmts.push(
+          module.call(
+            indexedSet.internalName,
+            [module.local_get(tempThis.index, arrayTypeRef), module.i32(i), values[i]],
+            TypeRef.None
+          )
+        );
+      }
+    }
+    stmts.push(module.local_get(tempThis.index, arrayTypeRef));
+    if (length) this.compileFunction(indexedSet);
+    this.currentType = arrayType;
+    return module.flatten(stmts, arrayTypeRef);
   }
 
   /** Finalizes existing and newly compiled arguments into the operand list for a call. */
@@ -7500,6 +7591,46 @@ export class Compiler extends DiagnosticEmitter {
       index = 1;
     }
     let parameterTypes = signature.parameterTypes;
+    let restIndex = signature.hasRest ? parameterTypes.length - 1 : -1;
+    if (restIndex >= 0 && existingOperands.length > restIndex) {
+      let restType = parameterTypes[restIndex];
+      let arrayInstance = assert(restType.getClass());
+      let restValues = new Array<ExpressionRef>(existingOperands.length - restIndex + argumentExpressions.length);
+      let restValueIndex = 0;
+      for (let i = restIndex; i < existingOperands.length; ++i) {
+        restValues[restValueIndex++] = this.finalizeCallOperand(
+          existingOperands[i],
+          existingOperandTypes[i],
+          arrayInstance.getArrayValueType(),
+          Constraints.ConvImplicit,
+          Source.native
+        );
+      }
+      for (let i = 0; i < argumentExpressions.length; ++i) {
+        restValues[restValueIndex++] = this.compileExpression(
+          argumentExpressions[i],
+          arrayInstance.getArrayValueType(),
+          Constraints.ConvImplicit
+        );
+      }
+      operands = new Array<ExpressionRef>(thisArg ? restIndex + 2 : restIndex + 1);
+      index = 0;
+      if (thisArg) {
+        operands[0] = thisArg;
+        index = 1;
+      }
+      for (let i = 0; i < restIndex; ++i, ++index) {
+        operands[index] = this.finalizeCallOperand(
+          existingOperands[i],
+          existingOperandTypes[i],
+          parameterTypes[i],
+          Constraints.ConvImplicit,
+          reportNode
+        );
+      }
+      operands[index] = this.compileArrayValues(arrayInstance, restValues, reportNode);
+      return operands;
+    }
     for (let i = 0; i < existingOperands.length; ++i, ++index) {
       operands[index] = this.finalizeCallOperand(
         existingOperands[i],
@@ -9506,103 +9637,24 @@ export class Compiler extends DiagnosticEmitter {
     if (!element) return module.unreachable();
     assert(element.kind == ElementKind.Class);
     let arrayInstance = <Class>element;
-    let arrayType = arrayInstance.type;
     let elementType = arrayInstance.getTypeArgumentsTo(program.arrayPrototype)![0];
 
     // block those here so compiling expressions doesn't conflict
     let tempThis = flow.getTempLocal(Type.usize32);
 
-    // compile value expressions and find out whether all are constant
+    // compile value expressions
     let expressions = expression.elementExpressions;
     let length = expressions.length;
     let values = new Array<ExpressionRef>(length);
-    let isStatic = !elementType.isExternalReference;
     for (let i = 0; i < length; ++i) {
       let elementExpression = expressions[i];
       if (elementExpression.kind != NodeKind.Omitted) {
-        let expr = this.compileExpression(<Expression>elementExpression, elementType, Constraints.ConvImplicit);
-        if (getExpressionType(expr) != elementType.toRef()) {
-          isStatic = false;
-        } else {
-          let precomp = module.runExpression(expr, ExpressionRunnerFlags.PreserveSideeffects);
-          if (precomp) {
-            expr = precomp;
-          } else {
-            isStatic = false;
-          }
-        }
-        values[i] = expr;
+        values[i] = this.compileExpression(<Expression>elementExpression, elementType, Constraints.ConvImplicit);
       } else {
         values[i] = this.makeZero(elementType);
       }
     }
-
-    // if the array is static, make a static arraybuffer segment
-    if (isStatic) {
-      let totalOverhead = program.totalOverhead;
-      let bufferSegment = this.addStaticBuffer(elementType, values);
-      let bufferAddress = i64_add(bufferSegment.offset, i64_new(totalOverhead));
-
-      // make both the buffer and array header static if assigned to a global. this can't be done
-      // if inside of a function because each invocation must create a new array reference then.
-      if (constraints & Constraints.PreferStatic) {
-        let arraySegment = this.addStaticArrayHeader(elementType, bufferSegment);
-        let arrayAddress = i64_add(arraySegment.offset, i64_new(totalOverhead));
-        this.currentType = arrayType;
-        return this.module.i32(i64_low(arrayAddress));
-
-        // otherwise allocate a new array header and make it wrap a copy of the static buffer
-      } else {
-        return this.makeNewArray(arrayInstance, length, bufferAddress, expression);
-      }
-    }
-
-    // otherwise compile an explicit instantiation with indexed sets
-    let indexedSet = arrayInstance.lookupOverload(OperatorKind.IndexedSet, true);
-    if (!indexedSet) {
-      this.error(
-        DiagnosticCode.Index_signature_in_type_0_only_permits_reading,
-        expression.range,
-        arrayInstance.internalName
-      );
-      this.currentType = arrayType;
-      return module.unreachable();
-    }
-    let arrayTypeRef = arrayType.toRef();
-
-    let stmts = new Array<ExpressionRef>();
-    // tempThis = __newArray(length, alignLog2, classId, source = 0)
-    stmts.push(
-      module.local_set(
-        tempThis.index,
-        this.makeNewArray(arrayInstance, length, i64_new(0), expression),
-        arrayType.isManaged
-      )
-    );
-    // tempData = tempThis.dataStart
-    let dataStartMember = assert(arrayInstance.getMember("dataStart"));
-    assert(dataStartMember.kind == ElementKind.PropertyPrototype);
-    // is a field, so should have been resolved during class finalization
-    let dataStartProperty = (<PropertyPrototype>dataStartMember).instance;
-    if (!dataStartProperty) return module.unreachable();
-    assert(dataStartProperty.isField && dataStartProperty.memoryOffset >= 0);
-    for (let i = 0; i < length; ++i) {
-      // this[i] = value
-      if (!this.canOptimizeZeroInitialization(values[i])) {
-        stmts.push(
-          module.call(
-            indexedSet.internalName,
-            [module.local_get(tempThis.index, arrayTypeRef), module.i32(i), values[i]],
-            TypeRef.None
-          )
-        );
-      }
-    }
-    // -> tempThis
-    stmts.push(module.local_get(tempThis.index, arrayTypeRef));
-    if (length) this.compileFunction(indexedSet);
-    this.currentType = arrayType;
-    return module.flatten(stmts, arrayTypeRef);
+    return this.compileArrayValues(arrayInstance, values, expression, constraints, tempThis);
   }
 
   /** Makes a new array instance from a static buffer segment. */

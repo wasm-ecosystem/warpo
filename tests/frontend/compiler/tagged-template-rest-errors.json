@@ -1,0 +1,6 @@
+{
+  "stderr": [
+    "AS100: Not implemented: Tagged template literals",
+    "TS2322: Type '~lib/array/Array<~lib/string/String>' is not assignable to type '~lib/string/String'."
+  ]
+}
