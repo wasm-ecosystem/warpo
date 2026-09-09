@@ -2193,7 +2193,7 @@
    i32.eq
    if
     local.get $0
-    call $~lib/rt/itcms/Object#makeGray
+    return_call $~lib/rt/itcms/Object#makeGray
    else
     block $__inlined_func$~lib/rt/itcms/Object#unlink$13
      local.get $0

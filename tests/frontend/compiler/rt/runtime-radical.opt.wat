@@ -138,7 +138,7 @@
     global.get $~lib/rt/tcms/toSpace
     global.get $~lib/rt/tcms/white
     i32.eqz
-    call $~lib/rt/tcms/Object#linkTo
+    return_call $~lib/rt/tcms/Object#linkTo
    end
   end
  )
@@ -1379,7 +1379,7 @@
    local.get $0
    global.get $~lib/rt/tcms/fromSpace
    global.get $~lib/rt/tcms/white
-   call $~lib/rt/tcms/Object#linkTo
+   return_call $~lib/rt/tcms/Object#linkTo
   end
  )
  (func $~lib/rt/__visit_members (param $0 i32)

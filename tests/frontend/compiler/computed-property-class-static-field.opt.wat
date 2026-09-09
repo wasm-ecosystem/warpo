@@ -1570,7 +1570,7 @@
      local.get $1
      local.get $2
      select
-     call $~lib/rt/itcms/Object#makeGray
+     return_call $~lib/rt/itcms/Object#makeGray
     else
      global.get $~lib/rt/itcms/state
      i32.const 1
@@ -1581,7 +1581,7 @@
      i32.and
      if
       local.get $1
-      call $~lib/rt/itcms/Object#makeGray
+      return_call $~lib/rt/itcms/Object#makeGray
      end
     end
    end

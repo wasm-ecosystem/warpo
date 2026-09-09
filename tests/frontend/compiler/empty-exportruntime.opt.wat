@@ -1579,14 +1579,14 @@
    i32.eq
    if
     local.get $0
-    call $~lib/rt/itcms/Object#makeGray
+    return_call $~lib/rt/itcms/Object#makeGray
    else
     local.get $0
     call $~lib/rt/itcms/Object#unlink
     local.get $0
     global.get $~lib/rt/itcms/fromSpace
     global.get $~lib/rt/itcms/white
-    call $~lib/rt/itcms/Object#linkTo
+    return_call $~lib/rt/itcms/Object#linkTo
    end
   end
  )

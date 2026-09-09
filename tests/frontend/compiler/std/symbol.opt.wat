@@ -1628,7 +1628,7 @@
      local.get $1
      local.get $2
      select
-     call $~lib/rt/itcms/Object#makeGray
+     return_call $~lib/rt/itcms/Object#makeGray
     else
      global.get $~lib/rt/itcms/state
      i32.const 1
@@ -1639,7 +1639,7 @@
      i32.and
      if
       local.get $1
-      call $~lib/rt/itcms/Object#makeGray
+      return_call $~lib/rt/itcms/Object#makeGray
      end
     end
    end
@@ -1764,7 +1764,7 @@
    local.get $0
    local.get $2
    i32.const 1
-   call $~lib/rt/itcms/__link
+   return_call $~lib/rt/itcms/__link
   else
    local.get $0
    i32.load offset=16
@@ -2662,7 +2662,7 @@
   if (result i32)
    global.get $~lib/symbol/idToString
    local.get $0
-   call $"~lib/map/Map<usize,~lib/string/String>#get"
+   return_call $"~lib/map/Map<usize,~lib/string/String>#get"
   else
    i32.const 0
   end

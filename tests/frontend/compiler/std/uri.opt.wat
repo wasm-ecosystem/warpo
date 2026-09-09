@@ -1969,7 +1969,7 @@
   if (result i32)
    local.get $5
    local.get $4
-   call $~lib/rt/itcms/__renew
+   return_call $~lib/rt/itcms/__renew
   else
    local.get $5
   end
@@ -2514,7 +2514,7 @@
   if (result i32)
    local.get $7
    local.get $6
-   call $~lib/rt/itcms/__renew
+   return_call $~lib/rt/itcms/__renew
   else
    local.get $7
   end
