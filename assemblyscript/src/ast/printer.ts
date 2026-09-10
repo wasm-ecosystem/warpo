@@ -580,10 +580,6 @@ export class ASTPrinter extends BaseVisitor {
     this.visitNode(node.operand);
   }
 
-  visitCompiledExpression(node: Expression): void {
-    assert(false);
-  }
-
   // statements
 
   visitNodeAndTerminate(node: Node): void {

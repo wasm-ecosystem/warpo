@@ -154,7 +154,6 @@ import {
   VariableLikeBase,
   CommentKind,
 } from "./ast";
-import { CompiledExpression, createCompiledExpression } from "./compiled-expression";
 import { Type, TypeKind, TypeFlags, Signature, typesToRefs, SmallTupleTypeInfo } from "./types";
 import {
   writeI8,
@@ -3871,12 +3870,6 @@ export class Compiler extends DiagnosticEmitter {
         expr = this.compileUnaryPrefixExpression(<UnaryPrefixExpression>expression, contextualType, constraints);
         break;
       }
-      case NodeKind.Compiled: {
-        let compiled = <CompiledExpression>expression;
-        expr = compiled.expr;
-        this.currentType = compiled.type;
-        break;
-      }
       case NodeKind.Class: {
         // TODO: compile as class expression
         this.error(
@@ -3892,24 +3885,56 @@ export class Compiler extends DiagnosticEmitter {
         expr = this.module.unreachable();
       }
     }
-    // ensure conversion and wrapping in case the respective function doesn't on its own
-    let currentType = this.currentType;
+    return this.finalizeExpression(expr, this.currentType, contextualType, constraints, expression);
+  }
+
+  /** Applies contextual conversions, integer wrapping, and source-map information to an expression. */
+  /** Applies contextual conversions, integer wrapping, and source-map information to an expression. */
+  private finalizeExpression(
+    /** Expression to finalize. */
+    expr: ExpressionRef,
+    /** Current expression type. */
+    currentType: Type,
+    /** Contextual type indicating the return type the caller expects, if any. */
+    contextualType: Type,
+    /** Constraints indicating contextual conditions. */
+    constraints: Constraints,
+    /** Report node. */
+    reportNode: Node
+  ): ExpressionRef {
     let wrap = (constraints & Constraints.MustWrap) != 0;
     if (currentType != contextualType.nonNullableType) {
       // allow assigning non-nullable to nullable
       if (constraints & Constraints.ConvExplicit) {
-        expr = this.convertExpression(expr, currentType, contextualType, true, expression);
+        expr = this.convertExpression(expr, currentType, contextualType, true, reportNode);
         this.currentType = currentType = contextualType;
       } else if (constraints & Constraints.ConvImplicit) {
-        expr = this.convertExpression(expr, currentType, contextualType, false, expression);
+        expr = this.convertExpression(expr, currentType, contextualType, false, reportNode);
         this.currentType = currentType = contextualType;
       }
     }
     if (wrap) expr = this.ensureSmallIntegerWrap(expr, currentType);
     // debug location is added here so the caller doesn't have to. means: compilation of an expression
     // must go through this function, with the respective per-kind functions not being used directly.
-    if (this.options.sourceMap) this.addDebugLocation(expr, expression.range);
+    if (this.options.sourceMap) this.addDebugLocation(expr, reportNode.range);
     return expr;
+  }
+
+  /** Restores the operand's current type before applying the standard expression finalization. */
+  private finalizeCallOperand(
+    /** Operand expression to finalize. */
+    expr: ExpressionRef,
+    /** Current operand type. */
+    currentType: Type,
+    /** Contextual type indicating the type expected by the call signature. */
+    contextualType: Type,
+    /** Constraints indicating contextual conditions. */
+    constraints: Constraints,
+    /** Report node. */
+    reportNode: Node
+  ): ExpressionRef {
+    this.currentType = currentType;
+    return this.finalizeExpression(expr, currentType, contextualType, constraints, reportNode);
   }
 
   /** Converts an expression's result from one type to another. */
@@ -7126,9 +7151,48 @@ export class Compiler extends DiagnosticEmitter {
       return module.local_set(thisLocal.index, superCall, classInstance.type.isManaged);
     }
 
-    // otherwise resolve normally
-    let target = this.resolver.lookupExpression(expression.expression, flow); // reports
+    let target = this.resolveCallTarget(expression.expression, flow);
     if (!target) return module.unreachable();
+    return this.compileResolvedCall(
+      target,
+      expression.expression,
+      expression.args,
+      expression,
+      contextualType,
+      constraints
+    );
+  }
+
+  /** Resolves a call expression's target while preserving resolver diagnostics. */
+  private resolveCallTarget(
+    /** Called expression. */
+    expression: Expression,
+    /** Current control flow. */
+    flow: Flow
+  ): Element | null {
+    return this.resolver.lookupExpression(expression, flow); // reports
+  }
+
+  /** Compiles a call after its target has been resolved, dispatching direct and indirect calls. */
+  private compileResolvedCall(
+    /** Resolved call target. */
+    target: Element,
+    /** Called expression. */
+    callee: Expression,
+    /** Call arguments. */
+    argumentExpressions: Expression[],
+    /** Call expression used for diagnostics. */
+    reportNode: CallExpression,
+    /** Contextual type indicating the return type the caller expects, if any. */
+    contextualType: Type,
+    /** Constraints indicating contextual conditions. */
+    constraints: Constraints,
+    /** Previously compiled call operands. */
+    existingOperands: ExpressionRef[] = [],
+    /** Types of previously compiled call operands. */
+    existingOperandTypes: Type[] = []
+  ): ExpressionRef {
+    let flow = this.currentFlow;
     let thisExpression = this.resolver.currentThisExpression;
 
     // handle direct call
@@ -7137,9 +7201,9 @@ export class Compiler extends DiagnosticEmitter {
         let functionPrototype = <FunctionPrototype>target;
         if (functionPrototype.hasDecorator(DecoratorFlags.Builtin)) {
           // builtins handle present respectively omitted type arguments on their own
-          return this.compileCallExpressionBuiltin(functionPrototype, expression, contextualType);
+          return this.compileCallExpressionBuiltin(functionPrototype, reportNode, contextualType);
         }
-        let functionInstance = this.resolver.maybeInferCall(expression, functionPrototype, flow);
+        let functionInstance = this.resolver.maybeInferCall(reportNode, functionPrototype, flow);
         if (!functionInstance) return this.module.unreachable();
         target = functionInstance;
         // fall-through
@@ -7154,26 +7218,47 @@ export class Compiler extends DiagnosticEmitter {
             Constraints.ConvImplicit | Constraints.IsThis
           );
         }
-        return this.compileCallDirect(functionInstance, expression.args, expression, thisArg, constraints);
+        return this.compileCallDirectWithOperands(
+          functionInstance,
+          existingOperands,
+          existingOperandTypes,
+          argumentExpressions,
+          reportNode,
+          thisArg,
+          constraints
+        );
       }
     }
 
     // handle indirect call
-    let functionArg = this.compileExpression(expression.expression, Type.auto);
+    let functionArg = this.compileExpression(callee, Type.auto);
     let signature = this.currentType.getSignature();
     if (signature) {
-      return this.compileCallIndirect(
+      return this.compileCallIndirectWithOperands(
         signature,
         functionArg,
-        expression.args,
-        expression,
+        existingOperands,
+        existingOperandTypes,
+        argumentExpressions,
+        reportNode,
         0,
         contextualType == Type.void
       );
     }
+    this.reportInvalidCallTarget(target, reportNode.range);
+    return this.module.unreachable();
+  }
+
+  /** Reports that a resolved call target does not have a compatible call signature. */
+  private reportInvalidCallTarget(
+    /** Resolved call target. */
+    target: Element,
+    /** Diagnostic range. */
+    range: Range
+  ): void {
     this.error(
       DiagnosticCode.Cannot_invoke_an_expression_whose_type_lacks_a_call_signature_Type_0_has_no_compatible_call_signatures,
-      expression.range,
+      range,
       this.currentType.toString()
     );
     if (target.kind == ElementKind.PropertyPrototype) {
@@ -7181,20 +7266,23 @@ export class Compiler extends DiagnosticEmitter {
       if (getterPrototype) {
         this.infoRelated(
           DiagnosticCode.This_expression_is_not_callable_because_it_is_a_get_accessor_Did_you_mean_to_use_it_without,
-          expression.range,
+          range,
           getterPrototype.nameRange
         );
       }
     }
-    return module.unreachable();
   }
 
-  /** Compiles the given arguments like a call expression according to the specified context. */
-  private compileCallExpressionLike(
+  /** Compiles a call-like expression while reusing operands compiled during lowering. */
+  private compileCallExpressionLikeWithOperands(
     /** Called expression. */
     expression: Expression,
     /** Call type arguments. */
     typeArguments: TypeNode[] | null,
+    /** Previously compiled call operands. */
+    operands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
+    operandTypes: Type[],
     /** Call arguments. */
     args: Expression[],
     /** Diagnostic range. */
@@ -7204,7 +7292,33 @@ export class Compiler extends DiagnosticEmitter {
     /** Constraints indicating contextual conditions. */
     constraints: Constraints = Constraints.None
   ): ExpressionRef {
-    // Desugaring like this can happen many times. Let's cache the intermediate allocation.
+    let call = this.createReusableCallExpression(expression, typeArguments, args, range);
+    let target = this.resolveCallTarget(expression, this.currentFlow);
+    if (!target) return this.module.unreachable();
+    return this.compileResolvedCall(
+      target,
+      expression,
+      args,
+      call,
+      contextualType,
+      constraints,
+      operands,
+      operandTypes
+    );
+  }
+
+  /** Creates or updates the temporary call node used while compiling a lowered call. */
+  private createReusableCallExpression(
+    /** Called expression. */
+    expression: Expression,
+    /** Call type arguments. */
+    typeArguments: TypeNode[] | null,
+    /** Call arguments. */
+    args: Expression[],
+    /** Diagnostic range. */
+    range: Range
+  ): CallExpression {
+    // This lowering can happen many times. Let's cache the intermediate allocation.
     let call = this._reusableCallExpression;
     if (call) {
       call.expression = expression;
@@ -7214,7 +7328,7 @@ export class Compiler extends DiagnosticEmitter {
     } else {
       this._reusableCallExpression = call = Node.createCallExpression(expression, typeArguments, args, range);
     }
-    return this.compileCallExpression(call, contextualType, constraints);
+    return call;
   }
   private _reusableCallExpression: CallExpression | null = null;
 
@@ -7323,10 +7437,16 @@ export class Compiler extends DiagnosticEmitter {
     }
   }
 
-  private adjustArgumentsForRestParams(
+  /** Packs trailing arguments into a rest-array expression when the signature requires it. */
+  private normalizeCallArguments(
+    /** Call arguments. */
     argumentExpressions: Expression[],
+    /** Call signature. */
     signature: Signature,
-    reportNode: Node
+    /** Diagnostic node. */
+    reportNode: Node,
+    /** Number of previously compiled operands. */
+    numLeadingOperands: i32 = 0
   ): Expression[] {
     // if no rest args, return the original args
     if (!signature.hasRest) {
@@ -7335,22 +7455,200 @@ export class Compiler extends DiagnosticEmitter {
 
     // if there are fewer args than params, then the rest args were not provided
     // so return the original args
-    const numArguments = argumentExpressions.length;
+    const numArguments = argumentExpressions.length + numLeadingOperands;
     const numParams = signature.parameterTypes.length;
     if (numArguments < numParams) {
       return argumentExpressions;
     }
 
     // make an array literal expression from the rest args
-    let elements = argumentExpressions.slice(numParams - 1);
+    let restStart = numParams - 1 - numLeadingOperands;
+    if (restStart < 0) return argumentExpressions;
+    let elements = argumentExpressions.slice(restStart);
     let range = new Range(elements[0].range.start, elements[elements.length - 1].range.end);
     range.source = reportNode.range.source;
     let arrExpr = new ArrayLiteralExpression(elements, range);
 
     // return the original args, but replace the rest args with the array
-    const exprs = argumentExpressions.slice(0, numParams - 1);
+    const exprs = argumentExpressions.slice(0, restStart);
     exprs.push(arrExpr);
     return exprs;
+  }
+
+  /** Compiles array values into a normal array instance. */
+  private compileArrayValues(
+    /** Concrete array class. */
+    arrayInstance: Class,
+    /** Compiled array elements. */
+    values: ExpressionRef[],
+    /** Report node. */
+    reportNode: Node,
+    /** Array compilation constraints. */
+    constraints: Constraints = Constraints.None,
+    /** Temporary array local allocated before compiling the values. */
+    tempThis: Local | null = null
+  ): ExpressionRef {
+    let module = this.module;
+    let flow = this.currentFlow;
+    let program = this.program;
+    let arrayType = arrayInstance.type;
+    let elementType = arrayInstance.getTypeArgumentsTo(program.arrayPrototype)![0];
+    let length = values.length;
+    let isStatic = !elementType.isExternalReference;
+
+    for (let i = 0; i < length; ++i) {
+      let expr = values[i];
+      if (getExpressionType(expr) != elementType.toRef()) {
+        isStatic = false;
+      } else {
+        let precomp = module.runExpression(expr, ExpressionRunnerFlags.PreserveSideeffects);
+        if (precomp) {
+          values[i] = precomp;
+        } else {
+          isStatic = false;
+        }
+      }
+    }
+
+    if (isStatic) {
+      let totalOverhead = program.totalOverhead;
+      let bufferSegment = this.addStaticBuffer(elementType, values);
+      let bufferAddress = i64_add(bufferSegment.offset, i64_new(totalOverhead));
+
+      if (constraints & Constraints.PreferStatic) {
+        let arraySegment = this.addStaticArrayHeader(elementType, bufferSegment);
+        let arrayAddress = i64_add(arraySegment.offset, i64_new(totalOverhead));
+        this.currentType = arrayType;
+        return module.i32(i64_low(arrayAddress));
+      }
+      return this.makeNewArray(arrayInstance, length, bufferAddress, reportNode);
+    }
+
+    let indexedSet = arrayInstance.lookupOverload(OperatorKind.IndexedSet, true);
+    if (!indexedSet) {
+      this.error(
+        DiagnosticCode.Index_signature_in_type_0_only_permits_reading,
+        reportNode.range,
+        arrayInstance.internalName
+      );
+      this.currentType = arrayType;
+      return module.unreachable();
+    }
+    let arrayTypeRef = arrayType.toRef();
+    if (!tempThis) tempThis = flow.getTempLocal(Type.usize32);
+    let stmts = new Array<ExpressionRef>();
+    stmts.push(
+      module.local_set(
+        tempThis.index,
+        this.makeNewArray(arrayInstance, length, i64_new(0), reportNode),
+        arrayType.isManaged
+      )
+    );
+    let dataStartMember = assert(arrayInstance.getMember("dataStart"));
+    assert(dataStartMember.kind == ElementKind.PropertyPrototype);
+    let dataStartProperty = (<PropertyPrototype>dataStartMember).instance;
+    if (!dataStartProperty) return module.unreachable();
+    assert(dataStartProperty.isField && dataStartProperty.memoryOffset >= 0);
+    for (let i = 0; i < length; ++i) {
+      if (!this.canOptimizeZeroInitialization(values[i])) {
+        stmts.push(
+          module.call(
+            indexedSet.internalName,
+            [module.local_get(tempThis.index, arrayTypeRef), module.i32(i), values[i]],
+            TypeRef.None
+          )
+        );
+      }
+    }
+    stmts.push(module.local_get(tempThis.index, arrayTypeRef));
+    if (length) this.compileFunction(indexedSet);
+    this.currentType = arrayType;
+    return module.flatten(stmts, arrayTypeRef);
+  }
+
+  /** Finalizes existing and newly compiled arguments into the operand list for a call. */
+  private assembleCallOperands(
+    /** Call signature. */
+    signature: Signature,
+    /** Previously compiled call operands. */
+    existingOperands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
+    existingOperandTypes: Type[],
+    /** Call arguments. */
+    argumentExpressions: Expression[],
+    /** Diagnostic node. */
+    reportNode: Node,
+    /** Compiled `this` argument. */
+    thisArg: ExpressionRef = 0
+  ): ExpressionRef[] {
+    assert(existingOperands.length == existingOperandTypes.length);
+    let numArguments = argumentExpressions.length + existingOperands.length;
+    let numArgumentsInclThis = thisArg ? numArguments + 1 : numArguments;
+    let operands = new Array<ExpressionRef>(numArgumentsInclThis);
+    let index = 0;
+    if (thisArg) {
+      operands[0] = thisArg;
+      index = 1;
+    }
+    let parameterTypes = signature.parameterTypes;
+    let restIndex = signature.hasRest ? parameterTypes.length - 1 : -1;
+    if (restIndex >= 0 && existingOperands.length > restIndex) {
+      let restType = parameterTypes[restIndex];
+      let arrayInstance = assert(restType.getClass());
+      let restValues = new Array<ExpressionRef>(existingOperands.length - restIndex + argumentExpressions.length);
+      let restValueIndex = 0;
+      for (let i = restIndex; i < existingOperands.length; ++i) {
+        restValues[restValueIndex++] = this.finalizeCallOperand(
+          existingOperands[i],
+          existingOperandTypes[i],
+          arrayInstance.getArrayValueType(),
+          Constraints.ConvImplicit,
+          Source.native
+        );
+      }
+      for (let i = 0; i < argumentExpressions.length; ++i) {
+        restValues[restValueIndex++] = this.compileExpression(
+          argumentExpressions[i],
+          arrayInstance.getArrayValueType(),
+          Constraints.ConvImplicit
+        );
+      }
+      operands = new Array<ExpressionRef>(thisArg ? restIndex + 2 : restIndex + 1);
+      index = 0;
+      if (thisArg) {
+        operands[0] = thisArg;
+        index = 1;
+      }
+      for (let i = 0; i < restIndex; ++i, ++index) {
+        operands[index] = this.finalizeCallOperand(
+          existingOperands[i],
+          existingOperandTypes[i],
+          parameterTypes[i],
+          Constraints.ConvImplicit,
+          reportNode
+        );
+      }
+      operands[index] = this.compileArrayValues(arrayInstance, restValues, reportNode);
+      return operands;
+    }
+    for (let i = 0; i < existingOperands.length; ++i, ++index) {
+      operands[index] = this.finalizeCallOperand(
+        existingOperands[i],
+        existingOperandTypes[i],
+        parameterTypes[i],
+        Constraints.ConvImplicit,
+        reportNode
+      );
+    }
+    for (let i = 0; i < argumentExpressions.length; ++i, ++index) {
+      operands[index] = this.compileExpression(
+        argumentExpressions[i],
+        parameterTypes[i + existingOperands.length],
+        Constraints.ConvImplicit
+      );
+    }
+    assert(index == numArgumentsInclThis);
+    return operands;
   }
 
   /** Compiles a direct call to a concrete function. */
@@ -7361,24 +7659,35 @@ export class Compiler extends DiagnosticEmitter {
     thisArg: ExpressionRef = 0,
     constraints: Constraints = Constraints.None
   ): ExpressionRef {
-    let numArguments = argumentExpressions.length;
+    return this.compileCallDirectWithOperands(instance, [], [], argumentExpressions, reportNode, thisArg, constraints);
+  }
+
+  /** Compiles a direct call using both previously compiled and source arguments. */
+  private compileCallDirectWithOperands(
+    /** Function to call. */
+    instance: Function,
+    /** Previously compiled call operands. */
+    operands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
+    operandTypes: Type[],
+    /** Call arguments. */
+    argumentExpressions: Expression[],
+    /** Diagnostic node. */
+    reportNode: Node,
+    /** Compiled `this` argument. */
+    thisArg: ExpressionRef = 0,
+    /** Constraints indicating contextual conditions. */
+    constraints: Constraints = Constraints.None
+  ): ExpressionRef {
+    let numArguments = argumentExpressions.length + operands.length;
     let signature = instance.signature;
-    if (
-      !this.checkCallSignature(
-        // reports
-        signature,
-        numArguments,
-        thisArg != 0,
-        reportNode
-      )
-    ) {
+    if (!this.checkCallSignature(signature, numArguments, thisArg != 0, reportNode)) {
       this.currentType = signature.returnType;
       return this.module.unreachable();
     }
     if (instance.hasDecorator(DecoratorFlags.Unsafe)) this.checkUnsafe(reportNode);
 
-    argumentExpressions = this.adjustArgumentsForRestParams(argumentExpressions, signature, reportNode);
-    numArguments = argumentExpressions.length;
+    argumentExpressions = this.normalizeCallArguments(argumentExpressions, signature, reportNode, operands.length);
 
     // handle call on `this` in constructors
     let sourceFunction = this.currentFlow.targetFunction;
@@ -7387,22 +7696,16 @@ export class Compiler extends DiagnosticEmitter {
       assert(parent.kind == ElementKind.Class);
       this.checkFieldInitialization(<Class>parent, reportNode);
     }
-    // Otherwise compile to just a call
-    let numArgumentsInclThis = thisArg ? numArguments + 1 : numArguments;
-    let operands = new Array<ExpressionRef>(numArgumentsInclThis);
-    let index = 0;
-    if (thisArg) {
-      operands[0] = thisArg;
-      index = 1;
-    }
-    let parameterTypes = signature.parameterTypes;
-    for (let i = 0; i < numArguments; ++i, ++index) {
-      let paramType = parameterTypes[i];
-      let paramExpr = this.compileExpression(argumentExpressions[i], paramType, Constraints.ConvImplicit);
-      operands[index] = paramExpr;
-    }
-    assert(index == numArgumentsInclThis);
-    return this.makeCallDirect(instance, operands, reportNode, (constraints & Constraints.WillDrop) != 0);
+
+    let callOperands = this.assembleCallOperands(
+      signature,
+      operands,
+      operandTypes,
+      argumentExpressions,
+      reportNode,
+      thisArg
+    );
+    return this.makeCallDirect(instance, callOperands, reportNode, (constraints & Constraints.WillDrop) != 0);
   }
 
   /** Makes sure that the arguments length helper global is present. */
@@ -7857,36 +8160,53 @@ export class Compiler extends DiagnosticEmitter {
     thisArg: ExpressionRef = 0,
     immediatelyDropped: bool = false
   ): ExpressionRef {
-    let numArguments = argumentExpressions.length;
+    return this.compileCallIndirectWithOperands(
+      signature,
+      functionArg,
+      [],
+      [],
+      argumentExpressions,
+      reportNode,
+      thisArg,
+      immediatelyDropped
+    );
+  }
 
-    if (
-      !this.checkCallSignature(
-        // reports
-        signature,
-        numArguments,
-        thisArg != 0,
-        reportNode
-      )
-    ) {
+  /** Compiles an indirect call using both previously compiled and source arguments. */
+  private compileCallIndirectWithOperands(
+    /** Call signature. */
+    signature: Signature,
+    /** Compiled function expression. */
+    functionArg: ExpressionRef,
+    /** Previously compiled call operands. */
+    operands: ExpressionRef[],
+    /** Types of previously compiled call operands. */
+    operandTypes: Type[],
+    /** Call arguments. */
+    argumentExpressions: Expression[],
+    /** Diagnostic node. */
+    reportNode: Node,
+    /** Compiled `this` argument. */
+    thisArg: ExpressionRef = 0,
+    /** Whether the call result is immediately dropped. */
+    immediatelyDropped: bool = false
+  ): ExpressionRef {
+    let numArguments = argumentExpressions.length + operands.length;
+
+    if (!this.checkCallSignature(signature, numArguments, thisArg != 0, reportNode)) {
       return this.module.unreachable();
     }
 
-    argumentExpressions = this.adjustArgumentsForRestParams(argumentExpressions, signature, reportNode);
-    numArguments = argumentExpressions.length;
-
-    let numArgumentsInclThis = thisArg ? numArguments + 1 : numArguments;
-    let operands = new Array<ExpressionRef>(numArgumentsInclThis);
-    let index = 0;
-    if (thisArg) {
-      operands[0] = thisArg;
-      index = 1;
-    }
-    let parameterTypes = signature.parameterTypes;
-    for (let i = 0; i < numArguments; ++i, ++index) {
-      operands[index] = this.compileExpression(argumentExpressions[i], parameterTypes[i], Constraints.ConvImplicit);
-    }
-    assert(index == numArgumentsInclThis);
-    return this.makeCallIndirect(signature, functionArg, reportNode, operands, immediatelyDropped);
+    argumentExpressions = this.normalizeCallArguments(argumentExpressions, signature, reportNode, operands.length);
+    let callOperands = this.assembleCallOperands(
+      signature,
+      operands,
+      operandTypes,
+      argumentExpressions,
+      reportNode,
+      thisArg
+    );
+    return this.makeCallIndirect(signature, functionArg, reportNode, callOperands, immediatelyDropped);
   }
 
   /** Creates an indirect call to a first-class function. */
@@ -9195,18 +9515,18 @@ export class Compiler extends DiagnosticEmitter {
       );
     }
 
-    // Desugar to compileCallExpression
-    let args = expressions.slice();
-    args.unshift(
-      createCompiledExpression(
-        module.usize(i64_add(arraySegment.offset, i64_new(this.program.totalOverhead))),
-        arrayInstance.type,
-        Source.native.range
-      )
-    );
+    let arrayOperand = module.usize(i64_add(arraySegment.offset, i64_new(this.program.totalOverhead)));
     // TODO: Requires ReadonlyArray to be safe
     this.error(DiagnosticCode.Not_implemented_0, expression.range, "Tagged template literals");
-    return this.compileCallExpressionLike(tag, null, args, expression.range, stringType);
+    return this.compileCallExpressionLikeWithOperands(
+      tag,
+      null,
+      [arrayOperand],
+      [arrayInstance.type],
+      expressions,
+      expression.range,
+      stringType
+    );
   }
 
   /** Makes a new tuple instance from a static buffer segment. */
@@ -9317,103 +9637,24 @@ export class Compiler extends DiagnosticEmitter {
     if (!element) return module.unreachable();
     assert(element.kind == ElementKind.Class);
     let arrayInstance = <Class>element;
-    let arrayType = arrayInstance.type;
     let elementType = arrayInstance.getTypeArgumentsTo(program.arrayPrototype)![0];
 
     // block those here so compiling expressions doesn't conflict
     let tempThis = flow.getTempLocal(Type.usize32);
 
-    // compile value expressions and find out whether all are constant
+    // compile value expressions
     let expressions = expression.elementExpressions;
     let length = expressions.length;
     let values = new Array<ExpressionRef>(length);
-    let isStatic = !elementType.isExternalReference;
     for (let i = 0; i < length; ++i) {
       let elementExpression = expressions[i];
       if (elementExpression.kind != NodeKind.Omitted) {
-        let expr = this.compileExpression(<Expression>elementExpression, elementType, Constraints.ConvImplicit);
-        if (getExpressionType(expr) != elementType.toRef()) {
-          isStatic = false;
-        } else {
-          let precomp = module.runExpression(expr, ExpressionRunnerFlags.PreserveSideeffects);
-          if (precomp) {
-            expr = precomp;
-          } else {
-            isStatic = false;
-          }
-        }
-        values[i] = expr;
+        values[i] = this.compileExpression(<Expression>elementExpression, elementType, Constraints.ConvImplicit);
       } else {
         values[i] = this.makeZero(elementType);
       }
     }
-
-    // if the array is static, make a static arraybuffer segment
-    if (isStatic) {
-      let totalOverhead = program.totalOverhead;
-      let bufferSegment = this.addStaticBuffer(elementType, values);
-      let bufferAddress = i64_add(bufferSegment.offset, i64_new(totalOverhead));
-
-      // make both the buffer and array header static if assigned to a global. this can't be done
-      // if inside of a function because each invocation must create a new array reference then.
-      if (constraints & Constraints.PreferStatic) {
-        let arraySegment = this.addStaticArrayHeader(elementType, bufferSegment);
-        let arrayAddress = i64_add(arraySegment.offset, i64_new(totalOverhead));
-        this.currentType = arrayType;
-        return this.module.i32(i64_low(arrayAddress));
-
-        // otherwise allocate a new array header and make it wrap a copy of the static buffer
-      } else {
-        return this.makeNewArray(arrayInstance, length, bufferAddress, expression);
-      }
-    }
-
-    // otherwise compile an explicit instantiation with indexed sets
-    let indexedSet = arrayInstance.lookupOverload(OperatorKind.IndexedSet, true);
-    if (!indexedSet) {
-      this.error(
-        DiagnosticCode.Index_signature_in_type_0_only_permits_reading,
-        expression.range,
-        arrayInstance.internalName
-      );
-      this.currentType = arrayType;
-      return module.unreachable();
-    }
-    let arrayTypeRef = arrayType.toRef();
-
-    let stmts = new Array<ExpressionRef>();
-    // tempThis = __newArray(length, alignLog2, classId, source = 0)
-    stmts.push(
-      module.local_set(
-        tempThis.index,
-        this.makeNewArray(arrayInstance, length, i64_new(0), expression),
-        arrayType.isManaged
-      )
-    );
-    // tempData = tempThis.dataStart
-    let dataStartMember = assert(arrayInstance.getMember("dataStart"));
-    assert(dataStartMember.kind == ElementKind.PropertyPrototype);
-    // is a field, so should have been resolved during class finalization
-    let dataStartProperty = (<PropertyPrototype>dataStartMember).instance;
-    if (!dataStartProperty) return module.unreachable();
-    assert(dataStartProperty.isField && dataStartProperty.memoryOffset >= 0);
-    for (let i = 0; i < length; ++i) {
-      // this[i] = value
-      if (!this.canOptimizeZeroInitialization(values[i])) {
-        stmts.push(
-          module.call(
-            indexedSet.internalName,
-            [module.local_get(tempThis.index, arrayTypeRef), module.i32(i), values[i]],
-            TypeRef.None
-          )
-        );
-      }
-    }
-    // -> tempThis
-    stmts.push(module.local_get(tempThis.index, arrayTypeRef));
-    if (length) this.compileFunction(indexedSet);
-    this.currentType = arrayType;
-    return module.flatten(stmts, arrayTypeRef);
+    return this.compileArrayValues(arrayInstance, values, expression, constraints, tempThis);
   }
 
   /** Makes a new array instance from a static buffer segment. */
