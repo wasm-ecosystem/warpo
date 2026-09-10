@@ -99,6 +99,33 @@ describe("closureScanner", () => {
     }
   });
 
+  test("closure captures variables declared in an array binding pattern", () => {
+    const scanner = makeScanner(`
+      export function outer(): i32 {
+          let [a, b] = [1, 2];
+          function inner(): i32 {
+              return a + b;
+          }
+          return inner();
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      const name = getNodeName(func);
+      if (name === "inner") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(2);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
   test("only the capturing inner function is a closure", () => {
     const scanner = makeScanner(`
       export function outer(): i32 {
@@ -385,6 +412,40 @@ describe("closureScanner", () => {
         expect(info.nestedLevel).equal(1);
       } else if (name === "outer") {
         expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
+  test("array binding variables declared in for initializer are captured", () => {
+    const scanner = makeScanner(`
+      export function outer(): void {
+          for (let [a, b] = [1, 2]; a < b; a++) {
+              function inner(): i32 {
+                  return a + b;
+              }
+              inner();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(3);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      const name = getNodeName(func);
+      if (name === "inner") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.forInitClosureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(2);
+      } else if (name === "<for>") {
+        expect(info.closureVariables.size).equal(2);
+        expect(info.forInitClosureVariables.size).equal(1);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.forInitClosureVariables.size).equal(0);
         expect(info.nestedLevel).equal(0);
       } else {
         assert(false, `Unexpected closure function: ${name}`);

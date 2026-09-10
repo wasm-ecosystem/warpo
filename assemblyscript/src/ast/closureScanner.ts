@@ -242,7 +242,7 @@ export class ClosureScanner extends BaseVisitor {
       let pattern = node.arrayBindingPattern;
       if (pattern) {
         for (let i = 0, k = pattern.length; i < k; ++i) {
-          this.currentTreeNode_!.addLocal(pattern[i].text, node);
+          this.currentTreeNode_!.addLocal(pattern[i].text, pattern[i]);
         }
       }
     }
