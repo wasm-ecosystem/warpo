@@ -4326,7 +4326,7 @@ export class FunctionPrototype extends DeclaredElement {
     this.decoratorFlags = decoratorFlags;
   }
 
-  get closureVariables(): Set<Node> {
+  get closureVariables(): Set<IdentifierExpression> {
     return assert(this.closureInfo).closureVariables;
   }
 
@@ -4579,7 +4579,7 @@ export class Function extends TypedElement {
         if (isClosureFunction) {
           let closureVariables = prototype.closureVariables;
           const paramNode = paramsNodeList[i];
-          if (closureVariables.has(paramNode)) {
+          if (closureVariables.has(paramNode.name)) {
             tupleIndex = this.heapLocalsTypeBuilder.size;
             this.heapLocalsTypeBuilder.push(parameterType, paramNode.range, ReportMode.Report);
           }
@@ -4684,46 +4684,47 @@ export class Function extends TypedElement {
     return stub;
   }
 
-  /** Adds a local of the specified type, with an optional name. */
-  addLocal(type: Type, name: string | null = null, declaration: VariableDeclaration | null = null): Local {
-    // if it has a name, check previously as this method will throw otherwise
+  /** Adds one local of the specified type. */
+  addLocal(
+    type: Type,
+    identifier: IdentifierExpression | null = null,
+    variableLikeBase: VariableLikeBase | null = null,
+    declarationBase: DeclarationBase | null = null,
+    registerName: bool = true
+  ): Local {
     let localsByIndex = this.localsByIndex;
     let localIndex = localsByIndex.length;
-    let localName = name != null ? name : localIndex.toString();
-    let variableLikeBase: VariableLikeBase;
-    let declarationBase: DeclarationBase;
+    let localName = identifier ? identifier.text : localIndex.toString();
+    let name = registerName && identifier ? identifier.text : null;
     let tupleIndex = -1;
     let tupleElementInfo: TupleElementInfo | null = null;
     let isForInitClosureVar = false;
-    if (declaration) {
-      variableLikeBase = declaration.toVariableLikeBase();
-      declarationBase = declaration.toDeclarationBase();
-      const sourceFunction = this.flow.targetFunction;
-      if (sourceFunction.isClosureFunction()) {
-        let closureInfo = assert(sourceFunction.currentClosureInfo);
-        if (closureInfo.closureVariables.has(declaration)) {
-          const heapLocalsTypeBuilder = sourceFunction.heapLocalsTypeBuilder;
-          tupleIndex = heapLocalsTypeBuilder.size;
-          heapLocalsTypeBuilder.push(type, declarationBase.nameRange, ReportMode.Report);
-          tupleElementInfo = heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
-          if (closureInfo.forInitClosureVariables.has(declaration)) isForInitClosureVar = true;
-        }
+    let localVariableLikeBase = variableLikeBase
+      ? variableLikeBase
+      : new VariableLikeBase(
+          identifier ? identifier : Node.createIdentifierExpression(localName, Source.native.range),
+          null,
+          null
+        );
+    let localDeclarationBase = declarationBase
+      ? declarationBase
+      : new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
+    if (identifier && this.isClosureFunction()) {
+      let closureInfo = assert(this.currentClosureInfo);
+      if (closureInfo.closureVariables.has(identifier)) {
+        tupleIndex = this.heapLocalsTypeBuilder.size;
+        this.heapLocalsTypeBuilder.push(type, localDeclarationBase.nameRange, ReportMode.Report);
+        tupleElementInfo = this.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
+        if (closureInfo.forInitClosureVariables.has(identifier)) isForInitClosureVar = true;
       }
-    } else {
-      variableLikeBase = new VariableLikeBase(
-        Node.createIdentifierExpression(localName, Source.native.range),
-        null,
-        null
-      );
-      declarationBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
     }
     let local = new Local(
       localName,
       localIndex,
       type,
       this,
-      variableLikeBase,
-      declarationBase,
+      localVariableLikeBase,
+      localDeclarationBase,
       tupleIndex,
       tupleElementInfo,
       isForInitClosureVar

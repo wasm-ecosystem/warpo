@@ -19,8 +19,8 @@ import {
 } from "../ast";
 
 export class ClosureFunctionInfo {
-  closureVariables: Set<Node> = new Set();
-  forInitClosureVariables: Set<VariableDeclaration> = new Set();
+  closureVariables: Set<IdentifierExpression> = new Set();
+  forInitClosureVariables: Set<IdentifierExpression> = new Set();
   capturesThis: bool = false;
   nestedLevel: i32 = 0;
 }
@@ -34,12 +34,12 @@ const enum ScopeNodeKind {
 class ScopeTreeNode {
   children: ScopeTreeNode[] = [];
   // All variables and parameters declared in this scope.
-  locals: Map<string, Node> = new Map();
+  locals: Map<string, IdentifierExpression> = new Map();
   // Variables from this scope that are captured by an inner function.
   // Populated on Function/Loop scopes only (Block captures are promoted to the nearest ancestor).
-  capturedLocals: Map<string, Node> = new Map();
+  capturedLocals: Map<string, IdentifierExpression> = new Map();
   // Subset of capturedLocals that are for-loop initializer declarations (e.g. `let i` in `for (let i = ...)`).
-  forInitClosureLocals: Set<VariableDeclaration> = new Set();
+  forInitClosureLocals: Set<IdentifierExpression> = new Set();
   info: ClosureFunctionInfo | null = null;
   kind: ScopeNodeKind;
   astNode: Node;
@@ -62,13 +62,13 @@ class ScopeTreeNode {
     if (parent) parent.children.push(this);
   }
 
-  addLocal(name: string, node: Node): void {
-    this.locals.set(name, node);
+  addLocal(name: string, identifier: IdentifierExpression): void {
+    this.locals.set(name, identifier);
   }
 
-  addParameter(name: string, node: Node): void {
+  addParameter(name: string, identifier: IdentifierExpression): void {
     assert(this.kind == ScopeNodeKind.Function);
-    this.locals.set(name, node);
+    this.locals.set(name, identifier);
   }
 
   findDeclaration(name: string): ScopeTreeNode | null {
@@ -98,7 +98,7 @@ export class ClosureScanner extends BaseVisitor {
     return null;
   }
 
-  getCapturedVariablesOfFunction(node: Node): Set<Node> | null {
+  getCapturedVariablesOfFunction(node: Node): Set<IdentifierExpression> | null {
     const info = this.getClosureFunctionInfo(node);
     return info ? info.closureVariables : null;
   }
@@ -176,7 +176,7 @@ export class ClosureScanner extends BaseVisitor {
 
   visitMethodDeclaration(node: MethodDeclaration): void {
     this.enterTreeNode(ScopeNodeKind.Function, node);
-    assert(this.currentTreeNode_).addLocal("this", node);
+    assert(this.currentTreeNode_).addLocal("this", Node.createIdentifierExpression("this", node.range));
     super.visitMethodDeclaration(node);
     this.leaveTreeNode();
   }
@@ -197,7 +197,8 @@ export class ClosureScanner extends BaseVisitor {
     if (initializer && initializer.kind == NodeKind.Variable) {
       let decls = (<VariableStatement>initializer).declarations;
       for (let d = 0; d < decls.length; d++) {
-        if (treeNode.capturedLocals.has(decls[d].name.text)) treeNode.forInitClosureLocals.add(decls[d]);
+        let identifier = decls[d].name;
+        if (treeNode.capturedLocals.has(identifier.text)) treeNode.forInitClosureLocals.add(identifier);
       }
     }
     this.leaveTreeNode();
@@ -212,7 +213,8 @@ export class ClosureScanner extends BaseVisitor {
     if (variable.kind == NodeKind.Variable) {
       let decls = (<VariableStatement>variable).declarations;
       for (let d = 0; d < decls.length; d++) {
-        if (treeNode.capturedLocals.has(decls[d].name.text)) treeNode.forInitClosureLocals.add(decls[d]);
+        let identifier = decls[d].name;
+        if (treeNode.capturedLocals.has(identifier.text)) treeNode.forInitClosureLocals.add(identifier);
       }
     }
     this.leaveTreeNode();
@@ -240,7 +242,7 @@ export class ClosureScanner extends BaseVisitor {
   }
 
   visitVariableDeclaration(node: VariableDeclaration): void {
-    if (this.currentTreeNode_) this.currentTreeNode_!.addLocal(node.name.text, node);
+    if (this.currentTreeNode_) this.currentTreeNode_!.addLocal(node.name.text, node.name);
     super.visitVariableDeclaration(node);
   }
 
@@ -252,7 +254,7 @@ export class ClosureScanner extends BaseVisitor {
 
   visitParameterNode(node: ParameterNode): void {
     if (!this.currentTreeNode_ || this.currentTreeNode_!.kind != ScopeNodeKind.Function) return;
-    this.currentTreeNode_!.addParameter(node.name.text, node);
+    this.currentTreeNode_!.addParameter(node.name.text, node.name);
     this.visitNode(node.name);
     this.visitNode(node.initializer);
   }
