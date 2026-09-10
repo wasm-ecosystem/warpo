@@ -196,9 +196,7 @@ export class ClosureScanner extends BaseVisitor {
     let initializer = node.initializer;
     if (initializer && initializer.kind == NodeKind.Variable) {
       let decls = (<VariableStatement>initializer).declarations;
-      for (let d = 0; d < decls.length; d++) {
-        if (treeNode.capturedLocals.has(decls[d].name.text)) treeNode.forInitClosureLocals.add(decls[d]);
-      }
+      this.markForInitClosureLocals(treeNode, decls);
     }
     this.leaveTreeNode();
   }
@@ -211,9 +209,7 @@ export class ClosureScanner extends BaseVisitor {
     let variable = node.variable;
     if (variable.kind == NodeKind.Variable) {
       let decls = (<VariableStatement>variable).declarations;
-      for (let d = 0; d < decls.length; d++) {
-        if (treeNode.capturedLocals.has(decls[d].name.text)) treeNode.forInitClosureLocals.add(decls[d]);
-      }
+      this.markForInitClosureLocals(treeNode, decls);
     }
     this.leaveTreeNode();
   }
@@ -240,8 +236,31 @@ export class ClosureScanner extends BaseVisitor {
   }
 
   visitVariableDeclaration(node: VariableDeclaration): void {
-    if (this.currentTreeNode_) this.currentTreeNode_!.addLocal(node.name.text, node);
+    if (this.currentTreeNode_) {
+      let name = node.name;
+      if (name) this.currentTreeNode_!.addLocal(name.text, node);
+      let pattern = node.arrayBindingPattern;
+      if (pattern) {
+        for (let i = 0, k = pattern.length; i < k; ++i) {
+          this.currentTreeNode_!.addLocal(pattern[i].text, node);
+        }
+      }
+    }
     super.visitVariableDeclaration(node);
+  }
+
+  private markForInitClosureLocals(treeNode: ScopeTreeNode, declarations: VariableDeclaration[]): void {
+    for (let d = 0; d < declarations.length; d++) {
+      let declaration = declarations[d];
+      let name = declaration.name;
+      if (name && treeNode.capturedLocals.has(name.text)) treeNode.forInitClosureLocals.add(declaration);
+      let pattern = declaration.arrayBindingPattern;
+      if (pattern) {
+        for (let i = 0, k = pattern.length; i < k; ++i) {
+          if (treeNode.capturedLocals.has(pattern[i].text)) treeNode.forInitClosureLocals.add(declaration);
+        }
+      }
+    }
   }
 
   visitTypeDeclaration(node: TypeDeclaration): void {
