@@ -10,6 +10,7 @@
 #include "ExprInserter.hpp"
 #include "ToString.hpp"
 #include "fmt/base.h"
+#include "warpo/support/Debug.hpp"
 #include "warpo/support/Unreachable.hpp"
 #include "wasm-builder.h"
 #include "wasm-type.h"
@@ -22,8 +23,8 @@ namespace warpo::passes {
 static bool isTerminator(wasm::Expression *expr) { return isOneOf<wasm::Return, wasm::Unreachable, wasm::Break>(expr); }
 
 bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
-  // those instructions does not have children, so we can insert before them directly.
-  if (isOneOf<wasm::GlobalGet, wasm::LocalGet, wasm::Const, wasm::MemorySize>(insertPosition))
+  // those instructions does not have children, or can be wrapped in a block directly to execute before them.
+  if (isOneOf<wasm::GlobalGet, wasm::LocalGet, wasm::Const, wasm::MemorySize, wasm::Drop>(insertPosition))
     return true;
   // those instructions should be inserted after the last operand
   if (wasm::Call *const call = insertPosition->dynCast<wasm::Call>(); call != nullptr) {
@@ -44,7 +45,8 @@ bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
     if (canInsertAfter(unary->value))
       return true;
   }
-  fmt::println("[" PASS_NAME "] fn '{}', failed to insert before {}", func_->name.view(), toString(insertPosition));
+  if (support::isDebug(PASS_NAME, func_->name.view()))
+    fmt::println("[" PASS_NAME "] fn '{}', failed to insert before {}", func_->name.view(), toString(insertPosition));
   return false;
 }
 
@@ -57,6 +59,7 @@ void ExprInserter::insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr
   case wasm::Expression::LocalGetId:
   case wasm::Expression::ConstId:
   case wasm::Expression::MemorySizeId:
+  case wasm::Expression::DropId:
     *insertPositionPtr = b.makeBlock({insertedExpr, insertPosition}, insertPosition->type);
     break;
   case wasm::Expression::CallId: {
@@ -93,7 +96,8 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
     return true;
   if (insertPosition->type != wasm::Type::unreachable)
     return true;
-  fmt::println("[" PASS_NAME "] fn '{}', failed to insert after {}", func_->name.view(), toString(insertPosition));
+  if (support::isDebug(PASS_NAME, func_->name.view()))
+    fmt::println("[" PASS_NAME "] fn '{}', failed to insert after {}", func_->name.view(), toString(insertPosition));
   return false;
 }
 
@@ -188,7 +192,7 @@ void ExprInserter::insertAtEndOfBB(wasm::Builder &b, wasm::Expression *insertedE
 namespace warpo::passes::ut {
 
 using wasm::Const, wasm::Block, wasm::Nop, wasm::Call, wasm::LocalGet, wasm::LocalSet, wasm::If, wasm::Return,
-    wasm::Loop, wasm::Break;
+    wasm::Loop, wasm::Break, wasm::Drop;
 using wasm::Type;
 
 TEST(ExprInserter, InsertBeforeNoOperand) {
@@ -290,6 +294,33 @@ TEST(ExprInserter, InsertBeforeBinary) {
           block::at(1, isNop()),
           block::at(2, isLocalGet()),
       })),
+  });
+  isMatched(match, f->body);
+}
+
+TEST(ExprInserter, InsertBeforeDrop) {
+  wasm::Module m{};
+  wasm::Builder b{m};
+  wasm::Expression *const dropVal = b.makeCall("createItem", {}, Type::i32);
+  wasm::Expression *const insertPos = b.makeDrop(dropVal);
+  std::unique_ptr<wasm::Function> f = wasm::Builder::makeFunction("test", wasm::Signature(), {}, insertPos);
+  ExprInserter inserter{f.get()};
+
+  ASSERT_TRUE(inserter.canInsertBefore(insertPos));
+  inserter.insertBefore(b, b.makeNop(), findExprPointer(insertPos, f.get()));
+
+  ASSERT_TRUE(f->body->is<Block>());
+  Block const *const block = f->body->cast<Block>();
+  ASSERT_EQ(block->list.size(), 2);
+  ASSERT_TRUE(block->list[0]->is<Nop>());
+  ASSERT_TRUE(block->list[1]->is<Drop>());
+  ASSERT_EQ(block->list[1]->cast<Drop>()->value, dropVal);
+
+  using namespace matcher;
+  auto match = isBlock({
+      block::has(2),
+      block::at(0, isNop()),
+      block::at(1, isDrop(drop::v(isCall(call::callee("createItem"))))),
   });
   isMatched(match, f->body);
 }
