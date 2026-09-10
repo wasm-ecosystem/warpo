@@ -23,8 +23,11 @@ namespace warpo::passes {
 static bool isTerminator(wasm::Expression *expr) { return isOneOf<wasm::Return, wasm::Unreachable, wasm::Break>(expr); }
 
 bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
-  // those instructions does not have children, or can be wrapped in a block directly to execute before them.
-  if (isOneOf<wasm::GlobalGet, wasm::LocalGet, wasm::Const, wasm::MemorySize, wasm::Drop>(insertPosition))
+  // those instructions do not have children, so can be wrapped in a block directly to execute before them.
+  if (isOneOf<wasm::GlobalGet, wasm::LocalGet, wasm::Const, wasm::MemorySize>(insertPosition))
+    return true;
+  // Wrap the entire drop to execute before evaluating its value.
+  if (insertPosition->is<wasm::Drop>())
     return true;
   // those instructions should be inserted after the last operand
   if (wasm::Call *const call = insertPosition->dynCast<wasm::Call>(); call != nullptr) {
