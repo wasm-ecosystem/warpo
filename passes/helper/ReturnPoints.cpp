@@ -364,6 +364,193 @@ TEST(ReturnPointsTest, VoidIfElseFallthrough) {
   EXPECT_TRUE(callees.contains("goo"));
 }
 
+TEST(ReturnPointsTest, BrIfValueFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $foo (param $c i32) (result i32)
+        (block $b (result i32)
+          (drop
+            (br_if $b (i32.const 1) (local.get $c))
+          )
+          (i32.const 2)
+        )
+      )
+    )
+  )");
+  auto *const func = m->getFunction("foo");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 2U);
+  std::vector<int32_t> values;
+  for (auto const &rp : rps) {
+    ASSERT_TRUE(rp.expr->is<wasm::Const>());
+    values.push_back(rp.expr->cast<wasm::Const>()->value.geti32());
+  }
+  EXPECT_TRUE((values[0] == 1 && values[1] == 2) || (values[0] == 2 && values[1] == 1));
+}
+
+TEST(ReturnPointsTest, BrValueBranchVsFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $foo (param $c i32) (result i32)
+        (block $out (result i32)
+          (if
+            (local.get $c)
+            (then
+              (br $out (i32.const 10))
+            )
+          )
+          (i32.const 20)
+        )
+      )
+    )
+  )");
+  auto *const func = m->getFunction("foo");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 2U);
+  std::unordered_set<int32_t> values;
+  for (auto const &rp : rps) {
+    ASSERT_TRUE(rp.expr->is<wasm::Const>());
+    values.insert(rp.expr->cast<wasm::Const>()->value.geti32());
+  }
+  EXPECT_EQ(values.size(), 2U);
+  EXPECT_TRUE(values.contains(10));
+  EXPECT_TRUE(values.contains(20));
+}
+
+TEST(ReturnPointsTest, VoidBrBranchVsFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $foo)
+      (func $goo)
+      (func $caller (param $c i32)
+        (block $out
+          (if
+            (local.get $c)
+            (then
+              call $foo
+              br $out
+            )
+          )
+          call $goo
+        )
+      )
+    )
+  )");
+  auto *const func = m->getFunction("caller");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 2U);
+  std::unordered_set<wasm::Name> callees;
+  for (auto const &rp : rps) {
+    ASSERT_TRUE(rp.expr->is<wasm::Call>());
+    callees.insert(rp.expr->cast<wasm::Call>()->target);
+  }
+  EXPECT_EQ(callees.size(), 2U);
+  EXPECT_TRUE(callees.contains("foo"));
+  EXPECT_TRUE(callees.contains("goo"));
+}
+
+TEST(ReturnPointsTest, NestedBlocksBrIfAndFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $foo (param $c1 i32) (param $c2 i32) (result i32)
+        (block $b0 (result i32)
+          (block $b1
+            (br_if $b1 (local.get $c1))
+            (br $b0 (i32.const 1))
+          )
+          (if
+            (local.get $c2)
+            (then
+              (br $b0 (i32.const 2))
+            )
+          )
+          (i32.const 3)
+        )
+      )
+    )
+  )");
+  auto *const func = m->getFunction("foo");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 3U);
+  std::unordered_set<int32_t> values;
+  for (auto const &rp : rps) {
+    ASSERT_TRUE(rp.expr->is<wasm::Const>());
+    values.insert(rp.expr->cast<wasm::Const>()->value.geti32());
+  }
+  EXPECT_EQ(values.size(), 3U);
+  EXPECT_TRUE(values.contains(1));
+  EXPECT_TRUE(values.contains(2));
+  EXPECT_TRUE(values.contains(3));
+}
+
+TEST(ReturnPointsTest, BrIfInsideIfWithFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $foo (param $c1 i32) (param $c2 i32) (result i32)
+        (block $out (result i32)
+          (if
+            (local.get $c1)
+            (then
+              (drop
+                (br_if $out (i32.const 10) (local.get $c2))
+              )
+              (br $out (i32.const 20))
+            )
+          )
+          (i32.const 30)
+        )
+      )
+    )
+  )");
+  auto *const func = m->getFunction("foo");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 3U);
+  std::unordered_set<int32_t> values;
+  for (auto const &rp : rps) {
+    ASSERT_TRUE(rp.expr->is<wasm::Const>());
+    values.insert(rp.expr->cast<wasm::Const>()->value.geti32());
+  }
+  EXPECT_EQ(values.size(), 3U);
+  EXPECT_TRUE(values.contains(10));
+  EXPECT_TRUE(values.contains(20));
+  EXPECT_TRUE(values.contains(30));
+}
+
+TEST(ReturnPointsTest, BrToOuterBlockVsInnerBlockFallthrough) {
+  auto m = loadWat(R"(
+    (module
+      (func $foo (param $c1 i32) (param $c2 i32) (result i32)
+        (block $b0 (result i32)
+          (block $b1
+            (if
+              (local.get $c1)
+              (then (br $b0 (i32.const 10)))
+            )
+            (if
+              (local.get $c2)
+              (then (br $b1))
+            )
+            (br $b0 (i32.const 20))
+          )
+          (i32.const 30)
+        )
+      )
+    )
+  )");
+  auto *const func = m->getFunction("foo");
+  auto const rps = computeReturnPoints(m.get(), func);
+  ASSERT_EQ(rps.size(), 3U);
+  std::unordered_set<int32_t> values;
+  for (auto const &rp : rps) {
+    ASSERT_TRUE(rp.expr->is<wasm::Const>());
+    values.insert(rp.expr->cast<wasm::Const>()->value.geti32());
+  }
+  EXPECT_EQ(values.size(), 3U);
+  EXPECT_TRUE(values.contains(10));
+  EXPECT_TRUE(values.contains(20));
+  EXPECT_TRUE(values.contains(30));
+}
+
 } // namespace warpo::passes::ut
 
 #endif
