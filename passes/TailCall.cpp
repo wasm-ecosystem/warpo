@@ -11,30 +11,6 @@
 namespace warpo::passes {
 namespace {
 
-// Unwraps Return/Break when it directly wraps a converted tail call in a single pass.
-void unwrapReturnPoints(wasm::Function *func, std::unordered_set<wasm::Expression *> const &converted) {
-  if (converted.empty())
-    return;
-
-  struct Unwrapper : public wasm::PostWalker<Unwrapper> {
-    std::unordered_set<wasm::Expression *> const &targets;
-    explicit Unwrapper(std::unordered_set<wasm::Expression *> const &targets) : targets(targets) {}
-
-    void visitReturn(wasm::Return *curr) {
-      if (curr->value != nullptr && targets.count(curr->value) > 0)
-        replaceCurrent(curr->value);
-    }
-
-    void visitBreak(wasm::Break *curr) {
-      if (curr->value != nullptr && targets.count(curr->value) > 0)
-        replaceCurrent(curr->value);
-    }
-  };
-
-  Unwrapper unwrapper{converted};
-  unwrapper.walk(func->body);
-}
-
 struct TailCallOptimizer : public wasm::Pass {
   bool modifiesBinaryenIR() override { return true; }
   bool isFunctionParallel() override { return true; }
@@ -79,15 +55,14 @@ struct TailCallOptimizer : public wasm::Pass {
     if (!m->features.hasTailCall() || func->imported() || func->body == nullptr)
       return;
 
-    std::unordered_set<wasm::Expression *> convertedCalls;
+    bool converted = false;
     std::vector<ReturnPoint> const returnPoints = computeReturnPoints(m, func);
     for (ReturnPoint const &rp : returnPoints) {
       if (tryConvertCall(rp.expr, m, func))
-        convertedCalls.insert(rp.expr);
+        converted = true;
     }
 
-    if (!convertedCalls.empty()) {
-      unwrapReturnPoints(func, convertedCalls);
+    if (converted) {
       // Reuse Binaryen DCE pass to clean
       wasm::PassRunner runner{m};
       runner.setIsNested(true);

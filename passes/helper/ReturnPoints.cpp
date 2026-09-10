@@ -125,6 +125,8 @@ public:
         // 5. Fallthrough: concrete instruction (value or void) reaching exit without explicit terminator.
       } else if (lastInst->type != wasm::Type::unreachable) {
         addReturnPointsFromExpr(lastInst, returnPoints);
+      } else {
+        assert(lastInst->type == wasm::Type::unreachable);
       }
     };
 
