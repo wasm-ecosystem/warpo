@@ -2037,7 +2037,7 @@
    local.get $0
    i64.load offset=16
    call $~lib/date/join
-   call $~lib/date/Date#setTime
+   return_call $~lib/date/Date#setTime
   end
  )
  (func $~lib/date/Date#setUTCMonth@varargs (param $0 i32) (param $1 i32)
@@ -2072,7 +2072,7 @@
    local.get $0
    i64.load offset=16
    call $~lib/date/join
-   call $~lib/date/Date#setTime
+   return_call $~lib/date/Date#setTime
   end
  )
  (func $~lib/date/Date#setUTCFullYear (param $0 i32) (param $1 i32)
@@ -2090,7 +2090,7 @@
    local.get $0
    i64.load offset=16
    call $~lib/date/join
-   call $~lib/date/Date#setTime
+   return_call $~lib/date/Date#setTime
   end
  )
  (func $~lib/date/dayOfWeek (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
@@ -2475,7 +2475,7 @@
      local.get $1
      local.get $2
      select
-     call $~lib/rt/itcms/Object#makeGray
+     return_call $~lib/rt/itcms/Object#makeGray
     else
      global.get $~lib/rt/itcms/state
      i32.const 1
@@ -2486,7 +2486,7 @@
      i32.and
      if
       local.get $1
-      call $~lib/rt/itcms/Object#makeGray
+      return_call $~lib/rt/itcms/Object#makeGray
      end
     end
    end

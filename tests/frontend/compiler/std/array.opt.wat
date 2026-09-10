@@ -1474,7 +1474,7 @@
    i32.store
    local.get $2
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/itcms/step (result i32)
@@ -2161,7 +2161,7 @@
      local.get $1
      local.get $2
      select
-     call $~lib/rt/itcms/Object#makeGray
+     return_call $~lib/rt/itcms/Object#makeGray
     else
      global.get $~lib/rt/itcms/state
      i32.const 1
@@ -2172,7 +2172,7 @@
      i32.and
      if
       local.get $1
-      call $~lib/rt/itcms/Object#makeGray
+      return_call $~lib/rt/itcms/Object#makeGray
      end
     end
    end
@@ -5754,8 +5754,7 @@
     i32.sub
     i32.const 0
     local.get $3
-    call $~lib/util/sort/insertionSort<f32>
-    br $__inlined_func$~lib/util/sort/SORT<f32>$209
+    return_call $~lib/util/sort/insertionSort<f32>
    end
    i32.const 33
    local.get $0
@@ -5974,7 +5973,7 @@
    local.get $13
    call $~lib/rt/tlsf/__free
    local.get $9
-   call $~lib/rt/tlsf/__free
+   return_call $~lib/rt/tlsf/__free
   end
  )
  (func $~lib/util/sort/insertionSort<f64> (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)

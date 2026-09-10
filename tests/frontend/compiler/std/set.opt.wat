@@ -1563,7 +1563,7 @@
     i32.eq
     if
      local.get $1
-     call $~lib/rt/itcms/Object#makeGray
+     return_call $~lib/rt/itcms/Object#makeGray
     else
      global.get $~lib/rt/itcms/state
      i32.const 1
@@ -1574,7 +1574,7 @@
      i32.and
      if
       local.get $1
-      call $~lib/rt/itcms/Object#makeGray
+      return_call $~lib/rt/itcms/Object#makeGray
      end
     end
    end
@@ -2177,7 +2177,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<i8>#rehash
+    return_call $~lib/set/Set<i8>#rehash
    end
   end
  )
@@ -2435,7 +2435,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<u8>#rehash
+    return_call $~lib/set/Set<u8>#rehash
    end
   end
  )
@@ -2877,7 +2877,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<i16>#rehash
+    return_call $~lib/set/Set<i16>#rehash
    end
   end
  )
@@ -3135,7 +3135,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<u16>#rehash
+    return_call $~lib/set/Set<u16>#rehash
    end
   end
  )
@@ -3497,7 +3497,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<i32>#rehash
+    return_call $~lib/set/Set<i32>#rehash
    end
   end
  )
@@ -3790,7 +3790,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<u32>#rehash
+    return_call $~lib/set/Set<u32>#rehash
    end
   end
  )
@@ -4167,7 +4167,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<i64>#rehash
+    return_call $~lib/set/Set<i64>#rehash
    end
   end
  )
@@ -4462,7 +4462,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<u64>#rehash
+    return_call $~lib/set/Set<u64>#rehash
    end
   end
  )
@@ -4865,7 +4865,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<f32>#rehash
+    return_call $~lib/set/Set<f32>#rehash
    end
   end
  )
@@ -5206,7 +5206,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<f64>#rehash
+    return_call $~lib/set/Set<f64>#rehash
    end
   end
  )

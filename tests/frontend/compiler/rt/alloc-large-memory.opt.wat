@@ -918,7 +918,7 @@
    i32.store
    local.get $2
    local.get $0
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   else
    local.get $0
    local.get $3

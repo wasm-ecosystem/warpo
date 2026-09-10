@@ -1571,7 +1571,7 @@
     i32.eq
     if
      local.get $1
-     call $~lib/rt/itcms/Object#makeGray
+     return_call $~lib/rt/itcms/Object#makeGray
     else
      global.get $~lib/rt/itcms/state
      i32.const 1
@@ -1582,7 +1582,7 @@
      i32.and
      if
       local.get $1
-      call $~lib/rt/itcms/Object#makeGray
+      return_call $~lib/rt/itcms/Object#makeGray
      end
     end
    end
@@ -2547,7 +2547,7 @@
    if
     local.get $0
     local.get $1
-    call $"~lib/map/Map<i8,i32>#rehash"
+    return_call $"~lib/map/Map<i8,i32>#rehash"
    end
   end
  )
@@ -2838,7 +2838,7 @@
    if
     local.get $0
     local.get $1
-    call $"~lib/map/Map<u8,i32>#rehash"
+    return_call $"~lib/map/Map<u8,i32>#rehash"
    end
   end
  )
@@ -3236,7 +3236,7 @@
    if
     local.get $0
     local.get $1
-    call $"~lib/map/Map<i16,i32>#rehash"
+    return_call $"~lib/map/Map<i16,i32>#rehash"
    end
   end
  )
@@ -3527,7 +3527,7 @@
    if
     local.get $0
     local.get $1
-    call $"~lib/map/Map<u16,i32>#rehash"
+    return_call $"~lib/map/Map<u16,i32>#rehash"
    end
   end
  )
@@ -3612,7 +3612,7 @@
    if
     local.get $0
     local.get $1
-    call $"~lib/map/Map<i32,i32>#rehash"
+    return_call $"~lib/map/Map<i32,i32>#rehash"
    end
   end
  )
@@ -3938,7 +3938,7 @@
    if
     local.get $0
     local.get $1
-    call $"~lib/map/Map<u32,i32>#rehash"
+    return_call $"~lib/map/Map<u32,i32>#rehash"
    end
   end
  )
@@ -4413,7 +4413,7 @@
    if
     local.get $0
     local.get $2
-    call $"~lib/map/Map<i64,i32>#rehash"
+    return_call $"~lib/map/Map<i64,i32>#rehash"
    end
   end
  )
@@ -4741,7 +4741,7 @@
    if
     local.get $0
     local.get $2
-    call $"~lib/map/Map<u64,i32>#rehash"
+    return_call $"~lib/map/Map<u64,i32>#rehash"
    end
   end
  )
@@ -5101,7 +5101,7 @@
    if
     local.get $0
     local.get $2
-    call $"~lib/map/Map<f32,i32>#rehash"
+    return_call $"~lib/map/Map<f32,i32>#rehash"
    end
   end
  )
@@ -5475,7 +5475,7 @@
    if
     local.get $0
     local.get $2
-    call $"~lib/map/Map<f64,i32>#rehash"
+    return_call $"~lib/map/Map<f64,i32>#rehash"
    end
   end
  )

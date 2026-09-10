@@ -5,7 +5,7 @@
 #include <optional>
 #include <unordered_set>
 
-#include "../helper/CFG.hpp"
+#include "../helper/ReturnPoints.hpp"
 #include "GCInfo.hpp"
 #include "ReturnParamFunctions.hpp"
 #include "wasm-traversal.h"
@@ -15,159 +15,61 @@ namespace warpo::passes::gc {
 
 namespace {
 
-wasm::Expression *getValueExpr(wasm::Expression *expr) {
-  if (expr == nullptr) {
-    return nullptr;
-  }
-  if (wasm::Break *const br = expr->dynCast<wasm::Break>()) {
-    if (br->value != nullptr) {
-      return getValueExpr(br->value);
-    }
-  } else if (wasm::Switch *const sw = expr->dynCast<wasm::Switch>()) {
-    if (sw->value != nullptr) {
-      return getValueExpr(sw->value);
-    }
-  } else if (wasm::Return *const ret = expr->dynCast<wasm::Return>()) {
-    if (ret->value != nullptr) {
-      return getValueExpr(ret->value);
-    }
-  }
-  return expr;
-}
-
 class ReturnParamAnalysis : public wasm::PostWalker<ReturnParamAnalysis> {
 public:
   explicit ReturnParamAnalysis(wasm::Function *f) : function_(f) {}
 
   void visitLocalSet(wasm::LocalSet *curr) {
-    if (curr->index < function_->getNumParams()) {
+    if (curr->index < function_->getNumParams())
       modifiedParamIndices_.insert(curr->index);
-    }
   }
 
-  void visitReturn(wasm::Return *curr) { checkReturnExpr(curr->value); }
-
-  void checkReturnExpr(wasm::Expression *expr) {
-    if (!allReturnsAreLocalGetsOfSameParam_)
-      return;
-    if (expr == nullptr) {
-      allReturnsAreLocalGetsOfSameParam_ = false;
-      return;
-    }
-    wasm::LocalGet *const get = expr->dynCast<wasm::LocalGet>();
-    if (get == nullptr || get->index >= function_->getNumParams()) {
-      allReturnsAreLocalGetsOfSameParam_ = false;
-      return;
-    }
-
-    if (!unchangedParamIndex_.has_value()) {
-      unchangedParamIndex_ = get->index;
-    } else if (unchangedParamIndex_.value() != get->index) {
-      allReturnsAreLocalGetsOfSameParam_ = false;
-    }
-  }
-
-  void checkImplicitReturns(wasm::Module *m) {
-    if (!allReturnsAreLocalGetsOfSameParam_)
-      return;
-
-    CFG const cfg = CFG::fromFunction(m, function_);
-    BasicBlock const *const exit = cfg.getExit();
-    if (exit == nullptr)
-      return;
-
-    std::unordered_set<BasicBlock const *> visited;
-    auto visitBB = [&](auto const &self, BasicBlock const *bb) -> void {
-      if (!allReturnsAreLocalGetsOfSameParam_ || bb == nullptr)
-        return;
-      if (!visited.insert(bb).second)
-        return;
-
-      // Find the last valuable instruction in this basic block.
-      // Skipping AST container nodes (Block, Loop, Nop) is necessary because CFGBuilder
-      // appends them to basic block instruction lists at block closure during post-order walk:
-      //
-      // 1. Pure join/merge point:
-      //      (block $merge (result i32)
-      //        (if (local.get $c)
-      //          (then (br $merge (local.get $a)))
-      //          (else (br $merge (local.get $a)))))
-      //    The exit block after $merge only contains [ (block $merge ...) ]. Skipping it yields
-      //    lastInst == nullptr, so the analysis checks incoming predecessor paths.
-      //
-      // 2. Linear statements followed by closed block(s) in the same basic block:
-      //      (block $outer (result i32)
-      //        (block $inner (result i32)
-      //          (local.get $this)))
-      //    CFGBuilder appends [ (local.get $this), (block $inner ...), (block $outer ...) ].
-      //    Reverse iteration skips the closing containers to inspect the actual value (local.get $this).
-      //
-      // 3. Statements after an inner block closes:
-      //      (block (nop))
-      //      (local.get $this)
-      //    CFGBuilder appends [ (nop), (block ...), (local.get $this) ].
-      //    Reverse iteration immediately encounters (local.get $this) first.
-      wasm::Expression *lastInst = nullptr;
-      // NOLINTNEXTLINE(modernize-loop-convert)
-      for (BasicBlock::reverse_iterator it = bb->rbegin(); it != bb->rend(); ++it) {
-        wasm::Expression *const expr = *it;
-        if (expr == nullptr || expr->is<wasm::Block>() || expr->is<wasm::Loop>() || expr->is<wasm::Nop>())
-          continue;
-        lastInst = expr;
-        break;
-      }
-
-      // If the basic block contains no valuable instruction (e.g. empty join block)
-      // or ends with a branching condition (If), the return value flows from predecessors.
-      if (lastInst == nullptr || lastInst->is<wasm::If>()) {
-        for (BasicBlock const *const pred : bb->preds()) {
-          self(self, pred);
-        }
-      } else if (wasm::Break *const br = lastInst->dynCast<wasm::Break>()) {
-        if (br->value != nullptr) {
-          checkReturnExpr(br->value);
-        }
-      } else if (wasm::Switch *const sw = lastInst->dynCast<wasm::Switch>()) {
-        if (sw->value != nullptr) {
-          checkReturnExpr(sw->value);
-        }
-      } else if (lastInst->type != wasm::Type::unreachable && !lastInst->is<wasm::Return>()) {
-        // Concrete instruction producing the return value in this basic block (visitReturn handles Return)
-        checkReturnExpr(lastInst);
-      } else {
-        assert(lastInst->type == wasm::Type::unreachable || lastInst->is<wasm::Return>());
-      }
-    };
-
-    visitBB(visitBB, exit);
-  }
-
-  std::optional<wasm::Index> getUnchangedParamIndex() const {
-    if (!allReturnsAreLocalGetsOfSameParam_ || !unchangedParamIndex_.has_value())
-      return std::nullopt;
-    if (modifiedParamIndices_.contains(unchangedParamIndex_.value()))
-      return std::nullopt;
-    return unchangedParamIndex_;
-  }
+  bool isParamModified(wasm::Index index) const { return modifiedParamIndices_.contains(index); }
 
 private:
   wasm::Function *function_;
-  std::optional<wasm::Index> unchangedParamIndex_;
-  bool allReturnsAreLocalGetsOfSameParam_ = true;
   std::unordered_set<wasm::Index> modifiedParamIndices_;
 };
 
+// Analyzes whether a function returns one of its parameters unchanged across all
+// reachable exit paths.
+//
+// 1. Every return point evaluates to a `local.get` of the exact same parameter index.
+// 2. That parameter is never modified by any `local.set` or `local.tee` within the
+//    entire function body.
 std::optional<wasm::Index> checkFunction(wasm::Module *m, wasm::Function *func) {
-  if (func->imported() || func->body == nullptr || func->getResults() == wasm::Type::none ||
-      func->getNumParams() == 0) {
+  if (func->imported() || func->body == nullptr || func->getResults() == wasm::Type::none || func->getNumParams() == 0)
     return std::nullopt;
+
+  std::vector<ReturnPoint> const returnPoints = computeReturnPoints(m, func);
+  if (returnPoints.empty())
+    return std::nullopt;
+
+  std::optional<wasm::Index> unchangedParamIndex;
+  for (ReturnPoint const &rp : returnPoints) {
+    wasm::Expression *const expr = rp.expr;
+    if (expr == nullptr)
+      return std::nullopt;
+
+    wasm::LocalGet *const get = expr->dynCast<wasm::LocalGet>();
+    if (get == nullptr || get->index >= func->getNumParams())
+      return std::nullopt;
+
+    if (!unchangedParamIndex.has_value())
+      unchangedParamIndex = get->index;
+    else if (unchangedParamIndex.value() != get->index)
+      return std::nullopt;
   }
 
-  ReturnParamAnalysis analysis{func};
-  analysis.walk(func->body);
-  analysis.checkImplicitReturns(m);
+  if (!unchangedParamIndex.has_value())
+    return std::nullopt;
 
-  return analysis.getUnchangedParamIndex();
+  ReturnParamAnalysis modAnalysis{func};
+  modAnalysis.walk(func->body);
+  if (modAnalysis.isParamModified(unchangedParamIndex.value()))
+    return std::nullopt;
+
+  return unchangedParamIndex;
 }
 
 } // namespace
