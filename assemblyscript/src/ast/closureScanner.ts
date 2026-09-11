@@ -38,6 +38,8 @@ class ScopeTreeNode {
   // Variables from this scope that are captured by an inner function.
   // Populated on Function/Loop scopes only (Block captures are promoted to the nearest ancestor).
   capturedLocals: Map<string, IdentifierExpression> = new Map();
+  hasThis: bool = false;
+  capturesThis: bool = false;
   // Subset of capturedLocals that are for-loop initializer declarations (e.g. `let i` in `for (let i = ...)`).
   forInitClosureLocals: Set<IdentifierExpression> = new Set();
   info: ClosureFunctionInfo | null = null;
@@ -74,7 +76,7 @@ class ScopeTreeNode {
   findDeclaration(name: string): ScopeTreeNode | null {
     let cur: ScopeTreeNode | null = this;
     while (cur) {
-      if (cur.locals.has(name)) return cur;
+      if (cur.locals.has(name) || (name == "this" && cur.hasThis)) return cur;
       cur = cur.parent;
     }
     return null;
@@ -148,15 +150,11 @@ export class ClosureScanner extends BaseVisitor {
         assert(node.kind != ScopeNodeKind.Block);
         let info = new ClosureFunctionInfo();
         info.nestedLevel = node.nestedLevel;
+        info.capturesThis = node.capturesThis;
         let keys = node.capturedLocals.keys();
         let values = node.capturedLocals.values();
         for (let j = 0; j < keys.length; j++) {
-          let name = keys[j];
-          if (name == "this") {
-            info.capturesThis = true;
-          } else {
-            info.closureVariables.add(values[j]);
-          }
+          info.closureVariables.add(values[j]);
         }
         info.forInitClosureVariables = node.forInitClosureLocals;
         node.info = info;
@@ -176,7 +174,7 @@ export class ClosureScanner extends BaseVisitor {
 
   visitMethodDeclaration(node: MethodDeclaration): void {
     this.enterTreeNode(ScopeNodeKind.Function, node);
-    assert(this.currentTreeNode_).addLocal("this", Node.createIdentifierExpression("this", node.range));
+    assert(this.currentTreeNode_).hasThis = true;
     super.visitMethodDeclaration(node);
     this.leaveTreeNode();
   }
@@ -262,7 +260,7 @@ export class ClosureScanner extends BaseVisitor {
   private checkCapture(name: string): void {
     if (!this.currentTreeNode_) return;
     let current = assert(this.currentTreeNode_);
-    const declaredScope = current.findDeclaration(name);
+    let declaredScope = current.findDeclaration(name);
     if (!declaredScope) return;
     const currentFunction = current.kind == ScopeNodeKind.Function ? current : assert(current.belongingFunction);
     const declaredFunction =
@@ -276,7 +274,8 @@ export class ClosureScanner extends BaseVisitor {
       owningScope = assert(walk);
     }
     owningScope.isClosure = true;
-    owningScope.capturedLocals.set(name, assert(declaredScope.locals.get(name)));
+    if (name == "this") owningScope.capturesThis = true;
+    else owningScope.capturedLocals.set(name, assert(declaredScope.locals.get(name)));
     assert(declaredFunction).isClosure = true;
     let cur: ScopeTreeNode | null = currentFunction.parent;
     while (cur && cur !== owningScope) {
