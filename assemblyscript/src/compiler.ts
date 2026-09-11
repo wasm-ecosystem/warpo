@@ -3079,7 +3079,7 @@ export class Compiler extends DiagnosticEmitter {
     );
     const variableType = this.currentType;
     // body flow is new created, there are definitely no duplicate identifier.
-    const variableLocal = bodyFlow.addScopedLocal(variableName.text, variableType, variable);
+    const variableLocal = bodyFlow.addScopedLocal(variableName, variableType, variable);
     if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
     let initClosureLocals = targetFunction.pendingInitClosureLocals;
     targetFunction.pendingInitClosureLocals = null;
@@ -3688,7 +3688,7 @@ export class Compiler extends DiagnosticEmitter {
         }
         local = existingLocal;
       } else {
-        local = flow.addScopedLocal(name.text, type, declaration);
+        local = flow.addScopedLocal(name, type, declaration);
       }
       if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
     } else {
@@ -3697,7 +3697,12 @@ export class Compiler extends DiagnosticEmitter {
         this.errorRelated(DiagnosticCode.Duplicate_identifier_0, name.range, existing.nameRange, name.text);
         return;
       }
-      local = flow.targetFunction.addLocal(type, name.text, declaration);
+      local = flow.targetFunction.addLocal(
+        type,
+        name,
+        declaration.toVariableLikeBase(),
+        declaration.toDeclarationBase()
+      );
       mir.addLocal(flow.targetFunction, local);
       flow.unsetLocalFlag(local.index, ~0);
       if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
@@ -8698,7 +8703,7 @@ export class Compiler extends DiagnosticEmitter {
         }
       } else {
         let ftype = instance.type;
-        let local = flow.addScopedLocal(instance.name, ftype, null);
+        let local = flow.addScopedLocal(declaration.name, ftype, null);
         flow.setLocalFlag(local.index, LocalFlags.Constant | LocalFlags.Initialized);
         expr = module.local_tee(local.index, expr, ftype.isManaged);
       }
