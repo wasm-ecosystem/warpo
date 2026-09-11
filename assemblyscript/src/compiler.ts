@@ -3063,7 +3063,7 @@ export class Compiler extends DiagnosticEmitter {
     );
     const variableType = this.currentType;
     // body flow is new created, there are definitely no duplicate identifier.
-    const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType, variable);
+    const variableLocal = bodyFlow.addScopedLocal(variable.name, variableType, variable);
     if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
     let initClosureLocals = targetFunction.pendingInitClosureLocals;
     targetFunction.pendingInitClosureLocals = null;
@@ -3421,7 +3421,8 @@ export class Compiler extends DiagnosticEmitter {
 
     for (let i = 0; i < numDeclarations; ++i) {
       let declaration = declarations[i];
-      let name = declaration.name.text;
+      let identifier = declaration.name;
+      let name = identifier.text;
       let type: Type | null = null;
       let initExpr: ExpressionRef = 0;
       let initType: Type | null = null;
@@ -3565,7 +3566,7 @@ export class Compiler extends DiagnosticEmitter {
             }
             local = existingLocal;
           } else {
-            local = flow.addScopedLocal(name, type, declaration);
+            local = flow.addScopedLocal(identifier, type, declaration);
           }
           if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
         } else {
@@ -3574,7 +3575,12 @@ export class Compiler extends DiagnosticEmitter {
             this.errorRelated(DiagnosticCode.Duplicate_identifier_0, declaration.name.range, existing.nameRange, name);
             continue;
           }
-          local = flow.targetFunction.addLocal(type, name, declaration);
+          local = flow.targetFunction.addLocal(
+            type,
+            identifier,
+            declaration.toVariableLikeBase(),
+            declaration.toDeclarationBase()
+          );
           mir.addLocal(flow.targetFunction, local);
           flow.unsetLocalFlag(local.index, ~0);
           if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
@@ -8582,7 +8588,7 @@ export class Compiler extends DiagnosticEmitter {
         }
       } else {
         let ftype = instance.type;
-        let local = flow.addScopedLocal(instance.name, ftype, null);
+        let local = flow.addScopedLocal(declaration.name, ftype, null);
         flow.setLocalFlag(local.index, LocalFlags.Constant | LocalFlags.Initialized);
         expr = module.local_tee(local.index, expr, ftype.isManaged);
       }
