@@ -918,8 +918,6 @@ export class Parser extends DiagnosticEmitter {
           initializer.range
         );
       }
-    } else if (arrayBindingPattern) {
-      this.error(DiagnosticCode.A_destructuring_declaration_must_have_an_initializer, tn.range(tn.pos)); // recoverable
     } else if (!isFor) {
       if (flags & CommonFlags.Const) {
         if (!(flags & CommonFlags.Ambient)) {

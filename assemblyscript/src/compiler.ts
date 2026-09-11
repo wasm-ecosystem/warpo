@@ -3460,9 +3460,9 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let flow = this.currentFlow;
     let resolver = this.resolver;
-    let type: Type | null = null;
+    let declarationType: Type | null = null;
     let initExpr: ExpressionRef = 0;
-    let initType: Type | null = null;
+    let initValueType: Type | null = null;
     let typeNode = declaration.type;
     let initializerNode = declaration.initializer;
 
@@ -3471,16 +3471,27 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     if (typeNode) {
-      type = resolver.resolveType(typeNode, flow, flow.targetFunction, cloneMap(flow.contextualTypeArguments));
-      if (!type) return;
-      this.program.checkTypeSupported(type, typeNode);
+      declarationType = resolver.resolveType(
+        typeNode,
+        flow,
+        flow.targetFunction,
+        cloneMap(flow.contextualTypeArguments)
+      );
+      if (!declarationType) return;
+      this.program.checkTypeSupported(declarationType, typeNode);
       if (initializerNode) {
-        initExpr = this.compileVariableInitializer(statement, initializerNode, [name], type, Constraints.ConvImplicit);
-        initType = this.currentType;
+        initExpr = this.compileVariableInitializer(
+          statement,
+          initializerNode,
+          [name],
+          declarationType,
+          Constraints.ConvImplicit
+        );
+        initValueType = this.currentType;
       }
     } else if (initializerNode) {
       initExpr = this.compileVariableInitializer(statement, initializerNode, [name], Type.auto, Constraints.None);
-      initType = this.currentType;
+      initValueType = this.currentType;
       if (this.currentType == Type.void) {
         this.error(
           DiagnosticCode.Type_0_is_not_assignable_to_type_1,
@@ -3490,7 +3501,7 @@ export class Compiler extends DiagnosticEmitter {
         );
         return;
       }
-      type = initType;
+      declarationType = initValueType;
     } else {
       this.error(DiagnosticCode.Type_expected, name.range.atEnd);
       return;
@@ -3510,7 +3521,7 @@ export class Compiler extends DiagnosticEmitter {
             null
           );
           const declarationBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
-          let resolvedType = assert(type);
+          let resolvedType = assert(declarationType);
           switch (<u32>getExpressionType(initExpr)) {
             case <u32>TypeRef.I32: {
               local = new Local(name.text, -1, resolvedType, flow.targetFunction, variableLikeBase, declarationBase);
@@ -3550,7 +3561,69 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
-    if (!isStatic) this.compileVariableLocal(declaration, name, assert(type), initExpr, initType, initializers);
+    if (!isStatic) this.addVariableLocal(declaration, initExpr, assert(declarationType), initValueType, initializers);
+  }
+
+  private addVariableLocal(
+    declaration: VariableDeclaration,
+    initValueExpr: ExpressionRef,
+    declarationType: Type,
+    initValueType: Type | null,
+    initializers: ExpressionRef[]
+  ): Local[] | null {
+    let name = declaration.name;
+    if (name) {
+      let local = this.addLocal(declaration, name, declarationType);
+      if (!local) return null;
+      if (initValueExpr) {
+        initializers.push(
+          this.makeLocalAssignment(local, initValueExpr, initValueType ? initValueType : declarationType, false)
+        );
+      } else if (local.type.isShortIntegerValue) {
+        this.currentFlow.setLocalFlag(local.index, LocalFlags.Wrapped);
+      }
+      return [local];
+    }
+
+    let arrayPattern = assert(declaration.arrayBindingPattern);
+    let tupleInfo = declarationType.tupleInfo;
+    if (!tupleInfo) {
+      this.error(DiagnosticCode.Type_0_must_be_a_tuple, declaration.range, declarationType.toString());
+      return null;
+    }
+    if (arrayPattern.length > tupleInfo.elementCount) {
+      let index = tupleInfo.elementCount;
+      this.error(
+        DiagnosticCode.Tuple_type_0_of_length_1_has_no_element_at_index_2,
+        arrayPattern[index].range,
+        declarationType.toString(),
+        tupleInfo.elementCount.toString(),
+        index.toString()
+      );
+      return null;
+    }
+
+    let module = this.module;
+    let tupleLocal = this.currentFlow.getTempLocal(declarationType);
+    initializers.push(module.local_set(tupleLocal.index, initValueExpr, declarationType.isManaged));
+    let tupleClass = this.program.smallTupleInstance;
+    let locals = new Array<Local>();
+    for (let i = 0, k = arrayPattern.length; i < k; ++i) {
+      let name = arrayPattern[i];
+      let elementInfo = tupleInfo.elements[i];
+      let getter = assert(tupleClass.getMethod("__get", [elementInfo.type]));
+      let elementValueExpr = this.makeCallDirect(
+        getter,
+        [module.local_get(tupleLocal.index, declarationType.toRef()), module.usize(elementInfo.offset)],
+        name,
+        true
+      );
+      let local = this.addLocal(declaration, name, elementInfo.type);
+      if (!local) return null;
+      initializers.push(this.makeLocalAssignment(local, elementValueExpr, elementInfo.type, false));
+      locals.push(local);
+    }
+    return locals;
   }
 
   private compileArrayBindingDeclaration(
@@ -3568,24 +3641,29 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let flow = this.currentFlow;
     let resolver = this.resolver;
-    let type: Type | null = null;
+    let declarationType: Type | null = null;
     let typeNode = declaration.type;
 
     if (typeNode) {
-      type = resolver.resolveType(typeNode, flow, flow.targetFunction, cloneMap(flow.contextualTypeArguments));
-      if (!type) return;
-      this.program.checkTypeSupported(type, typeNode);
+      declarationType = resolver.resolveType(
+        typeNode,
+        flow,
+        flow.targetFunction,
+        cloneMap(flow.contextualTypeArguments)
+      );
+      if (!declarationType) return;
+      this.program.checkTypeSupported(declarationType, typeNode);
     }
 
     let initExpr = this.compileVariableInitializer(
       statement,
       initializerNode,
       arrayBindingPattern,
-      type || Type.auto,
-      type ? Constraints.ConvImplicit : Constraints.None
+      declarationType || Type.auto,
+      declarationType ? Constraints.ConvImplicit : Constraints.None
     );
-    let initType = this.currentType;
-    if (!type) {
+    let initValueType = this.currentType;
+    if (!declarationType) {
       if (this.currentType == Type.void) {
         this.error(
           DiagnosticCode.Type_0_is_not_assignable_to_type_1,
@@ -3595,42 +3673,10 @@ export class Compiler extends DiagnosticEmitter {
         );
         return;
       }
-      type = initType;
+      declarationType = initValueType;
     }
 
-    let tupleType = assert(type);
-    let tupleInfo = tupleType.tupleInfo;
-    if (!tupleInfo) {
-      this.error(DiagnosticCode.Not_implemented_0, declaration.range, "array binding pattern requires a tuple");
-      return;
-    }
-    if (arrayBindingPattern.length > tupleInfo.elementCount) {
-      let index = tupleInfo.elementCount;
-      this.error(
-        DiagnosticCode.Tuple_type_0_of_length_1_has_no_element_at_index_2,
-        arrayBindingPattern[index].range,
-        tupleType.toString(),
-        tupleInfo.elementCount.toString(),
-        index.toString()
-      );
-      return;
-    }
-
-    let tupleLocal = flow.getTempLocal(tupleType);
-    initializers.push(module.local_set(tupleLocal.index, initExpr, tupleType.isManaged));
-    let tupleClass = this.program.smallTupleInstance;
-    for (let i = 0, k = arrayBindingPattern.length; i < k; ++i) {
-      let binding = arrayBindingPattern[i];
-      let elementInfo = tupleInfo.elements[i];
-      let getter = assert(tupleClass.getMethod("__get", [elementInfo.type]));
-      let elementExpr = this.makeCallDirect(
-        getter,
-        [module.local_get(tupleLocal.index, tupleType.toRef()), module.usize(elementInfo.offset)],
-        binding,
-        true
-      );
-      this.compileVariableLocal(declaration, binding, elementInfo.type, elementExpr, elementInfo.type, initializers);
-    }
+    this.addVariableLocal(declaration, initExpr, assert(declarationType), initValueType, initializers);
   }
 
   private compileVariableInitializer(
@@ -3661,20 +3707,7 @@ export class Compiler extends DiagnosticEmitter {
     return initExpr;
   }
 
-  /**
-   * Creates and initializes the local variable for one identifier in a variable declaration.
-   * `name` is the identifier in `let a = value` or one identifier in `let [a, b] = tuple`.
-   * The caller supplies its resolved type and value; this method registers the local, checks duplicate names and
-   * `const`, and emits the assignment.
-   */
-  private compileVariableLocal(
-    declaration: VariableDeclaration,
-    name: IdentifierExpression,
-    type: Type,
-    initExpr: ExpressionRef,
-    initType: Type | null,
-    initializers: ExpressionRef[]
-  ): void {
+  private addLocal(declaration: VariableDeclaration, name: IdentifierExpression, type: Type): Local | null {
     let flow = this.currentFlow;
     let isConst = declaration.is(CommonFlags.Const);
     let local: Local;
@@ -3695,7 +3728,7 @@ export class Compiler extends DiagnosticEmitter {
       let existing = flow.lookupLocal(name.text);
       if (existing) {
         this.errorRelated(DiagnosticCode.Duplicate_identifier_0, name.range, existing.nameRange, name.text);
-        return;
+        return null;
       }
       local = flow.targetFunction.addLocal(
         type,
@@ -3707,11 +3740,7 @@ export class Compiler extends DiagnosticEmitter {
       flow.unsetLocalFlag(local.index, ~0);
       if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
     }
-    if (initExpr) {
-      initializers.push(this.makeLocalAssignment(local, initExpr, initType ? initType : type, false));
-    } else if (local.type.isShortIntegerValue) {
-      flow.setLocalFlag(local.index, LocalFlags.Wrapped);
-    }
+    return local;
   }
 
   private compileVoidStatement(statement: VoidStatement): ExpressionRef {
