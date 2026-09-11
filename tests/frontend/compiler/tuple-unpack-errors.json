@@ -1,0 +1,9 @@
+{
+  "stderr": [
+    "ERROR TS1182: A destructuring declaration must have an initializer.",
+    "ERROR TS2440: Type 'i32' must be a tuple.",
+    "Tuple type '[i32]' of length '1' has no element at index '1'.",
+    "Type 'void' is not assignable to type '<auto>'.",
+    "TS2300: Duplicate identifier 'a'"
+  ]
+}

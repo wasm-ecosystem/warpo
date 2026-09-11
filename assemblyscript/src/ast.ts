@@ -610,14 +610,15 @@ export abstract class Node implements INode {
   }
 
   static createVariableDeclaration(
-    name: IdentifierExpression,
+    name: IdentifierExpression | null,
     decorators: DecoratorNode[] | null,
     flags: CommonFlags,
     type: TypeNode | null,
     initializer: Expression | null,
-    range: Range
+    range: Range,
+    arrayBindingPattern: ArrayBindingPattern | null = null
   ): VariableDeclaration {
-    return new VariableDeclaration(name, decorators, flags, type, initializer, range);
+    return new VariableDeclaration(name, decorators, flags, type, initializer, range, arrayBindingPattern);
   }
 
   static createVoidStatement(expression: Expression, range: Range): VoidStatement {
@@ -1888,7 +1889,12 @@ export class VariableLikeBase {
 }
 
 /** Base class of all variable-like declaration statements. */
-export abstract class VariableLikeDeclarationStatement extends DeclarationStatement {
+export abstract class VariableLikeDeclaration extends DeclarationStatement {
+  abstract toVariableLikeBase(): VariableLikeBase;
+}
+
+/** Base class of variable-like declaration statements. */
+export abstract class VariableLikeDeclarationStatement extends VariableLikeDeclaration {
   constructor(
     /** Variable-like declaration node kind. */
     kind: NodeKind,
@@ -2653,22 +2659,40 @@ export class TypeDeclaration extends DeclarationStatement {
 }
 
 /** Represents a variable declaration part of a {@link VariableStatement}. */
-export class VariableDeclaration extends VariableLikeDeclarationStatement {
+export type ArrayBindingPattern = IdentifierExpression[];
+
+export class VariableDeclaration extends VariableLikeDeclaration {
   constructor(
-    /** Simple name being declared. */
-    name: IdentifierExpression,
+    /** Simple name being declared, if any. */
+    public name: IdentifierExpression | null,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
     flags: CommonFlags,
     /** Annotated type node, if any. */
-    type: TypeNode | null,
+    public type: TypeNode | null,
     /** Initializer expression, if any. */
-    initializer: Expression | null,
+    public initializer: Expression | null,
     /** Source range. */
-    range: Range
+    range: Range,
+    /** Array binding pattern, if any. */
+    public arrayBindingPattern: ArrayBindingPattern | null = null
   ) {
-    super(NodeKind.VariableDeclaration, name, decorators, flags, type, initializer, range);
+    super(NodeKind.VariableDeclaration, decorators, flags, range);
+    assert((name == null) != (arrayBindingPattern == null));
+  }
+
+  get nameRange(): Range {
+    let name = this.name;
+    if (name) return name.range;
+    let pattern = assert(this.arrayBindingPattern);
+    return pattern.length ? Range.join(pattern[0].range, pattern[pattern.length - 1].range) : this.range;
+  }
+
+  toVariableLikeBase(): VariableLikeBase {
+    let name = this.name;
+    if (!name) name = assert(this.arrayBindingPattern)[0];
+    return new VariableLikeBase(name, this.type, this.initializer);
   }
 
   accept(visitor: IVisitor): void {
