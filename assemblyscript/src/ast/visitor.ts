@@ -490,6 +490,8 @@ export class BaseVisitor implements IVisitor {
 
   visitVariableDeclaration(node: VariableDeclaration): void {
     this.visitNode(node.name);
+    let pattern = node.arrayBindingPattern;
+    if (pattern) this.visitNodes(pattern);
     this.visitNodes(node.decorators);
     this.visitNode(node.type);
     this.visitNode(node.initializer);

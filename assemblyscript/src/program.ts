@@ -64,6 +64,7 @@ import {
   TypeDeclaration,
   VariableDeclaration,
   VariableLikeDeclarationStatement,
+  VariableLikeDeclaration,
   VariableStatement,
   ParameterKind,
   ParameterNode,
@@ -3200,7 +3201,12 @@ export class Program extends DiagnosticEmitter {
     let declarations = statement.declarations;
     for (let i = 0, k = declarations.length; i < k; ++i) {
       let declaration = declarations[i];
-      let name = declaration.name.text;
+      let nameNode = declaration.name;
+      if (!nameNode) {
+        this.error(DiagnosticCode.Not_implemented_0, declaration.range, "array binding pattern in global scope");
+        continue;
+      }
+      let name = nameNode.text;
       let acceptedFlags = DecoratorFlags.Global | DecoratorFlags.Lazy;
       if (declaration.is(CommonFlags.Ambient)) {
         acceptedFlags |= DecoratorFlags.External;
@@ -4119,7 +4125,7 @@ export class Global extends VariableLikeElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags,
     /** Declaration reference. Creates a native declaration if omitted. */
-    declaration: VariableLikeDeclarationStatement
+    declaration: VariableLikeDeclaration
   ) {
     super(ElementKind.Global, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.decoratorFlags = decoratorFlags;

@@ -68,6 +68,7 @@ import {
   JsonSource,
   IPropertyName,
   TupleTypeNode,
+  ArrayBindingPattern,
 } from "./ast";
 import { JsonParser } from "./json";
 
@@ -858,15 +859,41 @@ export class Parser extends DiagnosticEmitter {
     parentDecorators: DecoratorNode[] | null,
     isFor: bool = false
   ): VariableDeclaration | null {
-    // before: Identifier (':' Type)? ('=' Expression)?
+    // before: Identifier | '[' Identifier (',' Identifier)* ']' (':' Type)? ('=' Expression)?
 
-    if (!tn.skipIdentifier()) {
-      this.error(DiagnosticCode.Identifier_expected, tn.range());
-      return null;
-    }
-    let identifier = Node.createIdentifierExpression(tn.readIdentifier(), tn.range());
-    if (isIllegalVariableIdentifier(identifier.text)) {
-      this.error(DiagnosticCode.Identifier_expected, identifier.range);
+    let name: IdentifierExpression | null = null;
+    let arrayBindingPattern: ArrayBindingPattern | null = null;
+    if (tn.skip(Token.OpenBracket)) {
+      arrayBindingPattern = new Array<IdentifierExpression>();
+      if (tn.skip(Token.CloseBracket)) {
+        this.error(DiagnosticCode.Identifier_expected, tn.range());
+        return null;
+      }
+      do {
+        if (!tn.skipIdentifier()) {
+          this.error(DiagnosticCode.Identifier_expected, tn.range());
+          return null;
+        }
+        let binding = Node.createIdentifierExpression(tn.readIdentifier(), tn.range());
+        if (isIllegalVariableIdentifier(binding.text)) {
+          this.error(DiagnosticCode.Identifier_expected, binding.range);
+        }
+        arrayBindingPattern.push(binding);
+        if (!tn.skip(Token.Comma)) break;
+      } while (tn.token != Token.CloseBracket);
+      if (!tn.skip(Token.CloseBracket)) {
+        this.error(DiagnosticCode._0_expected, tn.range(), "]");
+        return null;
+      }
+    } else {
+      if (!tn.skipIdentifier()) {
+        this.error(DiagnosticCode.Identifier_expected, tn.range());
+        return null;
+      }
+      name = Node.createIdentifierExpression(tn.readIdentifier(), tn.range());
+      if (isIllegalVariableIdentifier(name.text)) {
+        this.error(DiagnosticCode.Identifier_expected, name.range);
+      }
     }
     let flags = parentFlags;
     if (tn.skip(Token.Exclamation)) {
@@ -894,18 +921,19 @@ export class Parser extends DiagnosticEmitter {
     } else if (!isFor) {
       if (flags & CommonFlags.Const) {
         if (!(flags & CommonFlags.Ambient)) {
-          this.error(DiagnosticCode._const_declarations_must_be_initialized, identifier.range); // recoverable
+          this.error(DiagnosticCode._const_declarations_must_be_initialized, assert(name).range); // recoverable
         }
       } else if (!type) {
         // neither type nor initializer
         this.error(DiagnosticCode.Type_expected, tn.range(tn.pos)); // recoverable
       }
     }
-    let range = Range.join(identifier.range, tn.range());
+    let nameRange = name ? name.range : assert(arrayBindingPattern)[0].range;
+    let range = Range.join(nameRange, tn.range());
     if ((flags & CommonFlags.DefinitelyAssigned) != 0 && (flags & CommonFlags.Ambient) != 0) {
       this.error(DiagnosticCode.A_definite_assignment_assertion_is_not_permitted_in_this_context, range);
     }
-    return Node.createVariableDeclaration(identifier, parentDecorators, flags, type, initializer, range);
+    return Node.createVariableDeclaration(name, parentDecorators, flags, type, initializer, range, arrayBindingPattern);
   }
 
   parseEnum(
@@ -2654,10 +2682,12 @@ export class Parser extends DiagnosticEmitter {
           for (let i = 0, k = declarations.length; i < k; ++i) {
             let declaration = declarations[i];
             if (!declaration.initializer) {
+              let name = declaration.name;
+              let declarationRange = name ? name.range : declaration.range;
               if (declaration.flags & CommonFlags.Const) {
-                this.error(DiagnosticCode._const_declarations_must_be_initialized, declaration.name.range);
+                this.error(DiagnosticCode._const_declarations_must_be_initialized, declarationRange);
               } else if (!declaration.type) {
-                this.error(DiagnosticCode.Type_expected, declaration.name.range.atEnd);
+                this.error(DiagnosticCode.Type_expected, declarationRange.atEnd);
               }
             }
           }
