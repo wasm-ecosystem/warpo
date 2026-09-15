@@ -3938,22 +3938,6 @@
      (local.get $0)
     )
    )
-   (call $~lib/tuple/SmallTuple#__set<i32>
-    (call $~lib/rt/__tmptostack
-     (local.get $5)
-    )
-    (i32.const 4)
-    (local.get $value)
-   )
-   (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
-    (call $~lib/rt/__tmptostack
-     (local.get $5)
-    )
-    (i32.const 8)
-    (call $~lib/rt/__tmptostack
-     (local.get $text)
-    )
-   )
    (if
     (i32.eqz
      (call $"~lib/iterator/IteratorResult<[i32, ~lib/string/String]>#get:done"
@@ -3972,7 +3956,11 @@
        )
       )
      )
-     (local.set $value
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $5)
+      )
+      (i32.const 4)
       (call $~lib/tuple/SmallTuple#__get<i32>
        (call $~lib/rt/__tmptostack
         (local.get $9)
@@ -3980,8 +3968,12 @@
        (i32.const 0)
       )
      )
-     (local.set $text
-      (call $~lib/rt/__localtostack
+     (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+      (call $~lib/rt/__tmptostack
+       (local.get $5)
+      )
+      (i32.const 8)
+      (call $~lib/rt/__tmptostack
        (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
         (call $~lib/rt/__tmptostack
          (local.get $9)

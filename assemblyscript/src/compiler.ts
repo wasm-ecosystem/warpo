@@ -2970,7 +2970,6 @@ export class Compiler extends DiagnosticEmitter {
     if (loopClosureInfo) {
       loopStorage = flow.getTempLocal(Type.i32);
       targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
-      targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
     }
     if (loopStorage) {
       mir.enterClosureScope(
@@ -3077,11 +3076,6 @@ export class Compiler extends DiagnosticEmitter {
       mir.leaveScope();
       return module.unreachable();
     }
-    let initClosureLocals = targetFunction.pendingInitClosureLocals;
-    targetFunction.pendingInitClosureLocals = null;
-    if (initClosureLocals) {
-      initClosureLocals.setActiveStorageToTuple();
-    }
     let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
     if (loopClosureInfo) {
       loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
@@ -3129,13 +3123,7 @@ export class Compiler extends DiagnosticEmitter {
     let ifExpr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
-      let tupleStmts = this.emitLoopClosureTuple(
-        targetFunction,
-        loopClosureTupleInfo,
-        loopStorage,
-        initClosureLocals,
-        statement
-      );
+      let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, loopStorage, null, statement);
       // tuple creation and value copying need to be inserted at beginning of loop body
       tupleStmts.push(ifExpr);
       expr = module.flatten(tupleStmts);

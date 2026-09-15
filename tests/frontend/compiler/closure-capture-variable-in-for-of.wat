@@ -3495,13 +3495,6 @@
      (local.get $0)
     )
    )
-   (call $~lib/tuple/SmallTuple#__set<i32>
-    (call $~lib/rt/__tmptostack
-     (local.get $3)
-    )
-    (i32.const 4)
-    (local.get $v)
-   )
    (if
     (i32.eqz
      (call $~lib/iterator/IteratorResult<i32>#get:done

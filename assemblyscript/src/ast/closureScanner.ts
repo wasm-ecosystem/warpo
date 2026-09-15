@@ -203,12 +203,6 @@ export class ClosureScanner extends BaseVisitor {
     if (!this.currentTreeNode_) return;
     this.enterTreeNode(ScopeNodeKind.Loop, node);
     super.visitForOfStatement(node);
-    let treeNode = assert(this.currentTreeNode_);
-    let variable = node.variable;
-    if (variable.kind == NodeKind.Variable) {
-      let decls = (<VariableStatement>variable).declarations;
-      this.markForInitClosureLocals(treeNode, decls);
-    }
     this.leaveTreeNode();
   }
 
