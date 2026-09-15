@@ -2863,34 +2863,33 @@ export class Compiler extends DiagnosticEmitter {
     let possiblyLoops = possiblyContinues || possiblyFallsThrough;
     if (possiblyLoops) {
       let incrementor = statement.incrementor;
-      if (incrementor) {
-        // Copy tuple -> local before incrementor (body may have modified incrementor variable via tuple)
-        if (initClosureLocals) {
-          let tupleClass = this.program.smallTupleInstance;
-          let locals = initClosureLocals.getLocals();
-          // copy loop closure variables from tuple to local before incrementor,
-          // then incrementor can calculate the value for next iteration in local
-          for (let k = 0; k < locals.length; k++) {
-            let initLocal = locals[k];
-            let elementInfo = initLocal.getTupleElementInfo();
-            let getter = assert(tupleClass.getMethod("__get", [elementInfo.type]));
-            bodyStmts.push(
-              module.local_set(
-                initLocal.index,
-                this.makeCallDirect(
-                  getter,
-                  [
-                    module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
-                    module.usize(elementInfo.offset),
-                  ],
-                  statement
-                ),
-                initLocal.type.isManaged
-              )
-            );
-          }
-          initClosureLocals.setActiveStorageToLocal();
+      if (initClosureLocals) {
+        // Copy tuple -> local before the next iteration (and before the incrementor, if present).
+        // The body may have modified an initializer variable via the tuple.
+        let tupleClass = this.program.smallTupleInstance;
+        let locals = initClosureLocals.getLocals();
+        for (let k = 0; k < locals.length; k++) {
+          let initLocal = locals[k];
+          let elementInfo = initLocal.getTupleElementInfo();
+          let getter = assert(tupleClass.getMethod("__get", [elementInfo.type]));
+          bodyStmts.push(
+            module.local_set(
+              initLocal.index,
+              this.makeCallDirect(
+                getter,
+                [
+                  module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
+                  module.usize(elementInfo.offset),
+                ],
+                statement
+              ),
+              initLocal.type.isManaged
+            )
+          );
         }
+      }
+      if (incrementor) {
+        if (initClosureLocals) initClosureLocals.setActiveStorageToLocal();
         // Switch forInitClosureVars to use local for the incrementor
         this.currentFlow = flow;
         bodyStmts.push(this.compileExpression(incrementor, Type.void, Constraints.ConvImplicit | Constraints.WillDrop));
