@@ -2957,12 +2957,6 @@ export class Compiler extends DiagnosticEmitter {
       return module.unreachable();
     }
     const variable = (<VariableStatement>statement.variable).declarations[0];
-    const variableName = variable.name;
-    if (!variableName) {
-      this.error(DiagnosticCode.Not_implemented_0, variable.range, "for...of with an array binding pattern");
-      return module.unreachable();
-    }
-
     const iterableExpr = this.compileExpression(iterable, Type.auto);
     const iterableType = this.currentType;
     const outerFlow = this.currentFlow;
@@ -2975,7 +2969,6 @@ export class Compiler extends DiagnosticEmitter {
     if (loopClosureInfo) {
       loopStorage = flow.getTempLocal(Type.i32);
       targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
-      targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
     }
     if (loopStorage) {
       mir.enterClosureScope(
@@ -3077,19 +3070,15 @@ export class Compiler extends DiagnosticEmitter {
       module.local_get(tmpLocal.index, tmpType.toRef())
     );
     const variableType = this.currentType;
-    // body flow is new created, there are definitely no duplicate identifier.
-    const variableLocal = bodyFlow.addScopedLocal(variableName, variableType, variable);
-    if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
-    let initClosureLocals = targetFunction.pendingInitClosureLocals;
-    targetFunction.pendingInitClosureLocals = null;
-    if (initClosureLocals) {
-      initClosureLocals.setActiveStorageToTuple();
+    if (!this.addVariableLocal(variable, variableExpr, variableType, variableType, bodyStmts)) {
+      bodyFlow.popControlFlowLabel(label);
+      mir.leaveScope();
+      return module.unreachable();
     }
     let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
     if (loopClosureInfo) {
       loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
     }
-    bodyStmts.push(this.makeLocalAssignment(variableLocal, variableExpr, variableType, false));
     if (body.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>body).statements, bodyStmts);
     } else {
@@ -3133,13 +3122,7 @@ export class Compiler extends DiagnosticEmitter {
     let ifExpr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
-      let tupleStmts = this.emitLoopClosureTuple(
-        targetFunction,
-        loopClosureTupleInfo,
-        loopStorage,
-        initClosureLocals,
-        statement
-      );
+      let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, loopStorage, null, statement);
       // tuple creation and value copying need to be inserted at beginning of loop body
       tupleStmts.push(ifExpr);
       expr = module.flatten(tupleStmts);
