@@ -879,7 +879,13 @@ export class Parser extends DiagnosticEmitter {
           this.error(DiagnosticCode.Identifier_expected, binding.range);
         }
         arrayBindingPattern.push(binding);
-        if (!tn.skip(Token.Comma)) break;
+        if (!tn.skip(Token.Comma)) {
+          if (tn.peek() == Token.Colon) {
+            this.error(DiagnosticCode._0_expected, tn.range(), ":");
+            return null;
+          }
+          break;
+        }
       } while (tn.token != Token.CloseBracket);
       if (!tn.skip(Token.CloseBracket)) {
         this.error(DiagnosticCode._0_expected, tn.range(), "]");

@@ -27,3 +27,4 @@
 - [Heap Analyzer](/zh-CN/executing_webassembly/heap-analyzer)
 - [CPU 性能分析](/zh-CN/executing_webassembly/profiling)
 - [Multi Return](/en/using_language/details/multi_return)
+- [从数组和 tuple 中解包](/zh-CN/using_language/details/unpack)

@@ -147,6 +147,7 @@ public:
            std::ranges::any_of(configJson_["asc_flags"].get<nlohmann::json::array_t>(),
                                [](nlohmann::basic_json<> const &flag) { return flag == "--exportStart _start"; });
   }
+  bool expectsTrap() const { return configJson_.contains("expect_trap") && configJson_["expect_trap"].get<bool>(); }
   bool checkErrorMessage() const { return configJson_.contains("stderr"); }
   std::vector<std::string> getExpectedErrorMessages() const {
     assert(checkErrorMessage());
@@ -199,6 +200,10 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
     if (configJson.hasExportStart())
       r.callExportedFunctionWithName<0>("_start");
   } catch (vb::TrapException &e) {
+    if (configJson.expectsTrap()) {
+      fmt::println("PASSED '{}': execution trapped as expected due to {}", tsPath.string(), e.what());
+      return TestResult::Success;
+    }
     fmt::println("FAILED '{}': execution trapped due to {}", tsPath.string(), e.what());
     return TestResult::Failure;
   } catch (vb::LinkingException &e) {
@@ -216,6 +221,10 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
     return TestResult::Skip;
   }
 
+  if (configJson.expectsTrap()) {
+    fmt::println("FAILED '{}': expected execution to trap", tsPath.string());
+    return TestResult::Failure;
+  }
   return TestResult::Success;
 }
 

@@ -3,15 +3,13 @@
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func))
- (type $5 (func (param i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func))
  (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (result i32)))
- (type $8 (func (result i32 i32)))
- (type $9 (func (param i32 i32 i32) (result i32)))
- (type $10 (func (param i32 i32 i64) (result i32)))
- (type $11 (func (param i32 i64) (result i32)))
- (import "env" "multi_return_api" (func $multi-return/multi_return_api (result i32 i32)))
+ (type $7 (func (param i32 i32 i32) (result i32)))
+ (type $8 (func (result i32)))
+ (type $9 (func (param i32 i32 i64) (result i32)))
+ (type $10 (func (param i32 i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -28,24 +26,27 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 480))
- (global $~lib/memory/__data_end i32 (i32.const 504))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33272))
- (global $~lib/memory/__heap_base i32 (i32.const 33272))
+ (global $~lib/rt/__rtti_base i32 (i32.const 592))
+ (global $~lib/memory/__data_end i32 (i32.const 620))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33388))
+ (global $~lib/memory/__heap_base i32 (i32.const 33388))
  (memory $0 1)
- (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
- (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $2 (i32.const 144) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00\n\00\00\00\14\00\00\00\00\00\00\00")
+ (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
+ (data $2 (i32.const 108) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $3 (i32.const 176) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $4 (i32.const 204) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
- (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00m\00u\00l\00t\00i\00-\00r\00e\00t\00u\00r\00n\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 480) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00")
+ (data $4 (i32.const 208) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $5 (i32.const 236) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
+ (data $6 (i32.const 300) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
+ (data $7 (i32.const 352) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $8 (i32.const 380) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $9 (i32.const 444) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
+ (data $10 (i32.const 492) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00\1e\00\00\00(\00\00\00\00\00\00\00")
+ (data $11 (i32.const 524) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00a\00r\00r\00a\00y\00-\00u\00n\00p\00a\00c\00k\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $12 (i32.const 592) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
- (export "_start" (func $multi-return/_start))
+ (export "_start" (func $array-unpack/_start))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
@@ -138,7 +139,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 96)
+         (i32.const 128)
          (i32.const 159)
          (i32.const 16)
         )
@@ -239,7 +240,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 96)
+       (i32.const 128)
        (i32.const 127)
        (i32.const 18)
       )
@@ -264,7 +265,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 96)
+     (i32.const 128)
      (i32.const 131)
      (i32.const 16)
     )
@@ -304,8 +305,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 224)
-     (i32.const 288)
+     (i32.const 256)
+     (i32.const 320)
      (i32.const 22)
      (i32.const 28)
     )
@@ -404,7 +405,7 @@
       (then
        (call $~lib/builtins/abort
         (i32.const 0)
-        (i32.const 96)
+        (i32.const 128)
         (i32.const 147)
         (i32.const 30)
        )
@@ -688,7 +689,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 245)
      (i32.const 14)
     )
@@ -717,7 +718,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 247)
      (i32.const 14)
     )
@@ -813,7 +814,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 261)
      (i32.const 14)
     )
@@ -951,7 +952,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 178)
      (i32.const 14)
     )
@@ -976,7 +977,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 180)
      (i32.const 14)
     )
@@ -1062,7 +1063,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 198)
        (i32.const 16)
       )
@@ -1125,7 +1126,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 210)
      (i32.const 14)
     )
@@ -1151,7 +1152,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 211)
      (i32.const 14)
     )
@@ -1254,7 +1255,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 228)
      (i32.const 14)
     )
@@ -1345,7 +1346,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 357)
      (i32.const 14)
     )
@@ -1406,7 +1407,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 365)
        (i32.const 16)
       )
@@ -1456,7 +1457,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 378)
        (i32.const 5)
       )
@@ -1748,7 +1749,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 532)
      (i32.const 3)
     )
@@ -2080,7 +2081,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 96)
+         (i32.const 128)
          (i32.const 229)
          (i32.const 20)
         )
@@ -2232,8 +2233,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 32)
-     (i32.const 368)
+     (i32.const 64)
+     (i32.const 400)
      (i32.const 435)
      (i32.const 29)
     )
@@ -2369,7 +2370,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 309)
      (i32.const 14)
     )
@@ -2447,7 +2448,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 368)
+         (i32.const 400)
          (i32.const 322)
          (i32.const 18)
         )
@@ -2625,7 +2626,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 336)
      (i32.const 14)
     )
@@ -2757,7 +2758,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 472)
        (i32.const 16)
       )
@@ -2787,7 +2788,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 474)
      (i32.const 14)
     )
@@ -2848,8 +2849,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 32)
-     (i32.const 96)
+     (i32.const 64)
+     (i32.const 128)
      (i32.const 262)
      (i32.const 31)
     )
@@ -2912,132 +2913,314 @@
    (local.get $ptr)
   )
  )
- (func $~lib/rt/__newTuple (param $elementSize i32) (param $bitmap i64) (result i32)
-  (local $totalSize i32)
-  (local $ptr i32)
-  (local.set $totalSize
-   (i32.add
-    (local.get $elementSize)
-    (i32.const 8)
-   )
-  )
-  (local.set $ptr
+ (func $~lib/rt/__newBuffer (param $size i32) (param $id i32) (param $data i32) (result i32)
+  (local $buffer i32)
+  (local.set $buffer
    (call $~lib/rt/itcms/__new
-    (local.get $totalSize)
-    (i32.const 4)
+    (local.get $size)
+    (local.get $id)
    )
   )
-  (i64.store
-   (i32.add
-    (local.get $ptr)
-    (local.get $elementSize)
+  (if
+   (local.get $data)
+   (then
+    (memory.copy
+     (local.get $buffer)
+     (local.get $data)
+     (local.get $size)
+    )
    )
-   (local.get $bitmap)
   )
   (return
-   (local.get $ptr)
+   (local.get $buffer)
   )
  )
- (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
-  (local $elementPtr i32)
-  (local.set $elementPtr
-   (i32.add
-    (local.get $this)
-    (local.get $offset)
+ (func $~lib/rt/itcms/__link (param $parentPtr i32) (param $childPtr i32) (param $expectMultiple i32)
+  (local $child i32)
+  (local $parent i32)
+  (local $parentColor i32)
+  (if
+   (i32.eqz
+    (local.get $childPtr)
+   )
+   (then
+    (return)
+   )
+  )
+  (drop
+   (i32.const 1)
+  )
+  (if
+   (i32.eqz
+    (local.get $parentPtr)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 128)
+     (i32.const 296)
+     (i32.const 14)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $child
+   (i32.sub
+    (local.get $childPtr)
+    (i32.const 20)
+   )
+  )
+  (if
+   (i32.eq
+    (call $~lib/rt/itcms/Object#get:color
+     (local.get $child)
+    )
+    (global.get $~lib/rt/itcms/white)
+   )
+   (then
+    (local.set $parent
+     (i32.sub
+      (local.get $parentPtr)
+      (i32.const 20)
+     )
+    )
+    (local.set $parentColor
+     (call $~lib/rt/itcms/Object#get:color
+      (local.get $parent)
+     )
+    )
+    (if
+     (i32.eq
+      (local.get $parentColor)
+      (i32.eqz
+       (global.get $~lib/rt/itcms/white)
+      )
+     )
+     (then
+      (if
+       (local.get $expectMultiple)
+       (then
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $parent)
+        )
+       )
+       (else
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $child)
+        )
+       )
+      )
+     )
+     (else
+      (if
+       (if (result i32)
+        (i32.eq
+         (local.get $parentColor)
+         (i32.const 3)
+        )
+        (then
+         (i32.eq
+          (global.get $~lib/rt/itcms/state)
+          (i32.const 1)
+         )
+        )
+        (else
+         (i32.const 0)
+        )
+       )
+       (then
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $child)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/rt/__newArray (param $length i32) (param $alignLog2 i32) (param $id i32) (param $data i32) (result i32)
+  (local $bufferSize i32)
+  (local $buffer i32)
+  (local $array i32)
+  (local.set $bufferSize
+   (i32.shl
+    (local.get $length)
+    (local.get $alignLog2)
+   )
+  )
+  (local.set $buffer
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/__newBuffer
+     (local.get $bufferSize)
+     (i32.const 1)
+     (local.get $data)
+    )
+   )
+  )
+  (local.set $array
+   (call $~lib/rt/itcms/__new
+    (i32.const 16)
+    (local.get $id)
    )
   )
   (i32.store
-   (local.get $elementPtr)
-   (local.get $value)
+   (local.get $array)
+   (local.get $buffer)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $array)
+   (local.get $buffer)
+   (i32.const 0)
+  )
+  (i32.store offset=4
+   (local.get $array)
+   (local.get $buffer)
+  )
+  (i32.store offset=8
+   (local.get $array)
+   (local.get $bufferSize)
+  )
+  (i32.store offset=12
+   (local.get $array)
+   (local.get $length)
+  )
+  (return
+   (local.get $array)
+  )
+ )
+ (func $~lib/array/Array<i32>#get:length_ (param $this i32) (result i32)
+  (i32.load offset=12
+   (local.get $this)
+  )
+ )
+ (func $~lib/array/Array<i32>#get:dataStart (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $~lib/array/Array<i32>#__get (param $this i32) (param $index i32) (result i32)
+  (local $value i32)
+  (if
+   (i32.ge_u
+    (local.get $index)
+    (call $~lib/array/Array<i32>#get:length_
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 256)
+     (i32.const 464)
+     (i32.const 123)
+     (i32.const 42)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $value
+   (i32.load
+    (i32.add
+     (call $~lib/array/Array<i32>#get:dataStart
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (i32.shl
+      (local.get $index)
+      (i32.const 2)
+     )
+    )
+   )
   )
   (drop
    (i32.const 0)
   )
- )
- (func $~lib/tuple/SmallTuple#__get<i32> (param $this i32) (param $offset i32) (result i32)
-  (local $elementPtr i32)
-  (local.set $elementPtr
-   (i32.add
-    (local.get $this)
-    (local.get $offset)
-   )
-  )
   (return
-   (i32.load
-    (local.get $elementPtr)
-   )
+   (local.get $value)
   )
  )
- (func $multi-return/testMultiReturnUnpack
-  (local $0 (tuple i32 i32))
-  (local $1 i32)
+ (func $array-unpack/_start (result i32)
+  (local $0 i32)
+  (local $values i32)
   (local $2 i32)
-  (local $firstValue i32)
-  (local $secondValue i32)
-  (local.set $2
+  (local $a i32)
+  (local $b i32)
+  (local $5 i32)
+  (local $6 i32)
+  (local $c i32)
+  (local $d i32)
+  (local.set $values
    (call $~lib/rt/__localtostack
-    (block (result i32)
-     (local.set $0
-      (call $multi-return/multi_return_api)
-     )
-     (local.set $1
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/__newTuple
-        (i32.const 8)
-        (i64.const 0)
-       )
-      )
-     )
-     (call $~lib/tuple/SmallTuple#__set<i32>
-      (call $~lib/rt/__tmptostack
-       (local.get $1)
-      )
-      (i32.const 0)
-      (tuple.extract 2 0
-       (local.get $0)
-      )
-     )
-     (call $~lib/tuple/SmallTuple#__set<i32>
-      (call $~lib/rt/__tmptostack
-       (local.get $1)
-      )
-      (i32.const 4)
-      (tuple.extract 2 1
-       (local.get $0)
-      )
-     )
-     (local.get $1)
+    (call $~lib/rt/__newArray
+     (i32.const 2)
+     (i32.const 2)
+     (i32.const 4)
+     (i32.const 32)
     )
    )
   )
-  (local.set $firstValue
-   (call $~lib/tuple/SmallTuple#__get<i32>
+  (local.set $2
+   (call $~lib/rt/__localtostack
+    (local.get $values)
+   )
+  )
+  (local.set $a
+   (call $~lib/array/Array<i32>#__get
     (call $~lib/rt/__tmptostack
      (local.get $2)
     )
     (i32.const 0)
    )
   )
-  (local.set $secondValue
-   (call $~lib/tuple/SmallTuple#__get<i32>
+  (local.set $b
+   (call $~lib/array/Array<i32>#__get
     (call $~lib/rt/__tmptostack
      (local.get $2)
     )
-    (i32.const 4)
+    (i32.const 1)
+   )
+  )
+  (local.set $6
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/__newArray
+     (i32.const 2)
+     (i32.const 2)
+     (i32.const 4)
+     (i32.const 512)
+    )
+   )
+  )
+  (local.set $c
+   (call $~lib/array/Array<i32>#__get
+    (call $~lib/rt/__tmptostack
+     (local.get $6)
+    )
+    (i32.const 0)
+   )
+  )
+  (local.set $d
+   (call $~lib/array/Array<i32>#__get
+    (call $~lib/rt/__tmptostack
+     (local.get $6)
+    )
+    (i32.const 1)
    )
   )
   (if
    (i32.eqz
     (i32.eq
-     (local.get $firstValue)
+     (local.get $a)
      (i32.const 10)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 432)
-     (i32.const 8)
+     (i32.const 544)
+     (i32.const 5)
      (i32.const 3)
     )
     (unreachable)
@@ -3046,80 +3229,68 @@
   (if
    (i32.eqz
     (i32.eq
-     (local.get $secondValue)
+     (local.get $b)
      (i32.const 20)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 432)
-     (i32.const 9)
+     (i32.const 544)
+     (i32.const 6)
      (i32.const 3)
     )
     (unreachable)
    )
   )
- )
- (func $multi-return/_start (result i32)
-  (local $0 (tuple i32 i32))
-  (local $1 i32)
-  (local $result i32)
-  (call $multi-return/testMultiReturnUnpack)
-  (local.set $result
-   (call $~lib/rt/__localtostack
-    (block (result i32)
-     (local.set $0
-      (call $multi-return/multi_return_api)
-     )
-     (local.set $1
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/__newTuple
-        (i32.const 8)
-        (i64.const 0)
-       )
-      )
-     )
-     (call $~lib/tuple/SmallTuple#__set<i32>
-      (call $~lib/rt/__tmptostack
-       (local.get $1)
-      )
-      (i32.const 0)
-      (tuple.extract 2 0
-       (local.get $0)
-      )
-     )
-     (call $~lib/tuple/SmallTuple#__set<i32>
-      (call $~lib/rt/__tmptostack
-       (local.get $1)
-      )
-      (i32.const 4)
-      (tuple.extract 2 1
-       (local.get $0)
-      )
-     )
-     (local.get $1)
+  (if
+   (i32.eqz
+    (i32.eq
+     (local.get $c)
+     (i32.const 30)
     )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 7)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (local.get $d)
+     (i32.const 40)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 8)
+     (i32.const 3)
+    )
+    (unreachable)
    )
   )
   (return
    (i32.add
-    (call $~lib/tuple/SmallTuple#__get<i32>
-     (call $~lib/rt/__tmptostack
-      (local.get $result)
+    (i32.add
+     (i32.add
+      (local.get $a)
+      (local.get $b)
      )
-     (i32.const 0)
+     (local.get $c)
     )
-    (call $~lib/tuple/SmallTuple#__get<i32>
-     (call $~lib/rt/__tmptostack
-      (local.get $result)
-     )
-     (i32.const 4)
-    )
+    (local.get $d)
    )
   )
  )
- (func $start:multi-return
+ (func $start:array-unpack
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3134,31 +3305,31 @@
   )
   (global.set $~lib/rt/itcms/pinSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 144)
+    (i32.const 176)
    )
   )
   (global.set $~lib/rt/itcms/toSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 176)
+    (i32.const 208)
    )
   )
   (global.set $~lib/rt/itcms/fromSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 320)
+    (i32.const 352)
    )
   )
   (if
    (i32.eqz
     (i32.eq
-     (call $multi-return/_start)
-     (i32.const 30)
+     (call $array-unpack/_start)
+     (i32.const 100)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 432)
-     (i32.const 18)
+     (i32.const 544)
+     (i32.const 12)
      (i32.const 1)
     )
     (unreachable)
@@ -3185,131 +3356,78 @@
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
   (nop)
  )
- (func $~lib/rt/common/OBJECT#get:rtSize (param $this i32) (result i32)
-  (i32.load offset=16
+ (func $~lib/array/Array<i32>#get:buffer (param $this i32) (result i32)
+  (i32.load
    (local.get $this)
   )
  )
- (func $~lib/tuple/SmallTuple#__visit (param $this i32) (param $cookie i32)
-  (local $rtSize i32)
-  (local $remaining i64)
-  (local $index i32)
-  (local $elementPtr i32)
-  (local.set $rtSize
-   (call $~lib/rt/common/OBJECT#get:rtSize
-    (i32.sub
+ (func $~lib/array/Array<i32>#__visit (param $this i32) (param $cookie i32)
+  (drop
+   (i32.const 0)
+  )
+  (call $~lib/rt/itcms/__visit
+   (call $~lib/array/Array<i32>#get:buffer
+    (call $~lib/rt/__tmptostack
      (local.get $this)
-     (i32.const 20)
     )
    )
-  )
-  (local.set $remaining
-   (i64.load
-    (i32.sub
-     (i32.add
-      (local.get $this)
-      (local.get $rtSize)
-     )
-     (i32.const 8)
-    )
-   )
-  )
-  (block $while-break|0
-   (loop $while-continue|0
-    (if
-     (i64.ne
-      (local.get $remaining)
-      (i64.const 0)
-     )
-     (then
-      (local.set $index
-       (i32.wrap_i64
-        (i64.ctz
-         (local.get $remaining)
-        )
-       )
-      )
-      (local.set $elementPtr
-       (i32.add
-        (local.get $this)
-        (i32.shl
-         (local.get $index)
-         (i32.const 2)
-        )
-       )
-      )
-      (call $~lib/rt/itcms/__visit
-       (i32.load
-        (local.get $elementPtr)
-       )
-       (local.get $cookie)
-      )
-      (local.set $remaining
-       (i64.and
-        (local.get $remaining)
-        (i64.sub
-         (local.get $remaining)
-         (i64.const 1)
-        )
-       )
-      )
-      (br $while-continue|0)
-     )
-    )
-   )
+   (local.get $cookie)
   )
  )
- (func $~lib/tuple/SmallTuple~visit (param $0 i32) (param $1 i32)
+ (func $~lib/array/Array<i32>~visit (param $0 i32) (param $1 i32)
   (call $~lib/object/Object~visit
    (local.get $0)
    (local.get $1)
   )
-  (call $~lib/tuple/SmallTuple#__visit
+  (call $~lib/array/Array<i32>#__visit
    (local.get $0)
    (local.get $1)
   )
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/tuple/SmallTuple
-    (block $~lib/arraybuffer/ArrayBufferView
-     (block $~lib/string/String
-      (block $~lib/arraybuffer/ArrayBuffer
-       (block $~lib/object/Object
-        (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $invalid
-         (i32.load
-          (i32.sub
-           (local.get $0)
-           (i32.const 8)
+   (block $~lib/iterator/Iterable<i32>
+    (block $~lib/array/Array<i32>
+     (block $~lib/arraybuffer/ArrayBufferView
+      (block $~lib/string/String
+       (block $~lib/arraybuffer/ArrayBuffer
+        (block $~lib/object/Object
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+          (i32.load
+           (i32.sub
+            (local.get $0)
+            (i32.const 8)
+           )
           )
          )
         )
+        (return)
        )
        (return)
       )
       (return)
      )
-     (return)
+     (block
+      (call $~lib/arraybuffer/ArrayBufferView~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
+     )
     )
     (block
-     (call $~lib/arraybuffer/ArrayBufferView~visit
+     (call $~lib/array/Array<i32>~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (block
-    (call $~lib/tuple/SmallTuple~visit
-     (local.get $0)
-     (local.get $1)
-    )
-    (return)
-   )
+   (return)
   )
   (unreachable)
  )
  (func $~start
-  (call $start:multi-return)
+  (call $start:array-unpack)
  )
 )
