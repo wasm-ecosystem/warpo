@@ -2853,6 +2853,8 @@ export class Compiler extends DiagnosticEmitter {
     if (possiblyLoops) {
       let incrementor = statement.incrementor;
       if (initClosureLocals) {
+        // Copy tuple -> local before the next iteration (and before the incrementor, if present).
+        // The body may have modified an initializer variable via the tuple.
         let tupleClass = this.program.smallTupleInstance;
         let locals = initClosureLocals.getLocals();
         for (let k = 0; k < locals.length; k++) {
