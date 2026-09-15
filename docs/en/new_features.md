@@ -27,4 +27,5 @@ Comparison with AS, we support some new features.
 - [heap analyzer](/en/executing_webassembly/heap-analyzer)
 - [CPU profiling](/en/executing_webassembly/profiling)
 - [multi return](/en/using_language/details/multi_return)
+- [unpack from arrays and tuples](/en/using_language/details/unpack)
 - [promise](/en/using_language/details/promise)
