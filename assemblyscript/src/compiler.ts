@@ -3568,42 +3568,73 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     let arrayPattern = assert(declaration.arrayBindingPattern);
-    let tupleInfo = declarationType.tupleInfo;
-    if (!tupleInfo) {
-      this.error(DiagnosticCode.Type_0_must_be_a_tuple, declaration.range, declarationType.toString());
-      return null;
-    }
-    if (arrayPattern.length > tupleInfo.elementCount) {
-      let index = tupleInfo.elementCount;
-      this.error(
-        DiagnosticCode.Tuple_type_0_of_length_1_has_no_element_at_index_2,
-        arrayPattern[index].range,
-        declarationType.toString(),
-        tupleInfo.elementCount.toString(),
-        index.toString()
-      );
-      return null;
-    }
-
+    let valueType = assert(initValueType);
     let module = this.module;
-    let tupleLocal = this.currentFlow.getTempLocal(declarationType);
-    initializers.push(module.local_set(tupleLocal.index, initValueExpr, declarationType.isManaged));
-    let tupleClass = this.program.smallTupleInstance;
     let locals = new Array<Local>();
-    for (let i = 0, k = arrayPattern.length; i < k; ++i) {
-      let name = arrayPattern[i];
-      let elementInfo = tupleInfo.elements[i];
-      let getter = assert(tupleClass.getMethod("__get", [elementInfo.type]));
-      let elementValueExpr = this.makeCallDirect(
-        getter,
-        [module.local_get(tupleLocal.index, declarationType.toRef()), module.usize(elementInfo.offset)],
-        name,
-        true
+    if (valueType.tupleInfo) {
+      let tupleInfo = assert(valueType.tupleInfo);
+      if (arrayPattern.length > tupleInfo.elementCount) {
+        let index = tupleInfo.elementCount;
+        this.error(
+          DiagnosticCode.Tuple_type_0_of_length_1_has_no_element_at_index_2,
+          arrayPattern[index].range,
+          valueType.toString(),
+          tupleInfo.elementCount.toString(),
+          index.toString()
+        );
+        return null;
+      }
+
+      let tupleLocal = this.currentFlow.getTempLocal(valueType);
+      initializers.push(module.local_set(tupleLocal.index, initValueExpr, valueType.isManaged));
+      let tupleClass = this.program.smallTupleInstance;
+      for (let i = 0, k = arrayPattern.length; i < k; ++i) {
+        let name = arrayPattern[i];
+        let elementInfo = tupleInfo.elements[i];
+        let getter = assert(tupleClass.getMethod("__get", [elementInfo.type]));
+        let elementValueExpr = this.makeCallDirect(
+          getter,
+          [module.local_get(tupleLocal.index, valueType.toRef()), module.usize(elementInfo.offset)],
+          name,
+          true
+        );
+        let local = this.addLocal(declaration, name, elementInfo.type);
+        if (!local) return null;
+        initializers.push(this.makeLocalAssignment(local, elementValueExpr, elementInfo.type, false));
+        locals.push(local);
+      }
+    } else if (valueType.classReference) {
+      let arrayClass = assert(valueType.classReference);
+      if (
+        !arrayClass.extendsPrototype(this.program.arrayPrototype) &&
+        !arrayClass.extendsPrototype(this.program.staticArrayPrototype) &&
+        !arrayClass.isBuiltinArray
+      ) {
+        this.error(DiagnosticCode.Type_0_must_be_a_tuple_or_an_array, declaration.range, valueType.toString());
+        return null;
+      }
+      let arrayElementType = arrayClass.getArrayValueType();
+      let arrayGetter = assert(
+        arrayClass.lookupOverload(OperatorKind.IndexedGet, this.currentFlow.is(FlowFlags.UncheckedContext))
       );
-      let local = this.addLocal(declaration, name, elementInfo.type);
-      if (!local) return null;
-      initializers.push(this.makeLocalAssignment(local, elementValueExpr, elementInfo.type, false));
-      locals.push(local);
+      let arrayLocal = this.currentFlow.getTempLocal(valueType);
+      initializers.push(module.local_set(arrayLocal.index, initValueExpr, valueType.isManaged));
+      for (let i = 0, k = arrayPattern.length; i < k; ++i) {
+        let name = arrayPattern[i];
+        let elementValueExpr = this.makeCallDirect(
+          arrayGetter,
+          [module.local_get(arrayLocal.index, valueType.toRef()), module.i32(i)],
+          name,
+          true
+        );
+        let local = this.addLocal(declaration, name, arrayElementType);
+        if (!local) return null;
+        initializers.push(this.makeLocalAssignment(local, elementValueExpr, arrayElementType, false));
+        locals.push(local);
+      }
+    } else {
+      this.error(DiagnosticCode.Type_0_must_be_a_tuple_or_an_array, declaration.range, valueType.toString());
+      return null;
     }
     return locals;
   }
@@ -3655,10 +3686,9 @@ export class Compiler extends DiagnosticEmitter {
         );
         return;
       }
-      declarationType = initValueType;
     }
 
-    this.addVariableLocal(declaration, initExpr, assert(declarationType), initValueType, initializers);
+    this.addVariableLocal(declaration, initExpr, assert(initValueType), initValueType, initializers);
   }
 
   private compileVariableInitializer(
