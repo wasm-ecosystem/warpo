@@ -3045,12 +3045,7 @@ export class Program extends DiagnosticEmitter {
             Node.createParameter(
               ParameterKind.Default,
               Node.createIdentifierExpression("index", indexSignature.keyType.range),
-              Node.createNamedType(
-                Node.createSimpleTypeName("i32", indexSignature.keyType.range),
-                null,
-                false,
-                indexSignature.keyType.range
-              ),
+              Node.createNamedType(indexSignature.keyType.name, null, false, indexSignature.keyType.range),
               null,
               indexSignature.keyType.range
             ),
