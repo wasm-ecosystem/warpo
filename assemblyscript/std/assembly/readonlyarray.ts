@@ -4,7 +4,7 @@
 import { Array } from "./array";
 
 export interface ReadonlyArray<T> extends Iterable<T> {
-  [key: number]: T;
+  [key: i32]: T;
   readonly length: i32;
   at(index: i32): T;
   findIndex(fn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): i32;
