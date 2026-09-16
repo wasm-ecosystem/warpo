@@ -29,7 +29,7 @@
  (data $7.1 (i32.const 360) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $8 (i32.const 412) "L")
  (data $8.1 (i32.const 424) "\02\00\00\002\00\00\00i\00m\00p\00l\00-\00i\00n\00t\00e\00r\00f\00a\00c\00e\00-\00i\00n\00-\00b\00a\00s\00e\00.\00t\00s")
- (data $9 (i32.const 496) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 ")
+ (data $9 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -144,7 +144,7 @@
       i32.load offset=8
       i32.eqz
       local.get $0
-      i32.const 33296
+      i32.const 33292
       i32.lt_u
       i32.and
       i32.eqz
@@ -885,7 +885,7 @@
      i32.const 8
      i32.sub
      i32.load
-     br_table $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $~lib/arraybuffer/ArrayBufferView $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $invalid
+     br_table $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $~lib/arraybuffer/ArrayBufferView $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $invalid
     end
     local.get $0
     i32.load
@@ -903,7 +903,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33296
+  i32.const 33292
   i32.sub
   i32.const 1
   i32.shr_u
@@ -1016,11 +1016,11 @@
         i32.and
         i32.eq
         if
-         i32.const 33296
+         i32.const 33292
          local.set $0
          loop $while-continue|0
           local.get $0
-          i32.const 33296
+          i32.const 33292
           i32.lt_u
           if
            local.get $0
@@ -1116,7 +1116,7 @@
          unreachable
         end
         local.get $0
-        i32.const 33296
+        i32.const 33292
         i32.lt_u
         if
          local.get $0
@@ -1139,7 +1139,7 @@
          i32.const 4
          i32.add
          local.tee $1
-         i32.const 33296
+         i32.const 33292
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1369,7 +1369,7 @@
    i32.store
   end
   local.get $0
-  i32.const 5
+  i32.const 4
   i32.store offset=12
   local.get $0
   i32.const 0
@@ -1399,10 +1399,10 @@
   i32.sub
   i32.load
   local.tee $0
-  i32.const 6
+  i32.const 5
   i32.eq
   local.get $0
-  i32.const 5
+  i32.const 4
   i32.eq
   i32.or
   if (result i32)

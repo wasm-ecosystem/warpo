@@ -26,9 +26,9 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 496))
- (global $~lib/memory/__data_end i32 (i32.const 528))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33296))
- (global $~lib/memory/__heap_base i32 (i32.const 33296))
+ (global $~lib/memory/__data_end i32 (i32.const 524))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33292))
+ (global $~lib/memory/__heap_base i32 (i32.const 33292))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -39,7 +39,7 @@
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\002\00\00\00i\00m\00p\00l\00-\00i\00n\00t\00e\00r\00f\00a\00c\00e\00-\00i\00n\00-\00b\00a\00s\00e\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 496) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00")
+ (data $9 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -2946,7 +2946,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 0)
-       (i32.const 5)
+       (i32.const 4)
       )
      )
     )
@@ -3024,13 +3024,13 @@
     (br_if $case0
      (i32.eq
       (local.get $1)
-      (i32.const 6)
+      (i32.const 5)
      )
     )
     (br_if $case0
      (i32.eq
       (local.get $1)
-      (i32.const 5)
+      (i32.const 4)
      )
     )
     (br $default)
@@ -3067,35 +3067,32 @@
   (block $invalid
    (block $impl-interface-in-base/impl_interface_in_base.Base
     (block $impl-interface-in-base/impl_interface_in_base.C
-     (block $impl-interface-in-base/impl_interface_in_base.I
-      (block $~lib/arraybuffer/ArrayBufferView
-       (block $~lib/string/String
-        (block $~lib/arraybuffer/ArrayBuffer
-         (block $~lib/object/Object
-          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $impl-interface-in-base/impl_interface_in_base.I $impl-interface-in-base/impl_interface_in_base.C $impl-interface-in-base/impl_interface_in_base.Base $invalid
-           (i32.load
-            (i32.sub
-             (local.get $0)
-             (i32.const 8)
-            )
+     (block $~lib/arraybuffer/ArrayBufferView
+      (block $~lib/string/String
+       (block $~lib/arraybuffer/ArrayBuffer
+        (block $~lib/object/Object
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $impl-interface-in-base/impl_interface_in_base.C $impl-interface-in-base/impl_interface_in_base.Base $invalid
+          (i32.load
+           (i32.sub
+            (local.get $0)
+            (i32.const 8)
            )
           )
          )
-         (return)
         )
         (return)
        )
        (return)
       )
-      (block
-       (call $~lib/arraybuffer/ArrayBufferView~visit
-        (local.get $0)
-        (local.get $1)
-       )
-       (return)
-      )
+      (return)
      )
-     (return)
+     (block
+      (call $~lib/arraybuffer/ArrayBufferView~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
+     )
     )
     (return)
    )

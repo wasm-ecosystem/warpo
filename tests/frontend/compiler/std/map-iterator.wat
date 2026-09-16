@@ -27,9 +27,9 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 592))
- (global $~lib/memory/__data_end i32 (i32.const 636))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33404))
- (global $~lib/memory/__heap_base i32 (i32.const 33404))
+ (global $~lib/memory/__data_end i32 (i32.const 628))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33396))
+ (global $~lib/memory/__heap_base i32 (i32.const 33396))
  (memory $0 1)
  (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
  (data $1 (i32.const 60) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00b\00u\00f\00f\00e\00r\00.\00t\00s\00\00\00\00\00\00\00")
@@ -42,7 +42,7 @@
  (data $8 (i32.const 432) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 460) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $10 (i32.const 524) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00s\00t\00d\00/\00m\00a\00p\00-\00i\00t\00e\00r\00a\00t\00o\00r\00.\00t\00s\00\00\00\00\00\00\00")
- (data $11 (i32.const 592) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\t\12\00\00\00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00")
+ (data $11 (i32.const 592) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\t\12\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "map_iterator_add" (func $std/map-iterator/map_iterator_add))
@@ -3848,7 +3848,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 8)
-      (i32.const 7)
+      (i32.const 6)
      )
     )
     (call $~lib/rt/__tmptostack
@@ -3961,7 +3961,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 4)
-      (i32.const 9)
+      (i32.const 7)
      )
     )
     (call $~lib/rt/__tmptostack
@@ -5280,65 +5280,59 @@
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
    (block $"~lib/iterator/IteratorResult<[i32, i32]>"
-    (block $"~lib/iterator/Iterator<[i32, i32]>"
-     (block $"~lib/map/MapIterator<i32,i32>"
-      (block $"~lib/iterator/Iterable<[i32, i32]>"
-       (block $~lib/tuple/SmallTuple
-        (block $"~lib/map/Map<i32,i32>"
-         (block $~lib/arraybuffer/ArrayBufferView
-          (block $~lib/string/String
-           (block $~lib/arraybuffer/ArrayBuffer
-            (block $~lib/object/Object
-             (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<i32,i32>" $~lib/tuple/SmallTuple $"~lib/iterator/Iterable<[i32, i32]>" $"~lib/map/MapIterator<i32,i32>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/IteratorResult<[i32, i32]>" $invalid
-              (i32.load
-               (i32.sub
-                (local.get $0)
-                (i32.const 8)
-               )
-              )
+    (block $"~lib/map/MapIterator<i32,i32>"
+     (block $~lib/tuple/SmallTuple
+      (block $"~lib/map/Map<i32,i32>"
+       (block $~lib/arraybuffer/ArrayBufferView
+        (block $~lib/string/String
+         (block $~lib/arraybuffer/ArrayBuffer
+          (block $~lib/object/Object
+           (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<i32,i32>" $~lib/tuple/SmallTuple $"~lib/map/MapIterator<i32,i32>" $"~lib/iterator/IteratorResult<[i32, i32]>" $invalid
+            (i32.load
+             (i32.sub
+              (local.get $0)
+              (i32.const 8)
              )
             )
-            (return)
            )
-           (return)
           )
           (return)
-         )
-         (block
-          (call $~lib/arraybuffer/ArrayBufferView~visit
-           (local.get $0)
-           (local.get $1)
-          )
-          (return)
-         )
-        )
-        (block
-         (call $"~lib/map/Map<i32,i32>~visit"
-          (local.get $0)
-          (local.get $1)
          )
          (return)
         )
+        (return)
        )
        (block
-        (call $~lib/tuple/SmallTuple~visit
+        (call $~lib/arraybuffer/ArrayBufferView~visit
          (local.get $0)
          (local.get $1)
         )
         (return)
        )
       )
-      (return)
+      (block
+       (call $"~lib/map/Map<i32,i32>~visit"
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
+      )
      )
      (block
-      (call $"~lib/map/MapIterator<i32,i32>~visit"
+      (call $~lib/tuple/SmallTuple~visit
        (local.get $0)
        (local.get $1)
       )
       (return)
      )
     )
-    (return)
+    (block
+     (call $"~lib/map/MapIterator<i32,i32>~visit"
+      (local.get $0)
+      (local.get $1)
+     )
+     (return)
+    )
    )
    (block
     (call $"~lib/iterator/IteratorResult<[i32, i32]>~visit"

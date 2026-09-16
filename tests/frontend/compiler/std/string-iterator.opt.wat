@@ -9,7 +9,7 @@
  (type $7 (func (param i32) (result i32)))
  (type $8 (func (param i32 i32 i32 i32 i32 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33616))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33612))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
@@ -51,8 +51,7 @@
  (data $17.1 (i32.const 760) "\02\00\00\00\02\00\00\00x")
  (data $18 (i32.const 780) "\1c")
  (data $18.1 (i32.const 792) "\02\00\00\00\02\00\00\00y")
- (data $19 (i32.const 816) "\07\00\00\00 \00\00\00 \00\00\00 ")
- (data $19.1 (i32.const 840) " ")
+ (data $19 (i32.const 816) "\06\00\00\00 \00\00\00 \00\00\00 ")
  (export "string_iterator_basic" (func $std/string-iterator/string_iterator_basic))
  (export "string_iterator_surrogate_pair" (func $std/string-iterator/string_iterator_surrogate_pair))
  (export "string_iterator_4byte_utf16_char" (func $std/string-iterator/string_iterator_4byte_utf16_char))
@@ -117,7 +116,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33616
+    i32.const 33612
     i32.lt_u
     i32.and
     i32.eqz
@@ -1136,7 +1135,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33616
+          i32.const 33612
           i32.lt_u
           if
            local.get $2
@@ -1232,7 +1231,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33616
+        i32.const 33612
         i32.lt_u
         if
          local.get $3
@@ -1255,7 +1254,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33616
+         i32.const 33612
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1657,7 +1656,7 @@
     local.get $0
     i32.store align=1
     i32.const 4
-    i32.const 6
+    i32.const 5
     call $~lib/rt/itcms/__new
     local.tee $1
     local.get $0
@@ -1688,7 +1687,7 @@
   local.get $0
   i32.store align=1
   i32.const 4
-  i32.const 6
+  i32.const 5
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -1958,19 +1957,19 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $~lib/iterator/IteratorResult<~lib/string/String>
-    block $~lib/iterator/Iterator<~lib/string/String>
-     block $~lib/string/StringIterator
+    block $~lib/string/StringIterator
+     block $~lib/string/String
       local.get $0
       i32.const 8
       i32.sub
       i32.load
-      br_table $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/IteratorResult<~lib/string/String> $~lib/string/StringIterator $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/IteratorResult<~lib/string/String> $invalid
+      br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/iterator/IteratorResult<~lib/string/String> $~lib/string/StringIterator $~lib/iterator/IteratorResult<~lib/string/String> $invalid
      end
-     local.get $0
-     i32.load offset=8
-     return_call $~lib/rt/itcms/__visit
+     return
     end
-    return
+    local.get $0
+    i32.load offset=8
+    return_call $~lib/rt/itcms/__visit
    end
    local.get $0
    i32.load
@@ -1990,7 +1989,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33616
+  i32.const 33612
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2039,7 +2038,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 848
+  i32.const 844
   i32.lt_s
   if
    unreachable

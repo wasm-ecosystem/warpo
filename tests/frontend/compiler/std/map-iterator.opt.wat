@@ -10,7 +10,7 @@
  (type $8 (func (param i32 i32 i64)))
  (type $9 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33404))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33396))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -36,7 +36,7 @@
  (data $9.1 (i32.const 472) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $10 (i32.const 524) "<")
  (data $10.1 (i32.const 536) "\02\00\00\00&\00\00\00s\00t\00d\00/\00m\00a\00p\00-\00i\00t\00e\00r\00a\00t\00o\00r\00.\00t\00s")
- (data $11 (i32.const 592) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\t\12\00\00\00\00\00 \00\00\00\00\00\00\00 ")
+ (data $11 (i32.const 592) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\t\12")
  (export "map_iterator_add" (func $std/map-iterator/map_iterator_add))
  (export "map_iterator_del" (func $std/map-iterator/map_iterator_del))
  (export "map_iterator_reassign" (func $std/map-iterator/map_iterator_reassign))
@@ -143,7 +143,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33404
+    i32.const 33396
     i32.lt_u
     i32.and
     i32.eqz
@@ -1069,7 +1069,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33404
+          i32.const 33396
           i32.lt_u
           if
            local.get $2
@@ -1165,7 +1165,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33404
+        i32.const 33396
         i32.lt_u
         if
          local.get $3
@@ -1188,7 +1188,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33404
+         i32.const 33396
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1869,7 +1869,7 @@
  (func $"~lib/map/Map<i32,i32>#[~lib/symbol/Symbol.iterator]" (param $0 i32) (result i32)
   (local $1 i32)
   i32.const 8
-  i32.const 7
+  i32.const 6
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -1940,7 +1940,7 @@
      i32.load offset=4
      i32.store
      i32.const 4
-     i32.const 9
+     i32.const 7
      call $~lib/rt/itcms/__new
      local.tee $1
      local.get $0
@@ -2462,63 +2462,63 @@
   (local $1 i64)
   block $invalid
    block $"~lib/iterator/IteratorResult<[i32, i32]>"
-    block $"~lib/iterator/Iterator<[i32, i32]>"
-     block $"~lib/map/MapIterator<i32,i32>"
-      block $~lib/tuple/SmallTuple
-       block $"~lib/map/Map<i32,i32>"
+    block $"~lib/map/MapIterator<i32,i32>"
+     block $~lib/tuple/SmallTuple
+      block $"~lib/map/Map<i32,i32>"
+       block $~lib/string/String
         local.get $0
         i32.const 8
         i32.sub
         i32.load
-        br_table $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/IteratorResult<[i32, i32]>" $"~lib/map/Map<i32,i32>" $~lib/tuple/SmallTuple $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/map/MapIterator<i32,i32>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/IteratorResult<[i32, i32]>" $invalid
+        br_table $~lib/string/String $~lib/string/String $~lib/string/String $"~lib/iterator/IteratorResult<[i32, i32]>" $"~lib/map/Map<i32,i32>" $~lib/tuple/SmallTuple $"~lib/map/MapIterator<i32,i32>" $"~lib/iterator/IteratorResult<[i32, i32]>" $invalid
        end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       local.get $0
-       i32.load offset=8
-       return_call $~lib/rt/itcms/__visit
+       return
       end
       local.get $0
+      i32.load
+      call $~lib/rt/itcms/__visit
       local.get $0
-      i32.const 20
-      i32.sub
-      i32.load offset=16
-      i32.add
-      i32.const 8
-      i32.sub
-      i64.load
-      local.set $1
-      loop $while-continue|0
-       local.get $1
-       i64.const 0
-       i64.ne
-       if
-        local.get $0
-        local.get $1
-        i64.ctz
-        i32.wrap_i64
-        i32.const 2
-        i32.shl
-        i32.add
-        i32.load
-        call $~lib/rt/itcms/__visit
-        local.get $1
-        local.get $1
-        i64.const 1
-        i64.sub
-        i64.and
-        local.set $1
-        br $while-continue|0
-       end
-      end
-      return
+      i32.load offset=8
+      return_call $~lib/rt/itcms/__visit
      end
      local.get $0
-     i32.load offset=4
-     return_call $~lib/rt/itcms/__visit
+     local.get $0
+     i32.const 20
+     i32.sub
+     i32.load offset=16
+     i32.add
+     i32.const 8
+     i32.sub
+     i64.load
+     local.set $1
+     loop $while-continue|0
+      local.get $1
+      i64.const 0
+      i64.ne
+      if
+       local.get $0
+       local.get $1
+       i64.ctz
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.add
+       i32.load
+       call $~lib/rt/itcms/__visit
+       local.get $1
+       local.get $1
+       i64.const 1
+       i64.sub
+       i64.and
+       local.set $1
+       br $while-continue|0
+      end
+     end
+     return
     end
-    return
+    local.get $0
+    i32.load offset=4
+    return_call $~lib/rt/itcms/__visit
    end
    local.get $0
    i32.load
@@ -2530,7 +2530,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33404
+  i32.const 33396
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2646,7 +2646,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 636
+  i32.const 628
   i32.lt_s
   if
    unreachable

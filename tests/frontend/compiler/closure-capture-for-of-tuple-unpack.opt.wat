@@ -10,7 +10,7 @@
  (type $8 (func (param i32 i64) (result i32)))
  (type $9 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33624))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33612))
  (global $closure-capture-for-of-tuple-unpack/first (mut i32) (i32.const 0))
  (global $closure-capture-for-of-tuple-unpack/second (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -43,8 +43,8 @@
  (data $11.1 (i32.const 536) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00\\")
  (data $12.1 (i32.const 584) "\02\00\00\00L\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00c\00a\00p\00t\00u\00r\00e\00-\00f\00o\00r\00-\00o\00f\00-\00t\00u\00p\00l\00e\00-\00u\00n\00p\00a\00c\00k\00.\00t\00s\00|")
  (data $13.1 (i32.const 680) "\02\00\00\00^\00\00\00U\00n\00e\00x\00p\00e\00c\00t\00e\00d\00 \00\'\00n\00u\00l\00l\00\'\00 \00(\00n\00o\00t\00 \00a\00s\00s\00i\00g\00n\00e\00d\00 \00o\00r\00 \00f\00a\00i\00l\00e\00d\00 \00c\00a\00s\00t\00)")
- (data $14 (i32.const 800) "\r\00\00\00 \00\00\00 \00\00\00 ")
- (data $14.1 (i32.const 824) "\02A\00\00 \00\00\00\02\t\00\00 \00\00\00\00\00\00\00 ")
+ (data $14 (i32.const 800) "\n\00\00\00 \00\00\00 \00\00\00 ")
+ (data $14.1 (i32.const 824) "\02A\00\00\02\t")
  (table $0 2 2 funcref)
  (elem $0 (i32.const 1) $closure-capture-for-of-tuple-unpack/outer~inner)
  (export "outer" (func $closure-capture-for-of-tuple-unpack/outer))
@@ -156,7 +156,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33624
+    i32.const 33612
     i32.lt_u
     i32.and
     i32.eqz
@@ -786,10 +786,10 @@
   if
    unreachable
   end
-  i32.const 33632
+  i32.const 33616
   i32.const 0
   i32.store
-  i32.const 35200
+  i32.const 35184
   i32.const 0
   i32.store
   i32.const 0
@@ -802,7 +802,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33632
+    i32.const 33616
     i32.add
     i32.const 0
     i32.store offset=4
@@ -820,7 +820,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33632
+      i32.const 33616
       i32.add
       i32.const 0
       i32.store offset=96
@@ -838,14 +838,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33632
-  i32.const 35204
+  i32.const 33616
+  i32.const 35188
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33632
+  i32.const 33616
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1082,7 +1082,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33624
+          i32.const 33612
           i32.lt_u
           if
            local.get $2
@@ -1178,7 +1178,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33624
+        i32.const 33612
         i32.lt_u
         if
          local.get $3
@@ -1201,7 +1201,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33624
+         i32.const 33612
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1785,7 +1785,7 @@
   local.tee $0
   i32.store align=1
   i32.const 4
-  i32.const 11
+  i32.const 8
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -1914,7 +1914,7 @@
   local.get $0
   i32.store offset=4 align=1
   i32.const 8
-  i32.const 9
+  i32.const 7
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -1963,7 +1963,7 @@
     i32.load
     call $~lib/tuple/SmallTuple#__set<~lib/string/String>
     i32.const 8
-    i32.const 12
+    i32.const 9
     call $~lib/rt/itcms/__new
     local.tee $2
     i32.const 1
@@ -2006,81 +2006,81 @@
   block $folding-inner0
    block $invalid
     block $~lib/function/Function<%28%29=>i32>
-     block $"~lib/iterator/Iterator<[i32, ~lib/string/String]>"
-      block $"~lib/array/Array<[i32, ~lib/string/String]>"
-       block $~lib/tuple/SmallTuple
+     block $"~lib/array/Array<[i32, ~lib/string/String]>"
+      block $~lib/tuple/SmallTuple
+       block $~lib/string/String
         local.get $0
         i32.const 8
         i32.sub
         i32.load
-        br_table $"~lib/iterator/Iterator<[i32, ~lib/string/String]>" $"~lib/iterator/Iterator<[i32, ~lib/string/String]>" $"~lib/iterator/Iterator<[i32, ~lib/string/String]>" $folding-inner0 $~lib/tuple/SmallTuple $"~lib/array/Array<[i32, ~lib/string/String]>" $"~lib/iterator/Iterator<[i32, ~lib/string/String]>" $folding-inner0 $"~lib/iterator/Iterator<[i32, ~lib/string/String]>" $~lib/function/Function<%28%29=>i32> $"~lib/iterator/Iterator<[i32, ~lib/string/String]>" $folding-inner0 $~lib/function/Function<%28%29=>i32> $invalid
-       end
-       local.get $0
-       local.get $0
-       i32.const 20
-       i32.sub
-       i32.load offset=16
-       i32.add
-       i32.const 8
-       i32.sub
-       i64.load
-       local.set $1
-       loop $while-continue|0
-        local.get $1
-        i64.const 0
-        i64.ne
-        if
-         local.get $0
-         local.get $1
-         i64.ctz
-         i32.wrap_i64
-         i32.const 2
-         i32.shl
-         i32.add
-         i32.load
-         call $~lib/rt/itcms/__visit
-         local.get $1
-         local.get $1
-         i64.const 1
-         i64.sub
-         i64.and
-         local.set $1
-         br $while-continue|0
-        end
+        br_table $~lib/string/String $~lib/string/String $~lib/string/String $folding-inner0 $~lib/tuple/SmallTuple $"~lib/array/Array<[i32, ~lib/string/String]>" $folding-inner0 $~lib/function/Function<%28%29=>i32> $folding-inner0 $~lib/function/Function<%28%29=>i32> $invalid
        end
        return
       end
       local.get $0
-      i32.load offset=4
-      local.tee $2
       local.get $0
-      i32.load offset=12
-      i32.const 2
-      i32.shl
+      i32.const 20
+      i32.sub
+      i32.load offset=16
       i32.add
-      local.set $3
-      loop $while-continue|00
-       local.get $2
-       local.get $3
-       i32.lt_u
+      i32.const 8
+      i32.sub
+      i64.load
+      local.set $1
+      loop $while-continue|0
+       local.get $1
+       i64.const 0
+       i64.ne
        if
-        local.get $2
-        i32.load
-        local.tee $4
-        if
-         local.get $4
-         call $~lib/rt/itcms/__visit
-        end
-        local.get $2
-        i32.const 4
+        local.get $0
+        local.get $1
+        i64.ctz
+        i32.wrap_i64
+        i32.const 2
+        i32.shl
         i32.add
-        local.set $2
-        br $while-continue|00
+        i32.load
+        call $~lib/rt/itcms/__visit
+        local.get $1
+        local.get $1
+        i64.const 1
+        i64.sub
+        i64.and
+        local.set $1
+        br $while-continue|0
        end
       end
-      br $folding-inner0
+      return
      end
-     return
+     local.get $0
+     i32.load offset=4
+     local.tee $2
+     local.get $0
+     i32.load offset=12
+     i32.const 2
+     i32.shl
+     i32.add
+     local.set $3
+     loop $while-continue|00
+      local.get $2
+      local.get $3
+      i32.lt_u
+      if
+       local.get $2
+       i32.load
+       local.tee $4
+       if
+        local.get $4
+        call $~lib/rt/itcms/__visit
+       end
+       local.get $2
+       i32.const 4
+       i32.add
+       local.set $2
+       br $while-continue|00
+      end
+     end
+     br $folding-inner0
     end
     local.get $0
     i32.load offset=4
@@ -2097,7 +2097,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33624
+  i32.const 33612
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2214,7 +2214,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 856
+  i32.const 844
   i32.lt_s
   if
    unreachable

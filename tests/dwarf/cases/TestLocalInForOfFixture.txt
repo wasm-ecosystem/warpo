@@ -118,7 +118,7 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/array/ArrayIterator<i32>")
-                DW_AT_signature	(0x00000006)
+                DW_AT_signature	(0x00000005)
     DW_TAG_inheritance
                   DW_AT_type	("~lib/object/Object")
     DW_TAG_member
@@ -140,7 +140,7 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/iterator/IteratorResult<i32>")
-                DW_AT_signature	(0x00000008)
+                DW_AT_signature	(0x00000006)
     DW_TAG_inheritance
                   DW_AT_type	("~lib/object/Object")
     DW_TAG_member

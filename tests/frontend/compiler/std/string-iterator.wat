@@ -29,9 +29,9 @@
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 816))
- (global $~lib/memory/__data_end i32 (i32.const 848))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33616))
- (global $~lib/memory/__heap_base i32 (i32.const 33616))
+ (global $~lib/memory/__data_end i32 (i32.const 844))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33612))
+ (global $~lib/memory/__heap_base i32 (i32.const 33612))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\00a\00b\00c\00\00\00\00\00\00\00")
  (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -52,7 +52,7 @@
  (data $16 (i32.const 716) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00B\00\00\00\00\00\00\00\00\00\00\00")
  (data $17 (i32.const 748) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00x\00\00\00\00\00\00\00\00\00\00\00")
  (data $18 (i32.const 780) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00y\00\00\00\00\00\00\00\00\00\00\00")
- (data $19 (i32.const 816) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00")
+ (data $19 (i32.const 816) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "string_iterator_basic" (func $std/string-iterator/string_iterator_basic))
@@ -3190,7 +3190,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 4)
-      (i32.const 6)
+      (i32.const 5)
      )
     )
     (call $~lib/rt/__tmptostack
@@ -4244,44 +4244,41 @@
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
    (block $~lib/iterator/IteratorResult<~lib/string/String>
-    (block $~lib/iterator/Iterator<~lib/string/String>
-     (block $~lib/string/StringIterator
-      (block $~lib/arraybuffer/ArrayBufferView
-       (block $~lib/string/String
-        (block $~lib/arraybuffer/ArrayBuffer
-         (block $~lib/object/Object
-          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/string/StringIterator $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/IteratorResult<~lib/string/String> $invalid
-           (i32.load
-            (i32.sub
-             (local.get $0)
-             (i32.const 8)
-            )
+    (block $~lib/string/StringIterator
+     (block $~lib/arraybuffer/ArrayBufferView
+      (block $~lib/string/String
+       (block $~lib/arraybuffer/ArrayBuffer
+        (block $~lib/object/Object
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/string/StringIterator $~lib/iterator/IteratorResult<~lib/string/String> $invalid
+          (i32.load
+           (i32.sub
+            (local.get $0)
+            (i32.const 8)
            )
           )
          )
-         (return)
         )
         (return)
        )
        (return)
       )
-      (block
-       (call $~lib/arraybuffer/ArrayBufferView~visit
-        (local.get $0)
-        (local.get $1)
-       )
-       (return)
-      )
+      (return)
      )
      (block
-      (call $~lib/string/StringIterator~visit
+      (call $~lib/arraybuffer/ArrayBufferView~visit
        (local.get $0)
        (local.get $1)
       )
       (return)
      )
     )
-    (return)
+    (block
+     (call $~lib/string/StringIterator~visit
+      (local.get $0)
+      (local.get $1)
+     )
+     (return)
+    )
    )
    (block
     (call $~lib/iterator/IteratorResult<~lib/string/String>~visit

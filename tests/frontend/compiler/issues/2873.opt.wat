@@ -13,7 +13,7 @@
  (type $11 (func (param i32 f32) (result i32)))
  (type $12 (func (param i32 f64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35124))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35116))
  (global $~lib/util/number/_frc_plus (mut i64) (i64.const 0))
  (global $~lib/util/number/_frc_minus (mut i64) (i64.const 0))
  (global $~lib/util/number/_exp (mut i32) (i32.const 0))
@@ -62,8 +62,8 @@
  (data $23.1 (i32.const 2184) "\02\00\00\00\16\00\00\001\00.\001\00,\002\00.\002\00,\003\00.\003")
  (data $24 (i32.const 2220) ",")
  (data $24.1 (i32.const 2232) "\01\00\00\00\18\00\00\00\9a\99\99\99\99\99\f1?\9a\99\99\99\99\99\01@ffffff\n@\00\00\00\00,")
- (data $25.1 (i32.const 2280) "\06\00\00\00\10\00\00\00\c0\08\00\00\c0\08\00\00\18\00\00\00\03")
- (data $26 (i32.const 2320) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00 \00\00\00\02\1a\00\00 ")
+ (data $25.1 (i32.const 2280) "\05\00\00\00\10\00\00\00\c0\08\00\00\c0\08\00\00\18\00\00\00\03")
+ (data $26 (i32.const 2320) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00\02\1a")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/util/number/decimalCount32 (param $0 i32) (result i32)
@@ -1244,7 +1244,7 @@
       i32.load offset=8
       i32.eqz
       local.get $0
-      i32.const 35124
+      i32.const 35116
       i32.lt_u
       i32.and
       i32.eqz
@@ -1858,10 +1858,10 @@
   if
    unreachable
   end
-  i32.const 35136
+  i32.const 35120
   i32.const 0
   i32.store
-  i32.const 36704
+  i32.const 36688
   i32.const 0
   i32.store
   i32.const 0
@@ -1874,7 +1874,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 35136
+    i32.const 35120
     i32.add
     i32.const 0
     i32.store offset=4
@@ -1892,7 +1892,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 35136
+      i32.const 35120
       i32.add
       i32.const 0
       i32.store offset=96
@@ -1910,14 +1910,14 @@
     br $for-loop|0
    end
   end
-  i32.const 35136
-  i32.const 36708
+  i32.const 35120
+  i32.const 36692
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 35136
+  i32.const 35120
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -2154,7 +2154,7 @@
          local.set $1
          loop $while-continue|0
           local.get $1
-          i32.const 35124
+          i32.const 35116
           i32.lt_u
           if
            local.get $1
@@ -2250,7 +2250,7 @@
          unreachable
         end
         local.get $2
-        i32.const 35124
+        i32.const 35116
         i32.lt_u
         if
          local.get $2
@@ -2273,7 +2273,7 @@
          i32.const 4
          i32.add
          local.tee $1
-         i32.const 35124
+         i32.const 35116
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -3031,12 +3031,12 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
    block $invalid
-    block $~lib/iterator/Iterable<f64>
+    block $~lib/string/String
      local.get $0
      i32.const 8
      i32.sub
      i32.load
-     br_table $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $invalid
+     br_table $~lib/string/String $~lib/string/String $~lib/string/String $folding-inner0 $folding-inner0 $folding-inner0 $invalid
     end
     return
    end
@@ -3057,7 +3057,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 35124
+  i32.const 35116
   i32.sub
   i32.const 1
   i32.shr_u
@@ -3127,7 +3127,7 @@
    i32.const 0
    i32.store align=1
    global.get $~lib/memory/__stack_pointer
-   i32.const 2356
+   i32.const 2348
    i32.lt_s
    if
     unreachable
@@ -3288,7 +3288,7 @@
    i32.const 0
    i32.store align=1
    global.get $~lib/memory/__stack_pointer
-   i32.const 2356
+   i32.const 2348
    i32.lt_s
    if
     unreachable

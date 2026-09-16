@@ -10,7 +10,7 @@
  (type $8 (func (param i32 i32 i32) (result i32)))
  (type $9 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33400))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33392))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -36,7 +36,7 @@
  (data $9.1 (i32.const 472) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $10 (i32.const 524) "<")
  (data $10.1 (i32.const 536) "\02\00\00\00&\00\00\00s\00t\00d\00/\00s\00e\00t\00-\00i\00t\00e\00r\00a\00t\00o\00r\00.\00t\00s")
- (data $11 (i32.const 592) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\08\t\00\00 \00\00\00\00\00\00\00 \00\00\00 ")
+ (data $11 (i32.const 592) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\08\t\00\00\00\00\00\00 ")
  (export "set_iterator_add" (func $std/set-iterator/set_iterator_add))
  (export "set_iterator_del" (func $std/set-iterator/set_iterator_del))
  (export "set_iterator_reassign" (func $std/set-iterator/set_iterator_reassign))
@@ -143,7 +143,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33400
+    i32.const 33392
     i32.lt_u
     i32.and
     i32.eqz
@@ -773,10 +773,10 @@
   if
    unreachable
   end
-  i32.const 33408
+  i32.const 33392
   i32.const 0
   i32.store
-  i32.const 34976
+  i32.const 34960
   i32.const 0
   i32.store
   i32.const 0
@@ -789,7 +789,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33408
+    i32.const 33392
     i32.add
     i32.const 0
     i32.store offset=4
@@ -807,7 +807,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33408
+      i32.const 33392
       i32.add
       i32.const 0
       i32.store offset=96
@@ -825,14 +825,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33408
-  i32.const 34980
+  i32.const 33392
+  i32.const 34964
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33408
+  i32.const 33392
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1069,7 +1069,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33400
+          i32.const 33392
           i32.lt_u
           if
            local.get $2
@@ -1165,7 +1165,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33400
+        i32.const 33392
         i32.lt_u
         if
          local.get $3
@@ -1188,7 +1188,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33400
+         i32.const 33392
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1855,7 +1855,7 @@
  (func $"~lib/set/Set<i32>#[~lib/symbol/Symbol.iterator]" (param $0 i32) (result i32)
   (local $1 i32)
   i32.const 8
-  i32.const 6
+  i32.const 5
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -1906,7 +1906,7 @@
      i32.load
      local.set $0
      i32.const 4
-     i32.const 8
+     i32.const 6
      call $~lib/rt/itcms/__new
      local.tee $1
      local.get $0
@@ -2295,7 +2295,7 @@
        i32.const 8
        i32.sub
        i32.load
-       br_table $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/arraybuffer/ArrayBufferView $~lib/set/Set<i32> $~lib/iterator/IteratorResult<i32> $~lib/set/SetIterator<i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $invalid
+       br_table $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/arraybuffer/ArrayBufferView $~lib/set/Set<i32> $~lib/set/SetIterator<i32> $~lib/iterator/IteratorResult<i32> $invalid
       end
       local.get $0
       i32.load
@@ -2320,7 +2320,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33400
+  i32.const 33392
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2436,7 +2436,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 632
+  i32.const 624
   i32.lt_s
   if
    unreachable

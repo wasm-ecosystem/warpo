@@ -442,7 +442,7 @@ export class Program extends DiagnosticEmitter {
   diagnosticsOffset: i32 = 0;
   /** Special native code file. */
   nativeFile!: File;
-  /** Next class id. */
+  /** Next concrete managed class id. */
   nextClassId: u32 = 0;
   /** Next signature id. */
   nextSignatureId: i32 = 0;
@@ -459,7 +459,7 @@ export class Program extends DiagnosticEmitter {
   instancesByName: Map<string, Element> = new Map();
   /** Classes wrapping basic types like `i32`. */
   wrapperClasses: Map<Type, Class> = new Map();
-  /** Managed classes contained in the program, by id. */
+  /** Concrete managed classes contained in the program, by id. */
   managedClasses: Map<i32, Class> = new Map();
   /** A set of unique function signatures contained in the program, by id. */
   uniqueSignatures: Map<string, Signature> = new Map<string, Signature>();
@@ -5117,10 +5117,10 @@ export class ClassPrototype extends DeclaredElement {
     declaration: ClassDeclaration,
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None,
-    _isInterface: bool = false // FIXME
+    isInterface: bool = false
   ) {
     super(
-      _isInterface ? ElementKind.InterfacePrototype : ElementKind.ClassPrototype,
+      isInterface ? ElementKind.InterfacePrototype : ElementKind.ClassPrototype,
       name,
       mangleInternalName(name, parent, declaration.is(CommonFlags.Instance)),
       parent.program,
@@ -5266,9 +5266,9 @@ export class Class extends TypedElement {
   /** Runtime visitor function reference. */
   visitRef: FunctionRef = 0;
 
-  /** Gets the unique runtime id of this class. */
+  /** Gets the unique runtime id of this concrete managed class. */
   get id(): u32 {
-    return this._id; // unmanaged remains 0 (=ArrayBuffer)
+    return this._id; // unmanaged classes and interfaces remain 0
   }
 
   /** Tests if this class is of a builtin array type (Array/TypedArray). */
@@ -5303,10 +5303,10 @@ export class Class extends TypedElement {
     prototype: ClassPrototype,
     /** Concrete type arguments, if any. */
     typeArguments: Type[] | null = null,
-    _isInterface: bool = false // FIXME
+    isInterface: bool = false
   ) {
     super(
-      _isInterface ? ElementKind.Interface : ElementKind.Class,
+      isInterface ? ElementKind.Interface : ElementKind.Class,
       nameInclTypeParameters,
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
@@ -5323,7 +5323,7 @@ export class Class extends TypedElement {
     type.classReference = this;
     this.setType(type);
 
-    if (!this.hasDecorator(DecoratorFlags.Unmanaged)) {
+    if (!isInterface && !this.hasDecorator(DecoratorFlags.Unmanaged)) {
       let id = program.nextClassId++;
       this._id = id;
       program.managedClasses.set(id, this);
@@ -5796,8 +5796,6 @@ export class InterfacePrototype extends ClassPrototype {
 
 /** A resolved interface. */
 export class Interface extends Class {
-  // FIXME
-
   /** Constructs a new interface. */
   constructor(
     /** Name incl. type parameters, i.e. `Foo<i32>`. */
