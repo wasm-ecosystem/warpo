@@ -4514,13 +4514,13 @@
     (i32.const 0)
    )
    (local.set $c
-    (i32.const 50)
+    (i32.const 52)
    )
    (local.set $d
-    (i32.const 51)
+    (i32.const 53)
    )
    (local.set $e
-    (i32.const 51)
+    (i32.const 53)
    )
    (call $~lib/builtins/trace
     (i32.const 256)
@@ -4579,7 +4579,7 @@
     (i32.eqz
      (i32.eq
       (local.get $c)
-      (i32.const 50)
+      (i32.const 52)
      )
     )
     (then
