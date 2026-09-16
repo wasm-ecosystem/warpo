@@ -1092,7 +1092,9 @@ export class Signature {
     if (!(thisReturnType == targetReturnType || thisReturnType.isAssignableTo(targetReturnType))) {
       return false;
     }
-    // check parameter types (invariant)
+    // Array<T> implements ReadonlyArray<T>, but their methods use function
+    // parameters with Array<T> and ReadonlyArray<T>, respectively. Permit this
+    // safe difference only when validating an interface override.
     let thisParameterTypes = this.parameterTypes;
     let targetParameterTypes = target.parameterTypes;
     let numParameters = thisParameterTypes.length;
@@ -1101,7 +1103,78 @@ export class Signature {
     for (let i = 0; i < numParameters; ++i) {
       let thisParameterType = unchecked(thisParameterTypes[i]);
       let targetParameterType = unchecked(targetParameterTypes[i]);
-      if (thisParameterType != targetParameterType) return false;
+      if (thisParameterType == targetParameterType) continue;
+      if (!checkCompatibleOverride) return false;
+      let thisParameterSignature = thisParameterType.getSignature();
+      let targetParameterSignature = targetParameterType.getSignature();
+      if (
+        !thisParameterSignature ||
+        !targetParameterSignature ||
+        // Compatible function types must use the same Wasm representation for
+        // indirect calls.
+        thisParameterType.toRef() != targetParameterType.toRef() ||
+        !targetParameterSignature.isFunctionTypeCompatibleTo(thisParameterSignature)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Checks whether an interface function type can accept values supplied by an implementation.
+   *
+   * This lets Array<T> implement ReadonlyArray<T>: the implementation passes
+   * Array<T>, while the interface function type accepts ReadonlyArray<T>.
+   */
+  private isFunctionTypeCompatibleTo(target: Signature): bool {
+    let thisThisType = this.thisType;
+    let targetThisType = target.thisType;
+    if (thisThisType && targetThisType) {
+      if (thisThisType.toRef() != targetThisType.toRef() || !targetThisType.isAssignableTo(thisThisType)) {
+        return false;
+      }
+    } else if (thisThisType || targetThisType) {
+      return false;
+    }
+
+    if (this.hasRest != target.hasRest) return false;
+
+    let thisReturnType = this.returnType;
+    let targetReturnType = target.returnType;
+    if (
+      thisReturnType != targetReturnType &&
+      (thisReturnType.toRef() != targetReturnType.toRef() || !thisReturnType.isAssignableTo(targetReturnType))
+    ) {
+      return false;
+    }
+
+    let thisParameterTypes = this.parameterTypes;
+    let targetParameterTypes = target.parameterTypes;
+    let numParameters = thisParameterTypes.length;
+    if (numParameters != targetParameterTypes.length) return false;
+
+    for (let i = 0; i < numParameters; ++i) {
+      let thisParameterType = unchecked(thisParameterTypes[i]);
+      let targetParameterType = unchecked(targetParameterTypes[i]);
+      if (thisParameterType == targetParameterType) continue;
+      let thisParameterSignature = thisParameterType.getSignature();
+      let targetParameterSignature = targetParameterType.getSignature();
+      if (thisParameterSignature && targetParameterSignature) {
+        if (
+          thisParameterType.toRef() != targetParameterType.toRef() ||
+          !targetParameterSignature.isFunctionTypeCompatibleTo(thisParameterSignature)
+        ) {
+          return false;
+        }
+      } else if (
+        // The interface function type must accept the parameter supplied by the
+        // implementation.
+        thisParameterType.toRef() != targetParameterType.toRef() ||
+        !targetParameterType.isAssignableTo(thisParameterType)
+      ) {
+        return false;
+      }
     }
     return true;
   }
