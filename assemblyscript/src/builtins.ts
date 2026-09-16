@@ -9861,8 +9861,14 @@ export function compileVisitMembers(compiler: Compiler): void {
     assert(instanceId == nextId++);
     let instance = assert(managedClasses.get(instanceId));
     names[i] = instance.internalName;
-    if (instance.isPointerfree) {
+    // need to exclude std libs because compiler may new a internal abstract std lib
+    let isNonStdAbstract = instance.is(CommonFlags.Abstract) && !instance.isDeclaredInLibrary;
+    if (instance.isPointerfree || isNonStdAbstract) {
+      // non std abstract class can't be visited by rtid, so can just use a return
       cases[i] = module.return();
+      // Even if the class is abstract, we still need to ensure its visit members function exists
+      // because child class can call base.~visit
+      if (!instance.isPointerfree) ensureVisitMembersOf(compiler, instance);
     } else {
       cases[i] = module.block(
         null,
