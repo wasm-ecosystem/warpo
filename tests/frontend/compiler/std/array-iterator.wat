@@ -27,9 +27,9 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 720))
- (global $~lib/memory/__data_end i32 (i32.const 760))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33528))
- (global $~lib/memory/__heap_base i32 (i32.const 33528))
+ (global $~lib/memory/__data_end i32 (i32.const 752))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33520))
+ (global $~lib/memory/__heap_base i32 (i32.const 33520))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00")
  (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
@@ -46,7 +46,7 @@
  (data $12 (i32.const 604) ",\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\10\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $13 (i32.const 652) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00")
  (data $14 (i32.const 684) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00")
- (data $15 (i32.const 720) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00")
+ (data $15 (i32.const 720) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\00\00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "increase_arr_length" (func $std/array-iterator/increase_arr_length))
@@ -3122,7 +3122,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 8)
-      (i32.const 6)
+      (i32.const 5)
      )
     )
     (call $~lib/rt/__tmptostack
@@ -3209,7 +3209,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 4)
-      (i32.const 8)
+      (i32.const 6)
      )
     )
     (local.get $value)
@@ -4222,56 +4222,50 @@
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
    (block $~lib/iterator/IteratorResult<i32>
-    (block $~lib/iterator/Iterator<i32>
-     (block $~lib/array/ArrayIterator<i32>
-      (block $~lib/iterator/Iterable<i32>
-       (block $~lib/array/Array<i32>
-        (block $~lib/arraybuffer/ArrayBufferView
-         (block $~lib/string/String
-          (block $~lib/arraybuffer/ArrayBuffer
-           (block $~lib/object/Object
-            (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/array/ArrayIterator<i32> $~lib/iterator/Iterator<i32> $~lib/iterator/IteratorResult<i32> $invalid
-             (i32.load
-              (i32.sub
-               (local.get $0)
-               (i32.const 8)
-              )
-             )
+    (block $~lib/array/ArrayIterator<i32>
+     (block $~lib/array/Array<i32>
+      (block $~lib/arraybuffer/ArrayBufferView
+       (block $~lib/string/String
+        (block $~lib/arraybuffer/ArrayBuffer
+         (block $~lib/object/Object
+          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/array/ArrayIterator<i32> $~lib/iterator/IteratorResult<i32> $invalid
+           (i32.load
+            (i32.sub
+             (local.get $0)
+             (i32.const 8)
             )
            )
-           (return)
           )
-          (return)
          )
          (return)
-        )
-        (block
-         (call $~lib/arraybuffer/ArrayBufferView~visit
-          (local.get $0)
-          (local.get $1)
-         )
-         (return)
-        )
-       )
-       (block
-        (call $~lib/array/Array<i32>~visit
-         (local.get $0)
-         (local.get $1)
         )
         (return)
        )
+       (return)
       )
-      (return)
+      (block
+       (call $~lib/arraybuffer/ArrayBufferView~visit
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
+      )
      )
      (block
-      (call $~lib/array/ArrayIterator<i32>~visit
+      (call $~lib/array/Array<i32>~visit
        (local.get $0)
        (local.get $1)
       )
       (return)
      )
     )
-    (return)
+    (block
+     (call $~lib/array/ArrayIterator<i32>~visit
+      (local.get $0)
+      (local.get $1)
+     )
+     (return)
+    )
    )
    (return)
   )

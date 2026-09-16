@@ -8,7 +8,7 @@
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 i32 i64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33648))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33636))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -44,7 +44,7 @@
  (data $13 (i32.const 668) ",")
  (data $13.1 (i32.const 680) "\02\00\00\00\1a\00\00\00H\00e\00l\00l\00o\00,\00 \00W\00o\00r\00l\00d\00!\00\00\00l")
  (data $14.1 (i32.const 728) "\02\00\00\00N\00\00\00c\00o\00m\00p\00u\00t\00e\00d\00-\00p\00r\00o\00p\00e\00r\00t\00y\00-\00c\00l\00a\00s\00s\00-\00s\00t\00a\00t\00i\00c\00-\00f\00i\00e\00l\00d\00.\00t\00s")
- (data $15 (i32.const 832) "\0b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\01\82\00\00\00\00\00 \00\00\00\10A\02\00 \00\00\00 \00\00\00 ")
+ (data $15 (i32.const 832) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\01\82\00\00\00\00\00\10A\02\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -159,7 +159,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33648
+    i32.const 33636
     i32.lt_u
     i32.and
     i32.eqz
@@ -1085,7 +1085,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33648
+          i32.const 33636
           i32.lt_u
           if
            local.get $2
@@ -1181,7 +1181,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33648
+        i32.const 33636
         i32.lt_u
         if
          local.get $3
@@ -1204,7 +1204,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33648
+         i32.const 33636
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1976,7 +1976,7 @@
         i32.const 8
         i32.sub
         i32.load
-        br_table $computed-property-class-static-field/computed_property_class_static_field.Fn $computed-property-class-static-field/computed_property_class_static_field.Fn $computed-property-class-static-field/computed_property_class_static_field.Fn $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<~lib/string/String,usize>" $~lib/tuple/SmallTuple $computed-property-class-static-field/computed_property_class_static_field.Fn $"~lib/map/Map<usize,~lib/string/String>" $computed-property-class-static-field/computed_property_class_static_field.Fn $computed-property-class-static-field/computed_property_class_static_field.Fn $computed-property-class-static-field/computed_property_class_static_field.Fn $invalid
+        br_table $computed-property-class-static-field/computed_property_class_static_field.Fn $computed-property-class-static-field/computed_property_class_static_field.Fn $computed-property-class-static-field/computed_property_class_static_field.Fn $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<~lib/string/String,usize>" $~lib/tuple/SmallTuple $"~lib/map/Map<usize,~lib/string/String>" $computed-property-class-static-field/computed_property_class_static_field.Fn $invalid
        end
        local.get $0
        i32.load
@@ -2113,7 +2113,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33648
+  i32.const 33636
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2153,7 +2153,7 @@
   call $"~lib/map/Map<~lib/string/String,usize>#constructor"
   global.set $~lib/symbol/stringToId
   i32.const 24
-  i32.const 7
+  i32.const 6
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2685,12 +2685,12 @@
   end
   drop
   i32.const 0
-  i32.const 10
+  i32.const 7
   call $~lib/rt/itcms/__new
   i32.const 8
   i32.sub
   i32.load
-  i32.const 10
+  i32.const 7
   i32.eq
   if (result i32)
    i32.const 688
@@ -2753,7 +2753,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 880
+  i32.const 868
   i32.lt_s
   if
    unreachable

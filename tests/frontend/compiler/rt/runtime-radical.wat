@@ -22,9 +22,9 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 528))
- (global $~lib/memory/__data_end i32 (i32.const 560))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33328))
- (global $~lib/memory/__heap_base i32 (i32.const 33328))
+ (global $~lib/memory/__data_end i32 (i32.const 556))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33324))
+ (global $~lib/memory/__heap_base i32 (i32.const 33324))
  (memory $0 1)
  (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
  (data $1 (i32.const 60) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
@@ -36,7 +36,7 @@
  (data $7 (i32.const 332) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 396) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00*\00\00\00O\00b\00j\00e\00c\00t\00 \00a\00l\00r\00e\00a\00d\00y\00 \00p\00i\00n\00n\00e\00d\00\00\00")
  (data $9 (i32.const 460) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00O\00b\00j\00e\00c\00t\00 \00i\00s\00 \00n\00o\00t\00 \00p\00i\00n\00n\00e\00d\00\00\00\00\00")
- (data $10 (i32.const 528) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\02\t\00\00 \00\00\00")
+ (data $10 (i32.const 528) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\02\t\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "__new" (func $~lib/rt/tcms/__new))
@@ -3199,38 +3199,29 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/iterator/Iterable<i32>
-    (block $~lib/array/Array<i32>
-     (block $rt/runtime-radical/RadicalObject
-      (block $~lib/arraybuffer/ArrayBufferView
-       (block $~lib/string/String
-        (block $~lib/arraybuffer/ArrayBuffer
-         (block $~lib/object/Object
-          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $rt/runtime-radical/RadicalObject $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
-           (i32.load
-            (i32.sub
-             (local.get $0)
-             (i32.const 8)
-            )
+   (block $~lib/array/Array<i32>
+    (block $rt/runtime-radical/RadicalObject
+     (block $~lib/arraybuffer/ArrayBufferView
+      (block $~lib/string/String
+       (block $~lib/arraybuffer/ArrayBuffer
+        (block $~lib/object/Object
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $rt/runtime-radical/RadicalObject $~lib/array/Array<i32> $invalid
+          (i32.load
+           (i32.sub
+            (local.get $0)
+            (i32.const 8)
            )
           )
          )
-         (return)
         )
         (return)
        )
        (return)
       )
-      (block
-       (call $~lib/arraybuffer/ArrayBufferView~visit
-        (local.get $0)
-        (local.get $1)
-       )
-       (return)
-      )
+      (return)
      )
      (block
-      (call $rt/runtime-radical/RadicalObject~visit
+      (call $~lib/arraybuffer/ArrayBufferView~visit
        (local.get $0)
        (local.get $1)
       )
@@ -3238,14 +3229,20 @@
      )
     )
     (block
-     (call $~lib/array/Array<i32>~visit
+     (call $rt/runtime-radical/RadicalObject~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (return)
+   (block
+    (call $~lib/array/Array<i32>~visit
+     (local.get $0)
+     (local.get $1)
+    )
+    (return)
+   )
   )
   (unreachable)
  )

@@ -24,7 +24,7 @@
  (global $class-overloading/ia (mut i32) (i32.const 0))
  (global $class-overloading/ic (mut i32) (i32.const 0))
  (global $class-overloading/b2 (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33612))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33604))
  (global $~started (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
@@ -53,7 +53,7 @@
  (data $15.1 (i32.const 680) "\02\00\00\00\04\00\00\00I\00C")
  (data $16 (i32.const 700) "<")
  (data $16.1 (i32.const 712) "\02\00\00\00\1e\00\00\00n\00o\00t\00 \00i\00m\00p\00l\00e\00m\00e\00n\00t\00e\00d")
- (data $17 (i32.const 768) "\12\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 ")
+ (data $17 (i32.const 768) "\10\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 ")
  (export "memory" (memory $0))
  (export "_start" (func $~start))
  (func $~lib/rt/itcms/visitRoots
@@ -204,7 +204,7 @@
       i32.load offset=8
       i32.eqz
       local.get $0
-      i32.const 33612
+      i32.const 33604
       i32.lt_u
       i32.and
       i32.eqz
@@ -1030,7 +1030,7 @@
          local.set $1
          loop $while-continue|0
           local.get $1
-          i32.const 33612
+          i32.const 33604
           i32.lt_u
           if
            local.get $1
@@ -1126,7 +1126,7 @@
          unreachable
         end
         local.get $1
-        i32.const 33612
+        i32.const 33604
         i32.lt_u
         if
          local.get $1
@@ -1149,7 +1149,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33612
+         i32.const 33604
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1623,7 +1623,7 @@
      i32.const 8
      i32.sub
      i32.load
-     br_table $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $~lib/arraybuffer/ArrayBufferView $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $invalid
+     br_table $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $~lib/arraybuffer/ArrayBufferView $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $invalid
     end
     local.get $0
     i32.load
@@ -1643,7 +1643,7 @@
    memory.size
    i32.const 16
    i32.shl
-   i32.const 33612
+   i32.const 33604
    i32.sub
    i32.const 1
    i32.shr_u
@@ -2013,7 +2013,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 11
+   i32.const 10
    call $~lib/rt/itcms/__new
    global.set $class-overloading/ia
    i32.const 32
@@ -2025,11 +2025,11 @@
      i32.sub
      i32.load
      local.tee $0
-     i32.const 11
+     i32.const 10
      i32.ne
      if
       local.get $0
-      i32.const 13
+      i32.const 11
       i32.eq
       br_if $case1
       unreachable
@@ -2053,7 +2053,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 13
+   i32.const 11
    call $~lib/rt/itcms/__new
    global.set $class-overloading/ic
    i32.const 32
@@ -2065,11 +2065,11 @@
      i32.sub
      i32.load
      local.tee $0
-     i32.const 11
+     i32.const 10
      i32.ne
      if
       local.get $0
-      i32.const 13
+      i32.const 11
       i32.eq
       br_if $case10
       unreachable
@@ -2101,12 +2101,12 @@
    i32.const 0
    i32.store align=1
    global.get $~lib/memory/__stack_pointer
-   i32.const 844
+   i32.const 836
    i32.lt_s
    if
     unreachable
    end
-   i32.const 15
+   i32.const 13
    call $~lib/rt/itcms/__new
    global.set $class-overloading/b2
    global.get $~lib/memory/__stack_pointer
@@ -2117,15 +2117,15 @@
     i32.const 8
     i32.sub
     i32.load
-    i32.const 15
+    i32.const 13
     i32.eq
     if
-     i32.const 16
+     i32.const 14
      call $~lib/rt/itcms/__new
      i32.const 8
      i32.sub
      i32.load
-     i32.const 16
+     i32.const 14
      i32.eq
      if (result i32)
       i32.const 3

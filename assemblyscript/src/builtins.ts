@@ -1209,7 +1209,7 @@ function builtin_idof(ctx: BuiltinFunctionContext): ExpressionRef {
     return reifyConstantType(ctx, module.i32(signatureReference.id));
   }
   let classReference = type.getClassOrWrapper(compiler.program);
-  if (classReference && !classReference.hasDecorator(DecoratorFlags.Unmanaged)) {
+  if (classReference && !classReference.isInterface && !classReference.hasDecorator(DecoratorFlags.Unmanaged)) {
     return reifyConstantType(ctx, module.i32(classReference.id));
   }
   compiler.error(

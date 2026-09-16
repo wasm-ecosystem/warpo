@@ -44,7 +44,7 @@
  (data $7.1 (i32.const 360) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $8 (i32.const 412) ",")
  (data $8.1 (i32.const 424) "\02\00\00\00\1a\00\00\00i\00n\00s\00t\00a\00n\00c\00e\00o\00f\00.\00t\00s")
- (data $9 (i32.const 464) "\18\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 ")
+ (data $9 (i32.const 464) "\13\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -249,7 +249,7 @@
       i32.load offset=8
       i32.eqz
       local.get $0
-      i32.const 33332
+      i32.const 33312
       i32.lt_u
       i32.and
       i32.eqz
@@ -863,10 +863,10 @@
   if
    unreachable
   end
-  i32.const 33344
+  i32.const 33312
   i32.const 0
   i32.store
-  i32.const 34912
+  i32.const 34880
   i32.const 0
   i32.store
   i32.const 0
@@ -879,7 +879,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33344
+    i32.const 33312
     i32.add
     i32.const 0
     i32.store offset=4
@@ -897,7 +897,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33344
+      i32.const 33312
       i32.add
       i32.const 0
       i32.store offset=96
@@ -915,14 +915,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33344
-  i32.const 34916
+  i32.const 33312
+  i32.const 34884
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33344
+  i32.const 33312
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (result i32)
@@ -1071,11 +1071,11 @@
         i32.and
         i32.eq
         if
-         i32.const 33332
+         i32.const 33312
          local.set $1
          loop $while-continue|0
           local.get $1
-          i32.const 33332
+          i32.const 33312
           i32.lt_u
           if
            local.get $1
@@ -1171,7 +1171,7 @@
          unreachable
         end
         local.get $1
-        i32.const 33332
+        i32.const 33312
         i32.lt_u
         if
          local.get $1
@@ -1194,7 +1194,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33332
+         i32.const 33312
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1462,11 +1462,11 @@
    i32.const 16
    i32.eq
    local.get $0
-   i32.const 19
+   i32.const 17
    i32.eq
    i32.or
    local.get $0
-   i32.const 22
+   i32.const 18
    i32.eq
    i32.or
   else
@@ -1490,10 +1490,10 @@
    i32.sub
    i32.load
    local.tee $0
-   i32.const 19
+   i32.const 17
    i32.eq
    local.get $0
-   i32.const 22
+   i32.const 18
    i32.eq
    i32.or
    if (result i32)
@@ -1521,7 +1521,7 @@
    i32.const 8
    i32.sub
    i32.load
-   i32.const 22
+   i32.const 18
    i32.ne
    if (result i32)
     i32.const 0
@@ -1549,10 +1549,10 @@
    i32.sub
    i32.load
    local.tee $0
-   i32.const 19
+   i32.const 17
    i32.eq
    local.get $0
-   i32.const 22
+   i32.const 18
    i32.eq
    i32.or
    if (result i32)
@@ -1579,7 +1579,7 @@
    i32.const 8
    i32.sub
    i32.load
-   i32.const 22
+   i32.const 18
    i32.ne
    if (result i32)
     i32.const 0
@@ -1632,13 +1632,13 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
-   block $instanceof/IE
+   block $instanceof/Z
     block $~lib/arraybuffer/ArrayBufferView
      local.get $0
      i32.const 8
      i32.sub
      i32.load
-     br_table $instanceof/IE $instanceof/IE $instanceof/IE $~lib/arraybuffer/ArrayBufferView $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $invalid
+     br_table $instanceof/Z $instanceof/Z $instanceof/Z $~lib/arraybuffer/ArrayBufferView $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $instanceof/Z $invalid
     end
     local.get $0
     i32.load
@@ -1653,7 +1653,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33332
+  i32.const 33312
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2030,10 +2030,10 @@
   i32.const 16
   call $~lib/rt/itcms/__new
   global.set $instanceof/x
-  i32.const 19
+  i32.const 17
   call $~lib/rt/itcms/__new
   global.set $instanceof/y
-  i32.const 22
+  i32.const 18
   call $~lib/rt/itcms/__new
   global.set $instanceof/z
   global.get $instanceof/w

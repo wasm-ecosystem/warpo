@@ -17,7 +17,7 @@
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33492))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33484))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\01")
@@ -26,7 +26,7 @@
  (data $2 (i32.const 92) "\1c")
  (data $2.1 (i32.const 104) "\01")
  (data $3 (i32.const 124) ",")
- (data $3.1 (i32.const 136) "\n\00\00\00\10\00\00\00p\00\00\00p")
+ (data $3.1 (i32.const 136) "\t\00\00\00\10\00\00\00p\00\00\00p")
  (data $4 (i32.const 172) "<")
  (data $4.1 (i32.const 184) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00<")
  (data $5.1 (i32.const 248) "\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s")
@@ -39,8 +39,8 @@
  (data $12 (i32.const 572) ",")
  (data $12.1 (i32.const 584) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00,")
  (data $13.1 (i32.const 632) "\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $14 (i32.const 672) "\0c\00\00\00 \00\00\00 \00\00\00 ")
- (data $14.1 (i32.const 708) "\02A\00\00 \00\00\00\02A\00\00 ")
+ (data $14 (i32.const 672) "\n\00\00\00 \00\00\00 \00\00\00 ")
+ (data $14.1 (i32.const 708) "\02A\00\00\02A")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -147,7 +147,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33492
+    i32.const 33484
     i32.lt_u
     i32.and
     i32.eqz
@@ -777,10 +777,10 @@
   if
    unreachable
   end
-  i32.const 33504
+  i32.const 33488
   i32.const 0
   i32.store
-  i32.const 35072
+  i32.const 35056
   i32.const 0
   i32.store
   i32.const 0
@@ -793,7 +793,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33504
+    i32.const 33488
     i32.add
     i32.const 0
     i32.store offset=4
@@ -811,7 +811,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33504
+      i32.const 33488
       i32.add
       i32.const 0
       i32.store offset=96
@@ -829,14 +829,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33504
-  i32.const 35076
+  i32.const 33488
+  i32.const 35060
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33504
+  i32.const 33488
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1073,7 +1073,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33492
+          i32.const 33484
           i32.lt_u
           if
            local.get $2
@@ -1169,7 +1169,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33492
+        i32.const 33484
         i32.lt_u
         if
          local.get $3
@@ -1192,7 +1192,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33492
+         i32.const 33484
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1568,52 +1568,52 @@
   (local $3 i32)
   block $folding-inner0
    block $invalid
-    block $~lib/iterator/Iterable<extends-baseaggregate/A2>
-     block $~lib/array/Array<extends-baseaggregate/A2>
-      block $extends-baseaggregate/A2
+    block $~lib/array/Array<extends-baseaggregate/A2>
+     block $extends-baseaggregate/A2
+      block $~lib/string/String
        local.get $0
        i32.const 8
        i32.sub
        i32.load
-       br_table $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $folding-inner0 $folding-inner0 $extends-baseaggregate/A2 $folding-inner0 $extends-baseaggregate/A2 $~lib/array/Array<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/array/Array<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $invalid
+       br_table $~lib/string/String $~lib/string/String $~lib/string/String $folding-inner0 $folding-inner0 $extends-baseaggregate/A2 $folding-inner0 $extends-baseaggregate/A2 $~lib/array/Array<extends-baseaggregate/A2> $~lib/array/Array<extends-baseaggregate/A2> $invalid
       end
-      local.get $0
-      i32.load offset=16
-      return_call $~lib/rt/itcms/__visit
+      return
      end
      local.get $0
-     i32.load offset=4
-     local.tee $1
-     local.get $0
-     i32.load offset=12
-     i32.const 2
-     i32.shl
-     i32.add
-     local.set $2
-     loop $while-continue|0
-      local.get $1
-      local.get $2
-      i32.lt_u
-      if
-       local.get $1
-       i32.load
-       local.tee $3
-       if
-        local.get $3
-        call $~lib/rt/itcms/__visit
-       end
-       local.get $1
-       i32.const 4
-       i32.add
-       local.set $1
-       br $while-continue|0
-      end
-     end
-     local.get $0
-     i32.load
+     i32.load offset=16
      return_call $~lib/rt/itcms/__visit
     end
-    return
+    local.get $0
+    i32.load offset=4
+    local.tee $1
+    local.get $0
+    i32.load offset=12
+    i32.const 2
+    i32.shl
+    i32.add
+    local.set $2
+    loop $while-continue|0
+     local.get $1
+     local.get $2
+     i32.lt_u
+     if
+      local.get $1
+      i32.load
+      local.tee $3
+      if
+       local.get $3
+       call $~lib/rt/itcms/__visit
+      end
+      local.get $1
+      i32.const 4
+      i32.add
+      local.set $1
+      br $while-continue|0
+     end
+    end
+    local.get $0
+    i32.load
+    return_call $~lib/rt/itcms/__visit
    end
    unreachable
   end
@@ -1637,7 +1637,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 724
+  i32.const 716
   i32.lt_s
   if
    unreachable
@@ -1645,7 +1645,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33492
+  i32.const 33484
   i32.sub
   i32.const 1
   i32.shr_u

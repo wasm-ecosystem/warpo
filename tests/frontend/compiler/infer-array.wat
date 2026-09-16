@@ -29,9 +29,9 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 1136))
- (global $~lib/memory/__data_end i32 (i32.const 1224))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33992))
- (global $~lib/memory/__heap_base i32 (i32.const 33992))
+ (global $~lib/memory/__data_end i32 (i32.const 1192))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33960))
+ (global $~lib/memory/__heap_base i32 (i32.const 33960))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00")
  (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
@@ -58,7 +58,7 @@
  (data $22 (i32.const 940) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
  (data $23 (i32.const 972) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\04\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00")
  (data $24 (i32.const 1004) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00^\00\00\00E\00l\00e\00m\00e\00n\00t\00 \00t\00y\00p\00e\00 \00m\00u\00s\00t\00 \00b\00e\00 \00n\00u\00l\00l\00a\00b\00l\00e\00 \00i\00f\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00h\00o\00l\00e\00y\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $25 (i32.const 1136) "\15\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\02\1a\00\00 \00\00\00\02\01\00\00 \00\00\00\02\19\00\00 \00\00\00 \00\00\00\02a\00\00 \00\00\00\02a\00\00 \00\00\00\02\01\00\00 \00\00\00\02A\00\00 \00\00\00")
+ (data $25 (i32.const 1136) "\r\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\02\1a\00\00\02\01\00\00\02\19\00\00 \00\00\00\02a\00\00\02a\00\00\02\01\00\00\02A\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -4077,7 +4077,7 @@
      (call $~lib/rt/__newArray
       (i32.const 3)
       (i32.const 3)
-      (i32.const 6)
+      (i32.const 5)
       (i32.const 560)
      )
     )
@@ -4113,7 +4113,7 @@
      (call $~lib/rt/__newArray
       (i32.const 2)
       (i32.const 2)
-      (i32.const 8)
+      (i32.const 6)
       (i32.const 608)
      )
     )
@@ -4197,7 +4197,7 @@
      (call $~lib/rt/__newArray
       (i32.const 3)
       (i32.const 3)
-      (i32.const 6)
+      (i32.const 5)
       (i32.const 640)
      )
     )
@@ -4233,7 +4233,7 @@
      (call $~lib/rt/__newArray
       (i32.const 3)
       (i32.const 2)
-      (i32.const 10)
+      (i32.const 7)
       (i32.const 688)
      )
     )
@@ -4278,7 +4278,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 0)
-        (i32.const 12)
+        (i32.const 8)
        )
       )
      )
@@ -4290,7 +4290,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 0)
-        (i32.const 12)
+        (i32.const 8)
        )
       )
      )
@@ -4304,7 +4304,7 @@
         (call $~lib/rt/__newArray
          (i32.const 2)
          (i32.const 2)
-         (i32.const 13)
+         (i32.const 9)
          (i32.const 0)
         )
        )
@@ -4355,7 +4355,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 0)
-        (i32.const 12)
+        (i32.const 8)
        )
       )
      )
@@ -4367,7 +4367,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 0)
-        (i32.const 12)
+        (i32.const 8)
        )
       )
      )
@@ -4381,7 +4381,7 @@
         (call $~lib/rt/__newArray
          (i32.const 2)
          (i32.const 2)
-         (i32.const 13)
+         (i32.const 9)
          (i32.const 0)
         )
        )
@@ -4432,7 +4432,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 0)
-        (i32.const 12)
+        (i32.const 8)
        )
       )
      )
@@ -4446,7 +4446,7 @@
         (call $~lib/rt/__newArray
          (i32.const 2)
          (i32.const 2)
-         (i32.const 13)
+         (i32.const 9)
          (i32.const 0)
         )
        )
@@ -4491,7 +4491,7 @@
      (call $~lib/rt/__newArray
       (i32.const 2)
       (i32.const 2)
-      (i32.const 15)
+      (i32.const 10)
       (i32.const 800)
      )
     )
@@ -4527,7 +4527,7 @@
      (call $~lib/rt/__newArray
       (i32.const 1)
       (i32.const 2)
-      (i32.const 17)
+      (i32.const 11)
       (i32.const 832)
      )
     )
@@ -4587,7 +4587,7 @@
      (call $~lib/rt/__newArray
       (i32.const 2)
       (i32.const 2)
-      (i32.const 17)
+      (i32.const 11)
       (i32.const 864)
      )
     )
@@ -4774,7 +4774,7 @@
         (call $~lib/rt/__newArray
          (i32.const 2)
          (i32.const 2)
-         (i32.const 19)
+         (i32.const 12)
          (i32.const 0)
         )
        )
@@ -5254,104 +5254,68 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/iterator/Iterable<~lib/array/Array<i32>>
-    (block $~lib/array/Array<~lib/array/Array<i32>>
-     (block $~lib/iterator/Iterable<usize>
-      (block $~lib/array/Array<usize>
-       (block $~lib/iterator/Iterable<~lib/string/String|null>
-        (block $~lib/array/Array<~lib/string/String|null>
-         (block $~lib/iterator/Iterable<infer-array/Ref|null>
-          (block $~lib/array/Array<infer-array/Ref|null>
-           (block $infer-array/Ref
-            (block $~lib/iterator/Iterable<f32>
-             (block $~lib/array/Array<f32>
-              (block $~lib/iterator/Iterable<u32>
-               (block $~lib/array/Array<u32>
-                (block $~lib/iterator/Iterable<f64>
-                 (block $~lib/array/Array<f64>
-                  (block $~lib/iterator/Iterable<i32>
-                   (block $~lib/array/Array<i32>
-                    (block $~lib/arraybuffer/ArrayBufferView
-                     (block $~lib/string/String
-                      (block $~lib/arraybuffer/ArrayBuffer
-                       (block $~lib/object/Object
-                        (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/array/Array<f64> $~lib/iterator/Iterable<f64> $~lib/array/Array<u32> $~lib/iterator/Iterable<u32> $~lib/array/Array<f32> $~lib/iterator/Iterable<f32> $infer-array/Ref $~lib/array/Array<infer-array/Ref|null> $~lib/iterator/Iterable<infer-array/Ref|null> $~lib/array/Array<~lib/string/String|null> $~lib/iterator/Iterable<~lib/string/String|null> $~lib/array/Array<usize> $~lib/iterator/Iterable<usize> $~lib/array/Array<~lib/array/Array<i32>> $~lib/iterator/Iterable<~lib/array/Array<i32>> $invalid
-                         (i32.load
-                          (i32.sub
-                           (local.get $0)
-                           (i32.const 8)
-                          )
-                         )
-                        )
-                       )
-                       (return)
-                      )
-                      (return)
-                     )
-                     (return)
-                    )
-                    (block
-                     (call $~lib/arraybuffer/ArrayBufferView~visit
-                      (local.get $0)
-                      (local.get $1)
-                     )
-                     (return)
-                    )
-                   )
-                   (block
-                    (call $~lib/array/Array<i32>~visit
-                     (local.get $0)
-                     (local.get $1)
-                    )
-                    (return)
-                   )
-                  )
-                  (return)
-                 )
-                 (block
-                  (call $~lib/array/Array<f64>~visit
+   (block $~lib/array/Array<~lib/array/Array<i32>>
+    (block $~lib/array/Array<usize>
+     (block $~lib/array/Array<~lib/string/String|null>
+      (block $~lib/array/Array<infer-array/Ref|null>
+       (block $infer-array/Ref
+        (block $~lib/array/Array<f32>
+         (block $~lib/array/Array<u32>
+          (block $~lib/array/Array<f64>
+           (block $~lib/array/Array<i32>
+            (block $~lib/arraybuffer/ArrayBufferView
+             (block $~lib/string/String
+              (block $~lib/arraybuffer/ArrayBuffer
+               (block $~lib/object/Object
+                (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/array/Array<f64> $~lib/array/Array<u32> $~lib/array/Array<f32> $infer-array/Ref $~lib/array/Array<infer-array/Ref|null> $~lib/array/Array<~lib/string/String|null> $~lib/array/Array<usize> $~lib/array/Array<~lib/array/Array<i32>> $invalid
+                 (i32.load
+                  (i32.sub
                    (local.get $0)
-                   (local.get $1)
+                   (i32.const 8)
                   )
-                  (return)
                  )
                 )
-                (return)
                )
-               (block
-                (call $~lib/array/Array<u32>~visit
-                 (local.get $0)
-                 (local.get $1)
-                )
-                (return)
-               )
+               (return)
               )
               (return)
              )
-             (block
-              (call $~lib/array/Array<f32>~visit
-               (local.get $0)
-               (local.get $1)
-              )
-              (return)
+             (return)
+            )
+            (block
+             (call $~lib/arraybuffer/ArrayBufferView~visit
+              (local.get $0)
+              (local.get $1)
              )
+             (return)
+            )
+           )
+           (block
+            (call $~lib/array/Array<i32>~visit
+             (local.get $0)
+             (local.get $1)
             )
             (return)
            )
-           (return)
           )
           (block
-           (call $~lib/array/Array<infer-array/Ref|null>~visit
+           (call $~lib/array/Array<f64>~visit
             (local.get $0)
             (local.get $1)
            )
            (return)
           )
          )
-         (return)
+         (block
+          (call $~lib/array/Array<u32>~visit
+           (local.get $0)
+           (local.get $1)
+          )
+          (return)
+         )
         )
         (block
-         (call $~lib/array/Array<~lib/string/String|null>~visit
+         (call $~lib/array/Array<f32>~visit
           (local.get $0)
           (local.get $1)
          )
@@ -5361,24 +5325,36 @@
        (return)
       )
       (block
-       (call $~lib/array/Array<usize>~visit
+       (call $~lib/array/Array<infer-array/Ref|null>~visit
         (local.get $0)
         (local.get $1)
        )
        (return)
       )
      )
-     (return)
+     (block
+      (call $~lib/array/Array<~lib/string/String|null>~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
+     )
     )
     (block
-     (call $~lib/array/Array<~lib/array/Array<i32>>~visit
+     (call $~lib/array/Array<usize>~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (return)
+   (block
+    (call $~lib/array/Array<~lib/array/Array<i32>>~visit
+     (local.get $0)
+     (local.get $1)
+    )
+    (return)
+   )
   )
   (unreachable)
  )

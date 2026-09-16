@@ -9,7 +9,7 @@
  (type $7 (func (param i32 i32 i64)))
  (type $8 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33488))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33480))
  (global $closure-capture-for-of-mixed/funcA1 (mut i32) (i32.const 0))
  (global $closure-capture-for-of-mixed/funcB1 (mut i32) (i32.const 0))
  (global $closure-capture-for-of-mixed/funcB2 (mut i32) (i32.const 0))
@@ -40,8 +40,8 @@
  (data $9.1 (i32.const 456) "\02\00\00\00>\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00c\00a\00p\00t\00u\00r\00e\00-\00f\00o\00r\00-\00o\00f\00-\00m\00i\00x\00e\00d\00.\00t\00s")
  (data $10 (i32.const 540) "|")
  (data $10.1 (i32.const 552) "\02\00\00\00^\00\00\00U\00n\00e\00x\00p\00e\00c\00t\00e\00d\00 \00\'\00n\00u\00l\00l\00\'\00 \00(\00n\00o\00t\00 \00a\00s\00s\00i\00g\00n\00e\00d\00 \00o\00r\00 \00f\00a\00i\00l\00e\00d\00 \00c\00a\00s\00t\00)")
- (data $11 (i32.const 672) "\0b\00\00\00 \00\00\00 \00\00\00 ")
- (data $11.1 (i32.const 696) "\02\t\00\00 \00\00\00\00\00\00\00 \00\00\00 ")
+ (data $11 (i32.const 672) "\t\00\00\00 \00\00\00 \00\00\00 ")
+ (data $11.1 (i32.const 696) "\02\t\00\00\00\00\00\00 ")
  (table $0 3 3 funcref)
  (elem $0 (i32.const 1) $closure-capture-for-of-mixed/outer~innerA $closure-capture-for-of-mixed/outer~innerA)
  (export "outer" (func $closure-capture-for-of-mixed/outer))
@@ -153,7 +153,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33488
+    i32.const 33480
     i32.lt_u
     i32.and
     i32.eqz
@@ -1079,7 +1079,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33488
+          i32.const 33480
           i32.lt_u
           if
            local.get $2
@@ -1175,7 +1175,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33488
+        i32.const 33480
         i32.lt_u
         if
          local.get $3
@@ -1198,7 +1198,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33488
+         i32.const 33480
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1606,7 +1606,7 @@
   i32.load
   local.set $0
   i32.const 4
-  i32.const 9
+  i32.const 7
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -1654,7 +1654,7 @@
   i32.const 16
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 720
+  i32.const 712
   i32.lt_s
   if
    unreachable
@@ -1691,7 +1691,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 720
+  i32.const 712
   i32.lt_s
   if
    unreachable
@@ -1735,7 +1735,7 @@
   local.get $1
   i32.store offset=8 align=1
   i32.const 8
-  i32.const 7
+  i32.const 6
   call $~lib/rt/itcms/__new
   local.tee $0
   local.get $1
@@ -1761,7 +1761,7 @@
     i32.load
     local.set $4
     i32.const 8
-    i32.const 10
+    i32.const 8
     call $~lib/rt/itcms/__new
     local.tee $0
     i32.const 1
@@ -1787,7 +1787,7 @@
   local.get $1
   i32.store offset=4 align=1
   i32.const 8
-  i32.const 7
+  i32.const 6
   call $~lib/rt/itcms/__new
   local.tee $0
   local.get $1
@@ -1833,7 +1833,7 @@
     i32.mul
     i32.store
     i32.const 8
-    i32.const 10
+    i32.const 8
     call $~lib/rt/itcms/__new
     local.tee $0
     i32.const 2
@@ -1878,7 +1878,7 @@
        i32.const 8
        i32.sub
        i32.load
-       br_table $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/array/Array<i32> $~lib/tuple/SmallTuple $~lib/array/Array<i32> $~lib/iterator/IteratorResult<i32> $~lib/function/Function<%28%29=>i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/function/Function<%28%29=>i32> $invalid
+       br_table $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/array/Array<i32> $~lib/tuple/SmallTuple $~lib/array/Array<i32> $~lib/function/Function<%28%29=>i32> $~lib/iterator/IteratorResult<i32> $~lib/function/Function<%28%29=>i32> $invalid
       end
       local.get $0
       local.get $0
@@ -1932,7 +1932,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33488
+  i32.const 33480
   i32.sub
   i32.const 1
   i32.shr_u

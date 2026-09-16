@@ -50,9 +50,9 @@
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $resolve-elementaccess/buf (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 3776))
- (global $~lib/memory/__data_end i32 (i32.const 3816))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 36584))
- (global $~lib/memory/__heap_base i32 (i32.const 36584))
+ (global $~lib/memory/__data_end i32 (i32.const 3808))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 36576))
+ (global $~lib/memory/__heap_base i32 (i32.const 36576))
  (memory $0 1)
  (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
  (data $1 (i32.const 60) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00b\00u\00f\00f\00e\00r\00.\00t\00s\00\00\00\00\00\00\00")
@@ -86,7 +86,7 @@
  (data $29 (i32.const 3676) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\001\00\00\00\00\00\00\00\00\00\00\00")
  (data $30 (i32.const 3708) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\002\00\00\00\00\00\00\00\00\00\00\00")
  (data $31 (i32.const 3740) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\001\001\00\00\00\00\00\00\00\00\00")
- (data $32 (i32.const 3776) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\01\19\00\00 \00\00\00A\00\00\00A\00\00\00 \00\00\00")
+ (data $32 (i32.const 3776) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\01\19\00\00A\00\00\00A\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -6235,7 +6235,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 12)
-      (i32.const 6)
+      (i32.const 5)
      )
     )
     (i32.const 2)
@@ -6458,50 +6458,38 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/iterator/Iterable<u8>
-    (block $~lib/typedarray/Uint8Array
-     (block $resolve-elementaccess/Buffer
-      (block $~lib/iterator/Iterable<f32>
-       (block $~lib/typedarray/Float32Array
-        (block $~lib/arraybuffer/ArrayBufferView
-         (block $~lib/string/String
-          (block $~lib/arraybuffer/ArrayBuffer
-           (block $~lib/object/Object
-            (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/typedarray/Float32Array $~lib/iterator/Iterable<f32> $resolve-elementaccess/Buffer $~lib/typedarray/Uint8Array $~lib/iterator/Iterable<u8> $invalid
-             (i32.load
-              (i32.sub
-               (local.get $0)
-               (i32.const 8)
-              )
-             )
+   (block $~lib/typedarray/Uint8Array
+    (block $resolve-elementaccess/Buffer
+     (block $~lib/typedarray/Float32Array
+      (block $~lib/arraybuffer/ArrayBufferView
+       (block $~lib/string/String
+        (block $~lib/arraybuffer/ArrayBuffer
+         (block $~lib/object/Object
+          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/typedarray/Float32Array $resolve-elementaccess/Buffer $~lib/typedarray/Uint8Array $invalid
+           (i32.load
+            (i32.sub
+             (local.get $0)
+             (i32.const 8)
             )
            )
-           (return)
           )
-          (return)
          )
          (return)
-        )
-        (block
-         (call $~lib/arraybuffer/ArrayBufferView~visit
-          (local.get $0)
-          (local.get $1)
-         )
-         (return)
-        )
-       )
-       (block
-        (call $~lib/typedarray/Float32Array~visit
-         (local.get $0)
-         (local.get $1)
         )
         (return)
        )
+       (return)
       )
-      (return)
+      (block
+       (call $~lib/arraybuffer/ArrayBufferView~visit
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
+      )
      )
      (block
-      (call $resolve-elementaccess/Buffer~visit
+      (call $~lib/typedarray/Float32Array~visit
        (local.get $0)
        (local.get $1)
       )
@@ -6509,14 +6497,20 @@
      )
     )
     (block
-     (call $~lib/typedarray/Uint8Array~visit
+     (call $resolve-elementaccess/Buffer~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (return)
+   (block
+    (call $~lib/typedarray/Uint8Array~visit
+     (local.get $0)
+     (local.get $1)
+    )
+    (return)
+   )
   )
   (unreachable)
  )

@@ -20,7 +20,7 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $issues/2730/boxCalls (mut i32) (i32.const 0))
  (global $issues/2730/idxCalls (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33440))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33436))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00<")
@@ -38,7 +38,7 @@
  (data $10 (i32.const 492) ",")
  (data $10.1 (i32.const 504) "\02\00\00\00\1c\00\00\00i\00s\00s\00u\00e\00s\00/\002\007\003\000\00.\00t\00s\00,")
  (data $11.1 (i32.const 552) "\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00,")
- (data $12.1 (i32.const 600) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00\00\00\00\00\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\02\t\00\00 ")
+ (data $12.1 (i32.const 600) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00\00\00\00\00\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\02\t")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -149,7 +149,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33440
+    i32.const 33436
     i32.lt_u
     i32.and
     i32.eqz
@@ -1075,7 +1075,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33440
+          i32.const 33436
           i32.lt_u
           if
            local.get $2
@@ -1171,7 +1171,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33440
+        i32.const 33436
         i32.lt_u
         if
          local.get $3
@@ -1194,7 +1194,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33440
+         i32.const 33436
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1666,19 +1666,19 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
-   block $~lib/iterator/Iterable<i32>
-    block $~lib/array/Array<i32>
+   block $~lib/array/Array<i32>
+    block $issues/2730/Box
      local.get $0
      i32.const 8
      i32.sub
      i32.load
-     br_table $~lib/iterator/Iterable<i32> $~lib/iterator/Iterable<i32> $~lib/iterator/Iterable<i32> $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+     br_table $issues/2730/Box $issues/2730/Box $issues/2730/Box $~lib/array/Array<i32> $issues/2730/Box $~lib/array/Array<i32> $invalid
     end
-    local.get $0
-    i32.load
-    return_call $~lib/rt/itcms/__visit
+    return
    end
-   return
+   local.get $0
+   i32.load
+   return_call $~lib/rt/itcms/__visit
   end
   unreachable
  )
@@ -1687,7 +1687,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33440
+  i32.const 33436
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2060,7 +2060,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 672
+  i32.const 668
   i32.lt_s
   if
    unreachable

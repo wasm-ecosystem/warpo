@@ -11,14 +11,14 @@
  (global $rt/flags/VALUE_ALIGN_REF i32 (i32.const 256))
  (global $rt/flags/KEY_ALIGN_REF i32 (i32.const 131072))
  (global $~lib/rt/__rtti_base i32 (i32.const 176))
- (global $~lib/memory/__data_end i32 (i32.const 492))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33260))
- (global $~lib/memory/__heap_base i32 (i32.const 33260))
+ (global $~lib/memory/__data_end i32 (i32.const 396))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33164))
+ (global $~lib/memory/__heap_base i32 (i32.const 33164))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
  (data $1 (i32.const 76) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $2 (i32.const 124) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00r\00t\00/\00f\00l\00a\00g\00s\00.\00t\00s\00\00\00\00\00\00\00")
- (data $3 (i32.const 176) "N\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00A\08\00\00 \00\00\00A\00\00\00 \00\00\00A\00\00\00\81\08\00\00 \00\00\00\81\00\00\00 \00\00\00\01\t\00\00 \00\00\00\01\01\00\00 \00\00\00\01\n\00\00 \00\00\00\01\02\00\00 \00\00\00\01\19\00\00 \00\00\00\01\1a\00\00 \00\00\00B\08\00\00B\00\00\00\82\08\00\00\82\00\00\00\02\t\00\00\02\01\00\00\02\n\00\00\02\02\00\00\02\19\00\00\02\1a\00\00\02\04\00\00 \00\00\00 \00\00\00\02A\00\00 \00\00\00\02a\00\00 \00\00\00H\08\00\00H\00\00\00\88\08\00\00\88\00\00\00\08\t\00\00\08\01\00\00\08\n\00\00\08\02\00\00\08\19\00\00\08\1a\00\00\08\04\00\00\08A\00\00\08a\00\00P\08\08\00\00\00\00\00 \00\00\00\90\08\14\00 \00\00\00\10\t\12\00 \00\00\00\10\n\11\00 \00\00\00\10\84\10\00 \00\00\00P\08\82\00 \00\00\00P\08\c2\00 \00\00\00\10\c1\10\00 \00\00\00\10\e1\10\00 \00\00\00\10a\c2\00 \00\00\00\10\t2\00 \00\00\00")
+ (data $3 (i32.const 176) "6\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00A\08\00\00A\00\00\00A\00\00\00\81\08\00\00\81\00\00\00\01\t\00\00\01\01\00\00\01\n\00\00\01\02\00\00\01\19\00\00\01\1a\00\00B\08\00\00B\00\00\00\82\08\00\00\82\00\00\00\02\t\00\00\02\01\00\00\02\n\00\00\02\02\00\00\02\19\00\00\02\1a\00\00\02\04\00\00 \00\00\00\02A\00\00\02a\00\00H\08\00\00H\00\00\00\88\08\00\00\88\00\00\00\08\t\00\00\08\01\00\00\08\n\00\00\08\02\00\00\08\19\00\00\08\1a\00\00\08\04\00\00\08A\00\00\08a\00\00P\08\08\00\00\00\00\00\90\08\14\00\10\t\12\00\10\n\11\00\10\84\10\00P\08\82\00P\08\c2\00\10\c1\10\00\10\e1\10\00\10a\c2\00\10\t2\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -91,7 +91,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 6)
+      (i32.const 5)
      )
      (local.get $flags)
     )
@@ -112,7 +112,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 8)
+      (i32.const 6)
      )
      (local.get $flags)
     )
@@ -133,7 +133,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 9)
+      (i32.const 7)
      )
      (local.get $flags)
     )
@@ -154,7 +154,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 11)
+      (i32.const 8)
      )
      (local.get $flags)
     )
@@ -175,7 +175,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 13)
+      (i32.const 9)
      )
      (local.get $flags)
     )
@@ -196,7 +196,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 15)
+      (i32.const 10)
      )
      (local.get $flags)
     )
@@ -217,7 +217,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 17)
+      (i32.const 11)
      )
      (local.get $flags)
     )
@@ -238,7 +238,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 19)
+      (i32.const 12)
      )
      (local.get $flags)
     )
@@ -259,7 +259,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 21)
+      (i32.const 13)
      )
      (local.get $flags)
     )
@@ -280,7 +280,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 23)
+      (i32.const 14)
      )
      (local.get $flags)
     )
@@ -301,7 +301,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 25)
+      (i32.const 15)
      )
      (local.get $flags)
     )
@@ -322,7 +322,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 26)
+      (i32.const 16)
      )
      (local.get $flags)
     )
@@ -343,7 +343,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 27)
+      (i32.const 17)
      )
      (local.get $flags)
     )
@@ -364,7 +364,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 28)
+      (i32.const 18)
      )
      (local.get $flags)
     )
@@ -385,7 +385,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 29)
+      (i32.const 19)
      )
      (local.get $flags)
     )
@@ -406,7 +406,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 30)
+      (i32.const 20)
      )
      (local.get $flags)
     )
@@ -427,7 +427,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 31)
+      (i32.const 21)
      )
      (local.get $flags)
     )
@@ -448,7 +448,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 32)
+      (i32.const 22)
      )
      (local.get $flags)
     )
@@ -469,7 +469,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 33)
+      (i32.const 23)
      )
      (local.get $flags)
     )
@@ -490,7 +490,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 34)
+      (i32.const 24)
      )
      (local.get $flags)
     )
@@ -511,7 +511,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 35)
+      (i32.const 25)
      )
      (local.get $flags)
     )
@@ -532,7 +532,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 38)
+      (i32.const 27)
      )
      (local.get $flags)
     )
@@ -553,7 +553,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 40)
+      (i32.const 28)
      )
      (local.get $flags)
     )
@@ -574,7 +574,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 42)
+      (i32.const 29)
      )
      (local.get $flags)
     )
@@ -595,7 +595,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 43)
+      (i32.const 30)
      )
      (local.get $flags)
     )
@@ -616,7 +616,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 44)
+      (i32.const 31)
      )
      (local.get $flags)
     )
@@ -637,7 +637,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 45)
+      (i32.const 32)
      )
      (local.get $flags)
     )
@@ -658,7 +658,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 46)
+      (i32.const 33)
      )
      (local.get $flags)
     )
@@ -679,7 +679,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 47)
+      (i32.const 34)
      )
      (local.get $flags)
     )
@@ -700,7 +700,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 48)
+      (i32.const 35)
      )
      (local.get $flags)
     )
@@ -721,7 +721,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 49)
+      (i32.const 36)
      )
      (local.get $flags)
     )
@@ -742,7 +742,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 50)
+      (i32.const 37)
      )
      (local.get $flags)
     )
@@ -763,7 +763,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 51)
+      (i32.const 38)
      )
      (local.get $flags)
     )
@@ -784,7 +784,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 52)
+      (i32.const 39)
      )
      (local.get $flags)
     )
@@ -805,7 +805,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 53)
+      (i32.const 40)
      )
      (local.get $flags)
     )
@@ -826,7 +826,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 54)
+      (i32.const 41)
      )
      (local.get $flags)
     )
@@ -847,7 +847,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 55)
+      (i32.const 42)
      )
      (local.get $flags)
     )
@@ -868,7 +868,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 58)
+      (i32.const 44)
      )
      (local.get $flags)
     )
@@ -889,7 +889,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 60)
+      (i32.const 45)
      )
      (local.get $flags)
     )
@@ -910,7 +910,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 62)
+      (i32.const 46)
      )
      (local.get $flags)
     )
@@ -931,7 +931,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 64)
+      (i32.const 47)
      )
      (local.get $flags)
     )
@@ -952,7 +952,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 66)
+      (i32.const 48)
      )
      (local.get $flags)
     )
@@ -973,7 +973,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 68)
+      (i32.const 49)
      )
      (local.get $flags)
     )
@@ -994,7 +994,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 70)
+      (i32.const 50)
      )
      (local.get $flags)
     )
@@ -1015,7 +1015,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 72)
+      (i32.const 51)
      )
      (local.get $flags)
     )
@@ -1036,7 +1036,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 74)
+      (i32.const 52)
      )
      (local.get $flags)
     )
@@ -1057,7 +1057,7 @@
    (i32.eqz
     (i32.eq
      (call $~lib/rt/__typeinfo
-      (i32.const 76)
+      (i32.const 53)
      )
      (local.get $flags)
     )

@@ -34,9 +34,9 @@
  (global $class-overloading/ic (mut i32) (i32.const 0))
  (global $class-overloading/b2 (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 768))
- (global $~lib/memory/__data_end i32 (i32.const 844))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33612))
- (global $~lib/memory/__heap_base i32 (i32.const 33612))
+ (global $~lib/memory/__data_end i32 (i32.const 836))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33604))
+ (global $~lib/memory/__heap_base i32 (i32.const 33604))
  (global $~started (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -56,7 +56,7 @@
  (data $14 (i32.const 636) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00I\00B\00\00\00\00\00\00\00\00\00")
  (data $15 (i32.const 668) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00I\00C\00\00\00\00\00\00\00\00\00")
  (data $16 (i32.const 700) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00n\00o\00t\00 \00i\00m\00p\00l\00e\00m\00e\00n\00t\00e\00d\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $17 (i32.const 768) "\12\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
+ (data $17 (i32.const 768) "\10\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -4021,7 +4021,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 11)
+      (i32.const 10)
      )
     )
    )
@@ -4058,7 +4058,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 13)
+      (i32.const 11)
      )
     )
    )
@@ -4095,7 +4095,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 15)
+      (i32.const 13)
      )
     )
    )
@@ -4223,7 +4223,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 0)
-        (i32.const 16)
+        (i32.const 14)
        )
       )
      )
@@ -4527,13 +4527,13 @@
      (br_if $case0
       (i32.eq
        (local.get $1)
-       (i32.const 11)
+       (i32.const 10)
       )
      )
      (br_if $case1
       (i32.eq
        (local.get $1)
-       (i32.const 13)
+       (i32.const 11)
       )
      )
      (br $default)
@@ -4565,7 +4565,7 @@
     (br_if $case0
      (i32.eq
       (local.get $1)
-      (i32.const 15)
+      (i32.const 13)
      )
     )
     (br $default)
@@ -4595,7 +4595,7 @@
     (br_if $case0
      (i32.eq
       (local.get $1)
-      (i32.const 16)
+      (i32.const 14)
      )
     )
     (br $default)
@@ -4702,45 +4702,39 @@
      (block $class-overloading/B2
       (block $class-overloading/A2
        (block $class-overloading/CC
-        (block $class-overloading/IC
-         (block $class-overloading/CA
-          (block $class-overloading/IA
-           (block $class-overloading/F
-            (block $class-overloading/E
-             (block $class-overloading/D
-              (block $class-overloading/C
-               (block $class-overloading/B
-                (block $class-overloading/A
-                 (block $~lib/arraybuffer/ArrayBufferView
-                  (block $~lib/string/String
-                   (block $~lib/arraybuffer/ArrayBuffer
-                    (block $~lib/object/Object
-                     (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-overloading/A $class-overloading/B $class-overloading/C $class-overloading/D $class-overloading/E $class-overloading/F $class-overloading/IA $class-overloading/CA $class-overloading/IC $class-overloading/CC $class-overloading/A2 $class-overloading/B2 $class-overloading/B1 $class-overloading/A1 $invalid
-                      (i32.load
-                       (i32.sub
-                        (local.get $0)
-                        (i32.const 8)
-                       )
-                      )
+        (block $class-overloading/CA
+         (block $class-overloading/F
+          (block $class-overloading/E
+           (block $class-overloading/D
+            (block $class-overloading/C
+             (block $class-overloading/B
+              (block $class-overloading/A
+               (block $~lib/arraybuffer/ArrayBufferView
+                (block $~lib/string/String
+                 (block $~lib/arraybuffer/ArrayBuffer
+                  (block $~lib/object/Object
+                   (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-overloading/A $class-overloading/B $class-overloading/C $class-overloading/D $class-overloading/E $class-overloading/F $class-overloading/CA $class-overloading/CC $class-overloading/A2 $class-overloading/B2 $class-overloading/B1 $class-overloading/A1 $invalid
+                    (i32.load
+                     (i32.sub
+                      (local.get $0)
+                      (i32.const 8)
                      )
                     )
-                    (return)
                    )
-                   (return)
                   )
                   (return)
                  )
-                 (block
-                  (call $~lib/arraybuffer/ArrayBufferView~visit
-                   (local.get $0)
-                   (local.get $1)
-                  )
-                  (return)
-                 )
+                 (return)
                 )
                 (return)
                )
-               (return)
+               (block
+                (call $~lib/arraybuffer/ArrayBufferView~visit
+                 (local.get $0)
+                 (local.get $1)
+                )
+                (return)
+               )
               )
               (return)
              )
