@@ -1755,6 +1755,26 @@ interface ArrayLike<T> {
   length: i32;
 }
 
+interface ReadonlyArray<T> extends Iterable<T> {
+  [key: number]: T;
+  readonly length: i32;
+  at(index: i32): T;
+  findIndex(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): i32;
+  findLastIndex(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): i32;
+  includes(searchElement: T, fromIndex?: i32): bool;
+  indexOf(searchElement: T, fromIndex?: i32): i32;
+  lastIndexOf(searchElement: T, fromIndex?: i32): i32;
+  forEach(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => void): void;
+  filter(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): Array<T>;
+  every(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): bool;
+  some(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): bool;
+  concat(other: Array<T>): Array<T>;
+  slice(from?: i32, to?: i32): Array<T>;
+  join(separator?: string): string;
+  flat(): T;
+  toString(): string;
+}
+
 /** Interface for a typed view on an array buffer. */
 interface ArrayBufferView {
   /** The {@link ArrayBuffer} referenced by this view. */
@@ -1890,7 +1910,7 @@ declare class Float64Array extends TypedArray<f64> {
 }
 
 /** Class representing a sequence of values of type `T`. */
-declare class Array<T> {
+declare class Array<T> implements ReadonlyArray<T> {
   /** Tests if a value is an array. */
   static isArray<U>(value: any): value is Array<any>;
 

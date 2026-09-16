@@ -3033,6 +3033,37 @@ export class Program extends DiagnosticEmitter {
           assert(false); // interface member expected
       }
     }
+    const indexSignature = declaration.indexSignature;
+    if (indexSignature) {
+      const methodDeclaration = Node.createMethodDeclaration(
+        Node.createIdentifierExpression("__get", indexSignature.range),
+        null,
+        CommonFlags.Instance | CommonFlags.Private | CommonFlags.Overridden,
+        null,
+        Node.createFunctionType(
+          [
+            Node.createParameter(
+              ParameterKind.Default,
+              Node.createIdentifierExpression("index", indexSignature.keyType.range),
+              Node.createNamedType(indexSignature.keyType.name, null, false, indexSignature.keyType.range),
+              null,
+              indexSignature.keyType.range
+            ),
+          ],
+          indexSignature.valueType,
+          null,
+          false,
+          indexSignature.range
+        ),
+        null,
+        indexSignature.range
+      );
+      const method = this.defineMethod(methodDeclaration, element);
+      if (method) {
+        method.operatorKind = OperatorKind.IndexedGet;
+        element.operatorOverloadPrototypes.set(OperatorKind.IndexedGet, method);
+      }
+    }
   }
 
   /** Initializes a field of an interface, as a property. */

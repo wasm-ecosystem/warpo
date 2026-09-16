@@ -7,6 +7,7 @@ import { REVERSE, FILL } from "./util/bytes";
 import { joinBooleanArray, joinIntegerArray, joinFloatArray, joinStringArray, joinReferenceArray } from "./util/string";
 import { idof, isArray as builtin_isArray } from "./builtins";
 import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, E_EMPTYARRAY, E_HOLEYARRAY } from "./util/error";
+import { ReadonlyArray } from "./readonlyarray";
 
 // @ts-ignore: decorator
 @inline @lazy const MIN_SIZE: usize = 8;
@@ -46,7 +47,7 @@ function ensureCapacity(array: usize, newSize: usize, alignLog2: u32, canGrow: b
   }
 }
 
-export class Array<T> implements Iterable<T> {
+export class Array<T> implements ReadonlyArray<T> {
   [key: number]: T;
 
   // Mimicking ArrayBufferView isn't strictly necessary here but is done to allow glue code
