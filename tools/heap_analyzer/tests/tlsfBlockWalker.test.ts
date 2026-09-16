@@ -78,7 +78,7 @@ describeIntegration("object header parsing", (ctx) => {
     const rtIds = new Set(blocks.map((b) => b.rtId));
     assert.ok(rtIds.has(1));
     assert.ok(rtIds.has(2));
-    assert.ok(rtIds.has(13));
+    assert.ok(rtIds.has(11));
   });
 
   it("rtId distribution matches fixture", () => {
@@ -88,11 +88,11 @@ describeIntegration("object header parsing", (ctx) => {
     }
     assert.strictEqual(counts[1], 29);
     assert.strictEqual(counts[2], 4);
-    assert.strictEqual(counts[13], 31);
+    assert.strictEqual(counts[11], 31);
   });
 
-  it("block at index 4 has rtId 14, rtSize 12, blockSize 28", () => {
-    assert.strictEqual(blocks[4].rtId, 14);
+  it("block at index 4 has rtId 12, rtSize 12, blockSize 28", () => {
+    assert.strictEqual(blocks[4].rtId, 12);
     assert.strictEqual(blocks[4].rtSize, 12);
     assert.strictEqual(blocks[4].mmInfo & ~TAGS_MASK, 28);
   });
@@ -105,8 +105,8 @@ describeIntegration("object header parsing", (ctx) => {
     }
   });
 
-  it("blocks with rtId 10 all have rtSize 8", () => {
-    const items = blocks.filter((b) => b.rtId === 10);
+  it("blocks with rtId 9 all have rtSize 8", () => {
+    const items = blocks.filter((b) => b.rtId === 9);
     assert.strictEqual(items.length, 13);
     for (const item of items) {
       assert.strictEqual(item.rtSize, 8);
