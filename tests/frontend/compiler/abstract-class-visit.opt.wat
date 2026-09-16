@@ -1064,14 +1064,16 @@
   block $invalid
    block $abstract-class-visit/Base
     block $abstract-class-visit/Derived
-     block $~lib/string/String
+     block $~lib/arraybuffer/ArrayBufferView
       local.get $0
       i32.const 8
       i32.sub
       i32.load
-      br_table $~lib/string/String $~lib/string/String $~lib/string/String $abstract-class-visit/Base $abstract-class-visit/Derived $abstract-class-visit/Base $invalid
+      br_table $abstract-class-visit/Base $abstract-class-visit/Base $abstract-class-visit/Base $~lib/arraybuffer/ArrayBufferView $abstract-class-visit/Derived $abstract-class-visit/Base $invalid
      end
-     return
+     local.get $0
+     i32.load
+     return_call $~lib/rt/itcms/__visit
     end
     local.get $0
     i32.load
@@ -1080,9 +1082,7 @@
     i32.load offset=4
     return_call $~lib/rt/itcms/__visit
    end
-   local.get $0
-   i32.load
-   return_call $~lib/rt/itcms/__visit
+   return
   end
   unreachable
  )

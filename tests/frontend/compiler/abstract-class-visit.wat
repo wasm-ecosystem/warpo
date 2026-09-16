@@ -3510,13 +3510,7 @@
      (return)
     )
    )
-   (block
-    (call $abstract-class-visit/Base~visit
-     (local.get $0)
-     (local.get $1)
-    )
-    (return)
-   )
+   (return)
   )
   (unreachable)
  )
