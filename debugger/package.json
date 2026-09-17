@@ -2,7 +2,7 @@
   "name": "warpo-debugger",
   "displayName": "Warpo Debugger",
   "description": "Debug adapter for Warpo WebAssembly projects",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "icon": "icon.png",
   "type": "commonjs",
   "publisher": "Schleifner",
@@ -59,6 +59,10 @@
               "warpoPath": {
                 "type": "string",
                 "description": "Optional path to the Warpo CLI entry script used by unittest mode. Defaults to the bundled CLI."
+              },
+              "testNamePattern": {
+                "type": "string",
+                "description": "Optional regular expression passed to the test runner to select unit tests by name."
               },
               "entryFunctionName": {
                 "type": "string",

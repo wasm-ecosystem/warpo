@@ -247,7 +247,7 @@ void describe("WarpoDebugSession", () => {
 
     await dc.setBreakpointsRequest({
       source: { path: testSource },
-      breakpoints: [{ line: 9 }],
+      breakpoints: [{ line: 11 }, { line: 16 }],
     });
     await dc.setBreakpointsRequest({
       source: { path: implementationSource },
@@ -259,11 +259,13 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       cwd: string;
       warpoPath: string;
+      testNamePattern: string;
     } = {
       launchType: "unittest",
       runtime: "node",
       cwd: TEST_MODULE_DIR,
       warpoPath: WARPO_CLI,
+      testNamePattern: "runs main before asserting",
     };
 
     await launchAndWaitForBreakpoint(dc, launchArgs);
@@ -280,7 +282,7 @@ void describe("WarpoDebugSession", () => {
 
     stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     assert.equal(assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path, normalizeDebugPath(testSource));
-    assert.equal(stackTraceResponse.body.stackFrames[0].line, 9);
+    assert.equal(stackTraceResponse.body.stackFrames[0].line, 16);
   });
 
   void it("should step over a JavaScript import during step into", { timeout: 15000 }, async () => {
@@ -372,7 +374,7 @@ void describe("WarpoDebugSession", () => {
     const source = sourcePath("debugger_std_array.ts");
     const stdSource = path.resolve(DIRNAME, "..", "..", "..", "assemblyscript", "std", "assembly", "array.ts");
     const output = await buildModule(source);
-    const breakpointLine = 101;
+    const breakpointLine = 102;
     const traceFile = path.join(TEST_MODULE_DIR, "build", "test_std_breakpoint_trace.log");
     if (fs.existsSync(traceFile)) {
       fs.unlinkSync(traceFile);
