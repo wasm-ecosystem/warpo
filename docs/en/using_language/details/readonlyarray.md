@@ -28,7 +28,7 @@ let numbers: Array<i32> = [1, 2, 3];
 printSummary(numbers); // Array<T> implements ReadonlyArray<T>, so passing it is valid
 ```
 
-## Upcasting to Readonly Views
+## Casting to Readonly Views
 
 `Array<T>` in the standard library implements `ReadonlyArray<T>`. Any mutable `Array<T>` can be assigned directly to a `ReadonlyArray<T>` variable or parameter:
 

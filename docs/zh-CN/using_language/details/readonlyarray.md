@@ -28,7 +28,7 @@ let numbers: Array<i32> = [1, 2, 3];
 printSummary(numbers); // Array<T> 实现了 ReadonlyArray<T>，可以直接传入
 ```
 
-## 隐式向上类型转换（Upcasting）
+## 隐式向上类型转换
 
 标准库中的 `Array<T>` 实现了 `ReadonlyArray<T>` 接口，因此任何普通的 `Array<T>` 实例都可以无缝赋值给 `ReadonlyArray<T>` 类型的变量或参数：
 
