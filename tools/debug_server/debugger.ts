@@ -18,6 +18,7 @@ export interface UnitTestLaunchConfig {
   wasmFilePath: string;
   cwd: string;
   warpoPath?: string;
+  testNamePattern?: string;
 }
 
 export interface DebugPauseInfo {

@@ -44,13 +44,16 @@ Set `sessionMode` to `unittest`:
   "type": "warpo",
   "request": "launch",
   "name": "Warpo Debug (unittest)",
-  "sessionMode": "unittest"
+  "sessionMode": "unittest",
+  "testNamePattern": "runs main"
 }
 ```
 
 The debugger runs the Warpo test command for the workspace. If unit tests need
 to use a different Warpo CLI, set the optional `warpoPath` property in the
-launch configuration. Relative paths are resolved from the workspace folder.
+launch configuration. Use `testNamePattern` to pass a regular expression to
+the test runner and debug only matching test cases. Relative paths are resolved
+from the workspace folder.
 
 ## Configuration
 
@@ -63,6 +66,7 @@ launch configuration. Relative paths are resolved from the workspace folder.
   Relative paths are resolved from the workspace folder and take precedence
   over any environment-based trace-file setting.
 - `warpoPath`: Optional Warpo CLI path for unit-test mode.
+- `testNamePattern`: Optional regular expression used to select unit tests by name.
 
 ## Collect logs for a bug report
 
