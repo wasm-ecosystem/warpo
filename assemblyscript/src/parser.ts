@@ -927,7 +927,12 @@ export class Parser extends DiagnosticEmitter {
     } else if (!isFor) {
       if (flags & CommonFlags.Const) {
         if (!(flags & CommonFlags.Ambient)) {
-          this.error(DiagnosticCode._const_declarations_must_be_initialized, assert(name).range); // recoverable
+          this.error(
+            arrayBindingPattern
+              ? DiagnosticCode.A_destructuring_declaration_must_have_an_initializer
+              : DiagnosticCode._const_declarations_must_be_initialized,
+            name ? name.range : assert(arrayBindingPattern)[0].range
+          ); // recoverable
         }
       } else if (!type) {
         // neither type nor initializer

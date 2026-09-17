@@ -1,0 +1,6 @@
+{
+    "stderr": [
+        "ERROR TS1182: A destructuring declaration must have an initializer.",
+        "ERROR TS1155: 'const' declarations must be initialized."
+    ]
+}
