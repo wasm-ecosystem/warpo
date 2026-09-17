@@ -374,7 +374,7 @@ void describe("WarpoDebugSession", () => {
     const source = sourcePath("debugger_std_array.ts");
     const stdSource = path.resolve(DIRNAME, "..", "..", "..", "assemblyscript", "std", "assembly", "array.ts");
     const output = await buildModule(source);
-    const breakpointLine = 101;
+    const breakpointLine = 102;
     const traceFile = path.join(TEST_MODULE_DIR, "build", "test_std_breakpoint_trace.log");
     if (fs.existsSync(traceFile)) {
       fs.unlinkSync(traceFile);
