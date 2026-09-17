@@ -195,6 +195,10 @@ static std::vector<SegmentInfo> collectOrderedSegmentInfo(wasm::Module const &m)
     return a.index < b.index;
   });
 
+  // AS emits non-overlapping active data segments
+  assert(std::adjacent_find(info.begin(), info.end(),
+                            [](SegmentInfo const &a, SegmentInfo const &b) { return a.end > b.offset; }) == info.end());
+
   return info;
 }
 
@@ -438,22 +442,6 @@ TEST(MergeDataSectionPassTest, AdjacentMerge) {
   ASSERT_EQ(m->dataSegments.size(), 1U);
   EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
   EXPECT_EQ(payload(*m->dataSegments[0]), "ABCD");
-}
-
-TEST(MergeDataSectionPassTest, OverlapMergeOverwritesLaterBytes) {
-  auto m = loadWat(R"(
-    (module
-      (memory $m0 1)
-      (data (i32.const 0) "AB_CD")
-      (data (i32.const 3) "XY")
-    )
-  )");
-
-  runMergeDataSection(m.get());
-
-  ASSERT_EQ(m->dataSegments.size(), 1U);
-  EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
-  EXPECT_EQ(payload(*m->dataSegments[0]), "AB_XY");
 }
 
 TEST(MergeDataSectionPassTest, CrossGapPositiveBenefitMergesAndFillsZeros) {
