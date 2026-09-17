@@ -2077,8 +2077,26 @@ declare namespace String {
   }
 }
 
-declare class TemplateStringsArray extends Array<string> {
-  readonly raw: string[];
+declare class TemplateStringsArray implements ReadonlyArray<string> {
+  [key: number]: string;
+  readonly raw: ReadonlyArray<string>;
+  readonly length: i32;
+  [Symbol.iterator](): Iterator<string>;
+  at(index: i32): string;
+  findIndex(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): i32;
+  findLastIndex(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): i32;
+  includes(searchElement: string, fromIndex?: i32): bool;
+  indexOf(searchElement: string, fromIndex?: i32): i32;
+  lastIndexOf(searchElement: string, fromIndex?: i32): i32;
+  forEach(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => void): void;
+  filter(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): Array<string>;
+  every(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): bool;
+  some(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): bool;
+  concat(other: Array<string>): Array<string>;
+  slice(from?: i32, to?: i32): Array<string>;
+  join(separator?: string): string;
+  flat(): string;
+  toString(): string;
 }
 
 declare class Object {

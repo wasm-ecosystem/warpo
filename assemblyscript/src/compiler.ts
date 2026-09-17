@@ -7365,7 +7365,13 @@ export class Compiler extends DiagnosticEmitter {
           // builtins handle present respectively omitted type arguments on their own
           return this.compileCallExpressionBuiltin(functionPrototype, reportNode, contextualType);
         }
-        let functionInstance = this.resolver.maybeInferCall(reportNode, functionPrototype, flow);
+        let functionInstance = this.resolver.maybeInferCall(
+          reportNode,
+          functionPrototype,
+          flow,
+          ReportMode.Report,
+          existingOperandTypes
+        );
         if (!functionInstance) return this.module.unreachable();
         target = functionInstance;
         // fall-through
@@ -9617,33 +9623,7 @@ export class Compiler extends DiagnosticEmitter {
       return module.block(null, stmts, stringType.toRef());
     }
 
-    // Try to find out whether the template function takes a full-blown TemplateStringsArray or if
-    // it is sufficient to compile to a normal array. While technically incorrect, this allows us
-    // to avoid generating unnecessary static data that is not explicitly signaled to be used.
     let tsaArrayInstance = this.program.templateStringsArrayInstance;
-    let arrayInstance = tsaArrayInstance;
-    let target = this.resolver.lookupExpression(tag, this.currentFlow, Type.auto, ReportMode.Swallow);
-    if (target) {
-      switch (target.kind) {
-        case ElementKind.FunctionPrototype: {
-          let instance = this.resolver.resolveFunction(<FunctionPrototype>target, null, new Map(), ReportMode.Swallow);
-          if (!instance) break;
-          target = instance;
-          // fall-through
-        }
-        case ElementKind.Function: {
-          let instance = <Function>target;
-          let parameterTypes = instance.signature.parameterTypes;
-          if (parameterTypes.length) {
-            let first = parameterTypes[0].getClass();
-            if (first && !first.extendsPrototype(tsaArrayInstance.prototype)) {
-              arrayInstance = assert(this.resolver.resolveClass(this.program.arrayPrototype, [stringType]));
-            }
-          }
-          break;
-        }
-      }
-    }
 
     // Compile to a call to the tag function
     let rawParts = expression.rawParts;
@@ -9652,39 +9632,38 @@ export class Compiler extends DiagnosticEmitter {
     for (let i = 0; i < numParts; ++i) {
       partExprs[i] = this.ensureStaticString(parts[i]);
     }
-    let arraySegment: MemorySegment;
-    if (arrayInstance == tsaArrayInstance) {
-      let rawExprs = new Array<ExpressionRef>(numParts);
-      for (let i = 0; i < numParts; ++i) {
-        rawExprs[i] = this.ensureStaticString(rawParts[i]);
-      }
-      arraySegment = this.addStaticArrayHeader(
-        stringType,
-        this.addStaticBuffer(Type.usize32, partExprs),
-        arrayInstance
-      );
-      let rawHeaderSegment = this.addStaticArrayHeader(stringType, this.addStaticBuffer(Type.usize32, rawExprs));
-      arrayInstance.writeField(
-        "raw",
-        i64_add(rawHeaderSegment.offset, i64_new(this.program.totalOverhead)),
-        arraySegment.buffer
-      );
-    } else {
-      arraySegment = this.addStaticArrayHeader(
-        stringType,
-        this.addStaticBuffer(Type.usize32, partExprs),
-        arrayInstance
-      );
+    let rawExprs = new Array<ExpressionRef>(numParts);
+    for (let i = 0; i < numParts; ++i) {
+      rawExprs[i] = this.ensureStaticString(rawParts[i]);
     }
+    let valuesArraySegment = this.addStaticArrayHeader(stringType, this.addStaticBuffer(Type.usize32, partExprs));
+    let rawArraySegment = this.addStaticArrayHeader(stringType, this.addStaticBuffer(Type.usize32, rawExprs));
+    // Each tagged-template source site must reuse the same TemplateStringsArray
+    // object across evaluations. Static allocation preserves that identity
+    // without a runtime cache or a new allocation on every call.
+    let templateBuffer = tsaArrayInstance.createBuffer();
+    assert(
+      tsaArrayInstance.writeField(
+        "values",
+        i64_add(valuesArraySegment.offset, i64_new(this.program.totalOverhead)),
+        templateBuffer
+      )
+    );
+    assert(
+      tsaArrayInstance.writeField(
+        "raw",
+        i64_add(rawArraySegment.offset, i64_new(this.program.totalOverhead)),
+        templateBuffer
+      )
+    );
+    let arraySegment = this.addRuntimeMemorySegment(templateBuffer);
 
     let arrayOperand = module.usize(i64_add(arraySegment.offset, i64_new(this.program.totalOverhead)));
-    // TODO: Requires ReadonlyArray to be safe
-    this.error(DiagnosticCode.Not_implemented_0, expression.range, "Tagged template literals");
     return this.compileCallExpressionLikeWithOperands(
       tag,
       null,
       [arrayOperand],
-      [arrayInstance.type],
+      [tsaArrayInstance.type],
       expressions,
       expression.range,
       stringType

@@ -1071,14 +1071,13 @@ export class Signature {
 
   /** Tests if a value of this function type is assignable to a target of the specified function type. */
   isAssignableTo(target: Signature, checkCompatibleOverride: bool = false): bool {
+    if (!checkCompatibleOverride) return this.isFunctionTypeCompatibleTo(target);
+
     let thisThisType = this.thisType;
     let targetThisType = target.thisType;
 
     if (thisThisType && targetThisType) {
-      const compatibleThisType = checkCompatibleOverride
-        ? thisThisType.canExtendOrImplement(targetThisType)
-        : targetThisType.isAssignableTo(thisThisType);
-      if (!compatibleThisType) return false;
+      if (!thisThisType.canExtendOrImplement(targetThisType)) return false;
     } else if (thisThisType || targetThisType) {
       return false;
     }
@@ -1092,9 +1091,8 @@ export class Signature {
     if (!(thisReturnType == targetReturnType || thisReturnType.isAssignableTo(targetReturnType))) {
       return false;
     }
-    // Array<T> implements ReadonlyArray<T>, but their methods use function
-    // parameters with Array<T> and ReadonlyArray<T>, respectively. Permit this
-    // safe difference only when validating an interface override.
+    // Interface overrides compare method parameters in the opposite direction
+    // of ordinary function calls.
     let thisParameterTypes = this.parameterTypes;
     let targetParameterTypes = target.parameterTypes;
     let numParameters = thisParameterTypes.length;
@@ -1104,16 +1102,13 @@ export class Signature {
       let thisParameterType = unchecked(thisParameterTypes[i]);
       let targetParameterType = unchecked(targetParameterTypes[i]);
       if (thisParameterType == targetParameterType) continue;
-      if (!checkCompatibleOverride) return false;
-      let thisParameterSignature = thisParameterType.getSignature();
-      let targetParameterSignature = targetParameterType.getSignature();
       if (
-        !thisParameterSignature ||
-        !targetParameterSignature ||
+        !thisParameterType.getSignature() ||
+        !targetParameterType.getSignature() ||
         // Compatible function types must use the same Wasm representation for
         // indirect calls.
         thisParameterType.toRef() != targetParameterType.toRef() ||
-        !targetParameterSignature.isFunctionTypeCompatibleTo(thisParameterSignature)
+        !targetParameterType.getSignature()!.isFunctionTypeCompatibleTo(thisParameterType.getSignature()!)
       ) {
         return false;
       }
@@ -1122,10 +1117,7 @@ export class Signature {
   }
 
   /**
-   * Checks whether an interface function type can accept values supplied by an implementation.
-   *
-   * This lets Array<T> implement ReadonlyArray<T>: the implementation passes
-   * Array<T>, while the interface function type accepts ReadonlyArray<T>.
+   * Checks whether this function type can accept values supplied by another function type.
    */
   private isFunctionTypeCompatibleTo(target: Signature): bool {
     let thisThisType = this.thisType;
