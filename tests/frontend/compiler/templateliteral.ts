@@ -61,36 +61,115 @@ function test_null(): void {
 }
 test_null();
 
-function tag(parts: TemplateStringsArray, a: i32): string {
+function tag(parts: TemplateStringsArray, a: i32, b: i32): string {
   var raw = parts.raw;
-  assert(parts.length == 2);
-  assert(raw.length == 2);
+  assert(parts.length == 3);
+  assert(raw.length == 3);
   assert(parts[0] == "a");
   assert(raw[0] == "a");
   assert(parts[1] == "b");
   assert(raw[1] == "b");
-  assert(a == 1);
-  return parts[0] + a.toString() + parts[1];
-}
+  assert(parts[2] == "a");
+  assert(raw[2] == "a");
+  assert(parts.at(-1) == "a");
+  assert(raw.at(1) == "b");
 
-namespace ns {
-  export function tag(parts: string[] /* ! */, a: i32, b: i32): string {
-    assert(!(parts instanceof TemplateStringsArray)); // optimized away
-    assert(parts.length == 3);
-    assert(parts[0] == "r");
-    assert(parts[1] == "d");
-    assert(parts[2] == "");
-    assert(a == 2);
-    assert(b == 2);
-    return parts[0] + a.toString() + parts[1] + b.toString();
-  }
+  assert(
+    parts.findIndex((value: string, index: i32, array: ReadonlyArray<string>) => {
+      assert(array[index] == value);
+      return value == "b";
+    }) == 1
+  );
+  assert(parts.findLastIndex((value) => value == "a") == 2);
+  assert(parts.includes("b", 0));
+  assert(parts.indexOf("a", 0) == 0);
+  assert(parts.lastIndexOf("a", i32.MAX_VALUE) == 2);
+
+  var forEachResult = "";
+  var count = 0;
+  parts.forEach((value, index, array) => {
+    assert(array[index] == value);
+    forEachResult += value + index.toString();
+    ++count;
+  });
+  assert(forEachResult == "a0b1a2");
+  assert(count == parts.length);
+
+  var mapped = parts.map<string>((value, index, array) => {
+    assert(array[index] == value);
+    return value + index.toString();
+  });
+  assert(mapped.join("") == "a0b1a2");
+
+  var filtered = parts.filter((value) => value == "a");
+  assert(filtered.length == 2);
+  assert(filtered[0] == "a");
+  assert(filtered[1] == "a");
+
+  var reduced = parts.reduce<string>(
+    (previousValue, currentValue, currentIndex) => previousValue + currentValue + currentIndex.toString(),
+    ""
+  );
+  assert(reduced == "a0b1a2");
+
+  var reducedRight = parts.reduceRight<string>(
+    (previousValue, currentValue, currentIndex) => previousValue + currentValue + currentIndex.toString(),
+    ""
+  );
+  assert(reducedRight == "a2b1a0");
+
+  assert(parts.every((value) => value.length > 0));
+  assert(parts.some((value) => value == "b"));
+
+  var other = new Array<string>();
+  other.push("c");
+  var concatenated = parts.concat(other);
+  assert(concatenated.length == 4);
+  assert(concatenated[3] == "c");
+
+  var sliced = parts.slice(1, 3);
+  assert(sliced.length == 2);
+  assert(sliced[0] == "b");
+  assert(sliced[1] == "a");
+
+  assert(parts.join("-") == "a-b-a");
+  assert(parts.toString() == "a,b,a");
+
+  var iterated = "";
+  for (const value of parts) iterated += value;
+  assert(iterated == "aba");
+  assert(a == 1);
+  assert(b == 2);
+  return parts[0] + a.toString() + parts[1] + b.toString() + parts[2];
 }
 
 function test_tag(): void {
-  assert(tag`a${1}b` == "a1b");
-  assert(ns.tag`r${2}d${2}` == "r2d2");
+  assert(tag`a${1}b${2}a` == "a1b2a");
 }
-// test_tag(); // TODO: Requires ReadonlyArray to be safe
+test_tag();
+
+function tagGeneric<T, U>(strings: T, val: U): string {
+  assert(nameof<T>() == nameof<TemplateStringsArray>());
+  assert(nameof<U>() == nameof<i32>());
+  return "generic";
+}
+
+let num: i32 = 123;
+assert(tagGeneric`Count: ${num}` == "generic");
+
+function identity_tag(parts: TemplateStringsArray): TemplateStringsArray {
+  return parts;
+}
+
+function test_tag_template_identity(): void {
+  var first: TemplateStringsArray | null = null;
+  for (var i: i32 = 0; i < 2; ++i) {
+    var current = identity_tag`identity`;
+    if (first != null) assert(first === current);
+    first = current;
+  }
+}
+test_tag_template_identity();
 
 function raw(parts: TemplateStringsArray): string {
   return parts.raw.join("");
@@ -102,7 +181,7 @@ function test_raw(): void {
   assert(raw`\u1` == "\\u1");
   assert(raw`\u1000` == "\\u1000");
 }
-// test_raw(); // TODO: Requires ReadonlyArray to be safe
+test_raw();
 
 class RecursiveObject {
   constructor(

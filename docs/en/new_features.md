@@ -29,3 +29,5 @@ Comparison with AS, we support some new features.
 - [multi return](/en/using_language/details/multi_return)
 - [unpack from arrays and tuples](/en/using_language/details/unpack)
 - [promise](/en/using_language/details/promise)
+- [tagged template literals](/en/using_language/details/template_literal)
+- [ReadonlyArray](/en/using_language/details/readonlyarray)
