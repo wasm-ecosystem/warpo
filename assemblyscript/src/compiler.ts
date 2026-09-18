@@ -10656,14 +10656,23 @@ export class Compiler extends DiagnosticEmitter {
   ): ExpressionRef {
     let module = this.module;
     let flow = this.currentFlow;
+    let compoundAssignmentCacheContext: CompoundAssignmentCacheContext | null = null;
+    let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(expression.operand);
 
     // make a getter for the expression (also obtains the type)
-    const getValueOriginal = this.compileExpression(
-      // reports
-      expression.operand,
-      contextualType.exceptVoid,
-      Constraints.None
-    );
+    let getValueOriginal: ExpressionRef;
+    if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+      compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType);
+      if (!compoundAssignmentCacheContext) return module.unreachable();
+      getValueOriginal = compoundAssignmentCacheContext.leftExpr;
+    } else {
+      getValueOriginal = this.compileExpression(
+        // reports
+        expression.operand,
+        contextualType.exceptVoid,
+        Constraints.None
+      );
+    }
     let getValue: ExpressionRef;
 
     // if the value isn't dropped, a temp. local is required to remember the original value,
@@ -10822,21 +10831,29 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     let resolver = this.resolver;
-    let target = resolver.lookupExpression(expression.operand, flow); // reports
+    let target = compoundAssignmentCacheContext
+      ? compoundAssignmentCacheContext.target
+      : resolver.lookupExpression(expression.operand, flow); // reports
     if (!target) {
       return module.unreachable();
     }
+    let assignmentAccessContext = compoundAssignmentCacheContext
+      ? compoundAssignmentCacheContext.assignmentAccessContext
+      : new AssignmentAccessContext(resolver.currentThisExpression, resolver.currentElementExpression);
 
     // simplify if dropped anyway
     if (!tempLocal) {
-      return this.makeAssignment(
+      let setValue = this.makeAssignment(
         target,
         expr,
         this.currentType,
         expression.operand,
-        new AssignmentAccessContext(resolver.currentThisExpression, resolver.currentElementExpression),
+        assignmentAccessContext,
         false
       );
+      return compoundAssignmentCacheContext
+        ? this.prependSetupPrefixExpressions(compoundAssignmentCacheContext.setupPrefixExprs, setValue, false)
+        : setValue;
     }
 
     // otherwise use the temp. local for the intermediate value (always possibly overflows)
@@ -10845,14 +10862,16 @@ export class Compiler extends DiagnosticEmitter {
       expr, // includes a tee of getValue to tempLocal
       this.currentType,
       expression.operand,
-      new AssignmentAccessContext(resolver.currentThisExpression, resolver.currentElementExpression),
+      assignmentAccessContext,
       false
     );
 
     this.currentType = tempLocal.type;
     let typeRef = tempLocal.type.toRef();
-
-    return module.block(null, [setValue, module.local_get(tempLocal.index, typeRef)], typeRef); // result of 'x++' / 'x--' might overflow
+    let result = module.block(null, [setValue, module.local_get(tempLocal.index, typeRef)], typeRef);
+    return compoundAssignmentCacheContext
+      ? this.prependSetupPrefixExpressions(compoundAssignmentCacheContext.setupPrefixExprs, result, true)
+      : result; // result of 'x++' / 'x--' might overflow
   }
 
   private compileUnaryPrefixExpression(
