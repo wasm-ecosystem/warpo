@@ -58333,6 +58333,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Uint8Array,u8>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -58408,17 +58409,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 0)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -58431,6 +58432,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -58646,6 +58650,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Int8Array,i8>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -58721,17 +58726,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 0)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -58744,6 +58749,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -59157,6 +59165,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Uint8ClampedArray,u8>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -59232,17 +59241,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 0)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -59255,6 +59264,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -59509,6 +59521,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Int16Array,i16>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -59584,17 +59597,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 1)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -59607,6 +59620,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -59865,6 +59881,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Uint16Array,u16>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -59940,17 +59957,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 1)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -59963,6 +59980,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -60227,6 +60247,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Int32Array,i32>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -60302,17 +60323,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 2)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -60325,6 +60346,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -60591,6 +60615,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Uint32Array,u32>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -60666,17 +60691,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 2)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -60689,6 +60714,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -60960,6 +60988,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Int64Array,i64>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -61035,17 +61064,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 3)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -61058,6 +61087,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -61336,6 +61368,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Uint64Array,u64>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -61411,17 +61444,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 3)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -61434,6 +61467,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -61717,6 +61753,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Float32Array,f32>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -61792,17 +61829,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 2)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -61815,6 +61852,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -62103,6 +62143,7 @@
  (func $"~lib/typedarray/WRAP<~lib/typedarray/Float64Array,f64>" (param $buffer i32) (param $byteOffset i32) (param $len i32) (result i32)
   (local $byteLength i32)
   (local $bufferByteLength i32)
+  (local $length i32)
   (local $out i32)
   (local.set $bufferByteLength
    (call $~lib/arraybuffer/ArrayBuffer#get:byteLength
@@ -62178,17 +62219,17 @@
     )
    )
    (else
-    (local.set $byteLength
+    (local.set $length
      (i32.shl
       (local.get $len)
       (i32.const 3)
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
-       (local.get $byteLength)
+       (local.get $length)
       )
       (local.get $bufferByteLength)
      )
@@ -62201,6 +62242,9 @@
       )
       (unreachable)
      )
+    )
+    (local.set $byteLength
+     (local.get $length)
     )
    )
   )
@@ -62518,10 +62562,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -62535,7 +62579,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -62817,10 +62861,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -62834,7 +62878,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -62977,10 +63021,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -62994,7 +63038,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -63140,10 +63184,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63157,7 +63201,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -63297,10 +63341,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63314,7 +63358,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -63392,10 +63436,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63409,7 +63453,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -63531,10 +63575,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63548,7 +63592,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -63895,10 +63939,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63912,7 +63956,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -64194,10 +64238,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64211,7 +64255,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -64354,10 +64398,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64371,7 +64415,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -64498,10 +64542,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64515,7 +64559,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -64655,10 +64699,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64672,7 +64716,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -64750,10 +64794,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64767,7 +64811,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -64889,10 +64933,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64906,7 +64950,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -65253,10 +65297,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -65270,7 +65314,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -65549,10 +65593,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -65566,7 +65610,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -65713,10 +65757,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -65730,7 +65774,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -65896,10 +65940,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -65913,7 +65957,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -66057,10 +66101,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -66074,7 +66118,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -66152,10 +66196,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -66169,7 +66213,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -66327,10 +66371,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -66344,7 +66388,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -66770,10 +66814,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -66787,7 +66831,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -67072,10 +67116,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67089,7 +67133,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -67232,10 +67276,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67249,7 +67293,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -67376,10 +67420,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67393,7 +67437,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -67536,10 +67580,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67553,7 +67597,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -67675,10 +67719,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67692,7 +67736,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -67770,10 +67814,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67787,7 +67831,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -68181,10 +68225,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68198,7 +68242,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -68483,10 +68527,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68500,7 +68544,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -68643,10 +68687,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68660,7 +68704,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -68787,10 +68831,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68804,7 +68848,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -68947,10 +68991,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68964,7 +69008,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -69086,10 +69130,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69103,7 +69147,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -69181,10 +69225,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69198,7 +69242,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -69589,10 +69633,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69606,7 +69650,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -69825,10 +69869,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69842,7 +69886,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -69985,10 +70029,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70002,7 +70046,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -70129,10 +70173,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70146,7 +70190,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -70289,10 +70333,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70306,7 +70350,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -70431,10 +70475,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70448,7 +70492,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -70573,10 +70617,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70590,7 +70634,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -70981,10 +71025,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70998,7 +71042,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -71236,10 +71280,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71253,7 +71297,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -71396,10 +71440,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71413,7 +71457,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -71540,10 +71584,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71557,7 +71601,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -71700,10 +71744,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71717,7 +71761,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -71842,10 +71886,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71859,7 +71903,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -71984,10 +72028,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72001,7 +72045,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -72395,10 +72439,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72412,7 +72456,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -72699,10 +72743,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72716,7 +72760,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -72856,10 +72900,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72873,7 +72917,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -72951,10 +72995,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72968,7 +73012,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -73111,10 +73155,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73128,7 +73172,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -73255,10 +73299,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73272,7 +73316,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -73399,10 +73443,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73416,7 +73460,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -73812,10 +73856,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73829,7 +73873,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -74116,10 +74160,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74133,7 +74177,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -74273,10 +74317,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74290,7 +74334,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -74368,10 +74412,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74385,7 +74429,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -74528,10 +74572,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74545,7 +74589,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -74672,10 +74716,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74689,7 +74733,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -74816,10 +74860,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74833,7 +74877,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -75229,10 +75273,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75246,7 +75290,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -75511,10 +75555,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75528,7 +75572,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -75606,10 +75650,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75623,7 +75667,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -75750,10 +75794,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75767,7 +75811,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -75894,10 +75938,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75911,7 +75955,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -76038,10 +76082,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76055,7 +76099,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -76426,10 +76470,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76443,7 +76487,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -76707,10 +76751,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76724,7 +76768,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -76853,10 +76897,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76870,7 +76914,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -76997,10 +77041,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -77014,7 +77058,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -77141,10 +77185,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -77158,7 +77202,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -77285,10 +77329,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -77302,7 +77346,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -77673,10 +77717,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -77690,7 +77734,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -77837,10 +77881,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -77854,7 +77898,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)
@@ -78014,10 +78058,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -78031,7 +78075,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 1957)
+     (i32.const 1958)
      (i32.const 5)
     )
     (unreachable)

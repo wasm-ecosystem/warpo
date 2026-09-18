@@ -1924,10 +1924,11 @@ function WRAP<TArray extends ArrayBufferView, T>(
       throw new RangeError(E_INVALIDLENGTH);
     }
   } else {
-    byteLength = len << alignof<T>();
-    if (byteOffset + byteLength > bufferByteLength) {
+    let length = <usize>len << alignof<T>();
+    if (<usize>byteOffset + length > <usize>bufferByteLength) {
       throw new RangeError(E_INVALIDLENGTH);
     }
+    byteLength = <i32>length;
   }
   let out = changetype<TArray>(__new(offsetof<TArray>(), idof<TArray>()));
   store<usize>(changetype<usize>(out), changetype<usize>(buffer), offsetof<TArray>("buffer"));
@@ -1952,7 +1953,7 @@ function SET<
     ERROR(E_NOTIMPLEMENTED);
   }
   let sourceLen = source.length;
-  if (offset < 0 || sourceLen + offset > target.length) {
+  if (offset < 0 || <usize>offset + <usize>sourceLen > <usize>target.length) {
     // offset is out of bounds
     throw new RangeError(E_INDEXOUTOFRANGE);
   }
