@@ -8037,6 +8037,8 @@
   (local $last i32)
   (local $23 i32)
   (local $24 i32)
+  (local $25 i32)
+  (local $26 i32)
   (local $count i32)
   (local.set $len
    (call $~lib/typedarray/Int32Array#get:length
@@ -8185,21 +8187,32 @@
   )
   (local.set $count
    (select
-    (local.tee $23
-     (i32.sub
-      (local.get $last)
-      (local.get $from)
+    (local.tee $25
+     (select
+      (local.tee $23
+       (i32.sub
+        (local.get $last)
+        (local.get $from)
+       )
+      )
+      (local.tee $24
+       (i32.sub
+        (local.get $len)
+        (local.get $to)
+       )
+      )
+      (i32.lt_s
+       (local.get $23)
+       (local.get $24)
+      )
      )
     )
-    (local.tee $24
-     (i32.sub
-      (local.get $len)
-      (local.get $to)
-     )
+    (local.tee $26
+     (i32.const 0)
     )
-    (i32.lt_s
-     (local.get $23)
-     (local.get $24)
+    (i32.gt_s
+     (local.get $25)
+     (local.get $26)
     )
    )
   )

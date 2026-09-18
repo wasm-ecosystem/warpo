@@ -4338,6 +4338,12 @@
   local.get $2
   i32.gt_s
   select
+  local.tee $1
+  i32.const 0
+  local.get $1
+  i32.const 0
+  i32.gt_s
+  select
   i32.const 2
   i32.shl
   memory.copy
