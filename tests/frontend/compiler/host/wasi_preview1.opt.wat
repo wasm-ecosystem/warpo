@@ -288,7 +288,7 @@
         if
          i32.const 144
          i32.const 208
-         i32.const 785
+         i32.const 787
          i32.const 49
          call $~lib/wasi_snapshot_preview1/wasi_internal/wasi_abort
          unreachable
