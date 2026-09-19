@@ -6833,30 +6833,10 @@
     )
    )
   )
-  (if
-   (i32.eqz
-    (local.get $searchLen)
-   )
-   (then
-    (return
-     (i32.const 0)
-    )
-   )
-  )
   (local.set $len
    (call $~lib/string/String#get:length
     (call $~lib/rt/__tmptostack
      (local.get $this)
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (local.get $len)
-   )
-   (then
-    (return
-     (i32.const -1)
     )
    )
   )
@@ -6882,6 +6862,26 @@
     (i32.lt_s
      (local.get $7)
      (local.get $8)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (local.get $searchLen)
+   )
+   (then
+    (return
+     (local.get $searchStart)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (local.get $len)
+   )
+   (then
+    (return
+     (i32.const -1)
     )
    )
   )
