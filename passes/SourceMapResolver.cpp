@@ -69,7 +69,7 @@ SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t cons
 
       std::optional<SourceLocation> sourceLocation = std::nullopt;
       if (location.has_value()) {
-        assert(location->fileIndex >= 0);
+        assert(location->fileIndex >= 0U);
         size_t const fileIndex = static_cast<size_t>(location->fileIndex);
         assert(fileIndex < m.debugInfoFileNames.size());
         sourceLocation = SourceLocation{
