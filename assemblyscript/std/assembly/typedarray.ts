@@ -1679,7 +1679,7 @@ function COPY_WITHIN<TArray extends ArrayBufferView, T extends number>(
   let to    = target < 0 ? max(len + target, 0) : min(target, len);
   let from  = start < 0 ? max(len + start, 0) : min(start, len);
   let last  = end < 0 ? max(len + end, 0) : min(end, len);
-  let count = min(last - from, len - to);
+  let count = max(min(last - from, len - to), 0);
 
   memory.copy(
     ptr + (<usize>to << alignof<T>()),
