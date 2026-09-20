@@ -207,10 +207,10 @@ class StringIterator implements Iterator<string> {
 
   indexOf(search: String, start: i32 = 0): i32 {
     let searchLen = <isize>search.length;
-    if (!searchLen) return 0;
     let len = <isize>this.length;
-    if (!len) return -1;
     let searchStart = min(max(<isize>start, 0), len);
+    if (!searchLen) return <i32>searchStart;
+    if (!len) return -1;
     for (len -= searchLen; searchStart <= len; ++searchStart) {
       // @ts-ignore: string <-> String
       if (!compareImpl(this, searchStart, search, 0, searchLen)) return <i32>searchStart;

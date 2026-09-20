@@ -62,6 +62,8 @@ assert("".indexOf("hi") == -1);
 assert("a".indexOf("a") == 0);
 assert(str.indexOf(str) == 0);
 assert(str.indexOf("") == 0);
+assert(str.indexOf("", 2) == 2);
+assert(str.indexOf("", i32.MAX_VALUE) == str.length);
 assert(str.indexOf(",") == 2);
 assert(str.indexOf("x") == -1);
 assert(str.indexOf(",", 2) == 2);
