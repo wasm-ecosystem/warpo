@@ -1908,7 +1908,7 @@ function WRAP<TArray extends ArrayBufferView, T>(
   byteOffset: i32 = 0,
   len: i32 = -1
 ): TArray {
-  let byteLength: i32;
+  let byteLength: usize;
   let bufferByteLength = buffer.byteLength;
   const mask: u32 = sizeof<T>() - 1;
   if (i32(<u32>byteOffset > <u32>bufferByteLength) | (byteOffset & mask)) {
@@ -1924,8 +1924,8 @@ function WRAP<TArray extends ArrayBufferView, T>(
       throw new RangeError(E_INVALIDLENGTH);
     }
   } else {
-    byteLength = len << alignof<T>();
-    if (byteOffset + byteLength > bufferByteLength) {
+    byteLength = <usize>len << alignof<T>();
+    if (<usize>byteOffset + byteLength > <usize>bufferByteLength) {
       throw new RangeError(E_INVALIDLENGTH);
     }
   }
@@ -1952,7 +1952,7 @@ function SET<
     ERROR(E_NOTIMPLEMENTED);
   }
   let sourceLen = source.length;
-  if (offset < 0 || sourceLen + offset > target.length) {
+  if (offset < 0 || <usize>offset + <usize>sourceLen > <usize>target.length) {
     // offset is out of bounds
     throw new RangeError(E_INDEXOUTOFRANGE);
   }

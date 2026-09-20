@@ -58428,7 +58428,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -58741,7 +58741,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -59252,7 +59252,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -59604,7 +59604,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -59960,7 +59960,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -60322,7 +60322,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -60686,7 +60686,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -61055,7 +61055,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -61431,7 +61431,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -61812,7 +61812,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -62198,7 +62198,7 @@
      )
     )
     (if
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
        (local.get $byteOffset)
        (local.get $byteLength)
@@ -62531,10 +62531,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -62830,10 +62830,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -62990,10 +62990,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63153,10 +63153,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63310,10 +63310,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63405,10 +63405,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63544,10 +63544,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -63908,10 +63908,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64207,10 +64207,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64367,10 +64367,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64511,10 +64511,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64668,10 +64668,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64763,10 +64763,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -64902,10 +64902,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8Array#get:length
        (call $~lib/rt/__tmptostack
@@ -65266,10 +65266,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -65562,10 +65562,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -65726,10 +65726,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -65909,10 +65909,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -66070,10 +66070,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -66165,10 +66165,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -66340,10 +66340,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -66783,10 +66783,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67085,10 +67085,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67245,10 +67245,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67389,10 +67389,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67549,10 +67549,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67688,10 +67688,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -67783,10 +67783,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68194,10 +68194,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68496,10 +68496,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68656,10 +68656,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68800,10 +68800,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -68960,10 +68960,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69099,10 +69099,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69194,10 +69194,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint16Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69602,10 +69602,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69838,10 +69838,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -69998,10 +69998,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70142,10 +70142,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70302,10 +70302,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70444,10 +70444,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70586,10 +70586,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -70994,10 +70994,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71249,10 +71249,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71409,10 +71409,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71553,10 +71553,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71713,10 +71713,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71855,10 +71855,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -71997,10 +71997,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72408,10 +72408,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72712,10 +72712,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72869,10 +72869,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -72964,10 +72964,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73124,10 +73124,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73268,10 +73268,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73412,10 +73412,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Int64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -73825,10 +73825,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74129,10 +74129,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74286,10 +74286,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74381,10 +74381,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74541,10 +74541,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74685,10 +74685,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -74829,10 +74829,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75242,10 +75242,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75524,10 +75524,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75619,10 +75619,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75763,10 +75763,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -75907,10 +75907,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76051,10 +76051,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float32Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76439,10 +76439,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76720,10 +76720,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -76866,10 +76866,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -77010,10 +77010,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -77154,10 +77154,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -77298,10 +77298,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Float64Array#get:length
        (call $~lib/rt/__tmptostack
@@ -77686,10 +77686,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -77850,10 +77850,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack
@@ -78027,10 +78027,10 @@
      (i32.const 1)
     )
     (else
-     (i32.gt_s
+     (i32.gt_u
       (i32.add
-       (local.get $sourceLen)
        (local.get $offset)
+       (local.get $sourceLen)
       )
       (call $~lib/typedarray/Uint8ClampedArray#get:length
        (call $~lib/rt/__tmptostack

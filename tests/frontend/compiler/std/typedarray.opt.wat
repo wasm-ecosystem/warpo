@@ -13242,7 +13242,7 @@
    local.get $3
    i32.add
    local.get $2
-   i32.gt_s
+   i32.gt_u
    if
     i32.const 32
     i32.const 608
@@ -13349,7 +13349,7 @@
   local.tee $1
   local.get $0
   i32.load offset=8
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -13465,7 +13465,7 @@
   local.tee $2
   i32.const 6
   i32.add
-  i32.lt_s
+  i32.lt_u
   if
    i32.const 336
    i32.const 608
@@ -13514,7 +13514,7 @@
   local.tee $2
   local.get $0
   i32.load offset=8
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -13542,7 +13542,7 @@
   local.tee $2
   i32.const 4
   i32.add
-  i32.lt_s
+  i32.lt_u
   if
    i32.const 336
    i32.const 608
@@ -13593,7 +13593,7 @@
   local.tee $1
   i32.const 7
   i32.add
-  i32.lt_s
+  i32.lt_u
   if
    i32.const 336
    i32.const 608
@@ -13630,7 +13630,7 @@
    local.get $2
    local.get $3
    i32.add
-   i32.lt_s
+   i32.lt_u
   end
   if
    i32.const 336
@@ -13709,7 +13709,7 @@
    local.get $2
    local.get $3
    i32.add
-   i32.lt_s
+   i32.lt_u
   end
   if
    i32.const 336
@@ -13776,7 +13776,7 @@
   i32.load offset=8
   i32.const 1
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -13901,7 +13901,7 @@
   i32.load offset=8
   i32.const 1
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -13955,7 +13955,7 @@
   i32.load offset=8
   i32.const 1
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14016,7 +14016,7 @@
   i32.load offset=8
   i32.const 1
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14145,7 +14145,7 @@
    i32.load offset=8
    i32.const 2
    i32.shr_u
-   i32.gt_s
+   i32.gt_u
   end
   if
    i32.const 336
@@ -14251,7 +14251,7 @@
   i32.load offset=8
   i32.const 2
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14305,7 +14305,7 @@
   i32.load offset=8
   i32.const 2
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14359,7 +14359,7 @@
   i32.load offset=8
   i32.const 2
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14416,7 +14416,7 @@
   i32.load offset=8
   i32.const 2
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14538,7 +14538,7 @@
   i32.load offset=8
   i32.const 3
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14668,7 +14668,7 @@
   i32.load offset=8
   i32.const 3
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14722,7 +14722,7 @@
   i32.load offset=8
   i32.const 3
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -14779,7 +14779,7 @@
   i32.load offset=8
   i32.const 3
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
@@ -36176,7 +36176,7 @@
                                                                       local.tee $5
                                                                       i32.const 3
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36245,7 +36245,7 @@
                                                                       local.tee $2
                                                                       i32.const 2
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36403,7 +36403,7 @@
                                                                       local.tee $5
                                                                       i32.const 3
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36474,7 +36474,7 @@
                                                                       local.tee $2
                                                                       i32.const 2
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36622,7 +36622,7 @@
                                                                       local.tee $6
                                                                       local.get $0
                                                                       i32.load offset=8
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36682,7 +36682,7 @@
                                                                       local.tee $5
                                                                       i32.const 3
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36758,7 +36758,7 @@
                                                                       local.tee $2
                                                                       i32.const 2
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36829,7 +36829,7 @@
                                                                       local.tee $2
                                                                       i32.const 7
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -36974,7 +36974,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37047,7 +37047,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37208,7 +37208,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37281,7 +37281,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37444,7 +37444,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37516,7 +37516,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37679,7 +37679,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37751,7 +37751,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37912,7 +37912,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -37985,7 +37985,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38145,7 +38145,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38218,7 +38218,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38367,7 +38367,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38430,7 +38430,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38481,7 +38481,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38525,7 +38525,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38571,7 +38571,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38694,7 +38694,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38745,7 +38745,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38800,7 +38800,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38850,7 +38850,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38894,7 +38894,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -38940,7 +38940,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -39055,7 +39055,7 @@
                                                                       local.tee $5
                                                                       i32.const 1
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -39117,7 +39117,7 @@
                                                                       local.tee $2
                                                                       i32.const 8
                                                                       i32.add
-                                                                      i32.lt_s
+                                                                      i32.lt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -39221,7 +39221,7 @@
                                                                       local.tee $4
                                                                       local.get $0
                                                                       i32.load offset=8
-                                                                      i32.gt_s
+                                                                      i32.gt_u
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
@@ -40986,7 +40986,7 @@
   i32.load offset=8
   local.get $2
   i32.shr_u
-  i32.gt_s
+  i32.gt_u
   if
    i32.const 336
    i32.const 608
