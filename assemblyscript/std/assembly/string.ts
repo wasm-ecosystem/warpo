@@ -456,8 +456,9 @@ class StringIterator implements Iterator<string> {
     while (~(next = <isize>this.indexOf(search, <i32>prev))) {
       if (!out) out = changetype<String>(__new(thisLen << 1, idof<String>()));
       let chunk = next - prev;
-      if (offset + chunk + replaceLen > outSize) {
-        outSize <<= 1;
+      let requiredSize = offset + chunk + replaceLen;
+      if (requiredSize > outSize) {
+        outSize = max(outSize << 1, requiredSize);
         out = changetype<String>(__renew(changetype<usize>(out), outSize << 1));
       }
       memory.copy(changetype<usize>(out) + (offset << 1), changetype<usize>(this) + (prev << 1), chunk << 1);
@@ -468,8 +469,9 @@ class StringIterator implements Iterator<string> {
     }
     if (out) {
       let rest = thisLen - prev;
-      if (offset + rest > outSize) {
-        outSize <<= 1;
+      let requiredSize = offset + rest;
+      if (requiredSize > outSize) {
+        outSize = max(outSize << 1, requiredSize);
         out = changetype<String>(__renew(changetype<usize>(out), outSize << 1));
       }
       if (rest) {
