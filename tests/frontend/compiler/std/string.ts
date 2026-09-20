@@ -496,6 +496,7 @@ assert("abcde".replaceAll("a", "---") == "---bcde");
 assert("ab".replaceAll("ab", "-----") == "-----");
 assert("aaa".replaceAll("a", "----") == "------------");
 assert("aaa".replaceAll("aa", "---") == "---a");
+assert("ab".replaceAll("a", "0123456789") == "0123456789b");
 
 // test cases for slice method
 str = "abcdefghijklmn";
