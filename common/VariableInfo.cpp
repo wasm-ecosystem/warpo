@@ -307,10 +307,10 @@ TEST(TestVariableInfo, TestCreateClass) {
 
   EXPECT_EQ(personClass.getName(), "Person");
   EXPECT_EQ(personClass.getRtid(), 1U);
-  EXPECT_EQ(personClass.getFields().size(), 3);
+  EXPECT_EQ(personClass.getLayoutFields().size(), 3);
 
   // Verify Person fields
-  const std::vector<FieldInfo> &personFields = personClass.getFields();
+  const std::vector<FieldInfo> &personFields = personClass.getLayoutFields();
   EXPECT_EQ(personFields[0].getName(), "name");
   EXPECT_EQ(personFields[0].getType(), "~lib/string/String");
   EXPECT_EQ(personFields[0].getOffsetInClass(), 0);
@@ -333,10 +333,10 @@ TEST(TestVariableInfo, TestCreateClass) {
 
   EXPECT_EQ(employeeClass.getName(), "Employee");
   EXPECT_EQ(employeeClass.getRtid(), 2U);
-  EXPECT_EQ(employeeClass.getFields().size(), 6);
+  EXPECT_EQ(employeeClass.getLayoutFields().size(), 6);
 
   // Verify Employee fields
-  const std::vector<FieldInfo> &employeeFields = employeeClass.getFields();
+  const std::vector<FieldInfo> &employeeFields = employeeClass.getLayoutFields();
   EXPECT_EQ(employeeFields[0].getName(), "name");
   EXPECT_EQ(employeeFields[0].getType(), "~lib/string/String");
   EXPECT_EQ(employeeFields[0].getOffsetInClass(), 0);

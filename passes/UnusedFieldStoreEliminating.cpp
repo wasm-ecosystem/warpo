@@ -140,7 +140,7 @@ public:
     std::optional<uint32_t> const setterOffset = getTrivialFieldSetterOffset(*setterFunction);
     if (!setterOffset.has_value())
       return;
-    if (variableInfo_ != nullptr && variableInfo_->getMemoryExposureTypeRegistry().contains(setter->owner))
+    if (variableInfo_ != nullptr && variableInfo_->getMemoryExposureTypeRegistry().contains(setter->getOwner()))
       return;
     setterOffsets_.emplace(call->target, *setterOffset);
   }
@@ -149,9 +149,7 @@ public:
 
   std::unordered_map<wasm::Name, uint32_t> const &getSetterOffsets() const noexcept { return setterOffsets_; }
   std::unordered_set<wasm::Name> const &getUsedGetterNames() const noexcept { return usedGetterNames_; }
-  std::unordered_set<wasm::Name> const &getReferencedFunctionNames() const noexcept {
-    return referencedFunctionNames_;
-  }
+  std::unordered_set<wasm::Name> const &getReferencedFunctionNames() const noexcept { return referencedFunctionNames_; }
 
 private:
   wasm::Module &m_;
@@ -207,13 +205,15 @@ public:
   explicit UnusedFieldStoreEliminating(VariableInfo const *const variableInfo) : variableInfo_{variableInfo} {}
 
   void run(wasm::Module *m) override {
-    std::unordered_set<wasm::Name> removableSetterNames = analyzeRemovableSetters(m, variableInfo_);
+    while (true) {
+      std::unordered_set<wasm::Name> removableSetterNames = analyzeRemovableSetters(m, variableInfo_);
 
-    if (removableSetterNames.empty())
-      return;
-    wasm::PassRunner runner{getPassRunner()};
-    runner.add(std::make_unique<SetterCallRemover>(std::move(removableSetterNames)));
-    runner.run();
+      if (removableSetterNames.empty())
+        return;
+      wasm::PassRunner runner{getPassRunner()};
+      runner.add(std::make_unique<SetterCallRemover>(std::move(removableSetterNames)));
+      runner.run();
+    }
   }
 
 private:
