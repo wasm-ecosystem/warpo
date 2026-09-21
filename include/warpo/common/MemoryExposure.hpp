@@ -3,10 +3,8 @@
 
 #pragma once
 
-#include <deque>
 #include <set>
 #include <string_view>
-#include <vector>
 
 namespace warpo {
 
@@ -22,10 +20,7 @@ public:
   TypeRegistry const &getTypes() const noexcept { return types_; }
 
 private:
-  using WorkList = std::deque<std::string_view>;
-
-  void addToWorkList(WorkList &workList, std::string_view typeName);
-
+  TypeRegistry seedTypes_;
   TypeRegistry types_;
 };
 

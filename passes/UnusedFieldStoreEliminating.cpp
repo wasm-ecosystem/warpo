@@ -1,6 +1,7 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <string>
@@ -10,6 +11,7 @@
 #include <utility>
 
 #include "UnusedFieldStoreEliminating.hpp"
+#include "ir/local-utils.h"
 #include "pass.h"
 #include "warpo/common/ClassHierarchy.hpp"
 #include "warpo/common/VariableInfo.hpp"
@@ -22,6 +24,8 @@ namespace {
 
 constexpr std::string_view SETTER_MARKER = "#set:";
 constexpr std::string_view GETTER_MARKER = "#get:";
+constexpr std::string_view ITCMS_LINK_FUNCTION = "~lib/rt/itcms/__link";
+constexpr std::string_view TCMS_LINK_FUNCTION = "~lib/rt/tcms/__link";
 class AccessorName {
 public:
   AccessorName(std::string_view const owner, std::string_view const field) noexcept : owner_{owner}, field_{field} {}
@@ -34,6 +38,23 @@ private:
   std::string_view field_;
 };
 
+bool isLocalGet(wasm::Expression const *const expression, wasm::Index const index) noexcept {
+  wasm::LocalGet const *const localGet = expression->dynCast<wasm::LocalGet>();
+  return localGet != nullptr && localGet->index == index;
+}
+
+bool isGcLinkFunction(wasm::Name const name) noexcept {
+  std::string_view const value = name.view();
+  return value == ITCMS_LINK_FUNCTION || value == TCMS_LINK_FUNCTION;
+}
+
+bool isFieldGcLink(wasm::Expression const *const expression) noexcept {
+  wasm::Call const *const call = expression->dynCast<wasm::Call>();
+  return call != nullptr && isGcLinkFunction(call->target) && call->type == wasm::Type::none && !call->isReturn &&
+         call->operands.size() == 3 && isLocalGet(call->operands[0], 0) && isLocalGet(call->operands[1], 1) &&
+         call->operands[2]->is<wasm::Const>();
+}
+
 std::optional<AccessorName> parseAccessorName(wasm::Name const name, std::string_view const marker) noexcept {
   std::string_view const value = name.view();
   size_t const markerPosition = value.rfind(marker);
@@ -42,12 +63,19 @@ std::optional<AccessorName> parseAccessorName(wasm::Name const name, std::string
   return AccessorName{value.substr(0, markerPosition), value.substr(markerPosition + marker.size())};
 }
 
-std::optional<uint32_t> getTrivialFieldSetterOffset(wasm::Function &setter) noexcept {
+std::optional<uint32_t> getEliminableFieldSetterOffset(wasm::Function &setter) noexcept {
   if (setter.imported() || setter.body == nullptr || setter.getResults() != wasm::Type::none ||
       setter.getParams().size() != 2)
     return std::nullopt;
 
-  wasm::Store const *const store = setter.body->dynCast<wasm::Store>();
+  wasm::Expression const *storeExpression = setter.body;
+  if (wasm::Block const *const block = setter.body->dynCast<wasm::Block>()) {
+    if (block->list.size() != 2 || !isFieldGcLink(block->list[1]))
+      return std::nullopt;
+    storeExpression = block->list[0];
+  }
+
+  wasm::Store const *const store = storeExpression->dynCast<wasm::Store>();
   if (store == nullptr || store->isAtomic())
     return std::nullopt;
 
@@ -85,8 +113,10 @@ bool isSetterObservedByUsedGetter(VariableInfo const *const variableInfo, wasm::
   std::optional<AccessorName> const setter = parseAccessorName(setterName, SETTER_MARKER);
   if (!setter.has_value())
     return false;
-  if (variableInfo == nullptr)
-    return usedGetterNames.contains(getGetterName(setter->getOwner(), setter->getField()));
+  if (variableInfo == nullptr) {
+    wasm::Name const getterName = getGetterName(setter->getOwner(), setter->getField());
+    return usedGetterNames.contains(getterName);
+  }
 
   ClassHierarchy const hierarchy{*variableInfo};
   std::vector<std::string_view> relatedClasses = hierarchy.getAncestors(setter->getOwner());
@@ -99,9 +129,12 @@ bool isSetterObservedByUsedGetter(VariableInfo const *const variableInfo, wasm::
     if (classIt == classRegistry.end())
       continue;
     for (FieldInfo const &field : classIt->second.getDeclaredFields()) {
-      if (field.getName() == setter->getField() && field.getOffsetInClass() == setterOffset &&
-          usedGetterNames.contains(getGetterName(className, setter->getField())))
-        return true;
+      if (field.getName() != setter->getField() || field.getOffsetInClass() != setterOffset)
+        continue;
+      wasm::Name const getterName = getGetterName(className, setter->getField());
+      if (!usedGetterNames.contains(getterName))
+        continue;
+      return true;
     }
   }
   return false;
@@ -128,16 +161,20 @@ public:
   }
 
   void visitCall(wasm::Call *call) {
-    if (parseAccessorName(call->target, GETTER_MARKER).has_value())
+    if (parseAccessorName(call->target, GETTER_MARKER).has_value()) {
       usedGetterNames_.insert(call->target);
+    }
 
     std::optional<AccessorName> const setter = parseAccessorName(call->target, SETTER_MARKER);
-    if (!setter || referencedFunctionNames_.contains(call->target))
+    if (!setter)
       return;
+    if (!analyzedSetterNames_.insert(call->target).second)
+      return;
+
     wasm::Function *const setterFunction = m_.getFunctionOrNull(call->target);
     if (setterFunction == nullptr)
       return;
-    std::optional<uint32_t> const setterOffset = getTrivialFieldSetterOffset(*setterFunction);
+    std::optional<uint32_t> const setterOffset = getEliminableFieldSetterOffset(*setterFunction);
     if (!setterOffset.has_value())
       return;
     if (variableInfo_ != nullptr && variableInfo_->getMemoryExposureTypeRegistry().contains(setter->getOwner()))
@@ -155,6 +192,7 @@ private:
   wasm::Module &m_;
   VariableInfo const *variableInfo_;
   std::unordered_map<wasm::Name, uint32_t> setterOffsets_;
+  std::unordered_set<wasm::Name> analyzedSetterNames_;
   std::unordered_set<wasm::Name> usedGetterNames_;
   std::unordered_set<wasm::Name> referencedFunctionNames_;
 };
@@ -181,38 +219,111 @@ std::unordered_set<wasm::Name> analyzeRemovableSetters(wasm::Module *const m, Va
   return removableSetterNames;
 }
 
+class RemovalCounter {
+public:
+  void increment() noexcept { count_.fetch_add(1, std::memory_order_relaxed); }
+  size_t get() const noexcept { return count_.load(std::memory_order_relaxed); }
+
+private:
+  std::atomic<size_t> count_{0};
+};
+
 class SetterCallRemover : public wasm::WalkerPass<wasm::PostWalker<SetterCallRemover>> {
 public:
-  explicit SetterCallRemover(std::unordered_set<wasm::Name> removableSetterNames)
-      : removableSetterNames_{std::move(removableSetterNames)} {}
+  SetterCallRemover(std::unordered_set<wasm::Name> removableSetterNames, std::shared_ptr<RemovalCounter> counter)
+      : removableSetterNames_{std::move(removableSetterNames)}, counter_{std::move(counter)} {}
 
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<SetterCallRemover>(removableSetterNames_); }
+  std::unique_ptr<wasm::Pass> create() override {
+    return std::make_unique<SetterCallRemover>(removableSetterNames_, counter_);
+  }
 
   void visitCall(wasm::Call *call) {
     if (!removableSetterNames_.contains(call->target) || call->type != wasm::Type::none || call->isReturn)
       return;
 
+    counter_->increment();
     replaceCurrent(wasm::Builder{*getModule()}.makeNop());
   }
 
 private:
   std::unordered_set<wasm::Name> removableSetterNames_;
+  std::shared_ptr<RemovalCounter> counter_;
 };
+
+class UnusedGetterCallRemover : public wasm::PostWalker<UnusedGetterCallRemover> {
+public:
+  UnusedGetterCallRemover(wasm::Module &m, std::vector<wasm::Index> const &localGetCounts) noexcept
+      : m_{m}, localGetCounts_{localGetCounts} {}
+
+  void visitLocalSet(wasm::LocalSet *localSet) {
+    if (localSet->type != wasm::Type::none || localGetCounts_[localSet->index] != 0 ||
+        !isRemovableGetterCall(localSet->value))
+      return;
+    ++removedCallCount_;
+    replaceCurrent(wasm::Builder{m_}.makeNop());
+  }
+
+  void visitDrop(wasm::Drop *drop) {
+    if (!isRemovableGetterCall(drop->value))
+      return;
+    ++removedCallCount_;
+    replaceCurrent(wasm::Builder{m_}.makeNop());
+  }
+
+  size_t getRemovedCallCount() const noexcept { return removedCallCount_; }
+
+private:
+  bool isRemovableGetterCall(wasm::Expression *expression) const noexcept {
+    wasm::Call const *const call = expression->dynCast<wasm::Call>();
+    if (call == nullptr || call->operands.size() != 1 || call->operands[0]->dynCast<wasm::LocalGet>() == nullptr ||
+        !parseAccessorName(call->target, GETTER_MARKER).has_value())
+      return false;
+
+    wasm::Function *const getter = m_.getFunction(call->target);
+    wasm::Load const *const load = getter->body->dynCast<wasm::Load>();
+    return load != nullptr && !load->isAtomic() && isLocalGet(load->ptr, 0);
+  }
+
+  wasm::Module &m_;
+  std::vector<wasm::Index> const &localGetCounts_;
+  size_t removedCallCount_{0};
+};
+
+size_t removeUnusedGetterCalls(wasm::Module *const m) {
+  size_t removedCallCount = 0;
+  for (std::unique_ptr<wasm::Function> const &function : m->functions) {
+    if (function->body == nullptr)
+      continue;
+    wasm::LocalGetCounter const localGetCounter{function.get()};
+    UnusedGetterCallRemover remover{*m, localGetCounter.num};
+    remover.walkFunctionInModule(function.get(), m);
+    removedCallCount += remover.getRemovedCallCount();
+  }
+  return removedCallCount;
+}
 
 class UnusedFieldStoreEliminating : public wasm::Pass {
 public:
   explicit UnusedFieldStoreEliminating(VariableInfo const *const variableInfo) : variableInfo_{variableInfo} {}
 
   void run(wasm::Module *m) override {
+    std::shared_ptr<RemovalCounter> const counter = std::make_shared<RemovalCounter>();
     while (true) {
       std::unordered_set<wasm::Name> removableSetterNames = analyzeRemovableSetters(m, variableInfo_);
 
-      if (removableSetterNames.empty())
+      if (removableSetterNames.empty()) {
         return;
+      }
+      size_t const removedCallCountBefore = counter->get();
       wasm::PassRunner runner{getPassRunner()};
-      runner.add(std::make_unique<SetterCallRemover>(std::move(removableSetterNames)));
+      runner.add(std::make_unique<SetterCallRemover>(std::move(removableSetterNames), counter));
       runner.run();
+      size_t const removedCallCount = counter->get() - removedCallCountBefore;
+      if (removedCallCount == 0) {
+        return;
+      }
+      removeUnusedGetterCalls(m);
     }
   }
 
@@ -262,6 +373,79 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallForUnreadField) {
   runUnusedFieldStoreEliminating(*m);
 
   EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesReferenceFieldSetterWithGcLink) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $~lib/rt/itcms/__link (param i32 i32 i32))
+      (func $Packet#set:unused (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+        (call $~lib/rt/itcms/__link (local.get 0) (local.get 1) (i32.const 1))
+      )
+      (func $write
+        (call $Packet#set:unused (i32.const 8) (i32.const 16))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesNestedReferenceInitializationAtFixedPoint) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $~lib/rt/tcms/__link (param i32 i32 i32))
+      (func $A#set:b (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+        (call $~lib/rt/tcms/__link (local.get 0) (local.get 1) (i32.const 1))
+      )
+      (func $A#get:b (param i32) (result i32)
+        (i32.load offset=4 (local.get 0))
+      )
+      (func $B#set:y (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $initialize (param i32 i32) (local i32)
+        (call $A#set:b (local.get 0) (local.get 1))
+        (local.set 2 (call $A#get:b (local.get 0)))
+        (call $B#set:y (local.get 2) (i32.const 42))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  wasm::Block const *const body = m->getFunction("initialize")->body->dynCast<wasm::Block>();
+  ASSERT_NE(body, nullptr);
+  ASSERT_EQ(body->list.size(), 3);
+  EXPECT_TRUE(body->list[0]->is<wasm::Nop>());
+  EXPECT_TRUE(body->list[1]->is<wasm::Nop>());
+  EXPECT_TRUE(body->list[2]->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsStoreFollowedByUnrelatedCall) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $observe (param i32 i32 i32))
+      (func $Packet#set:unused (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+        (call $observe (local.get 0) (local.get 1) (i32.const 1))
+      )
+      (func $write
+        (call $Packet#set:unused (i32.const 8) (i32.const 16))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
 }
 
 TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallForReadField) {
@@ -415,6 +599,7 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterWhenGetterIsExported) {
 TEST(UnusedFieldStoreEliminatingTest, KeepsSetterWhenGetterIsInTable) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
+      (memory 1)
       (table 1 funcref)
       (elem (i32.const 0) $Packet#get:used)
       (func $Packet#set:used (param i32 i32)
