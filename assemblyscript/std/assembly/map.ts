@@ -57,6 +57,41 @@ function ENTRY_SIZE<K, V>(): usize {
   return size;
 }
 
+class MapIteratorVersion {
+  private nextVersion: MapIteratorVersion | null = null;
+  private entries: ArrayBuffer | null = null;
+  private entriesOffset: i32 = 0;
+  private nextEntriesOffset: i32 = 0;
+  private entrySize: usize = 0;
+  private taggedNextOffset: usize = 0;
+
+  transition(
+    entries: ArrayBuffer | null,
+    entriesOffset: i32,
+    nextEntriesOffset: i32,
+    entrySize: usize,
+    taggedNextOffset: usize
+  ): MapIteratorVersion {
+    this.entries = entries;
+    this.entriesOffset = entriesOffset;
+    this.nextEntriesOffset = nextEntriesOffset;
+    this.entrySize = entrySize;
+    this.taggedNextOffset = taggedNextOffset;
+    return (this.nextVersion = new MapIteratorVersion());
+  }
+
+  translateIndex(index: i32): i32 {
+    const entries = this.entries;
+    if (!entries) return 0;
+    if (index >= this.entriesOffset) return this.nextEntriesOffset;
+    return <i32>load<usize>(changetype<usize>(entries) + <usize>index * this.entrySize + this.taggedNextOffset);
+  }
+
+  getNext(): MapIteratorVersion {
+    return assert(this.nextVersion);
+  }
+}
+
 // @ts-ignore: decorator
 @lazy
 const GET_START = Symbol();
@@ -65,11 +100,28 @@ const GET_START = Symbol();
 @lazy
 const GET_ENTRIES_OFFSET = Symbol();
 
+// @ts-ignore: decorator
+@lazy
+const GET_ITERATOR_VERSION = Symbol();
+
 class MapIterator<K, V> implements Iterator<[K, V]> {
   private i: i32 = 0;
-  constructor(private map: Map<K, V>) {}
+  private version: MapIteratorVersion;
+
+  constructor(private map: Map<K, V>) {
+    this.version = map[GET_ITERATOR_VERSION]();
+  }
+
   next(): IteratorResult<[K, V]> {
     const map = this.map;
+    const currentVersion = map[GET_ITERATOR_VERSION]();
+    let version = this.version;
+    while (version != currentVersion) {
+      this.i = version.translateIndex(this.i);
+      version = version.getNext();
+    }
+    this.version = version;
+
     const start = map[GET_START]();
     const size = map[GET_ENTRIES_OFFSET]();
     for (let i = this.i; i < size; ++i) {
@@ -93,6 +145,7 @@ export class Map<K, V> implements Iterable<[K, V]> {
   private entriesCapacity: i32 = INITIAL_CAPACITY;
   private entriesOffset: i32 = 0;
   private entriesCount: i32 = 0;
+  private iteratorVersion: MapIteratorVersion | null = null;
 
   constructor() {
     /* nop */
@@ -107,6 +160,12 @@ export class Map<K, V> implements Iterable<[K, V]> {
   [GET_ENTRIES_OFFSET](): i32 {
     return this.entriesOffset;
   }
+  @inline
+  [GET_ITERATOR_VERSION](): MapIteratorVersion {
+    let iteratorVersion = this.iteratorVersion;
+    if (!iteratorVersion) this.iteratorVersion = iteratorVersion = new MapIteratorVersion();
+    return iteratorVersion;
+  }
 
   get size(): i32 {
     return this.entriesCount;
@@ -116,6 +175,8 @@ export class Map<K, V> implements Iterable<[K, V]> {
     this.buckets = new ArrayBuffer(INITIAL_CAPACITY * <i32>BUCKET_SIZE);
     this.bucketsMask = INITIAL_CAPACITY - 1;
     this.entries = new ArrayBuffer(INITIAL_CAPACITY * <i32>ENTRY_SIZE<K, V>());
+    let iteratorVersion = this.iteratorVersion;
+    if (iteratorVersion) this.iteratorVersion = iteratorVersion.transition(null, 0, 0, 0, 0);
     this.entriesCapacity = INITIAL_CAPACITY;
     this.entriesOffset = 0;
     this.entriesCount = 0;
@@ -206,12 +267,19 @@ export class Map<K, V> implements Iterable<[K, V]> {
     let newEntries = new ArrayBuffer(newEntriesCapacity * <i32>ENTRY_SIZE<K, V>());
 
     // copy old entries to new entries
-    let oldPtr = changetype<usize>(this.entries);
-    let oldEnd = oldPtr + <usize>this.entriesOffset * ENTRY_SIZE<K, V>();
+    let oldEntries = this.entries;
+    let oldEntriesOffset = this.entriesOffset;
+    let oldPtr = changetype<usize>(oldEntries);
+    let oldEnd = oldPtr + <usize>oldEntriesOffset * ENTRY_SIZE<K, V>();
     let newPtr = changetype<usize>(newEntries);
+    let newEntriesOffset = 0;
+    let iteratorVersion = this.iteratorVersion;
     while (oldPtr != oldEnd) {
       let oldEntry = changetype<MapEntry<K, V>>(oldPtr);
-      if (!(oldEntry.taggedNext & EMPTY)) {
+      let taggedNext = oldEntry.taggedNext;
+      // The old buckets no longer need their links, so reuse each link as the new index of its slot.
+      if (iteratorVersion) oldEntry.taggedNext = <usize>newEntriesOffset;
+      if (!(taggedNext & EMPTY)) {
         let newEntry = changetype<MapEntry<K, V>>(newPtr);
         let oldEntryKey = oldEntry.key;
         newEntry.key = oldEntryKey;
@@ -221,6 +289,7 @@ export class Map<K, V> implements Iterable<[K, V]> {
         newEntry.taggedNext = load<usize>(newBucketPtrBase);
         store<usize>(newBucketPtrBase, newPtr);
         newPtr += ENTRY_SIZE<K, V>();
+        ++newEntriesOffset;
       }
       oldPtr += ENTRY_SIZE<K, V>();
     }
@@ -228,8 +297,16 @@ export class Map<K, V> implements Iterable<[K, V]> {
     this.buckets = newBuckets;
     this.bucketsMask = newBucketsMask;
     this.entries = newEntries;
+    if (iteratorVersion)
+      this.iteratorVersion = iteratorVersion.transition(
+        oldEntries,
+        oldEntriesOffset,
+        newEntriesOffset,
+        ENTRY_SIZE<K, V>(),
+        offsetof<MapEntry<K, V>>("taggedNext")
+      );
     this.entriesCapacity = newEntriesCapacity;
-    this.entriesOffset = this.entriesCount;
+    this.entriesOffset = newEntriesOffset;
   }
 
   keys(): K[] {
@@ -276,6 +353,8 @@ export class Map<K, V> implements Iterable<[K, V]> {
 
   @unsafe private __visit(cookie: u32): void {
     __visit(changetype<usize>(this.buckets), cookie);
+    let iteratorVersion = this.iteratorVersion;
+    if (iteratorVersion) __visit(changetype<usize>(iteratorVersion), cookie);
     let entries = changetype<usize>(this.entries);
     if (isManaged<K>() || isManaged<V>()) {
       let cur = entries;
