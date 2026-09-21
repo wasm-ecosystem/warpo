@@ -70,9 +70,7 @@ void VariableInfo::addMemoryExposureType(std::string_view const typeName) {
   memoryExposure_.addType(stringPool_.internString(typeName));
 }
 
-void VariableInfo::finalizeMemoryExposure() {
-  memoryExposure_.finalize(*this);
-}
+void VariableInfo::finalizeMemoryExposure() { memoryExposure_.finalize(*this); }
 
 void VariableInfo::addTemplateType(std::string_view const className, std::string_view const templateTypeName) {
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
