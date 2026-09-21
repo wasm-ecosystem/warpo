@@ -3545,6 +3545,7 @@ export class Resolver extends DiagnosticEmitter {
                   mir.addField(instance, memberName, fieldType, boundInstance.memoryOffset);
                   memoryOffset += byteSize;
                 }
+                mir.addFieldDeclaration(instance, memberName, fieldType, boundInstance.memoryOffset);
                 boundPrototype.instance = boundInstance;
                 instance.add(boundPrototype.name, boundPrototype); // reports
                 // field materializes here, so check for supported type early

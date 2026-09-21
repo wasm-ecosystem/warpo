@@ -30,6 +30,7 @@
 #include "MergeDataSection.hpp"
 #include "Runner.hpp"
 #include "TailCall.hpp"
+#include "UnusedFieldStoreEliminating.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
 #include "parser/wat-parser.h"
@@ -131,6 +132,7 @@ static void optimize(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Optimization};
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
+    passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedFieldStoreEliminatingPass(&m.variableInfo_)});
     passRunner->addDefaultOptimizationPasses();
     passRunner->add(std::unique_ptr<wasm::Pass>{createAdvancedInliningPass()});
     passRunner->add(std::unique_ptr<wasm::Pass>{createInstrSimplifier()});

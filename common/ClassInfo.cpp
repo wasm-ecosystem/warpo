@@ -20,14 +20,24 @@
 
 namespace warpo {
 
-void ClassInfo::addMember(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                          bool const nullable) {
-  fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+void ClassInfo::addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                               bool const nullable) {
+  layoutFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
 }
 
-void InterfaceInfo::addMember(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                              bool const nullable) {
-  fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+void ClassInfo::addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                                 bool const nullable) {
+  declaredFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+}
+
+void InterfaceInfo::addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                                   bool const nullable) {
+  layoutFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+}
+
+void InterfaceInfo::addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                                     bool const nullable) {
+  declaredFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
 }
 
 } // namespace warpo

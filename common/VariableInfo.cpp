@@ -16,13 +16,27 @@ void VariableInfo::addField(std::string_view const className, std::string fieldN
   std::string_view const internedTypeName = stringPool_.internString(typeName);
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
   if (classIt != classRegistry_.end()) {
-    classIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
+    classIt->second.addLayoutField(std::move(fieldName), internedTypeName, offset, nullable != 0);
     return;
   }
 
   InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
   assert(interfaceIt != interfaceRegistry_.end());
-  interfaceIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
+  interfaceIt->second.addLayoutField(std::move(fieldName), internedTypeName, offset, nullable != 0);
+}
+
+void VariableInfo::addFieldDeclaration(std::string_view const className, std::string fieldName,
+                                       std::string const typeName, uint32_t const offset, uint32_t const nullable) {
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
+  ClassRegistry::iterator const classIt = classRegistry_.find(className);
+  if (classIt != classRegistry_.end()) {
+    classIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0);
+    return;
+  }
+
+  InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
+  assert(interfaceIt != interfaceRegistry_.end());
+  interfaceIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0);
 }
 
 void VariableInfo::createBaseType(std::string_view typeName) {
@@ -244,8 +258,8 @@ TEST(TestVariableInfo, TestCreateInterface) {
   ASSERT_NE(readableIt, interfaceRegistry.end());
   EXPECT_EQ(readableIt->second.getName(), "Readable");
   EXPECT_EQ(readableIt->second.getParentName(), "BaseInterface");
-  ASSERT_EQ(readableIt->second.getFields().size(), 1);
-  EXPECT_EQ(readableIt->second.getFields()[0].getName(), "length");
+  ASSERT_EQ(readableIt->second.getLayoutFields().size(), 1);
+  EXPECT_EQ(readableIt->second.getLayoutFields()[0].getName(), "length");
   ASSERT_EQ(readableIt->second.getTemplateTypes().size(), 1);
   EXPECT_EQ(readableIt->second.getTemplateTypes()[0], "i32");
 

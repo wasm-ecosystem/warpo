@@ -3,15 +3,11 @@
 
 #include <deque>
 
+#include "warpo/common/ClassHierarchy.hpp"
 #include "warpo/common/MemoryExposure.hpp"
 #include "warpo/common/VariableInfo.hpp"
 
 namespace warpo {
-
-void MemoryExposure::addExposureImplication(ExposureImplications &implications, std::string_view const triggerTypeName,
-                                            std::string_view const impliedTypeName) {
-  implications[triggerTypeName].push_back(impliedTypeName);
-}
 
 void MemoryExposure::addToWorkList(WorkList &workList, std::string_view const typeName) {
   if (types_.emplace(typeName).second)
@@ -21,39 +17,28 @@ void MemoryExposure::addToWorkList(WorkList &workList, std::string_view const ty
 void MemoryExposure::addType(std::string_view const typeName) { types_.emplace(typeName); }
 
 void MemoryExposure::finalize(VariableInfo const &variableInfo) {
-  VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
-  VariableInfo::InterfaceRegistry const &interfaceRegistry = variableInfo.getInterfaceRegistry();
-  ExposureImplications implications;
-
-  for (auto const &[className, classInfo] : classRegistry) {
-    std::string_view const parentName = classInfo.getParentName();
-    if (classRegistry.contains(parentName)) {
-      addExposureImplication(implications, className, parentName);
-      addExposureImplication(implications, parentName, className);
-    }
-    for (std::string_view const interfaceName : classInfo.getInterfaces())
-      if (interfaceRegistry.contains(interfaceName))
-        addExposureImplication(implications, interfaceName, className);
-  }
-
-  for (auto const &[interfaceName, interfaceInfo] : interfaceRegistry) {
-    std::string_view const parentName = interfaceInfo.getParentName();
-    if (interfaceRegistry.contains(parentName))
-      addExposureImplication(implications, parentName, interfaceName);
-  }
+  ClassHierarchy const hierarchy{variableInfo};
 
   WorkList workList;
   for (std::string_view const typeName : types_)
     workList.push_back(typeName);
 
   while (!workList.empty()) {
-    std::string_view const typeName = workList.front();
+    std::string_view const current = workList.front();
     workList.pop_front();
-    ExposureImplications::const_iterator const implicationIt = implications.find(typeName);
-    if (implicationIt == implications.end())
-      continue;
-    for (std::string_view const impliedTypeName : implicationIt->second)
-      addToWorkList(workList, impliedTypeName);
+
+    if (hierarchy.isClass(current)) {
+      std::string_view const parent = hierarchy.getParentClass(current);
+      if (!parent.empty())
+        addToWorkList(workList, parent);
+      for (std::string_view const subClass : hierarchy.getDirectSubclasses(current))
+        addToWorkList(workList, subClass);
+    } else if (hierarchy.isInterface(current)) {
+      for (std::string_view const subInterface : hierarchy.getDirectSubinterfaces(current))
+        addToWorkList(workList, subInterface);
+      for (std::string_view const implementer : hierarchy.getDirectImplementers(current))
+        addToWorkList(workList, implementer);
+    }
   }
 }
 

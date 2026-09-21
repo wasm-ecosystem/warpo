@@ -1,0 +1,656 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+
+#include "UnusedFieldStoreEliminating.hpp"
+#include "pass.h"
+#include "warpo/common/ClassHierarchy.hpp"
+#include "warpo/common/VariableInfo.hpp"
+#include "wasm-builder.h"
+#include "wasm-traversal.h"
+#include "wasm.h"
+
+namespace warpo::passes {
+namespace {
+
+constexpr std::string_view SETTER_MARKER = "#set:";
+constexpr std::string_view GETTER_MARKER = "#get:";
+class AccessorName {
+public:
+  AccessorName(std::string_view const owner, std::string_view const field) noexcept : owner_{owner}, field_{field} {}
+
+  std::string_view getOwner() const noexcept { return owner_; }
+  std::string_view getField() const noexcept { return field_; }
+
+private:
+  std::string_view owner_;
+  std::string_view field_;
+};
+
+std::optional<AccessorName> parseAccessorName(wasm::Name const name, std::string_view const marker) noexcept {
+  std::string_view const value = name.view();
+  size_t const markerPosition = value.rfind(marker);
+  if (markerPosition == std::string_view::npos)
+    return std::nullopt;
+  return AccessorName{value.substr(0, markerPosition), value.substr(markerPosition + marker.size())};
+}
+
+std::optional<uint32_t> getTrivialFieldSetterOffset(wasm::Function &setter) noexcept {
+  if (setter.imported() || setter.body == nullptr || setter.getResults() != wasm::Type::none ||
+      setter.getParams().size() != 2)
+    return std::nullopt;
+
+  wasm::Store const *const store = setter.body->dynCast<wasm::Store>();
+  if (store == nullptr || store->isAtomic())
+    return std::nullopt;
+
+  wasm::LocalGet const *const object = store->ptr->dynCast<wasm::LocalGet>();
+  wasm::LocalGet const *const value = store->value->dynCast<wasm::LocalGet>();
+  if (object == nullptr || object->index != 0 || value == nullptr || value->index != 1)
+    return std::nullopt;
+  return static_cast<uint32_t>(store->offset);
+}
+
+wasm::Name getGetterName(std::string_view const owner, std::string_view const field) {
+  std::string getterName;
+  getterName.reserve(owner.size() + GETTER_MARKER.size() + field.size());
+  getterName.append(owner);
+  getterName.append(GETTER_MARKER);
+  getterName.append(field);
+  return getterName;
+}
+
+// AssemblyScript allows a derived class to redeclare an inherited field. For example:
+//
+//   class Base { value: i32; }                  // Base.value is at offset 0
+//   class Derived extends Base { value: i32; }  // redeclares value at the same offset
+//
+// A call to Base#set:value can therefore be observed by a call to Derived#get:value: the accessor
+// owners differ, but both access the same storage. The redeclaration alone does not make the setter
+// observable, though. If Derived#get:value is never called, referenced, or exported, it cannot read
+// the stored value.
+//
+// This function first finds declarations in the setter owner's hierarchy with the same field name
+// and Store offset. It then checks whether the getter corresponding to any such declaration is in
+// usedGetterNames. Same-name getters from unrelated classes or for another offset do not count.
+bool isSetterObservedByUsedGetter(VariableInfo const *const variableInfo, wasm::Name const setterName,
+                                  uint32_t const setterOffset, std::unordered_set<wasm::Name> const &usedGetterNames) {
+  std::optional<AccessorName> const setter = parseAccessorName(setterName, SETTER_MARKER);
+  if (!setter.has_value())
+    return false;
+  if (variableInfo == nullptr)
+    return usedGetterNames.contains(getGetterName(setter->getOwner(), setter->getField()));
+
+  ClassHierarchy const hierarchy{*variableInfo};
+  std::vector<std::string_view> relatedClasses = hierarchy.getAncestors(setter->getOwner());
+  relatedClasses.push_back(setter->getOwner());
+  std::vector<std::string_view> descendants = hierarchy.getDescendants(setter->getOwner());
+  relatedClasses.insert(relatedClasses.end(), descendants.begin(), descendants.end());
+  VariableInfo::ClassRegistry const &classRegistry = variableInfo->getClassRegistry();
+  for (std::string_view const className : relatedClasses) {
+    VariableInfo::ClassRegistry::const_iterator const classIt = classRegistry.find(className);
+    if (classIt == classRegistry.end())
+      continue;
+    for (FieldInfo const &field : classIt->second.getDeclaredFields()) {
+      if (field.getName() == setter->getField() && field.getOffsetInClass() == setterOffset &&
+          usedGetterNames.contains(getGetterName(className, setter->getField())))
+        return true;
+    }
+  }
+  return false;
+}
+
+class AccessorAnalysis : public wasm::PostWalker<AccessorAnalysis> {
+public:
+  AccessorAnalysis(wasm::Module &m, VariableInfo const *const variableInfo) : m_{m}, variableInfo_{variableInfo} {}
+
+  void addReferencedFunction(wasm::Name const functionName) {
+    referencedFunctionNames_.insert(functionName);
+    if (parseAccessorName(functionName, GETTER_MARKER).has_value())
+      usedGetterNames_.insert(functionName);
+  }
+
+  void addElementSegmentFunctions() {
+    for (std::unique_ptr<wasm::ElementSegment> const &segment : m_.elementSegments) {
+      for (wasm::Expression *const element : segment->data) {
+        wasm::RefFunc *const refFunc = element->dynCast<wasm::RefFunc>();
+        if (refFunc != nullptr)
+          addReferencedFunction(refFunc->func);
+      }
+    }
+  }
+
+  void visitCall(wasm::Call *call) {
+    if (parseAccessorName(call->target, GETTER_MARKER).has_value())
+      usedGetterNames_.insert(call->target);
+
+    std::optional<AccessorName> const setter = parseAccessorName(call->target, SETTER_MARKER);
+    if (!setter || referencedFunctionNames_.contains(call->target))
+      return;
+    wasm::Function *const setterFunction = m_.getFunctionOrNull(call->target);
+    if (setterFunction == nullptr)
+      return;
+    std::optional<uint32_t> const setterOffset = getTrivialFieldSetterOffset(*setterFunction);
+    if (!setterOffset.has_value())
+      return;
+    if (variableInfo_ != nullptr && variableInfo_->getMemoryExposureTypeRegistry().contains(setter->owner))
+      return;
+    setterOffsets_.emplace(call->target, *setterOffset);
+  }
+
+  void visitRefFunc(wasm::RefFunc *refFunc) { addReferencedFunction(refFunc->func); }
+
+  std::unordered_map<wasm::Name, uint32_t> const &getSetterOffsets() const noexcept { return setterOffsets_; }
+  std::unordered_set<wasm::Name> const &getUsedGetterNames() const noexcept { return usedGetterNames_; }
+  std::unordered_set<wasm::Name> const &getReferencedFunctionNames() const noexcept {
+    return referencedFunctionNames_;
+  }
+
+private:
+  wasm::Module &m_;
+  VariableInfo const *variableInfo_;
+  std::unordered_map<wasm::Name, uint32_t> setterOffsets_;
+  std::unordered_set<wasm::Name> usedGetterNames_;
+  std::unordered_set<wasm::Name> referencedFunctionNames_;
+};
+
+std::unordered_set<wasm::Name> analyzeRemovableSetters(wasm::Module *const m, VariableInfo const *const variableInfo) {
+  AccessorAnalysis analysis{*m, variableInfo};
+  analysis.addElementSegmentFunctions();
+  for (std::unique_ptr<wasm::Export> const &export_ : m->exports) {
+    if (export_->kind == wasm::ExternalKind::Function)
+      analysis.addReferencedFunction(*export_->getInternalName());
+  }
+  if (m->start.is())
+    analysis.addReferencedFunction(m->start);
+  analysis.walkModule(m);
+
+  std::unordered_set<wasm::Name> removableSetterNames;
+  for (std::pair<wasm::Name const, uint32_t> const &setter : analysis.getSetterOffsets()) {
+    wasm::Name const &setterName = setter.first;
+    if (analysis.getReferencedFunctionNames().contains(setterName))
+      continue;
+    if (!isSetterObservedByUsedGetter(variableInfo, setterName, setter.second, analysis.getUsedGetterNames()))
+      removableSetterNames.insert(setterName);
+  }
+  return removableSetterNames;
+}
+
+class SetterCallRemover : public wasm::WalkerPass<wasm::PostWalker<SetterCallRemover>> {
+public:
+  explicit SetterCallRemover(std::unordered_set<wasm::Name> removableSetterNames)
+      : removableSetterNames_{std::move(removableSetterNames)} {}
+
+  bool isFunctionParallel() override { return true; }
+  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<SetterCallRemover>(removableSetterNames_); }
+
+  void visitCall(wasm::Call *call) {
+    if (!removableSetterNames_.contains(call->target) || call->type != wasm::Type::none || call->isReturn)
+      return;
+
+    replaceCurrent(wasm::Builder{*getModule()}.makeNop());
+  }
+
+private:
+  std::unordered_set<wasm::Name> removableSetterNames_;
+};
+
+class UnusedFieldStoreEliminating : public wasm::Pass {
+public:
+  explicit UnusedFieldStoreEliminating(VariableInfo const *const variableInfo) : variableInfo_{variableInfo} {}
+
+  void run(wasm::Module *m) override {
+    std::unordered_set<wasm::Name> removableSetterNames = analyzeRemovableSetters(m, variableInfo_);
+
+    if (removableSetterNames.empty())
+      return;
+    wasm::PassRunner runner{getPassRunner()};
+    runner.add(std::make_unique<SetterCallRemover>(std::move(removableSetterNames)));
+    runner.run();
+  }
+
+private:
+  VariableInfo const *variableInfo_;
+};
+
+} // namespace
+
+wasm::Pass *createUnusedFieldStoreEliminatingPass(VariableInfo const *const variableInfo) {
+  return new UnusedFieldStoreEliminating(variableInfo);
+}
+
+} // namespace warpo::passes
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+#include "Runner.hpp"
+
+namespace warpo::passes::ut {
+namespace {
+
+void runUnusedFieldStoreEliminating(wasm::Module &m, VariableInfo const *const variableInfo = nullptr) {
+  wasm::PassRunner runner{&m};
+  runner.add(std::unique_ptr<wasm::Pass>{createUnusedFieldStoreEliminatingPass(variableInfo)});
+  runner.run();
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallForUnreadField) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Packet#set:unused (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $write
+        (call $Packet#set:unused
+          (i32.const 8)
+          (i32.load (i32.const 4))
+        )
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallForReadField) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Packet#set:used (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $Packet#get:used (param i32) (result i32)
+        (i32.load offset=4 (local.get 0))
+      )
+      (func $write
+        (call $Packet#set:used (i32.const 8) (i32.const 1))
+      )
+      (func $read (result i32)
+        (call $Packet#get:used (i32.const 8))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesEntireSetterCallWithEffectfulOperand) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (global $state (mut i32) (i32.const 0))
+      (memory 1)
+      (func $Packet#set:unused (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $getValue (result i32)
+        (global.set $state (i32.const 1))
+        (i32.const 2)
+      )
+      (func $write
+        (call $Packet#set:unused (i32.const 8) (call $getValue))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallWithBuiltinImportOperand) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (import "builtin.math" "value" (func $builtin.value (result i32)))
+      (memory 1)
+      (func $Packet#set:unused (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $write
+        (call $Packet#set:unused (i32.const 8) (call $builtin.value))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallWithTmpToStackOperand) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (import "as-builtin-fn" "~lib/rt/__tmptostack"
+        (func $~lib/rt/__tmptostack (param i32) (result i32)))
+      (memory 1)
+      (func $Packet#set:unused (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $write
+        (call $Packet#set:unused
+          (i32.const 8)
+          (call $~lib/rt/__tmptostack (i32.load (i32.const 0)))
+        )
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesEntireSetterCallWithNonBuiltinImportOperand) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (import "host" "value" (func $host.value (result i32)))
+      (memory 1)
+      (func $Packet#set:unused (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $write
+        (call $Packet#set:unused (i32.const 8) (call $host.value))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsNonTrivialSetter) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (global $state (mut i32) (i32.const 0))
+      (func $Packet#set:unused (param i32 i32)
+        (global.set $state (local.get 1))
+      )
+      (func $write
+        (call $Packet#set:unused (i32.const 8) (i32.const 1))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterWhenGetterIsExported) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (export "get" (func $Packet#get:used))
+      (func $Packet#set:used (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $Packet#get:used (param i32) (result i32)
+        (i32.load offset=4 (local.get 0))
+      )
+      (func $write
+        (call $Packet#set:used (i32.const 8) (i32.const 1))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterWhenGetterIsInTable) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (table 1 funcref)
+      (elem (i32.const 0) $Packet#get:used)
+      (func $Packet#set:used (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $Packet#get:used (param i32) (result i32)
+        (i32.load offset=4 (local.get 0))
+      )
+      (func $write
+        (call $Packet#set:used (i32.const 8) (i32.const 1))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterForExposedClassHierarchy) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Derived#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $write
+        (call $Derived#set:value (i32.const 8) (i32.const 1))
+      )
+    )
+  )");
+  VariableInfo variableInfo;
+  variableInfo.createClass("Base", 1);
+  variableInfo.createClass("Derived", 2);
+  variableInfo.addBaseClass("Derived", "Base");
+  variableInfo.addMemoryExposureType("Base");
+  variableInfo.finalizeMemoryExposure();
+
+  runUnusedFieldStoreEliminating(*m, &variableInfo);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterForBaseOfExposedClassHierarchy) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Base#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $write
+        (call $Base#set:value (i32.const 8) (i32.const 1))
+      )
+    )
+  )");
+  VariableInfo variableInfo;
+  variableInfo.createClass("Base", 1);
+  variableInfo.createClass("Derived", 2);
+  variableInfo.addBaseClass("Derived", "Base");
+  variableInfo.addMemoryExposureType("Derived");
+  variableInfo.finalizeMemoryExposure();
+
+  runUnusedFieldStoreEliminating(*m, &variableInfo);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterForInterfaceImplementation) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Impl#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $BaseImpl#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $writeImpl
+        (call $Impl#set:value (i32.const 8) (i32.const 1))
+      )
+      (func $writeBaseImpl
+        (call $BaseImpl#set:value (i32.const 8) (i32.const 1))
+      )
+    )
+  )");
+  VariableInfo variableInfo;
+  variableInfo.createInterface("BaseReadable");
+  variableInfo.createInterface("Readable");
+  variableInfo.addBaseInterface("Readable", "BaseReadable");
+  variableInfo.createClass("Impl", 1);
+  variableInfo.createClass("BaseImpl", 2);
+  variableInfo.addInterface("Impl", "Readable");
+  variableInfo.addInterface("BaseImpl", "BaseReadable");
+  variableInfo.addMemoryExposureType("BaseReadable");
+  variableInfo.finalizeMemoryExposure();
+
+  runUnusedFieldStoreEliminating(*m, &variableInfo);
+
+  EXPECT_TRUE(m->getFunction("writeImpl")->body->is<wasm::Call>());
+  EXPECT_TRUE(m->getFunction("writeBaseImpl")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterForRelatedSameNameGetter) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Base#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $Derived#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $Base#get:value (param i32) (result i32)
+        (i32.load (local.get 0))
+      )
+      (func $Derived#get:value (param i32) (result i32)
+        (i32.load (local.get 0))
+      )
+      (func $writeBase
+        (call $Base#set:value (i32.const 8) (i32.const 1))
+      )
+      (func $writeDerived
+        (call $Derived#set:value (i32.const 8) (i32.const 1))
+      )
+      (func $readBase (result i32)
+        (call $Base#get:value (i32.const 8))
+      )
+      (func $readDerived (result i32)
+        (call $Derived#get:value (i32.const 8))
+      )
+    )
+  )");
+  VariableInfo variableInfo;
+  variableInfo.createClass("Base", 1);
+  variableInfo.createClass("Derived", 2);
+  variableInfo.addBaseClass("Derived", "Base");
+  variableInfo.addField("Base", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0);
+
+  runUnusedFieldStoreEliminating(*m, &variableInfo);
+
+  EXPECT_TRUE(m->getFunction("writeBase")->body->is<wasm::Call>());
+  EXPECT_TRUE(m->getFunction("writeDerived")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterWhenRedeclaredGetterIsUsed) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Base#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $Derived#get:value (param i32) (result i32)
+        (i32.load (local.get 0))
+      )
+      (func $write
+        (call $Base#set:value (i32.const 8) (i32.const 1))
+      )
+      (func $read (result i32)
+        (call $Derived#get:value (i32.const 8))
+      )
+    )
+  )");
+  VariableInfo variableInfo;
+  variableInfo.createClass("Base", 1);
+  variableInfo.createClass("Derived", 2);
+  variableInfo.addBaseClass("Derived", "Base");
+  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0);
+
+  runUnusedFieldStoreEliminating(*m, &variableInfo);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterWhenRedeclaredGetterIsUnused) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $Base#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $Derived#get:value (param i32) (result i32)
+        (i32.load (local.get 0))
+      )
+      (func $write
+        (call $Base#set:value (i32.const 8) (i32.const 1))
+      )
+    )
+  )");
+  VariableInfo variableInfo;
+  variableInfo.createClass("Base", 1);
+  variableInfo.createClass("Derived", 2);
+  variableInfo.addBaseClass("Derived", "Base");
+  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0);
+
+  runUnusedFieldStoreEliminating(*m, &variableInfo);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+}
+
+TEST(UnusedFieldStoreEliminatingTest, DoesNotMatchGetterFromUnrelatedClass) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $First#set:value (param i32 i32)
+        (i32.store (local.get 0) (local.get 1))
+      )
+      (func $Second#get:value (param i32) (result i32)
+        (i32.load (local.get 0))
+      )
+      (func $write
+        (call $First#set:value (i32.const 8) (i32.const 1))
+      )
+      (func $read (result i32)
+        (call $Second#get:value (i32.const 8))
+      )
+    )
+  )");
+  VariableInfo variableInfo;
+  variableInfo.createClass("First", 1);
+  variableInfo.createClass("Second", 2);
+  variableInfo.addField("First", "value", "i32", 0, 0);
+  variableInfo.addField("Second", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("First", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Second", "value", "i32", 0, 0);
+
+  runUnusedFieldStoreEliminating(*m, &variableInfo);
+
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+  EXPECT_TRUE(m->getFunction("read")->body->is<wasm::Call>());
+}
+
+} // namespace
+} // namespace warpo::passes::ut
+
+#endif
