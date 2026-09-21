@@ -5360,7 +5360,8 @@ export class Class extends TypedElement {
       program.managedClasses.set(id, this);
     }
 
-    mir.createClass(this);
+    if (isInterface) mir.createInterface(this);
+    else mir.createClass(this);
 
     // apply pre-checked instance-specific contextual type arguments
     let typeParameters = prototype.typeParameterNodes;
@@ -5407,7 +5408,8 @@ export class Class extends TypedElement {
   setBase(base: Class): void {
     assert(!this.base);
     this.base = base;
-    mir.addBaseClass(this, base);
+    if (this.isInterface) mir.addBaseInterface(this, base);
+    else mir.addBaseClass(this, base);
 
     // Inherit contextual type arguments from base class
     let inheritedTypeArguments = base.contextualTypeArguments;

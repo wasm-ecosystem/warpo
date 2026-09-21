@@ -200,7 +200,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$99
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$104
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -224,7 +224,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$99
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$104
      end
      local.get $0
      i32.load offset=8
@@ -1043,7 +1043,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$104 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$109 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1059,7 +1059,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$104
+         br $__inlined_func$~lib/rt/itcms/step$109
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1098,7 +1098,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$104
+           br $__inlined_func$~lib/rt/itcms/step$109
           end
           local.get $2
           i32.load offset=4
@@ -1190,7 +1190,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$104
+        br $__inlined_func$~lib/rt/itcms/step$109
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1289,7 +1289,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$104
+        br $__inlined_func$~lib/rt/itcms/step$109
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1631,10 +1631,32 @@
   i32.store
   local.get $0
   global.set $constructor/emptyCtorWithFieldInit
+  global.get $constructor/emptyCtorWithFieldInit
+  i32.load
+  i32.const 1
+  i32.ne
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 15
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
   i32.const 4
   i32.const 6
   call $~lib/rt/itcms/__new
   global.set $constructor/emptyCtorWithFieldNoInit
+  global.get $constructor/emptyCtorWithFieldNoInit
+  i32.load
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 24
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
   i32.const 4
   i32.const 7
   call $~lib/rt/itcms/__new
@@ -1643,6 +1665,18 @@
   i32.store
   local.get $0
   global.set $constructor/emptyCtorWithFieldAccess
+  global.get $constructor/emptyCtorWithFieldAccess
+  i32.load
+  i32.const 1
+  i32.ne
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 35
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
   i32.const 0
   i32.const 8
   call $~lib/rt/itcms/__new
@@ -1655,10 +1689,32 @@
   i32.store
   local.get $0
   global.set $constructor/justFieldInit
+  global.get $constructor/justFieldInit
+  i32.load
+  i32.const 1
+  i32.ne
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 48
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
   i32.const 4
   i32.const 10
   call $~lib/rt/itcms/__new
   global.set $constructor/justFieldNoInit
+  global.get $constructor/justFieldNoInit
+  i32.load
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 56
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
   i32.const 0
   i32.const 11
   call $~lib/rt/itcms/__new
@@ -1688,7 +1744,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 93
+   i32.const 98
    i32.const 1
    call $~lib/builtins/abort
    unreachable
@@ -1710,7 +1766,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 94
+   i32.const 99
    i32.const 1
    call $~lib/builtins/abort
    unreachable
@@ -1738,7 +1794,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 103
+   i32.const 108
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -1750,7 +1806,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 105
+   i32.const 110
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -1762,7 +1818,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 106
+   i32.const 111
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -1776,7 +1832,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 111
+   i32.const 116
    i32.const 1
    call $~lib/builtins/abort
    unreachable
@@ -1788,7 +1844,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 112
+   i32.const 117
    i32.const 1
    call $~lib/builtins/abort
    unreachable
@@ -1800,7 +1856,7 @@
   if
    i32.const 0
    i32.const 432
-   i32.const 113
+   i32.const 118
    i32.const 1
    call $~lib/builtins/abort
    unreachable

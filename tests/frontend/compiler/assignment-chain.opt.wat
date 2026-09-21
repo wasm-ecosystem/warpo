@@ -18,6 +18,7 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $assignment-chain/C._setter_cnt (mut i32) (i32.const 0))
+ (global $assignment-chain/C._y (mut f64) (f64.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00<")
@@ -136,7 +137,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$82
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$85
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -160,7 +161,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$82
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$85
      end
      local.get $0
      i32.load offset=8
@@ -895,7 +896,7 @@
     local.set $1
     loop $do-loop|0
      local.get $1
-     block $__inlined_func$~lib/rt/itcms/step$87 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$90 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -911,7 +912,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$87
+         br $__inlined_func$~lib/rt/itcms/step$90
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -950,7 +951,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$87
+           br $__inlined_func$~lib/rt/itcms/step$90
           end
           local.get $1
           i32.load offset=4
@@ -1042,7 +1043,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$87
+        br $__inlined_func$~lib/rt/itcms/step$90
        end
        global.get $~lib/rt/itcms/iter
        local.tee $1
@@ -1141,7 +1142,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$87
+        br $__inlined_func$~lib/rt/itcms/step$90
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1360,6 +1361,23 @@
   local.get $0
   i64.const 0
   i64.store
+  local.get $0
+  i64.load offset=8
+  local.get $0
+  i64.load
+  i64.const 1
+  i64.add
+  i64.add
+  i64.const 1
+  i64.ne
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 10
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
  )
  (func $assignment-chain/setter_assignment_chain
   (local $0 i32)
@@ -1405,23 +1423,50 @@
    call $~lib/builtins/abort
    unreachable
   end
+  local.get $0
+  f64.load offset=8
+  f64.const 1
+  f64.ne
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 32
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
  )
  (func $assignment-chain/static_setter_assignment_chain
   global.get $assignment-chain/C._setter_cnt
   i32.const 1
   i32.add
   global.set $assignment-chain/C._setter_cnt
+  f64.const 1
+  global.set $assignment-chain/C._y
   global.get $assignment-chain/C._setter_cnt
   i32.const 1
   i32.add
   global.set $assignment-chain/C._setter_cnt
+  f64.const 1
+  global.set $assignment-chain/C._y
   global.get $assignment-chain/C._setter_cnt
   i32.const 2
   i32.ne
   if
    i32.const 0
    i32.const 432
-   i32.const 45
+   i32.const 46
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $assignment-chain/C._y
+  f64.const 1
+  f64.ne
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 47
    i32.const 3
    call $~lib/builtins/abort
    unreachable

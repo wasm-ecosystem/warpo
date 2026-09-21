@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ClassInfo.hpp"
+#include "MemoryExposure.hpp"
 #include "SubProgramInfo.hpp"
 #include "warpo/support/StringPool.hpp"
 
@@ -22,6 +23,8 @@ class VariableInfo final {
 public:
   using BaseTypeRegistry = std::set<std::string_view>;
   using ClassRegistry = std::map<std::string_view, ClassInfo>;
+  using InterfaceRegistry = std::map<std::string_view, InterfaceInfo>;
+  using MemoryExposureTypeRegistry = MemoryExposure::TypeRegistry;
   using SubProgramLookupMap = std::unordered_map<std::string_view, SubProgramInfo &>;
 
   struct GlobalTypeInfo {
@@ -35,7 +38,12 @@ public:
   void createBaseType(std::string_view typeName);
   void createClass(std::string_view className, uint32_t const rtid);
   void createClass(std::string_view className);
+  void createInterface(std::string_view interfaceName);
   void addBaseClass(std::string_view const className, std::string const parentName);
+  void addBaseInterface(std::string_view const interfaceName, std::string const parentName);
+  void addInterface(std::string_view const className, std::string const interfaceName);
+  void addMemoryExposureType(std::string_view typeName);
+  void finalizeMemoryExposure();
 
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
                 uint32_t const nullable);
@@ -46,6 +54,10 @@ public:
 
   BaseTypeRegistry const &getBaseTypeRegistry() const noexcept { return baseTypeRegistry_; }
   ClassRegistry const &getClassRegistry() const noexcept { return classRegistry_; }
+  InterfaceRegistry const &getInterfaceRegistry() const noexcept { return interfaceRegistry_; }
+  MemoryExposureTypeRegistry const &getMemoryExposureTypeRegistry() const noexcept {
+    return memoryExposure_.getTypes();
+  }
 
   GlobalTypes const &getGlobalTypes() const noexcept { return globalTypes_; }
 
@@ -82,6 +94,8 @@ private:
 
   BaseTypeRegistry baseTypeRegistry_;
   ClassRegistry classRegistry_;
+  InterfaceRegistry interfaceRegistry_;
+  MemoryExposure memoryExposure_;
   GlobalTypes globalTypes_;
   StringPool stringPool_;
   std::deque<SubProgramInfo> topLevelSubPrograms_;

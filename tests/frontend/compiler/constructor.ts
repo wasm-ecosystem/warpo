@@ -12,6 +12,7 @@ class EmptyCtorWithFieldInit {
 }
 
 var emptyCtorWithFieldInit = new EmptyCtorWithFieldInit();
+assert(emptyCtorWithFieldInit.a == 1);
 
 // fall-through allocate with field initialized to zero
 class EmptyCtorWithFieldNoInit {
@@ -20,6 +21,7 @@ class EmptyCtorWithFieldNoInit {
 }
 
 var emptyCtorWithFieldNoInit = new EmptyCtorWithFieldNoInit();
+assert(emptyCtorWithFieldNoInit.a == 0);
 
 // fall-through allocate with field access
 class EmptyCtorWithFieldAccess {
@@ -30,6 +32,7 @@ class EmptyCtorWithFieldAccess {
 }
 
 var emptyCtorWithFieldAccess = new EmptyCtorWithFieldAccess();
+assert(emptyCtorWithFieldAccess.a == 1);
 
 // direct allocate
 class None {}
@@ -42,6 +45,7 @@ class JustFieldInit {
 }
 
 var justFieldInit = new JustFieldInit();
+assert(justFieldInit.a == 1);
 
 // direct allocate with field initialized to zero
 class JustFieldNoInit {
@@ -49,6 +53,7 @@ class JustFieldNoInit {
 }
 
 var justFieldNoInit = new JustFieldNoInit();
+assert(justFieldNoInit.a == 0);
 
 // explicit return with no extra checks
 @final

@@ -7,7 +7,7 @@ export function normal_assignment_chain(): void {
   let x = new A();
   let cnt = 0;
   x.x = x.y = cnt++;
-  assert(cnt == 1); // `cnt++` should be executed only once
+  assert(cnt + x.x + x.y == 1); // `cnt++` should be executed only once
 }
 normal_assignment_chain();
 
@@ -29,6 +29,7 @@ export function setter_assignment_chain(): void {
   x.y = x.y = 1;
   assert(x._setter_cnt == 2);
   assert(x._getter_cnt == 0); // should not use getter method
+  assert(x._y == 1.0);
 }
 setter_assignment_chain();
 
@@ -43,5 +44,6 @@ class C {
 export function static_setter_assignment_chain(): void {
   C.y = C.y = 1;
   assert(C._setter_cnt == 2);
+  assert(C._y == 1.0);
 }
 static_setter_assignment_chain();

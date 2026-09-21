@@ -7,11 +7,13 @@
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 i64)))
- (type $8 (func (param i32 f64)))
- (type $9 (func (param i32 i32 i32) (result i32)))
- (type $10 (func (param i32 i32 i64) (result i32)))
- (type $11 (func (result i32)))
- (type $12 (func (param f64)))
+ (type $8 (func (param i32) (result i64)))
+ (type $9 (func (param i32 f64)))
+ (type $10 (func (param i32 i32 i32) (result i32)))
+ (type $11 (func (param i32 i32 i64) (result i32)))
+ (type $12 (func (result i32)))
+ (type $13 (func (param i32) (result f64)))
+ (type $14 (func (param f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -2943,6 +2945,16 @@
    (local.get $x)
   )
  )
+ (func $assignment-chain/A#get:x (param $this i32) (result i64)
+  (i64.load
+   (local.get $this)
+  )
+ )
+ (func $assignment-chain/A#get:y (param $this i32) (result i64)
+  (i64.load offset=8
+   (local.get $this)
+  )
+ )
  (func $assignment-chain/normal_assignment_chain
   (local $x i32)
   (local $cnt i32)
@@ -2993,9 +3005,25 @@
   )
   (if
    (i32.eqz
-    (i32.eq
-     (local.get $cnt)
-     (i32.const 1)
+    (i64.eq
+     (i64.add
+      (i64.add
+       (i64.extend_i32_s
+        (local.get $cnt)
+       )
+       (call $assignment-chain/A#get:x
+        (call $~lib/rt/__tmptostack
+         (local.get $x)
+        )
+       )
+      )
+      (call $assignment-chain/A#get:y
+       (call $~lib/rt/__tmptostack
+        (local.get $x)
+       )
+      )
+     )
+     (i64.const 1)
     )
    )
    (then
@@ -3061,6 +3089,11 @@
  )
  (func $assignment-chain/B#get:_getter_cnt (param $this i32) (result i32)
   (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $assignment-chain/B#get:_y (param $this i32) (result f64)
+  (f64.load offset=8
    (local.get $this)
   )
  )
@@ -3137,6 +3170,27 @@
     (unreachable)
    )
   )
+  (if
+   (i32.eqz
+    (f64.eq
+     (call $assignment-chain/B#get:_y
+      (call $~lib/rt/__tmptostack
+       (local.get $x)
+      )
+     )
+     (f64.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 32)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
  )
  (func $assignment-chain/C.set:y (param $z f64)
   (global.set $assignment-chain/C._setter_cnt
@@ -3172,7 +3226,24 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 45)
+     (i32.const 46)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (f64.eq
+     (global.get $assignment-chain/C._y)
+     (f64.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 47)
      (i32.const 3)
     )
     (unreachable)
