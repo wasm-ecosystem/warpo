@@ -22,8 +22,7 @@ public:
   std::string_view getParentName() const noexcept { return parentName_; }
 
   // Layout fields introduce a new storage entry; redeclarations are not included.
-  void addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                      bool const nullable);
+  void addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
   std::vector<FieldInfo> const &getLayoutFields() const noexcept { return layoutFields_; }
   // Declared fields contain every declaration, including redeclarations that reuse an inherited offset.
   void addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
@@ -62,8 +61,7 @@ public:
   // Declared fields contain every declaration, including redeclarations that reuse an inherited offset.
   std::vector<FieldInfo> const &getDeclaredFields() const noexcept { return declaredFields_; }
 
-  void addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                      bool const nullable);
+  void addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
   void addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
                         bool const nullable);
 

@@ -48,6 +48,7 @@ E_KEYNOTFOUND
 E_NOTIMPLEMENTED
 E_VALUEOUTOFRANGE
 EBNF
+Effectful
 Eliminable
 emptydir
 endforeach

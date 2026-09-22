@@ -172,17 +172,17 @@ TEST(TestClassHierarchy, DirectRelationshipsAndInterfaceImplementers) {
   EXPECT_EQ(hierarchy.getParentClass("BaseClass"), "");
 
   std::vector<std::string_view> const subClasses = hierarchy.getDirectSubclasses("BaseClass");
-  EXPECT_EQ(subClasses.size(), 2u);
+  EXPECT_EQ(subClasses.size(), 2U);
 
   EXPECT_EQ(hierarchy.getParentInterface("IDerived"), "IBase");
   EXPECT_EQ(hierarchy.getParentInterface("IBase"), "");
 
   std::vector<std::string_view> const subInterfaces = hierarchy.getDirectSubinterfaces("IBase");
-  EXPECT_EQ(subInterfaces.size(), 1u);
+  EXPECT_EQ(subInterfaces.size(), 1U);
   EXPECT_EQ(subInterfaces.front(), "IDerived");
 
   std::vector<std::string_view> const implementers = hierarchy.getDirectImplementers("IDerived");
-  EXPECT_EQ(implementers.size(), 1u);
+  EXPECT_EQ(implementers.size(), 1U);
   EXPECT_EQ(implementers.front(), "DerivedClass1");
 }
 
