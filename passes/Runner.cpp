@@ -39,6 +39,7 @@
 #include "warpo/common/DebugLevel.hpp"
 #include "warpo/common/Features.hpp"
 #include "warpo/common/OptLevel.hpp"
+#include "warpo/passes/KnownImportSemantics.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Statistics.hpp"
@@ -84,6 +85,20 @@ static void lowering(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Lowering};
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
+      // A known-removable import can be eliminated when its result is unused, but
+      // the same fact is not inferred for a defined helper automatically. For
+      // example, without generate-global-effects, Binaryen conservatively keeps
+      // this direct call even when $foo has no side effects:
+      //
+      //   (drop (call $foo))
+      //
+      // KnownImportSemantics annotates known imports, while
+      // generate-global-effects derives and propagates the corresponding fact for
+      // defined functions. Both are needed to remove an unused call chain.
+      passRunner->add(std::unique_ptr<wasm::Pass>{createKnownImportSemanticsPass()});
+      passRunner->add("generate-global-effects");
+    }
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
     passRunner->add(std::unique_ptr<wasm::Pass>{createConstructorNewOutliningPass()});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {

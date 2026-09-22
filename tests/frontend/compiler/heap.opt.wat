@@ -842,40 +842,37 @@
   local.tee $1
   i32.eqz
   if
-   local.get $2
-   local.tee $1
-   i32.const 256
-   i32.ge_u
-   if (result i32)
-    local.get $1
-    i32.const 1
-    i32.const 27
-    local.get $1
-    i32.clz
-    i32.sub
-    i32.shl
-    i32.add
-    i32.const 1
-    i32.sub
-    local.get $1
-    local.get $1
-    i32.const 536870910
-    i32.lt_u
-    select
-   else
-    local.get $1
-   end
    i32.const 4
    local.get $0
    i32.load offset=1568
    memory.size
-   local.tee $3
+   local.tee $1
    i32.const 16
    i32.shl
    i32.const 4
    i32.sub
    i32.ne
    i32.shl
+   local.get $2
+   i32.const 1
+   i32.const 27
+   local.get $2
+   i32.clz
+   i32.sub
+   i32.shl
+   i32.add
+   i32.const 1
+   i32.sub
+   local.get $2
+   local.get $2
+   i32.const 536870910
+   i32.lt_u
+   select
+   local.get $2
+   local.get $2
+   i32.const 256
+   i32.ge_u
+   select
    i32.add
    i32.const 65535
    i32.add
@@ -883,18 +880,18 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.set $1
-   local.get $3
-   local.get $1
+   local.set $3
    local.get $1
    local.get $3
-   i32.lt_s
+   local.get $1
+   local.get $3
+   i32.gt_s
    select
    memory.grow
    i32.const 0
    i32.lt_s
    if
-    local.get $1
+    local.get $3
     memory.grow
     i32.const 0
     i32.lt_s
@@ -903,7 +900,7 @@
     end
    end
    local.get $0
-   local.get $3
+   local.get $1
    i32.const 16
    i32.shl
    memory.size

@@ -953,8 +953,6 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  call $start:function-call~anonymous|0
-  call $start:function-call~anonymous|0
   i32.const 1
   i32.const 2
   call $start:function-call~anonymous|2
@@ -1505,8 +1503,6 @@
   global.get $~lib/memory/__stack_pointer
   global.get $function-call/foo
   i32.store align=1
-  global.get $function-call/foo
-  call $function-call/Foo#fnVoid
   i32.const 1
   call $start:function-call~fn2|4
   i32.const 1

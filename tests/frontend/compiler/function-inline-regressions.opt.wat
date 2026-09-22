@@ -13,7 +13,6 @@
  )
  (func $function-inline-regressions/foo (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  (local $4 i32)
   local.get $0
   i32.const 1
   i32.shl
@@ -21,11 +20,11 @@
   i32.const 1
   i32.add
   i32.load
-  i32.const 16
-  i32.load
-  local.tee $4
   local.get $3
   i32.load
+  i32.const 16
+  i32.load
+  local.tee $3
   i32.add
   i32.add
   if
@@ -51,6 +50,6 @@
   if
    unreachable
   end
-  local.get $4
+  local.get $3
  )
 )
