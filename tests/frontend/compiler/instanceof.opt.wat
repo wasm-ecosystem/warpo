@@ -733,7 +733,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -808,7 +808,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2

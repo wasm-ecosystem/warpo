@@ -45,7 +45,7 @@
 ;;    return
 ;;  end
 ;; =========add========
-      br_if $CONDITION_RETURN#0
+      br_if $~CONDITION_RETURN/tests/snapshot_diff/gc_lower_opt/base/void_conditional_return/_start
         block ;;i32
             global.get $~lib/memory/__stack_pointer
 ;; ====================
