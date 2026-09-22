@@ -130,7 +130,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$86
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$82
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -154,7 +154,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$86
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$82
    end
    local.get $0
    i32.load offset=8
@@ -989,7 +989,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$91 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$87 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1005,7 +1005,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$91
+         br $__inlined_func$~lib/rt/itcms/step$87
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1044,7 +1044,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$91
+           br $__inlined_func$~lib/rt/itcms/step$87
           end
           local.get $2
           i32.load offset=4
@@ -1136,7 +1136,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$91
+        br $__inlined_func$~lib/rt/itcms/step$87
        end
        global.get $~lib/rt/itcms/iter
        local.tee $2
@@ -1235,7 +1235,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$91
+        br $__inlined_func$~lib/rt/itcms/step$87
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1679,38 +1679,18 @@
   local.get $0
   local.get $1
   call $~lib/rt/itcms/__link
-  local.get $0
   i32.const 2
   call $constructor-called-multi-times/Box#constructor@new
-  local.tee $1
-  i32.store offset=4
-  local.get $0
-  local.get $1
-  call $~lib/rt/itcms/__link
-  local.get $0
+  drop
   i32.const 3
   call $constructor-called-multi-times/Box#constructor@new
-  local.tee $1
-  i32.store offset=8
-  local.get $0
-  local.get $1
-  call $~lib/rt/itcms/__link
-  local.get $0
+  drop
   i32.const 4
   call $constructor-called-multi-times/Box#constructor@new
-  local.tee $1
-  i32.store offset=12
-  local.get $0
-  local.get $1
-  call $~lib/rt/itcms/__link
-  local.get $0
+  drop
   i32.const 5
   call $constructor-called-multi-times/Box#constructor@new
-  local.tee $1
-  i32.store offset=16
-  local.get $0
-  local.get $1
-  call $~lib/rt/itcms/__link
+  drop
   local.get $0
   i32.const 6
   call $constructor-called-multi-times/Box#constructor@new

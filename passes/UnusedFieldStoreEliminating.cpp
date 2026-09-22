@@ -126,46 +126,28 @@ wasm::Name getGetterName(std::string_view const owner, std::string_view const fi
   return getterName;
 }
 
-// AssemblyScript allows a derived class to redeclare an inherited field. For example:
-//
-//   class Base { value: i32; }                  // Base.value is at offset 0
-//   class Derived extends Base { value: i32; }  // redeclares value at the same offset
-//
-// A call to Base#set:value can therefore be observed by a call to Derived#get:value: the accessor
-// owners differ, but both access the same storage. The redeclaration alone does not make the setter
-// observable, though. If Derived#get:value is never called, referenced, or exported, it cannot read
-// the stored value.
-//
-// This function first finds declarations in the setter owner's hierarchy with the same field name
-// and Store offset. It then checks whether the getter corresponding to any such declaration is in
-// usedGetterNames. Same-name getters from unrelated classes or for another offset do not count.
-bool isSetterObservedByUsedGetter(VariableInfo const *const variableInfo, wasm::Name const setterName,
-                                  uint32_t const setterOffset, std::unordered_set<wasm::Name> const &usedGetterNames) {
-  std::optional<AccessorName> const setter = parseAccessorName(setterName, SETTER_MARKER);
-  if (!setter.has_value())
+bool isRedeclaredField(VariableInfo const *const variableInfo, AccessorName const &setter,
+                       uint32_t const setterOffset) {
+  if (variableInfo == nullptr)
     return false;
-  if (variableInfo == nullptr) {
-    wasm::Name const getterName = getGetterName(setter->getOwner(), setter->getField());
-    return usedGetterNames.contains(getterName);
-  }
 
   ClassHierarchy const hierarchy{*variableInfo};
-  std::vector<std::string_view> relatedClasses = hierarchy.getAncestors(setter->getOwner());
-  relatedClasses.push_back(setter->getOwner());
-  std::vector<std::string_view> descendants = hierarchy.getDescendants(setter->getOwner());
+  std::vector<std::string_view> relatedClasses = hierarchy.getAncestors(setter.getOwner());
+  relatedClasses.push_back(setter.getOwner());
+  std::vector<std::string_view> descendants = hierarchy.getDescendants(setter.getOwner());
   relatedClasses.insert(relatedClasses.end(), descendants.begin(), descendants.end());
+
+  uint32_t declarationCount = 0;
   VariableInfo::ClassRegistry const &classRegistry = variableInfo->getClassRegistry();
   for (std::string_view const className : relatedClasses) {
     VariableInfo::ClassRegistry::const_iterator const classIt = classRegistry.find(className);
     if (classIt == classRegistry.end())
       continue;
     for (FieldInfo const &field : classIt->second.getDeclaredFields()) {
-      if (field.getName() != setter->getField() || field.getOffsetInClass() != setterOffset)
+      if (field.getName() != setter.getField() || field.getOffsetInClass() != setterOffset)
         continue;
-      wasm::Name const getterName = getGetterName(className, setter->getField());
-      if (!usedGetterNames.contains(getterName))
-        continue;
-      return true;
+      if (++declarationCount > 1)
+        return true;
     }
   }
   return false;
@@ -209,6 +191,8 @@ public:
       return;
     if (variableInfo_ != nullptr && variableInfo_->getMemoryExposureTypeRegistry().contains(setter->getOwner()))
       return;
+    if (isRedeclaredField(variableInfo_, *setter, *setterOffset))
+      return;
     setterOffsets_.emplace(call->target, *setterOffset);
   }
 
@@ -242,8 +226,12 @@ std::unordered_set<wasm::Name> analyzeRemovableSetters(wasm::Module *const m, Va
     wasm::Name const &setterName = setter.first;
     if (analysis.getReferencedFunctionNames().contains(setterName))
       continue;
-    if (!isSetterObservedByUsedGetter(variableInfo, setterName, setter.second, analysis.getUsedGetterNames()))
-      removableSetterNames.insert(setterName);
+    std::optional<AccessorName> const setterAccessor = parseAccessorName(setterName, SETTER_MARKER);
+    if (!setterAccessor.has_value())
+      continue;
+    if (analysis.getUsedGetterNames().contains(getGetterName(setterAccessor->getOwner(), setterAccessor->getField())))
+      continue;
+    removableSetterNames.insert(setterName);
   }
   return removableSetterNames;
 }
@@ -889,7 +877,7 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterWhenRedeclaredGetterIsUsed) {
   EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
 }
 
-TEST(UnusedFieldStoreEliminatingTest, RemovesSetterWhenRedeclaredGetterIsUnused) {
+TEST(UnusedFieldStoreEliminatingTest, KeepsSetterForRedeclaredFieldWhenGetterIsUnused) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (memory 1)
@@ -913,7 +901,7 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterWhenRedeclaredGetterIsUnused)
 
   runUnusedFieldStoreEliminating(*m, &variableInfo);
 
-  expectOperandDrops(m->getFunction("write")->body);
+  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
 }
 
 TEST(UnusedFieldStoreEliminatingTest, DoesNotMatchGetterFromUnrelatedClass) {
