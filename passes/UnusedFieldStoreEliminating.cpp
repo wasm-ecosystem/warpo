@@ -58,18 +58,6 @@ bool isGcRootingFunction(wasm::Name const name) noexcept {
 
 std::optional<AccessorName> parseAccessorName(wasm::Name const name, std::string_view const marker) noexcept;
 
-bool isLinkedMemoryGetter(wasm::Function const *const function) noexcept {
-  if (function == nullptr || function->module != "builtin")
-    return false;
-  std::string_view const base = function->base.view();
-  return base == "getLengthOfLinkedMemory" || base == "getU8FromLinkedMemory" ||
-         base == "getI8FromLinkedMemory" || base == "getU16FromLinkedMemory" ||
-         base == "getI16FromLinkedMemory" || base == "getU32FromLinkedMemory" ||
-         base == "getI32FromLinkedMemory" || base == "getU64FromLinkedMemory" ||
-         base == "getI64FromLinkedMemory" || base == "getF32FromLinkedMemory" ||
-         base == "getF64FromLinkedMemory";
-}
-
 wasm::Expression *unwrapGcRootingCall(wasm::Expression *expression) noexcept {
   wasm::Call *const call = expression->dynCast<wasm::Call>();
   if (call == nullptr || !isGcRootingFunction(call->target) || call->operands.size() != 1)
@@ -82,17 +70,6 @@ bool isTrivialFieldGetter(wasm::Function const *const getter) noexcept {
     return false;
   wasm::Load const *const load = getter->body->dynCast<wasm::Load>();
   return load != nullptr && !load->isAtomic() && isLocalGet(load->ptr, 0);
-}
-
-bool isSafeCall(wasm::Module &m, wasm::Call const *const call) noexcept {
-  if (call->isReturn || call->type == wasm::Type::none || call->type == wasm::Type::unreachable)
-    return false;
-  if (isGcRootingFunction(call->target))
-    return call->operands.size() == 1;
-  if (isLinkedMemoryGetter(m.getFunctionOrNull(call->target)))
-    return true;
-  return parseAccessorName(call->target, GETTER_MARKER).has_value() &&
-         isTrivialFieldGetter(m.getFunctionOrNull(call->target));
 }
 
 bool isFieldGcLink(wasm::Expression const *const expression) noexcept {
@@ -280,40 +257,6 @@ private:
   std::atomic<size_t> count_{0};
 };
 
-class SetterOperandSafetyAnalyzer
-    : public wasm::PostWalker<SetterOperandSafetyAnalyzer,
-                               wasm::UnifiedExpressionVisitor<SetterOperandSafetyAnalyzer>> {
-public:
-  explicit SetterOperandSafetyAnalyzer(wasm::Module &m) : m_{m} {}
-
-  bool isSafe(wasm::Expression *expression) {
-    safe_ = true;
-    walk(expression);
-    return safe_;
-  }
-
-  void visitExpression(wasm::Expression *expression) {
-    if (!safe_)
-      return;
-    if (wasm::Call const *const call = expression->dynCast<wasm::Call>()) {
-      safe_ = isSafeCall(m_, call);
-      return;
-    }
-    if (wasm::Load const *const load = expression->dynCast<wasm::Load>()) {
-      safe_ = !load->isAtomic();
-      return;
-    }
-
-    safe_ = expression->is<wasm::Const>() || expression->is<wasm::LocalGet>() ||
-            expression->is<wasm::GlobalGet>() || expression->is<wasm::Unary>() ||
-            expression->is<wasm::Binary>() || expression->is<wasm::Select>();
-  }
-
-private:
-  wasm::Module &m_;
-  bool safe_{true};
-};
-
 class SetterCallRemover : public wasm::WalkerPass<wasm::PostWalker<SetterCallRemover>> {
 public:
   SetterCallRemover(std::unordered_set<wasm::Name> removableSetterNames, std::shared_ptr<RemovalCounter> counter)
@@ -327,14 +270,10 @@ public:
   void visitCall(wasm::Call *call) {
     if (!removableSetterNames_.contains(call->target) || call->type != wasm::Type::none || call->isReturn)
       return;
-    SetterOperandSafetyAnalyzer analyzer{*getModule()};
-    for (wasm::Expression *const operand : call->operands) {
-      if (!analyzer.isSafe(operand))
-        return;
-    }
 
     counter_->increment();
-    replaceCurrent(wasm::Builder{*getModule()}.makeNop());
+    wasm::Builder builder{*getModule()};
+    replaceCurrent(builder.makeBlock({builder.makeDrop(call->operands[0]), builder.makeDrop(call->operands[1])}));
   }
 
 private:
@@ -443,6 +382,14 @@ void runUnusedFieldStoreEliminating(wasm::Module &m, VariableInfo const *const v
   runner.run();
 }
 
+void expectOperandDrops(wasm::Expression *const expression) {
+  wasm::Block const *const block = expression->dynCast<wasm::Block>();
+  ASSERT_NE(block, nullptr);
+  ASSERT_EQ(block->list.size(), 2);
+  EXPECT_TRUE(block->list[0]->is<wasm::Drop>());
+  EXPECT_TRUE(block->list[1]->is<wasm::Drop>());
+}
+
 TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallForUnreadField) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
@@ -461,7 +408,7 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallForUnreadField) {
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
 TEST(UnusedFieldStoreEliminatingTest, RemovesReferenceFieldSetterWithGcLink) {
@@ -481,10 +428,10 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesReferenceFieldSetterWithGcLink) {
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
-TEST(UnusedFieldStoreEliminatingTest, RemovesNestedReferenceInitializationAtFixedPoint) {
+TEST(UnusedFieldStoreEliminatingTest, PreservesOuterSetterUsedByDroppedReceiver) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (import "as-builtin-fn" "~lib/rt/__localtostack"
@@ -520,9 +467,11 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesNestedReferenceInitializationAtFixe
   wasm::Block const *const body = m->getFunction("initialize")->body->dynCast<wasm::Block>();
   ASSERT_NE(body, nullptr);
   ASSERT_EQ(body->list.size(), 3);
-  EXPECT_TRUE(body->list[0]->is<wasm::Nop>());
-  EXPECT_TRUE(body->list[1]->is<wasm::Nop>());
-  EXPECT_TRUE(body->list[2]->is<wasm::Nop>());
+  wasm::Call const *const outerSetter = body->list[0]->dynCast<wasm::Call>();
+  ASSERT_NE(outerSetter, nullptr);
+  EXPECT_EQ(outerSetter->target, "A#set:b");
+  EXPECT_TRUE(body->list[1]->is<wasm::LocalSet>());
+  expectOperandDrops(body->list[2]);
 }
 
 TEST(UnusedFieldStoreEliminatingTest, KeepsStoreFollowedByUnrelatedCall) {
@@ -569,7 +518,7 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallForReadField) {
   EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
 }
 
-TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithEffectfulOperand) {
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingEffectfulOperand) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (global $state (mut i32) (i32.const 0))
@@ -589,10 +538,10 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithEffectfulOperand) {
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
-TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithLocalTeeOperand) {
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingLocalTeeOperand) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (memory 1)
@@ -610,10 +559,10 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithLocalTeeOperand) {
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
-TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithControlFlowOperand) {
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingControlFlowOperand) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (memory 1)
@@ -633,10 +582,10 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithControlFlowOperand) {
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
-TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithUnknownBuiltinImportOperand) {
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingUnknownBuiltinImportOperand) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (import "builtin.math" "value" (func $builtin.value (result i32)))
@@ -652,10 +601,10 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithUnknownBuiltinImportOpe
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
-TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallWithLinkedMemoryGetterOperand) {
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingLinkedMemoryGetterOperand) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (import "builtin" "getU8FromLinkedMemory"
@@ -675,10 +624,10 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallWithLinkedMemoryGetterOpe
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
-TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallWithTmpToStackOperand) {
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingTmpToStackOperand) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (import "as-builtin-fn" "~lib/rt/__tmptostack"
@@ -698,10 +647,10 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallWithTmpToStackOperand) {
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
-TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithNonBuiltinImportOperand) {
+TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingNonBuiltinImportOperand) {
   std::unique_ptr<wasm::Module> m = loadWat(R"(
     (module
       (import "host" "value" (func $host.value (result i32)))
@@ -717,7 +666,7 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterCallWithNonBuiltinImportOperand
 
   runUnusedFieldStoreEliminating(*m);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Call>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
 TEST(UnusedFieldStoreEliminatingTest, KeepsNonTrivialSetter) {
@@ -964,7 +913,7 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterWhenRedeclaredGetterIsUnused)
 
   runUnusedFieldStoreEliminating(*m, &variableInfo);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+  expectOperandDrops(m->getFunction("write")->body);
 }
 
 TEST(UnusedFieldStoreEliminatingTest, DoesNotMatchGetterFromUnrelatedClass) {
@@ -995,7 +944,7 @@ TEST(UnusedFieldStoreEliminatingTest, DoesNotMatchGetterFromUnrelatedClass) {
 
   runUnusedFieldStoreEliminating(*m, &variableInfo);
 
-  EXPECT_TRUE(m->getFunction("write")->body->is<wasm::Nop>());
+  expectOperandDrops(m->getFunction("write")->body);
   EXPECT_TRUE(m->getFunction("read")->body->is<wasm::Call>());
 }
 
