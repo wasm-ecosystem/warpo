@@ -8,6 +8,7 @@
 
 namespace warpo::passes {
 
+void optimizeConditionalReturns(wasm::Module *m, wasm::Function *func);
 wasm::Pass *createConditionalReturnPass();
 
-}
+} // namespace warpo::passes

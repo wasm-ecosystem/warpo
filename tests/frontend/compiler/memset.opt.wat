@@ -12,10 +12,10 @@
  (func $memset/memset (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (local $4 i64)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/memset/memset
    local.get $2
    i32.eqz
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/memset/memset
    local.get $0
    local.get $1
    i32.store8
@@ -30,7 +30,7 @@
    local.get $2
    i32.const 2
    i32.le_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/memset/memset
    local.get $0
    i32.const 1
    i32.add
@@ -54,7 +54,7 @@
    local.get $2
    i32.const 6
    i32.le_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/memset/memset
    local.get $0
    i32.const 3
    i32.add
@@ -68,7 +68,7 @@
    local.get $2
    i32.const 8
    i32.le_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/memset/memset
    i32.const 0
    local.get $0
    i32.sub
@@ -100,7 +100,7 @@
    local.get $2
    i32.const 8
    i32.le_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/memset/memset
    local.get $0
    i32.const 4
    i32.add
@@ -127,7 +127,7 @@
    local.get $2
    i32.const 24
    i32.le_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/memset/memset
    local.get $0
    i32.const 12
    i32.add

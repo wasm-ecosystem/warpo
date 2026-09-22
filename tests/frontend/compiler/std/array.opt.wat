@@ -1234,7 +1234,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -1309,7 +1309,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -8306,9 +8306,7 @@
     local.get $2
     i32.const 1
     i32.le_s
-    if
-     br $__inlined_func$~lib/util/sort/SORT<std/array/Dim>$229
-    end
+    br_if $__inlined_func$~lib/util/sort/SORT<std/array/Dim>$229
     block $break|0
      block $case1|0
       local.get $2
@@ -9318,7 +9316,7 @@
     local.get $7
     i32.gt_s
     if
-     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$61 (result i32)
+     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$60 (result i32)
       local.get $0
       local.get $2
       i32.const 1
@@ -9341,7 +9339,7 @@
        i32.or
        i32.store16
        i32.const 1
-       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$61
+       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$60
       end
       local.get $8
       local.get $4
@@ -9378,7 +9376,7 @@
      br $for-loop|0
     end
    end
-   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$62 (result i32)
+   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$61 (result i32)
     local.get $0
     local.get $2
     i32.const 1
@@ -9401,7 +9399,7 @@
      i32.or
      i32.store16
      i32.const 1
-     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$62
+     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$61
     end
     local.get $3
     local.get $1
@@ -22023,7 +22021,7 @@
  )
  (func $byn$mgfn-shared$~lib/util/number/itoa_buffered<u16> (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$76 (result i32)
+  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$75 (result i32)
    local.get $1
    local.get $2
    i32.and
@@ -22037,7 +22035,7 @@
     i32.or
     i32.store16
     i32.const 1
-    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$76
+    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$75
    end
    local.get $1
    local.get $2

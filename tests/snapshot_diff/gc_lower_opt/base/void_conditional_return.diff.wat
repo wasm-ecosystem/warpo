@@ -37,17 +37,15 @@
         end
 ;; ====================
       local.set $0
-      if ;;none
-        global.get $tests/snapshot_diff/gc_lower_opt/base/void_conditional_return/shouldReturn
-;; =========add========
-        block ;;unreachable
-            i32.const 12
-          call $~lib/rt/__increase_sp
+;; ======remove=======
+;;  if ;;none
 ;; ====================
-          return
-        end
+        global.get $tests/snapshot_diff/gc_lower_opt/base/void_conditional_return/shouldReturn
+;; ======remove=======
+;;    return
+;;  end
 ;; =========add========
-      end
+      br_if $~CONDITION_RETURN/tests/snapshot_diff/gc_lower_opt/base/void_conditional_return/_start
         block ;;i32
             global.get $~lib/memory/__stack_pointer
 ;; ====================
