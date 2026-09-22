@@ -166,7 +166,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$80
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$79
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -190,7 +190,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$80
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$79
      end
      local.get $0
      i32.load offset=8
@@ -1072,17 +1072,17 @@
   i32.store
   i32.const 720
   global.set $~lib/rt/itcms/fromSpace
-  block $__inlined_func$~lib/string/String.__eq$87 (result i32)
+  block $__inlined_func$~lib/string/String.__eq$86 (result i32)
    i32.const 1
    i32.const 0
    call $start:resolve-function-expression~anonymous|2
-   local.tee $0
+   local.tee $2
    if (result i32)
     i32.const 0
-    local.get $0
+    local.get $2
     i32.sub
-    local.get $0
-    local.get $0
+    local.get $2
+    local.get $2
     i32.const 31
     i32.shr_u
     i32.const 1
@@ -1150,12 +1150,12 @@
     global.get $~lib/rt/itcms/threshold
     i32.ge_u
     if
-     block $__inlined_func$~lib/rt/itcms/interrupt$67
+     block $__inlined_func$~lib/rt/itcms/interrupt$66
       i32.const 2048
       local.set $0
       loop $do-loop|0
        local.get $0
-       block $__inlined_func$~lib/rt/itcms/step$85 (result i32)
+       block $__inlined_func$~lib/rt/itcms/step$84 (result i32)
         block $break|0
          block $case2|0
           block $case1|0
@@ -1171,7 +1171,7 @@
            global.get $~lib/rt/itcms/toSpace
            global.set $~lib/rt/itcms/iter
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$85
+           br $__inlined_func$~lib/rt/itcms/step$84
           end
           global.get $~lib/rt/itcms/white
           i32.eqz
@@ -1210,7 +1210,7 @@
              i32.add
              call $~lib/rt/__visit_members
              global.get $~lib/rt/itcms/visitCount
-             br $__inlined_func$~lib/rt/itcms/step$85
+             br $__inlined_func$~lib/rt/itcms/step$84
             end
             local.get $0
             i32.load offset=4
@@ -1302,7 +1302,7 @@
            global.set $~lib/rt/itcms/state
           end
           global.get $~lib/rt/itcms/visitCount
-          br $__inlined_func$~lib/rt/itcms/step$85
+          br $__inlined_func$~lib/rt/itcms/step$84
          end
          global.get $~lib/rt/itcms/iter
          local.tee $0
@@ -1401,7 +1401,7 @@
            end
           end
           i32.const 10
-          br $__inlined_func$~lib/rt/itcms/step$85
+          br $__inlined_func$~lib/rt/itcms/step$84
          end
          global.get $~lib/rt/itcms/toSpace
          global.get $~lib/rt/itcms/toSpace
@@ -1425,7 +1425,7 @@
         i32.const 1024
         i32.add
         global.set $~lib/rt/itcms/threshold
-        br $__inlined_func$~lib/rt/itcms/interrupt$67
+        br $__inlined_func$~lib/rt/itcms/interrupt$66
        end
        local.get $0
        i32.const 0
@@ -1483,40 +1483,37 @@
     local.tee $0
     i32.eqz
     if
-     local.get $1
-     local.tee $0
-     i32.const 256
-     i32.ge_u
-     if (result i32)
-      local.get $0
-      i32.const 1
-      i32.const 27
-      local.get $0
-      i32.clz
-      i32.sub
-      i32.shl
-      i32.add
-      i32.const 1
-      i32.sub
-      local.get $0
-      local.get $0
-      i32.const 536870910
-      i32.lt_u
-      select
-     else
-      local.get $0
-     end
      i32.const 4
      local.get $4
      i32.load offset=1568
      memory.size
-     local.tee $5
+     local.tee $0
      i32.const 16
      i32.shl
      i32.const 4
      i32.sub
      i32.ne
      i32.shl
+     local.get $1
+     i32.const 1
+     i32.const 27
+     local.get $1
+     i32.clz
+     i32.sub
+     i32.shl
+     i32.add
+     i32.const 1
+     i32.sub
+     local.get $1
+     local.get $1
+     i32.const 536870910
+     i32.lt_u
+     select
+     local.get $1
+     local.get $1
+     i32.const 256
+     i32.ge_u
+     select
      i32.add
      i32.const 65535
      i32.add
@@ -1524,18 +1521,18 @@
      i32.and
      i32.const 16
      i32.shr_u
-     local.set $0
-     local.get $5
-     local.get $0
+     local.set $5
      local.get $0
      local.get $5
-     i32.lt_s
+     local.get $0
+     local.get $5
+     i32.gt_s
      select
      memory.grow
      i32.const 0
      i32.lt_s
      if
-      local.get $0
+      local.get $5
       memory.grow
       i32.const 0
       i32.lt_s
@@ -1544,7 +1541,7 @@
       end
      end
      local.get $4
-     local.get $5
+     local.get $0
      i32.const 16
      i32.shl
      memory.size
@@ -1795,12 +1792,12 @@
    local.tee $3
    i32.const 2384
    i32.eq
-   br_if $__inlined_func$~lib/string/String.__eq$87
+   br_if $__inlined_func$~lib/string/String.__eq$86
    drop
    i32.const 0
    local.get $3
    i32.eqz
-   br_if $__inlined_func$~lib/string/String.__eq$87
+   br_if $__inlined_func$~lib/string/String.__eq$86
    drop
    i32.const 0
    local.get $3
@@ -1815,9 +1812,9 @@
    i32.const 1
    i32.shr_u
    i32.ne
-   br_if $__inlined_func$~lib/string/String.__eq$87
+   br_if $__inlined_func$~lib/string/String.__eq$86
    drop
-   block $__inlined_func$~lib/util/string/compareImpl$74 (result i32)
+   block $__inlined_func$~lib/util/string/compareImpl$73 (result i32)
     i32.const 2384
     local.set $1
     local.get $3
@@ -1873,7 +1870,7 @@
        local.get $0
        local.get $4
        i32.sub
-       br $__inlined_func$~lib/util/string/compareImpl$74
+       br $__inlined_func$~lib/util/string/compareImpl$73
       end
       local.get $3
       i32.const 2

@@ -1095,11 +1095,11 @@
    call $~lib/rt/tlsf/initialize
   end
   global.get $~lib/rt/tlsf/ROOT
-  local.set $4
+  local.set $5
   local.get $0
   i32.const 16
   i32.add
-  local.tee $3
+  local.tee $2
   i32.const 1073741820
   i32.gt_u
   if
@@ -1110,16 +1110,16 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $4
+  local.get $5
   i32.const 12
-  local.get $3
+  local.get $2
   i32.const 19
   i32.add
   i32.const -16
   i32.and
   i32.const 4
   i32.sub
-  local.get $3
+  local.get $2
   i32.const 12
   i32.le_u
   select
@@ -1128,40 +1128,37 @@
   local.tee $2
   i32.eqz
   if
-   local.get $3
-   local.tee $2
-   i32.const 256
-   i32.ge_u
-   if (result i32)
-    local.get $2
-    i32.const 1
-    i32.const 27
-    local.get $2
-    i32.clz
-    i32.sub
-    i32.shl
-    i32.add
-    i32.const 1
-    i32.sub
-    local.get $2
-    local.get $2
-    i32.const 536870910
-    i32.lt_u
-    select
-   else
-    local.get $2
-   end
    i32.const 4
-   local.get $4
+   local.get $5
    i32.load offset=1568
    memory.size
-   local.tee $5
+   local.tee $2
    i32.const 16
    i32.shl
    i32.const 4
    i32.sub
    i32.ne
    i32.shl
+   local.get $3
+   i32.const 1
+   i32.const 27
+   local.get $3
+   i32.clz
+   i32.sub
+   i32.shl
+   i32.add
+   i32.const 1
+   i32.sub
+   local.get $3
+   local.get $3
+   i32.const 536870910
+   i32.lt_u
+   select
+   local.get $3
+   local.get $3
+   i32.const 256
+   i32.ge_u
+   select
    i32.add
    i32.const 65535
    i32.add
@@ -1169,18 +1166,18 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.set $2
-   local.get $5
+   local.set $4
    local.get $2
+   local.get $4
    local.get $2
-   local.get $5
-   i32.lt_s
+   local.get $4
+   i32.gt_s
    select
    memory.grow
    i32.const 0
    i32.lt_s
    if
-    local.get $2
+    local.get $4
     memory.grow
     i32.const 0
     i32.lt_s
@@ -1188,8 +1185,8 @@
      unreachable
     end
    end
-   local.get $4
    local.get $5
+   local.get $2
    i32.const 16
    i32.shl
    memory.size
@@ -1197,7 +1194,7 @@
    i64.const 16
    i64.shl
    call $~lib/rt/tlsf/addMemory
-   local.get $4
+   local.get $5
    local.get $3
    call $~lib/rt/tlsf/searchBlock
    local.tee $2
@@ -1225,12 +1222,12 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $4
+  local.get $5
   local.get $2
   call $~lib/rt/tlsf/removeBlock
   local.get $2
   i32.load
-  local.set $6
+  local.set $4
   local.get $3
   i32.const 4
   i32.add
@@ -1244,18 +1241,18 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $6
+  local.get $4
   i32.const -4
   i32.and
   local.get $3
   i32.sub
-  local.tee $5
+  local.tee $6
   i32.const 16
   i32.ge_u
   if
    local.get $2
    local.get $3
-   local.get $6
+   local.get $4
    i32.const 2
    i32.and
    i32.or
@@ -1266,18 +1263,18 @@
    local.get $3
    i32.add
    local.tee $3
-   local.get $5
+   local.get $6
    i32.const 4
    i32.sub
    i32.const 1
    i32.or
    i32.store
-   local.get $4
+   local.get $5
    local.get $3
    call $~lib/rt/tlsf/insertBlock
   else
    local.get $2
-   local.get $6
+   local.get $4
    i32.const -2
    i32.and
    i32.store

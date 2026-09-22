@@ -304,7 +304,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$131
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$132
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -328,7 +328,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$131
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$132
    end
    local.get $0
    i32.load offset=8
@@ -1444,40 +1444,37 @@
   local.tee $0
   i32.eqz
   if
-   local.get $1
-   local.tee $0
-   i32.const 256
-   i32.ge_u
-   if (result i32)
-    local.get $0
-    i32.const 1
-    i32.const 27
-    local.get $0
-    i32.clz
-    i32.sub
-    i32.shl
-    i32.add
-    i32.const 1
-    i32.sub
-    local.get $0
-    local.get $0
-    i32.const 536870910
-    i32.lt_u
-    select
-   else
-    local.get $0
-   end
    i32.const 4
    local.get $3
    i32.load offset=1568
    memory.size
-   local.tee $2
+   local.tee $0
    i32.const 16
    i32.shl
    i32.const 4
    i32.sub
    i32.ne
    i32.shl
+   local.get $1
+   i32.const 1
+   i32.const 27
+   local.get $1
+   i32.clz
+   i32.sub
+   i32.shl
+   i32.add
+   i32.const 1
+   i32.sub
+   local.get $1
+   local.get $1
+   i32.const 536870910
+   i32.lt_u
+   select
+   local.get $1
+   local.get $1
+   i32.const 256
+   i32.ge_u
+   select
    i32.add
    i32.const 65535
    i32.add
@@ -1485,18 +1482,18 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.set $0
-   local.get $2
-   local.get $0
+   local.set $2
    local.get $0
    local.get $2
-   i32.lt_s
+   local.get $0
+   local.get $2
+   i32.gt_s
    select
    memory.grow
    i32.const 0
    i32.lt_s
    if
-    local.get $0
+    local.get $2
     memory.grow
     i32.const 0
     i32.lt_s
@@ -1505,7 +1502,7 @@
     end
    end
    local.get $3
-   local.get $2
+   local.get $0
    i32.const 16
    i32.shl
    memory.size
@@ -5188,7 +5185,7 @@
       local.get $8
       i32.load
       local.tee $12
-      block $__inlined_func$~lib/rt/itcms/__renew$139 (result i32)
+      block $__inlined_func$~lib/rt/itcms/__renew$140 (result i32)
        i32.const 1073741820
        local.get $0
        i32.const 1
@@ -5228,7 +5225,7 @@
         local.get $6
         i32.store offset=16
         local.get $12
-        br $__inlined_func$~lib/rt/itcms/__renew$139
+        br $__inlined_func$~lib/rt/itcms/__renew$140
        end
        local.get $6
        local.get $0
@@ -5607,7 +5604,7 @@
   global.set $~argumentsLength
   i32.const 0
   local.set $0
-  block $__inlined_func$~lib/util/sort/SORT<i32>$140
+  block $__inlined_func$~lib/util/sort/SORT<i32>$141
    local.get $7
    i32.const 20
    i32.sub
@@ -5621,7 +5618,7 @@
     local.get $4
     i32.const 1
     i32.le_u
-    br_if $__inlined_func$~lib/util/sort/SORT<i32>$140
+    br_if $__inlined_func$~lib/util/sort/SORT<i32>$141
     block $break|0
      block $case1|0
       local.get $4
@@ -5712,7 +5709,7 @@
      local.get $0
      select
      i32.store offset=4
-     br $__inlined_func$~lib/util/sort/SORT<i32>$140
+     br $__inlined_func$~lib/util/sort/SORT<i32>$141
     end
     local.get $7
     i32.const 0
@@ -5721,7 +5718,7 @@
     i32.sub
     i32.const 0
     call $~lib/util/sort/insertionSort<i32>
-    br $__inlined_func$~lib/util/sort/SORT<i32>$140
+    br $__inlined_func$~lib/util/sort/SORT<i32>$141
    end
    i32.const 33
    local.get $4

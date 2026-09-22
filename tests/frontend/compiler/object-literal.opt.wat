@@ -93,7 +93,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$118
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$116
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -117,7 +117,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$118
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$116
    end
    local.get $0
    i32.load offset=8
@@ -1326,40 +1326,37 @@
   local.tee $0
   i32.eqz
   if
-   local.get $1
-   local.tee $0
-   i32.const 256
-   i32.ge_u
-   if (result i32)
-    local.get $0
-    i32.const 1
-    i32.const 27
-    local.get $0
-    i32.clz
-    i32.sub
-    i32.shl
-    i32.add
-    i32.const 1
-    i32.sub
-    local.get $0
-    local.get $0
-    i32.const 536870910
-    i32.lt_u
-    select
-   else
-    local.get $0
-   end
    i32.const 4
    local.get $3
    i32.load offset=1568
    memory.size
-   local.tee $2
+   local.tee $0
    i32.const 16
    i32.shl
    i32.const 4
    i32.sub
    i32.ne
    i32.shl
+   local.get $1
+   i32.const 1
+   i32.const 27
+   local.get $1
+   i32.clz
+   i32.sub
+   i32.shl
+   i32.add
+   i32.const 1
+   i32.sub
+   local.get $1
+   local.get $1
+   i32.const 536870910
+   i32.lt_u
+   select
+   local.get $1
+   local.get $1
+   i32.const 256
+   i32.ge_u
+   select
    i32.add
    i32.const 65535
    i32.add
@@ -1367,18 +1364,18 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.set $0
-   local.get $2
-   local.get $0
+   local.set $2
    local.get $0
    local.get $2
-   i32.lt_s
+   local.get $0
+   local.get $2
+   i32.gt_s
    select
    memory.grow
    i32.const 0
    i32.lt_s
    if
-    local.get $0
+    local.get $2
     memory.grow
     i32.const 0
     i32.lt_s
@@ -1387,7 +1384,7 @@
     end
    end
    local.get $3
-   local.get $2
+   local.get $0
    i32.const 16
    i32.shl
    memory.size
@@ -1515,7 +1512,7 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$67
+   block $__inlined_func$~lib/rt/itcms/interrupt$66
     i32.const 2048
     local.set $2
     loop $do-loop|0
@@ -1532,7 +1529,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$67
+      br $__inlined_func$~lib/rt/itcms/interrupt$66
      end
      local.get $2
      i32.const 0
@@ -1623,7 +1620,7 @@
    i32.const 0
    return
   end
-  block $__inlined_func$~lib/util/string/compareImpl$71 (result i32)
+  block $__inlined_func$~lib/util/string/compareImpl$70 (result i32)
    local.get $0
    local.tee $2
    i32.const 7
@@ -1683,7 +1680,7 @@
       local.get $3
       local.get $4
       i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$71
+      br $__inlined_func$~lib/util/string/compareImpl$70
      end
      local.get $2
      i32.const 2
@@ -1836,7 +1833,7 @@
   i32.const 123
   i32.store
   local.get $0
-  block $__inlined_func$~lib/string/String#substring$110 (result i32)
+  block $__inlined_func$~lib/string/String#substring$109 (result i32)
    i32.const 28
    i32.load
    i32.const 1
@@ -1872,7 +1869,7 @@
    i32.sub
    local.tee $2
    i32.eqz
-   br_if $__inlined_func$~lib/string/String#substring$110
+   br_if $__inlined_func$~lib/string/String#substring$109
    drop
    i32.const 32
    local.get $3
@@ -1883,7 +1880,7 @@
    i32.shl
    i32.eq
    i32.and
-   br_if $__inlined_func$~lib/string/String#substring$110
+   br_if $__inlined_func$~lib/string/String#substring$109
    drop
    local.get $2
    i32.const 2

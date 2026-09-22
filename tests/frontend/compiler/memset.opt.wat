@@ -235,7 +235,7 @@
   i32.const 1
   i32.const 16
   call $memset/memset
-  global.get $memset/dest
+  i32.const 32828
   i32.load8_u
   i32.const 1
   i32.ne

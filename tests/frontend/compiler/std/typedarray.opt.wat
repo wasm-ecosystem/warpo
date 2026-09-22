@@ -748,7 +748,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$733
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$731
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -772,7 +772,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$733
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$731
    end
    local.get $0
    i32.load offset=8
@@ -1888,40 +1888,37 @@
   local.tee $0
   i32.eqz
   if
-   local.get $1
-   local.tee $0
-   i32.const 256
-   i32.ge_u
-   if (result i32)
-    local.get $0
-    i32.const 1
-    i32.const 27
-    local.get $0
-    i32.clz
-    i32.sub
-    i32.shl
-    i32.add
-    i32.const 1
-    i32.sub
-    local.get $0
-    local.get $0
-    i32.const 536870910
-    i32.lt_u
-    select
-   else
-    local.get $0
-   end
    i32.const 4
    local.get $3
    i32.load offset=1568
    memory.size
-   local.tee $2
+   local.tee $0
    i32.const 16
    i32.shl
    i32.const 4
    i32.sub
    i32.ne
    i32.shl
+   local.get $1
+   i32.const 1
+   i32.const 27
+   local.get $1
+   i32.clz
+   i32.sub
+   i32.shl
+   i32.add
+   i32.const 1
+   i32.sub
+   local.get $1
+   local.get $1
+   i32.const 536870910
+   i32.lt_u
+   select
+   local.get $1
+   local.get $1
+   i32.const 256
+   i32.ge_u
+   select
    i32.add
    i32.const 65535
    i32.add
@@ -1929,18 +1926,18 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.set $0
-   local.get $2
-   local.get $0
+   local.set $2
    local.get $0
    local.get $2
-   i32.lt_s
+   local.get $0
+   local.get $2
+   i32.gt_s
    select
    memory.grow
    i32.const 0
    i32.lt_s
    if
-    local.get $0
+    local.get $2
     memory.grow
     i32.const 0
     i32.lt_s
@@ -1949,7 +1946,7 @@
     end
    end
    local.get $3
-   local.get $2
+   local.get $0
    i32.const 16
    i32.shl
    memory.size
@@ -11307,7 +11304,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780 (result i32)
+  block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$778 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -11330,7 +11327,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$778
    end
    local.get $2
    i32.eqz
@@ -11407,7 +11404,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$778
    end
    i32.const 8556
    i32.load
@@ -11502,7 +11499,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$778
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -11559,7 +11556,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781 (result i32)
+  block $__inlined_func$~lib/util/string/joinIntegerArray<u64>$779 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -11582,7 +11579,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$779
    end
    local.get $2
    i32.eqz
@@ -11632,7 +11629,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$779
    end
    i32.const 8556
    i32.load
@@ -11727,7 +11724,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$779
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -12736,7 +12733,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinFloatArray<f32>$782 (result i32)
+  block $__inlined_func$~lib/util/string/joinFloatArray<f32>$780 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -12759,7 +12756,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$782
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$780
    end
    local.get $3
    i32.eqz
@@ -12815,7 +12812,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$782
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$780
    end
    i32.const 8556
    i32.load
@@ -12910,7 +12907,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$782
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$780
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -13000,7 +12997,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinFloatArray<f64>$783 (result i32)
+  block $__inlined_func$~lib/util/string/joinFloatArray<f64>$781 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -13023,7 +13020,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$783
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$781
    end
    local.get $3
    i32.eqz
@@ -13078,7 +13075,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$783
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$781
    end
    i32.const 8556
    i32.load
@@ -13173,7 +13170,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$783
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$781
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -22280,7 +22277,7 @@
   (local $9 f64)
   (local $10 i32)
   (local $11 i64)
-  block $__inlined_func$start:std/typedarray$1035
+  block $__inlined_func$start:std/typedarray$1031
    i32.const 12
    call $~lib/rt/__decrease_sp
    memory.size
@@ -40094,7 +40091,7 @@
                                                                       i32.const 12
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      br $__inlined_func$start:std/typedarray$1035
+                                                                      br $__inlined_func$start:std/typedarray$1031
                                                                      end
                                                                      i32.const 0
                                                                      i32.const 544
