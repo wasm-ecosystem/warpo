@@ -2939,9 +2939,19 @@
   )
   (local.get $this)
  )
+ (func $constructor/EmptyCtorWithFieldInit#get:a (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
  (func $constructor/EmptyCtorWithFieldNoInit#constructor (param $this i32) (result i32)
   (nop)
   (local.get $this)
+ )
+ (func $constructor/EmptyCtorWithFieldNoInit#get:a (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
  )
  (func $constructor/EmptyCtorWithFieldAccess#set:a (param $this i32) (param $a i32)
   (i32.store
@@ -2958,6 +2968,11 @@
    (i32.const 1)
   )
   (local.get $this)
+ )
+ (func $constructor/EmptyCtorWithFieldAccess#get:a (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
   (local.get $this)
@@ -2998,6 +3013,11 @@
   )
   (local.get $this)
  )
+ (func $constructor/JustFieldInit#get:a (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
  (func $constructor/JustFieldNoInit#constructor (param $this i32) (result i32)
   (local.set $this
    (call $~lib/rt/__localtostack
@@ -3009,6 +3029,11 @@
    )
   )
   (local.get $this)
+ )
+ (func $constructor/JustFieldNoInit#get:a (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
  )
  (func $constructor/CtorReturns#constructor (param $this i32) (result i32)
   (return
@@ -3165,7 +3190,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 102)
+     (i32.const 107)
      (i32.const 5)
     )
     (unreachable)
@@ -3186,7 +3211,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 103)
+     (i32.const 108)
      (i32.const 5)
     )
     (unreachable)
@@ -3203,7 +3228,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 104)
+     (i32.const 109)
      (i32.const 5)
     )
     (unreachable)
@@ -3224,7 +3249,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 105)
+     (i32.const 110)
      (i32.const 5)
     )
     (unreachable)
@@ -3245,7 +3270,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 106)
+     (i32.const 111)
      (i32.const 5)
     )
     (unreachable)
@@ -3301,6 +3326,27 @@
     )
    )
   )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $constructor/EmptyCtorWithFieldInit#get:a
+      (call $~lib/rt/__tmptostack
+       (global.get $constructor/emptyCtorWithFieldInit)
+      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 15)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
   (global.set $constructor/emptyCtorWithFieldNoInit
    (call $constructor/EmptyCtorWithFieldNoInit#constructor
     (call $~lib/rt/__tmptostack
@@ -3311,6 +3357,27 @@
     )
    )
   )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $constructor/EmptyCtorWithFieldNoInit#get:a
+      (call $~lib/rt/__tmptostack
+       (global.get $constructor/emptyCtorWithFieldNoInit)
+      )
+     )
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 24)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
   (global.set $constructor/emptyCtorWithFieldAccess
    (call $constructor/EmptyCtorWithFieldAccess#constructor
     (call $~lib/rt/__tmptostack
@@ -3319,6 +3386,27 @@
       (i32.const 7)
      )
     )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $constructor/EmptyCtorWithFieldAccess#get:a
+      (call $~lib/rt/__tmptostack
+       (global.get $constructor/emptyCtorWithFieldAccess)
+      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 35)
+     (i32.const 1)
+    )
+    (unreachable)
    )
   )
   (global.set $constructor/none
@@ -3341,6 +3429,27 @@
     )
    )
   )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $constructor/JustFieldInit#get:a
+      (call $~lib/rt/__tmptostack
+       (global.get $constructor/justFieldInit)
+      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 48)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
   (global.set $constructor/justFieldNoInit
    (call $constructor/JustFieldNoInit#constructor
     (call $~lib/rt/__tmptostack
@@ -3349,6 +3458,27 @@
       (i32.const 10)
      )
     )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $constructor/JustFieldNoInit#get:a
+      (call $~lib/rt/__tmptostack
+       (global.get $constructor/justFieldNoInit)
+      )
+     )
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 56)
+     (i32.const 1)
+    )
+    (unreachable)
    )
   )
   (global.set $constructor/ctorReturns
@@ -3403,7 +3533,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 93)
+     (i32.const 98)
      (i32.const 1)
     )
     (unreachable)
@@ -3431,7 +3561,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 94)
+     (i32.const 99)
      (i32.const 1)
     )
     (unreachable)
@@ -3464,7 +3594,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 111)
+     (i32.const 116)
      (i32.const 1)
     )
     (unreachable)
@@ -3485,7 +3615,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 112)
+     (i32.const 117)
      (i32.const 1)
     )
     (unreachable)
@@ -3506,7 +3636,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 113)
+     (i32.const 118)
      (i32.const 1)
     )
     (unreachable)

@@ -4,8 +4,11 @@ import { Global, Local, Function, Class } from "./program";
 import { Type, TypeFlags } from "./types";
 import {
   _WarpoAddBaseClass,
+  _WarpoAddBaseInterface,
+  _WarpoAddInterface,
   _WarpoAddField,
   _WarpoAddGlobal,
+  _WarpoAddMemoryExposureType,
   _WarpoEnterScope,
   _WarpoLeaveScope,
   _WarpoAddLocal,
@@ -16,6 +19,7 @@ import {
   _WarpoAddTemplateType,
   _WarpoCreateBaseType,
   _WarpoCreateClass,
+  _WarpoCreateInterface,
   _WarpoAddHeapVariableStorageLocalIndex,
   _WarpoEnterClosureScope,
   _WarpoLeaveFunction,
@@ -141,8 +145,27 @@ export function createClass(clazz: Class): void {
   _WarpoCreateClass(decodeURIComponent(classToMIRName(clazz)), clazz.id);
 }
 
+export function createInterface(clazz: Class): void {
+  _WarpoCreateInterface(decodeURIComponent(classToMIRName(clazz)));
+}
+
 export function addBaseClass(clazz: Class, baseClass: Class): void {
   _WarpoAddBaseClass(decodeURIComponent(classToMIRName(clazz)), decodeURIComponent(classToMIRName(baseClass)));
+}
+
+export function addBaseInterface(interfaceClass: Class, baseInterface: Class): void {
+  _WarpoAddBaseInterface(
+    decodeURIComponent(classToMIRName(interfaceClass)),
+    decodeURIComponent(classToMIRName(baseInterface))
+  );
+}
+
+export function addInterface(clazz: Class, interfaceClass: Class): void {
+  _WarpoAddInterface(decodeURIComponent(classToMIRName(clazz)), decodeURIComponent(classToMIRName(interfaceClass)));
+}
+
+export function addMemoryExposureType(type: Type): void {
+  _WarpoAddMemoryExposureType(decodeURIComponent(classToMIRName(assert(type.getClass()))));
 }
 
 export function addField(clazz: Class, fieldName: string, fieldType: Type, offset: u32): void {

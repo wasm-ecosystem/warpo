@@ -42,6 +42,7 @@ import {
 } from "./ast";
 
 import { Type, TypeKind, TypeFlags } from "./types";
+import { addMemoryExposureType } from "./mir";
 
 import {
   BinaryOp,
@@ -3060,6 +3061,8 @@ function builtin_changetype(ctx: BuiltinFunctionContext): ExpressionRef {
     );
     return module.unreachable();
   }
+  if ((toType.isNumericValue && fromType.getClass() != null) || (fromType.isNumericValue && toType.getClass() != null))
+    addMemoryExposureType(toType.isNumericValue ? fromType : toType);
   return arg0;
 }
 builtinFunctions.set(BuiltinNames.changetype, builtin_changetype);

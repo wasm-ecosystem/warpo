@@ -25,4 +25,9 @@ void ClassInfo::addMember(std::string name, std::string_view const type, uint32_
   fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
 }
 
+void InterfaceInfo::addMember(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                              bool const nullable) {
+  fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+}
+
 } // namespace warpo

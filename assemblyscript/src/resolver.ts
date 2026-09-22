@@ -3279,6 +3279,7 @@ export class Resolver extends DiagnosticEmitter {
         if (!iface) return null;
         assert(iface.kind == ElementKind.Interface);
         instance.addInterface(<Interface>iface);
+        mir.addInterface(instance, <Interface>iface);
 
         // Like above, if any implemented interface is still pending, yield
         if (pendingClasses.has(iface)) anyPending = true;

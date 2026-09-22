@@ -13,10 +13,16 @@ namespace warpo {
 
 void VariableInfo::addField(std::string_view const className, std::string fieldName, std::string const typeName,
                             uint32_t const offset, uint32_t const nullable) {
-  ClassRegistry::iterator const classIt = classRegistry_.find(className);
-  assert(classIt != classRegistry_.end());
   std::string_view const internedTypeName = stringPool_.internString(typeName);
-  classIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
+  ClassRegistry::iterator const classIt = classRegistry_.find(className);
+  if (classIt != classRegistry_.end()) {
+    classIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
+    return;
+  }
+
+  InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
+  assert(interfaceIt != interfaceRegistry_.end());
+  interfaceIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
 }
 
 void VariableInfo::createBaseType(std::string_view typeName) {
@@ -34,6 +40,11 @@ void VariableInfo::createClass(std::string_view const className) {
   classRegistry_.emplace(internedClassName, ClassInfo{internedClassName});
 }
 
+void VariableInfo::createInterface(std::string_view const interfaceName) {
+  std::string_view const internedInterfaceName = stringPool_.internString(interfaceName);
+  interfaceRegistry_.emplace(internedInterfaceName, InterfaceInfo{internedInterfaceName});
+}
+
 void VariableInfo::addBaseClass(std::string_view const className, std::string const parentName) {
   std::string_view const internedParentName = stringPool_.internString(parentName);
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
@@ -41,11 +52,36 @@ void VariableInfo::addBaseClass(std::string_view const className, std::string co
   classIt->second.addBaseClass(internedParentName);
 }
 
-void VariableInfo::addTemplateType(std::string_view const className, std::string_view const templateTypeName) {
+void VariableInfo::addBaseInterface(std::string_view const interfaceName, std::string const parentName) {
+  std::string_view const internedParentName = stringPool_.internString(parentName);
+  InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(interfaceName);
+  assert(interfaceIt != interfaceRegistry_.end());
+  interfaceIt->second.addBaseInterface(internedParentName);
+}
+
+void VariableInfo::addInterface(std::string_view const className, std::string const interfaceName) {
+  std::string_view const internedInterfaceName = stringPool_.internString(interfaceName);
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
   assert(classIt != classRegistry_.end());
+  classIt->second.addInterface(internedInterfaceName);
+}
+
+void VariableInfo::addMemoryExposureType(std::string_view const typeName) {
+  memoryExposure_.addType(stringPool_.internString(typeName));
+}
+
+void VariableInfo::finalizeMemoryExposure() { memoryExposure_.finalize(*this); }
+
+void VariableInfo::addTemplateType(std::string_view const className, std::string_view const templateTypeName) {
+  ClassRegistry::iterator const classIt = classRegistry_.find(className);
   std::string_view const internedTypeName = stringPool_.internString(templateTypeName);
-  classIt->second.addTemplateType(internedTypeName);
+  if (classIt != classRegistry_.end()) {
+    classIt->second.addTemplateType(internedTypeName);
+    return;
+  }
+  InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
+  assert(interfaceIt != interfaceRegistry_.end());
+  interfaceIt->second.addTemplateType(internedTypeName);
 }
 
 void VariableInfo::addGlobalType(std::string variableName, std::string_view const typeName, bool const nullable,
@@ -72,12 +108,18 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
 
   if (!belongClassName.empty() && (belongClassName != "<<NULL>>")) {
     ClassRegistry::iterator const classIt = classRegistry_.find(belongClassName);
-    assert(classIt != classRegistry_.end() && "Class not found in registry");
-    // NOLINTNEXTLINE(misc-const-correctness)
-    SubProgramInfo &subProgramInfo =
-        classIt->second.addSubProgram(internedName, internedSourcePath, startLine, endLine, outerFunction);
-    subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
-    scopeStack_.push_back(&subProgramInfo);
+    SubProgramInfo *subProgramInfo = nullptr;
+    if (classIt != classRegistry_.end()) {
+      subProgramInfo =
+          &classIt->second.addSubProgram(internedName, internedSourcePath, startLine, endLine, outerFunction);
+    } else {
+      InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(belongClassName);
+      assert(interfaceIt != interfaceRegistry_.end() && "Type not found in registry");
+      subProgramInfo =
+          &interfaceIt->second.addSubProgram(internedName, internedSourcePath, startLine, endLine, outerFunction);
+    }
+    subProgramLookupMap_.emplace(subProgramInfo->getName(), *subProgramInfo);
+    scopeStack_.push_back(subProgramInfo);
   } else if (outerFunction.has_value() && !scopeStack_.empty()) {
     std::unique_ptr<SubProgramInfo> child =
         std::make_unique<SubProgramInfo>(internedName, internedSourcePath, startLine, endLine, outerFunction);
@@ -183,6 +225,35 @@ TEST(TestVariableInfo, TestCreateBaseType) {
 
   const VariableInfo::BaseTypeRegistry &baseTypeRegistry = variableInfo.getBaseTypeRegistry();
   EXPECT_THAT(baseTypeRegistry, ::testing::ElementsAre("i32", "u32"));
+}
+
+TEST(TestVariableInfo, TestCreateInterface) {
+  VariableInfo variableInfo;
+  variableInfo.createInterface("BaseInterface");
+  variableInfo.createInterface("Readable");
+  variableInfo.addBaseInterface("Readable", "BaseInterface");
+
+  variableInfo.createClass("Widget", 1);
+  variableInfo.addInterface("Widget", "Readable");
+  variableInfo.addField("Readable", "length", "i32", 0, 0);
+  variableInfo.addTemplateType("Readable", "i32");
+
+  VariableInfo::InterfaceRegistry const &interfaceRegistry = variableInfo.getInterfaceRegistry();
+  ASSERT_EQ(interfaceRegistry.size(), 2);
+  VariableInfo::InterfaceRegistry::const_iterator const readableIt = interfaceRegistry.find("Readable");
+  ASSERT_NE(readableIt, interfaceRegistry.end());
+  EXPECT_EQ(readableIt->second.getName(), "Readable");
+  EXPECT_EQ(readableIt->second.getParentName(), "BaseInterface");
+  ASSERT_EQ(readableIt->second.getFields().size(), 1);
+  EXPECT_EQ(readableIt->second.getFields()[0].getName(), "length");
+  ASSERT_EQ(readableIt->second.getTemplateTypes().size(), 1);
+  EXPECT_EQ(readableIt->second.getTemplateTypes()[0], "i32");
+
+  VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
+  VariableInfo::ClassRegistry::const_iterator const widgetIt = classRegistry.find("Widget");
+  ASSERT_NE(widgetIt, classRegistry.end());
+  ASSERT_EQ(widgetIt->second.getInterfaces().size(), 1);
+  EXPECT_EQ(widgetIt->second.getInterfaces()[0], "Readable");
 }
 
 TEST(TestVariableInfo, TestCreateClass) {
