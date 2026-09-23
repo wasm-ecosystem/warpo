@@ -69,7 +69,7 @@ void optimizeConditionalReturnsImpl(wasm::Module *m, wasm::Function *func) {
   Scanner scanner{};
   scanner.walk(func->body);
 
-  if (scanner.targetIfs_.size() < 2)
+  if (scanner.targetIfs_.size() < 3)
     return;
 
   wasm::Type const resultType = func->getResults();
