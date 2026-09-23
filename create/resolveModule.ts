@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as api from "./__warpo_create";
+import { memory_expose } from "warpo/memory";
 
 export class ModuleResolve {
   packageName!: string;
@@ -13,5 +14,6 @@ export class ModuleResolve {
 
 export type Fn = (task: ModuleResolve) => void;
 export function onModuleResolve(fn: Fn): void {
+  memory_expose<ModuleResolve>();
   api.onModuleResolve(fn.index, idof<ModuleResolve>());
 }

@@ -8,6 +8,10 @@ declare module "warpo/ffi" {
   }
 }
 
+declare module "warpo/memory" {
+  function memory_expose<T>(): void;
+}
+
 declare module "rt/index" {
   // allocate new object with size and rtid
   function __new(size: usize, id: u32): usize;
