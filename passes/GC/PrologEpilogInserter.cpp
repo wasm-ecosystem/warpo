@@ -4,12 +4,8 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cstddef>
-#include <map>
-#include <memory>
 #include <optional>
 
-#include "../ConditionalReturn.hpp"
 #include "../helper/ExprInserter.hpp"
 #include "../helper/FindExpr.hpp"
 #include "../helper/ToString.hpp"
@@ -67,8 +63,6 @@ void PrologEpilogInserter::runOnFunction(wasm::Module *m, wasm::Function *func) 
     if (support::isDebug(PASS_NAME, func->name.view())) {
       fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.view(), "entry", "exit");
     }
-    // Only safe in OptInsertState::None where whole-function decrease/increase_sp dominates all exits.
-    optimizeConditionalReturns(m, func);
     replaceReturnExprWithEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     insertDefaultPrologueAndEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     break;

@@ -19,32 +19,32 @@
  )
  (func $~start
   global.get $~started
-  i32.eqz
   if
+   return
+  end
+  i32.const 1
+  global.set $~started
+  global.get $bigint-integration/externalValue
+  i64.const 9007199254740991
+  i64.ne
+  if
+   i32.const 0
+   i32.const 32
+   i32.const 4
    i32.const 1
-   global.set $~started
-   global.get $bigint-integration/externalValue
-   i64.const 9007199254740991
-   i64.ne
-   if
-    i32.const 0
-    i32.const 32
-    i32.const 4
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   call $bigint-integration/getExternalValue
-   global.get $bigint-integration/externalValue
-   i64.ne
-   if
-    i32.const 0
-    i32.const 32
-    i32.const 5
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
+   call $~lib/builtins/abort
+   unreachable
+  end
+  call $bigint-integration/getExternalValue
+  global.get $bigint-integration/externalValue
+  i64.ne
+  if
+   i32.const 0
+   i32.const 32
+   i32.const 5
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
   end
  )
 )
