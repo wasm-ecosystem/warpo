@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-latest, windows-latest, windows-11-arm]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-latest, windows-latest, windows-11-arm]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-latest, windows-latest, windows-11-arm]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-latest, windows-latest, windows-11-arm]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Configure Git to preserve line endings
@@ -49,7 +49,7 @@ jobs:
       - uses: ./.github/action/build
         with:
           OS_ID: ${{ matrix.os }}
-          CMAKE_ARGS: ${{ matrix.os == 'ubuntu-latest' && '-DCMAKE_BUILD_TYPE=RelWithDebInfo -DWARPO_SANITIZE=ON' || '-DCMAKE_BUILD_TYPE=RelWithDebInfo' }}
+          CMAKE_ARGS: ${{ matrix.os == 'ubuntu-24.04' && '-DCMAKE_BUILD_TYPE=RelWithDebInfo -DWARPO_SANITIZE=ON' || '-DCMAKE_BUILD_TYPE=RelWithDebInfo' }}
       - run: npm run build:ts
       - run: npm run build:parser:ts
       # test
