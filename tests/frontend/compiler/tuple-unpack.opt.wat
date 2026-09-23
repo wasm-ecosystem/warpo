@@ -1437,18 +1437,18 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/string/String.__eq$89 (result i32)
+  block $~CONDITION_RETURN/~lib/string/String.__eq (result i32)
    i32.const 1
    local.get $2
    local.tee $0
    i32.const 432
    i32.eq
-   br_if $__inlined_func$~lib/string/String.__eq$89
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
    drop
    i32.const 0
    local.get $0
    i32.eqz
-   br_if $__inlined_func$~lib/string/String.__eq$89
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
    drop
    i32.const 0
    local.get $0
@@ -1463,7 +1463,7 @@
    i32.const 1
    i32.shr_u
    i32.ne
-   br_if $__inlined_func$~lib/string/String.__eq$89
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
    drop
    block $__inlined_func$~lib/util/string/compareImpl$74 (result i32)
     i32.const 432

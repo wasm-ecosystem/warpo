@@ -1839,7 +1839,7 @@
   local.set $0
   i32.const 0
   local.set $1
-  block $__inlined_func$~lib/util/string/joinStringArray$76 (result i32)
+  block $~CONDITION_RETURN/~lib/util/string/joinStringArray (result i32)
    i32.const 32336
    i32.const 30092
    i32.load
@@ -1851,7 +1851,7 @@
    local.tee $3
    i32.const 0
    i32.lt_s
-   br_if $__inlined_func$~lib/util/string/joinStringArray$76
+   br_if $~CONDITION_RETURN/~lib/util/string/joinStringArray
    drop
    local.get $3
    i32.eqz
@@ -1864,7 +1864,7 @@
     else
      i32.const 32336
     end
-    br $__inlined_func$~lib/util/string/joinStringArray$76
+    br $~CONDITION_RETURN/~lib/util/string/joinStringArray
    end
    loop $for-loop|0
     local.get $0

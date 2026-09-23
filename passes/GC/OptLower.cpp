@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
-#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
 
+#include "../ConditionalReturn.hpp"
 #include "BaseLower.hpp"
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
@@ -125,6 +125,7 @@ void OptLower::run(wasm::Module *m) {
       StackAssigner::addToPass(runner, stackAssignerMode, livenessInfo);
   std::shared_ptr<InsertPositionHints const> const stackInsertPositions =
       enableShrinkWrap ? ShrinkWrapAnalysis::addToPass(runner, livenessInfo) : ShrinkWrapAnalysis::dummy(runner);
+  runner.add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
   runner.add(std::unique_ptr<wasm::Pass>(
       new PrologEpilogInserter(stackInsertPositions, MaxShadowStackOffsetsFromStackPositions::create(stackPositions))));
   runner.add(std::unique_ptr<wasm::Pass>(new ToStackReplacer(stackPositions)));

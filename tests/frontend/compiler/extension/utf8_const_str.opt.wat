@@ -1572,7 +1572,7 @@
   i32.store
   i32.const 480
   global.set $~lib/rt/itcms/fromSpace
-  block $__inlined_func$~lib/string/String.__eq$89 (result i32)
+  block $~CONDITION_RETURN/~lib/string/String.__eq (result i32)
    i32.const 32
    local.tee $0
    i32.const 28
@@ -1794,12 +1794,12 @@
    local.tee $1
    i32.const 592
    i32.eq
-   br_if $__inlined_func$~lib/string/String.__eq$89
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
    drop
    i32.const 0
    local.get $1
    i32.eqz
-   br_if $__inlined_func$~lib/string/String.__eq$89
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
    drop
    i32.const 0
    local.get $1
@@ -1814,7 +1814,7 @@
    i32.const 1
    i32.shr_u
    i32.ne
-   br_if $__inlined_func$~lib/string/String.__eq$89
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
    drop
    block $__inlined_func$~lib/util/string/compareImpl$78 (result i32)
     i32.const 592

@@ -2068,116 +2068,115 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  local.get $0
-  local.get $1
-  i32.eq
-  if
+  block $~CONDITION_RETURN/~lib/string/String.__eq (result i32)
    i32.const 1
-   return
-  end
-  local.get $1
-  i32.eqz
-  local.get $0
-  i32.eqz
-  i32.or
-  if
-   i32.const 0
-   return
-  end
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  local.tee $3
-  local.get $1
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  i32.ne
-  if
-   i32.const 0
-   return
-  end
-  block $__inlined_func$~lib/util/string/compareImpl$77 (result i32)
    local.get $0
-   local.tee $2
-   i32.const 7
-   i32.and
    local.get $1
-   i32.const 7
-   i32.and
-   i32.or
+   i32.eq
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
+   i32.const 0
+   local.get $1
    i32.eqz
-   local.get $3
-   local.tee $0
-   i32.const 4
-   i32.ge_u
-   i32.and
-   if
-    loop $do-loop|0
-     local.get $2
-     i64.load
-     local.get $1
-     i64.load
-     i64.eq
+   local.get $0
+   i32.eqz
+   i32.or
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
+   i32.const 0
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $3
+   local.get $1
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   i32.ne
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
+   block $__inlined_func$~lib/util/string/compareImpl$77 (result i32)
+    local.get $0
+    local.tee $2
+    i32.const 7
+    i32.and
+    local.get $1
+    i32.const 7
+    i32.and
+    i32.or
+    i32.eqz
+    local.get $3
+    local.tee $0
+    i32.const 4
+    i32.ge_u
+    i32.and
+    if
+     loop $do-loop|0
+      local.get $2
+      i64.load
+      local.get $1
+      i64.load
+      i64.eq
+      if
+       local.get $2
+       i32.const 8
+       i32.add
+       local.set $2
+       local.get $1
+       i32.const 8
+       i32.add
+       local.set $1
+       local.get $0
+       i32.const 4
+       i32.sub
+       local.tee $0
+       i32.const 4
+       i32.ge_u
+       br_if $do-loop|0
+      end
+     end
+    end
+    loop $while-continue|1
+     local.get $0
+     local.tee $3
+     i32.const 1
+     i32.sub
+     local.set $0
+     local.get $3
      if
       local.get $2
-      i32.const 8
+      i32.load16_u
+      local.tee $3
+      local.get $1
+      i32.load16_u
+      local.tee $4
+      i32.ne
+      if
+       local.get $3
+       local.get $4
+       i32.sub
+       br $__inlined_func$~lib/util/string/compareImpl$77
+      end
+      local.get $2
+      i32.const 2
       i32.add
       local.set $2
       local.get $1
-      i32.const 8
+      i32.const 2
       i32.add
       local.set $1
-      local.get $0
-      i32.const 4
-      i32.sub
-      local.tee $0
-      i32.const 4
-      i32.ge_u
-      br_if $do-loop|0
+      br $while-continue|1
      end
     end
+    i32.const 0
    end
-   loop $while-continue|1
-    local.get $0
-    local.tee $3
-    i32.const 1
-    i32.sub
-    local.set $0
-    local.get $3
-    if
-     local.get $2
-     i32.load16_u
-     local.tee $3
-     local.get $1
-     i32.load16_u
-     local.tee $4
-     i32.ne
-     if
-      local.get $3
-      local.get $4
-      i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$77
-     end
-     local.get $2
-     i32.const 2
-     i32.add
-     local.set $2
-     local.get $1
-     i32.const 2
-     i32.add
-     local.set $1
-     br $while-continue|1
-    end
-   end
-   i32.const 0
+   i32.eqz
   end
-  i32.eqz
  )
  (func $~lib/staticarray/StaticArray<~lib/string/String>#concat<~lib/array/Array<~lib/string/String>> (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -2288,7 +2287,7 @@
  )
  (func $~lib/staticarray/StaticArray<~lib/string/String>#includes (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  block $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$80 (result i32)
+  block $~CONDITION_RETURN/~lib/staticarray/StaticArray<~lib/string/String>#indexOf (result i32)
    i32.const -1
    local.get $0
    i32.const 20
@@ -2302,7 +2301,7 @@
    local.get $3
    i32.ge_s
    i32.or
-   br_if $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$80
+   br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<~lib/string/String>#indexOf
    drop
    local.get $2
    i32.const 0
@@ -2333,7 +2332,7 @@
      i32.load
      local.get $1
      call $~lib/string/String.__eq
-     br_if $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$80
+     br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<~lib/string/String>#indexOf
      drop
      local.get $2
      i32.const 1
@@ -2349,118 +2348,118 @@
  )
  (func $~lib/staticarray/StaticArray<i32>#indexOf (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 2
-  i32.shr_u
-  local.tee $3
-  i32.eqz
-  local.get $2
-  local.get $3
-  i32.ge_s
-  i32.or
-  if
+  block $~CONDITION_RETURN/~lib/staticarray/StaticArray<i32>#indexOf (result i32)
    i32.const -1
-   return
-  end
-  local.get $2
-  i32.const 0
-  i32.lt_s
-  if
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 2
+   i32.shr_u
+   local.tee $3
+   i32.eqz
    local.get $2
    local.get $3
-   i32.add
-   local.tee $2
-   i32.const 0
+   i32.ge_s
+   i32.or
+   br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<i32>#indexOf
+   drop
    local.get $2
    i32.const 0
-   i32.gt_s
-   select
-   local.set $2
-  end
-  loop $while-continue|0
-   local.get $2
-   local.get $3
    i32.lt_s
    if
-    local.get $0
     local.get $2
-    i32.const 2
-    i32.shl
+    local.get $3
     i32.add
-    i32.load
-    local.get $1
-    i32.eq
+    local.tee $2
+    i32.const 0
+    local.get $2
+    i32.const 0
+    i32.gt_s
+    select
+    local.set $2
+   end
+   loop $while-continue|0
+    local.get $2
+    local.get $3
+    i32.lt_s
     if
      local.get $2
-     return
+     local.get $0
+     local.get $2
+     i32.const 2
+     i32.shl
+     i32.add
+     i32.load
+     local.get $1
+     i32.eq
+     br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<i32>#indexOf
+     drop
+     local.get $2
+     i32.const 1
+     i32.add
+     local.set $2
+     br $while-continue|0
     end
-    local.get $2
-    i32.const 1
-    i32.add
-    local.set $2
-    br $while-continue|0
    end
+   i32.const -1
   end
-  i32.const -1
  )
  (func $~lib/staticarray/StaticArray<i32>#lastIndexOf (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 2
-  i32.shr_u
-  local.tee $3
-  i32.eqz
-  if
+  block $~CONDITION_RETURN/~lib/staticarray/StaticArray<i32>#lastIndexOf (result i32)
    i32.const -1
-   return
-  end
-  local.get $2
-  local.get $3
-  i32.add
-  local.get $3
-  i32.const 1
-  i32.sub
-  local.get $2
-  local.get $2
-  local.get $3
-  i32.ge_s
-  select
-  local.get $2
-  i32.const 0
-  i32.lt_s
-  select
-  local.set $2
-  loop $while-continue|0
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 2
+   i32.shr_u
+   local.tee $3
+   i32.eqz
+   br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<i32>#lastIndexOf
+   drop
+   local.get $2
+   local.get $3
+   i32.add
+   local.get $3
+   i32.const 1
+   i32.sub
+   local.get $2
+   local.get $2
+   local.get $3
+   i32.ge_s
+   select
    local.get $2
    i32.const 0
-   i32.ge_s
-   if
-    local.get $0
+   i32.lt_s
+   select
+   local.set $2
+   loop $while-continue|0
     local.get $2
-    i32.const 2
-    i32.shl
-    i32.add
-    i32.load
-    local.get $1
-    i32.eq
+    i32.const 0
+    i32.ge_s
     if
      local.get $2
-     return
+     local.get $0
+     local.get $2
+     i32.const 2
+     i32.shl
+     i32.add
+     i32.load
+     local.get $1
+     i32.eq
+     br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<i32>#lastIndexOf
+     drop
+     local.get $2
+     i32.const 1
+     i32.sub
+     local.set $2
+     br $while-continue|0
     end
-    local.get $2
-    i32.const 1
-    i32.sub
-    local.set $2
-    br $while-continue|0
    end
+   i32.const -1
   end
-  i32.const -1
  )
  (func $~lib/staticarray/StaticArray<i32>#lastIndexOf@varargs (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   block $1of1
@@ -2493,7 +2492,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinStringArray$82 (result i32)
+  block $~CONDITION_RETURN/~lib/util/string/joinStringArray (result i32)
    i32.const 1904
    local.get $0
    i32.const 20
@@ -2507,7 +2506,7 @@
    local.tee $6
    i32.const 0
    i32.lt_s
-   br_if $__inlined_func$~lib/util/string/joinStringArray$82
+   br_if $~CONDITION_RETURN/~lib/util/string/joinStringArray
    drop
    local.get $6
    i32.eqz
@@ -2520,7 +2519,7 @@
     else
      i32.const 1904
     end
-    br $__inlined_func$~lib/util/string/joinStringArray$82
+    br $~CONDITION_RETURN/~lib/util/string/joinStringArray
    end
    loop $for-loop|0
     local.get $2
@@ -4325,9 +4324,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$101 (result i32)
-   i32.const 0
-   local.set $2
+  i32.const 0
+  local.set $2
+  block $~CONDITION_RETURN/~lib/staticarray/StaticArray<f64>#includes (result i32)
    i32.const 0
    i32.const 8
    i32.const 10
@@ -4344,7 +4343,7 @@
    local.get $1
    i32.eqz
    i32.or
-   br_if $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$101
+   br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<f64>#includes
    drop
    loop $while-continue|0
     local.get $1
@@ -4361,7 +4360,7 @@
      local.tee $14
      local.get $14
      f64.ne
-     br_if $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$101
+     br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<f64>#includes
      drop
      local.get $2
      i32.const 1
@@ -4382,9 +4381,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$102 (result i32)
-   i32.const 0
-   local.set $2
+  i32.const 0
+  local.set $2
+  block $~CONDITION_RETURN/~lib/staticarray/StaticArray<f32>#includes (result i32)
    i32.const 0
    i32.const 4
    i32.const 11
@@ -4401,7 +4400,7 @@
    local.get $1
    i32.eqz
    i32.or
-   br_if $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$102
+   br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<f32>#includes
    drop
    loop $while-continue|02
     local.get $1
@@ -4418,7 +4417,7 @@
      local.tee $15
      local.get $15
      f32.ne
-     br_if $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$102
+     br_if $~CONDITION_RETURN/~lib/staticarray/StaticArray<f32>#includes
      drop
      local.get $2
      i32.const 1

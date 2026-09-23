@@ -216,7 +216,9 @@
   global.set $binary/I
   i64.const 0
   global.set $binary/I
-  i64.const 0
+  global.get $binary/I
+  i64.const 1
+  i64.shr_s
   global.set $binary/I
   global.get $binary/I
   i64.const 1
