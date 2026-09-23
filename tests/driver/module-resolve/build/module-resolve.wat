@@ -12,13 +12,14 @@
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $~lib/memory/__data_end i32 (i32.const 172))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 32940))
- (global $~lib/memory/__heap_base i32 (i32.const 32940))
+ (global $~lib/memory/__data_end i32 (i32.const 236))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33004))
+ (global $~lib/memory/__heap_base i32 (i32.const 33004))
  (memory $0 1)
- (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00f\00r\00o\00m\00 \00o\00t\00h\00e\00r\00 \00l\00i\00b\00")
- (data $1 (i32.const 60) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\"\00\00\00a\00s\00s\00e\00m\00b\00l\00y\00/\00i\00n\00d\00e\00x\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00")
- (data $2 (i32.const 124) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\0e\00\00\00s\00u\00c\00c\00e\00s\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00f\00r\00o\00m\00 \00c\00u\00s\00t\00o\00m\00 \00l\00i\00b\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $1 (i32.const 76) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00f\00r\00o\00m\00 \00o\00t\00h\00e\00r\00 \00l\00i\00b\00")
+ (data $2 (i32.const 124) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\"\00\00\00a\00s\00s\00e\00m\00b\00l\00y\00/\00i\00n\00d\00e\00x\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00")
+ (data $3 (i32.const 188) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\0e\00\00\00s\00u\00c\00c\00e\00s\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "_start" (func $assembly/index/_start))
@@ -218,18 +219,18 @@
  )
  (func $assembly/index/_start
   global.get $~lib/@as/custom/lib/index/v
-  i32.const 32
+  i32.const 96
   call $~lib/string/String.__eq
   i32.eqz
   if
    i32.const 0
-   i32.const 80
+   i32.const 144
    i32.const 4
    i32.const 3
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 144
+  i32.const 208
   i32.const 0
   f64.const 0
   f64.const 0

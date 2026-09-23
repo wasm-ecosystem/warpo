@@ -261,7 +261,8 @@ public:
 
     counter_->increment();
     wasm::Builder builder{*getModule()};
-    replaceCurrent(builder.makeBlock({builder.makeDrop(call->operands[0]), builder.makeDrop(call->operands[1])}));
+    replaceCurrent(builder.makeBlock({builder.makeDrop(unwrapGcRootingCall(call->operands[0])),
+                                      builder.makeDrop(unwrapGcRootingCall(call->operands[1]))}));
   }
 
 private:
@@ -397,6 +398,11 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallForUnreadField) {
   runUnusedFieldStoreEliminating(*m);
 
   expectOperandDrops(m->getFunction("write")->body);
+  wasm::Block const *const body = m->getFunction("write")->body->dynCast<wasm::Block>();
+  ASSERT_NE(body, nullptr);
+  wasm::Drop const *const valueDrop = body->list[1]->dynCast<wasm::Drop>();
+  ASSERT_NE(valueDrop, nullptr);
+  EXPECT_TRUE(valueDrop->value->is<wasm::Load>());
 }
 
 TEST(UnusedFieldStoreEliminatingTest, RemovesReferenceFieldSetterWithGcLink) {
