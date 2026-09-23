@@ -1306,8 +1306,7 @@
   end
  )
  (func $std/math/test_acosh (param $0 f64) (param $1 f64) (param $2 f64) (result i32)
-  (local $3 f64)
-  (local $4 i64)
+  (local $3 i64)
   block $~CONDITION_RETURN/~lib/math/NativeMath.acosh (result f64)
    local.get $0
    local.get $0
@@ -1316,36 +1315,37 @@
    f64.div
    local.get $0
    i64.reinterpret_f64
-   local.tee $4
+   local.tee $3
    i64.const 4607182418800017408
    i64.lt_s
    br_if $~CONDITION_RETURN/~lib/math/NativeMath.acosh
    drop
-   local.get $0
-   f64.const -1
-   f64.add
-   local.tee $3
    local.get $3
-   local.get $3
-   f64.mul
-   local.get $3
-   local.get $3
-   f64.add
-   f64.add
-   f64.sqrt
-   f64.add
-   call $~lib/math/NativeMath.log1p
-   local.get $4
    i64.const 52
    i64.shr_u
    i64.const 2047
    i64.and
-   local.tee $4
+   local.tee $3
    i64.const 1024
    i64.lt_u
-   br_if $~CONDITION_RETURN/~lib/math/NativeMath.acosh
-   drop
-   local.get $4
+   if
+    local.get $0
+    f64.const -1
+    f64.add
+    local.tee $0
+    local.get $0
+    local.get $0
+    f64.mul
+    local.get $0
+    local.get $0
+    f64.add
+    f64.add
+    f64.sqrt
+    f64.add
+    call $~lib/math/NativeMath.log1p
+    br $~CONDITION_RETURN/~lib/math/NativeMath.acosh
+   end
+   local.get $3
    i64.const 1049
    i64.lt_u
    if
@@ -1652,7 +1652,7 @@
  )
  (func $std/math/test_acoshf (param $0 f32) (param $1 f32) (param $2 f32) (result i32)
   (local $3 i32)
-  block $__inlined_func$~lib/math/NativeMathf.acosh$5 (result f32)
+  block $~CONDITION_RETURN/~lib/math/NativeMathf.acosh (result f32)
    local.get $0
    i32.reinterpret_f32
    local.tee $3
@@ -1673,7 +1673,7 @@
     f32.sqrt
     f32.add
     call $~lib/math/NativeMathf.log1p
-    br $__inlined_func$~lib/math/NativeMathf.acosh$5
+    br $~CONDITION_RETURN/~lib/math/NativeMathf.acosh
    end
    local.get $3
    i32.const 1166016512
@@ -1694,7 +1694,7 @@
     f32.div
     f32.sub
     call $~lib/math/NativeMathf.log
-    br $__inlined_func$~lib/math/NativeMathf.acosh$5
+    br $~CONDITION_RETURN/~lib/math/NativeMathf.acosh
    end
    local.get $0
    call $~lib/math/NativeMathf.log
@@ -2106,6 +2106,8 @@
   (local $4 f64)
   block $~CONDITION_RETURN/~lib/math/NativeMath.atan (result f64)
    local.get $0
+   local.set $4
+   local.get $0
    i64.reinterpret_f64
    i64.const 32
    i64.shr_u
@@ -2127,8 +2129,6 @@
     f64.copysign
     return
    end
-   local.get $0
-   local.set $4
    local.get $2
    i32.const 1071382528
    i32.lt_u
@@ -2325,6 +2325,8 @@
   (local $4 f32)
   block $~CONDITION_RETURN/~lib/math/NativeMathf.atan (result f32)
    local.get $0
+   local.set $4
+   local.get $0
    i32.reinterpret_f32
    i32.const 2147483647
    i32.and
@@ -2343,8 +2345,6 @@
     f32.copysign
     return
    end
-   local.get $0
-   local.set $4
    local.get $1
    i32.const 1054867456
    i32.lt_u
@@ -2622,7 +2622,6 @@
   (local $6 i32)
   (local $7 i64)
   (local $8 i32)
-  (local $9 i32)
   block $~CONDITION_RETURN/~lib/math/NativeMath.atan2 (result f64)
    local.get $1
    local.get $0
@@ -2712,57 +2711,113 @@
      br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
     end
    end
-   f64.const -1.5707963267948966
-   f64.const 1.5707963267948966
-   local.get $4
-   i32.const 1
-   i32.and
-   local.tee $9
-   select
-   local.get $5
-   i32.const 2147483647
-   i32.and
-   local.tee $5
-   local.get $8
-   i32.or
-   i32.eqz
-   br_if $~CONDITION_RETURN/~lib/math/NativeMath.atan2
-   drop
-   local.get $5
-   i32.const 2146435072
-   i32.eq
-   if
+   block $folding-inner0
+    local.get $5
+    i32.const 2147483647
+    i32.and
+    local.tee $5
+    local.get $8
+    i32.or
+    i32.eqz
+    br_if $folding-inner0
+    local.get $5
+    i32.const 2146435072
+    i32.eq
+    if
+     local.get $6
+     i32.const 2146435072
+     i32.eq
+     if (result f64)
+      f64.const 2.356194490192345
+      f64.const 0.7853981633974483
+      local.get $4
+      i32.const 2
+      i32.and
+      select
+      local.tee $0
+      f64.neg
+      local.get $0
+      local.get $4
+      i32.const 1
+      i32.and
+      select
+     else
+      f64.const 3.141592653589793
+      f64.const 0
+      local.get $4
+      i32.const 2
+      i32.and
+      select
+      local.tee $0
+      f64.neg
+      local.get $0
+      local.get $4
+      i32.const 1
+      i32.and
+      select
+     end
+     br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
+    end
     local.get $6
     i32.const 2146435072
     i32.eq
+    local.get $5
+    i32.const 67108864
+    i32.add
+    local.get $6
+    i32.lt_u
+    i32.or
+    br_if $folding-inner0
+    local.get $6
+    i32.const 67108864
+    i32.add
+    local.get $5
+    i32.lt_u
+    i32.const 0
+    local.get $4
+    i32.const 2
+    i32.and
+    select
     if (result f64)
-     f64.const 2.356194490192345
-     f64.const 0.7853981633974483
-     local.get $4
-     i32.const 2
-     i32.and
-     select
-     local.tee $0
-     f64.neg
-     local.get $0
-     local.get $9
-     select
-    else
-     f64.const 3.141592653589793
      f64.const 0
-     local.get $4
-     i32.const 2
-     i32.and
-     select
-     local.tee $0
-     f64.neg
+    else
      local.get $0
-     local.get $4
-     i32.const 1
-     i32.and
-     select
+     local.get $1
+     f64.div
+     f64.abs
+     call $~lib/math/NativeMath.atan
     end
-    br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
+    local.set $0
+    block $break|1
+     block $case3|1
+      block $case2|1
+       block $case1|1
+        block $case0|1
+         local.get $4
+         br_table $case0|1 $case1|1 $case2|1 $case3|1 $break|1
+        end
+        local.get $0
+        br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
+       end
+       local.get $0
+       f64.neg
+       br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
+      end
+      f64.const 3.141592653589793
+      local.get $0
+      f64.const -1.2246467991473532e-16
+      f64.add
+      f64.sub
+      br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
+     end
+     local.get $0
+     f64.const -1.2246467991473532e-16
+     f64.add
+     f64.const -3.141592653589793
+     f64.add
+     br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
+    end
+    unreachable
    end
    f64.const -1.5707963267948966
    f64.const 1.5707963267948966
@@ -2770,67 +2825,6 @@
    i32.const 1
    i32.and
    select
-   local.get $6
-   i32.const 2146435072
-   i32.eq
-   local.get $5
-   i32.const 67108864
-   i32.add
-   local.get $6
-   i32.lt_u
-   i32.or
-   br_if $~CONDITION_RETURN/~lib/math/NativeMath.atan2
-   drop
-   local.get $6
-   i32.const 67108864
-   i32.add
-   local.get $5
-   i32.lt_u
-   i32.const 0
-   local.get $4
-   i32.const 2
-   i32.and
-   select
-   if (result f64)
-    f64.const 0
-   else
-    local.get $0
-    local.get $1
-    f64.div
-    f64.abs
-    call $~lib/math/NativeMath.atan
-   end
-   local.set $0
-   block $break|1
-    block $case3|1
-     block $case2|1
-      block $case1|1
-       block $case0|1
-        local.get $4
-        br_table $case0|1 $case1|1 $case2|1 $case3|1 $break|1
-       end
-       local.get $0
-       br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
-      end
-      local.get $0
-      f64.neg
-      br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
-     end
-     f64.const 3.141592653589793
-     local.get $0
-     f64.const -1.2246467991473532e-16
-     f64.add
-     f64.sub
-     br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
-    end
-    local.get $0
-    f64.const -1.2246467991473532e-16
-    f64.add
-    f64.const -3.141592653589793
-    f64.add
-    br $~CONDITION_RETURN/~lib/math/NativeMath.atan2
-   end
-   unreachable
   end
   local.get $2
   local.get $3
@@ -2840,7 +2834,6 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i32)
   block $~CONDITION_RETURN/~lib/math/NativeMathf.atan2 (result f32)
    local.get $1
    local.get $0
@@ -2913,55 +2906,111 @@
      br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
     end
    end
-   f32.const -1.5707963705062866
-   f32.const 1.5707963705062866
-   local.get $4
-   i32.const 1
-   i32.and
-   local.tee $7
-   select
-   local.get $5
-   i32.const 2147483647
-   i32.and
-   local.tee $5
-   i32.eqz
-   br_if $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
-   drop
-   local.get $5
-   i32.const 2139095040
-   i32.eq
-   if
+   block $folding-inner0
+    local.get $5
+    i32.const 2147483647
+    i32.and
+    local.tee $5
+    i32.eqz
+    br_if $folding-inner0
+    local.get $5
+    i32.const 2139095040
+    i32.eq
+    if
+     local.get $6
+     i32.const 2139095040
+     i32.eq
+     if (result f32)
+      f32.const 2.356194496154785
+      f32.const 0.7853981852531433
+      local.get $4
+      i32.const 2
+      i32.and
+      select
+      local.tee $0
+      f32.neg
+      local.get $0
+      local.get $4
+      i32.const 1
+      i32.and
+      select
+     else
+      f32.const 3.1415927410125732
+      f32.const 0
+      local.get $4
+      i32.const 2
+      i32.and
+      select
+      local.tee $0
+      f32.neg
+      local.get $0
+      local.get $4
+      i32.const 1
+      i32.and
+      select
+     end
+     br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
+    end
     local.get $6
     i32.const 2139095040
     i32.eq
+    local.get $5
+    i32.const 218103808
+    i32.add
+    local.get $6
+    i32.lt_u
+    i32.or
+    br_if $folding-inner0
+    local.get $6
+    i32.const 218103808
+    i32.add
+    local.get $5
+    i32.lt_u
+    i32.const 0
+    local.get $4
+    i32.const 2
+    i32.and
+    select
     if (result f32)
-     f32.const 2.356194496154785
-     f32.const 0.7853981852531433
-     local.get $4
-     i32.const 2
-     i32.and
-     select
-     local.tee $0
-     f32.neg
-     local.get $0
-     local.get $7
-     select
-    else
-     f32.const 3.1415927410125732
      f32.const 0
-     local.get $4
-     i32.const 2
-     i32.and
-     select
-     local.tee $0
-     f32.neg
+    else
      local.get $0
-     local.get $4
-     i32.const 1
-     i32.and
-     select
+     local.get $1
+     f32.div
+     f32.abs
+     call $~lib/math/NativeMathf.atan
     end
-    br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
+    local.set $0
+    block $break|1
+     block $case3|1
+      block $case2|1
+       block $case1|1
+        block $case0|1
+         local.get $4
+         br_table $case0|1 $case1|1 $case2|1 $case3|1 $break|1
+        end
+        local.get $0
+        br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
+       end
+       local.get $0
+       f32.neg
+       br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
+      end
+      f32.const 3.1415927410125732
+      local.get $0
+      f32.const 8.742277657347586e-08
+      f32.add
+      f32.sub
+      br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
+     end
+     local.get $0
+     f32.const 8.742277657347586e-08
+     f32.add
+     f32.const -3.1415927410125732
+     f32.add
+     br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
+    end
+    unreachable
    end
    f32.const -1.5707963705062866
    f32.const 1.5707963705062866
@@ -2969,67 +3018,6 @@
    i32.const 1
    i32.and
    select
-   local.get $6
-   i32.const 2139095040
-   i32.eq
-   local.get $5
-   i32.const 218103808
-   i32.add
-   local.get $6
-   i32.lt_u
-   i32.or
-   br_if $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
-   drop
-   local.get $6
-   i32.const 218103808
-   i32.add
-   local.get $5
-   i32.lt_u
-   i32.const 0
-   local.get $4
-   i32.const 2
-   i32.and
-   select
-   if (result f32)
-    f32.const 0
-   else
-    local.get $0
-    local.get $1
-    f32.div
-    f32.abs
-    call $~lib/math/NativeMathf.atan
-   end
-   local.set $0
-   block $break|1
-    block $case3|1
-     block $case2|1
-      block $case1|1
-       block $case0|1
-        local.get $4
-        br_table $case0|1 $case1|1 $case2|1 $case3|1 $break|1
-       end
-       local.get $0
-       br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
-      end
-      local.get $0
-      f32.neg
-      br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
-     end
-     f32.const 3.1415927410125732
-     local.get $0
-     f32.const 8.742277657347586e-08
-     f32.add
-     f32.sub
-     br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
-    end
-    local.get $0
-    f32.const 8.742277657347586e-08
-    f32.add
-    f32.const -3.1415927410125732
-    f32.add
-    br $~CONDITION_RETURN/~lib/math/NativeMathf.atan2
-   end
-   unreachable
   end
   local.get $2
   local.get $3
@@ -4658,7 +4646,7 @@
     select
     f64.const -1
     f64.add
-    return
+    br $~CONDITION_RETURN/~lib/math/NativeMath.expm1
    end
    local.get $0
    f64.const 1
@@ -4905,7 +4893,7 @@
  (func $std/math/test_cosh (param $0 f64) (param $1 f64) (param $2 f64) (result i32)
   (local $3 i32)
   (local $4 i64)
-  block $__inlined_func$~lib/math/NativeMath.cosh$17 (result f64)
+  block $~CONDITION_RETURN/~lib/math/NativeMath.cosh (result f64)
    local.get $0
    i64.reinterpret_f64
    i64.const 9223372036854775807
@@ -4925,7 +4913,7 @@
     local.get $3
     i32.const 1045430272
     i32.lt_u
-    br_if $__inlined_func$~lib/math/NativeMath.cosh$17
+    br_if $~CONDITION_RETURN/~lib/math/NativeMath.cosh
     drop
     local.get $0
     call $~lib/math/NativeMath.expm1
@@ -4940,7 +4928,7 @@
     f64.div
     f64.const 1
     f64.add
-    br $__inlined_func$~lib/math/NativeMath.cosh$17
+    br $~CONDITION_RETURN/~lib/math/NativeMath.cosh
    end
    local.get $3
    i32.const 1082535490
@@ -4955,7 +4943,7 @@
     f64.add
     f64.const 0.5
     f64.mul
-    br $__inlined_func$~lib/math/NativeMath.cosh$17
+    br $~CONDITION_RETURN/~lib/math/NativeMath.cosh
    end
    local.get $0
    f64.const -1416.0996898839683
@@ -5002,15 +4990,14 @@
     local.get $5
     br_if $~CONDITION_RETURN/~lib/math/NativeMathf.expm1
     drop
+    local.get $0
+    f32.const 1701411834604692317316873e14
+    f32.mul
     local.get $1
     i32.const 1118925335
     i32.gt_u
-    if
-     local.get $0
-     f32.const 1701411834604692317316873e14
-     f32.mul
-     return
-    end
+    br_if $~CONDITION_RETURN/~lib/math/NativeMathf.expm1
+    drop
    end
    local.get $1
    i32.const 1051816472
@@ -5187,7 +5174,7 @@
     select
     f32.const -1
     f32.add
-    return
+    br $~CONDITION_RETURN/~lib/math/NativeMathf.expm1
    end
    local.get $0
    f32.const 1
@@ -5312,7 +5299,7 @@
  )
  (func $std/math/test_coshf (param $0 f32) (param $1 f32) (param $2 f32) (result i32)
   (local $3 i32)
-  block $__inlined_func$~lib/math/NativeMathf.cosh$18 (result f32)
+  block $~CONDITION_RETURN/~lib/math/NativeMathf.cosh (result f32)
    local.get $0
    i32.reinterpret_f32
    i32.const 2147483647
@@ -5328,7 +5315,7 @@
     local.get $3
     i32.const 964689920
     i32.lt_u
-    br_if $__inlined_func$~lib/math/NativeMathf.cosh$18
+    br_if $~CONDITION_RETURN/~lib/math/NativeMathf.cosh
     drop
     local.get $0
     call $~lib/math/NativeMathf.expm1
@@ -5343,7 +5330,7 @@
     f32.div
     f32.const 1
     f32.add
-    br $__inlined_func$~lib/math/NativeMathf.cosh$18
+    br $~CONDITION_RETURN/~lib/math/NativeMathf.cosh
    end
    local.get $3
    i32.const 1118925335
@@ -5358,7 +5345,7 @@
     local.get $0
     f32.div
     f32.add
-    br $__inlined_func$~lib/math/NativeMathf.cosh$18
+    br $~CONDITION_RETURN/~lib/math/NativeMathf.cosh
    end
    local.get $0
    f32.const -162.88958740234375
@@ -6794,20 +6781,21 @@
     f64.div
     br $~CONDITION_RETURN/~lib/math/NativeMath.mod
    end
-   local.get $0
    local.get $6
    i64.const 1
    i64.shl
    local.tee $8
    local.get $3
-   i64.ne
-   f64.convert_i32_u
-   f64.mul
-   local.get $3
-   local.get $8
-   i64.ge_u
-   br_if $~CONDITION_RETURN/~lib/math/NativeMath.mod
-   drop
+   i64.le_u
+   if
+    local.get $0
+    local.get $3
+    local.get $8
+    i64.ne
+    f64.convert_i32_u
+    f64.mul
+    br $~CONDITION_RETURN/~lib/math/NativeMath.mod
+   end
    local.get $5
    i64.eqz
    if (result i64)
@@ -7000,20 +6988,21 @@
     f32.div
     br $~CONDITION_RETURN/~lib/math/NativeMathf.mod
    end
-   local.get $0
    local.get $6
    i32.const 1
    i32.shl
    local.tee $8
    local.get $3
-   i32.ne
-   f32.convert_i32_u
-   f32.mul
-   local.get $3
-   local.get $8
-   i32.ge_u
-   br_if $~CONDITION_RETURN/~lib/math/NativeMathf.mod
-   drop
+   i32.le_u
+   if
+    local.get $0
+    local.get $3
+    local.get $8
+    i32.ne
+    f32.convert_i32_u
+    f32.mul
+    br $~CONDITION_RETURN/~lib/math/NativeMathf.mod
+   end
    local.get $5
    if (result i32)
     local.get $6
@@ -8485,7 +8474,7 @@
   (local $7 i32)
   (local $8 i64)
   (local $9 f64)
-  block $__inlined_func$~lib/math/NativeMath.rem$32 (result f64)
+  block $~CONDITION_RETURN/~lib/math/NativeMath.rem (result f64)
    local.get $1
    i64.reinterpret_f64
    local.tee $5
@@ -8520,14 +8509,14 @@
     local.tee $0
     local.get $0
     f64.div
-    br $__inlined_func$~lib/math/NativeMath.rem$32
+    br $~CONDITION_RETURN/~lib/math/NativeMath.rem
    end
    local.get $0
    local.get $8
    i64.const 1
    i64.shl
    i64.eqz
-   br_if $__inlined_func$~lib/math/NativeMath.rem$32
+   br_if $~CONDITION_RETURN/~lib/math/NativeMath.rem
    drop
    local.get $3
    i64.eqz
@@ -8585,7 +8574,7 @@
      i64.eq
      br_if $do-break|0
      local.get $0
-     br $__inlined_func$~lib/math/NativeMath.rem$32
+     br $~CONDITION_RETURN/~lib/math/NativeMath.rem
     end
     loop $while-continue|1
      local.get $3
@@ -8731,12 +8720,6 @@
    i32.const 255
    i32.and
    local.set $6
-   local.get $0
-   local.get $1
-   f32.mul
-   local.tee $9
-   local.get $9
-   f32.div
    local.get $5
    i32.const 1
    i32.shl
@@ -8756,8 +8739,15 @@
    local.get $1
    f32.ne
    i32.or
-   br_if $~CONDITION_RETURN/~lib/math/NativeMathf.rem
-   drop
+   if
+    local.get $0
+    local.get $1
+    f32.mul
+    local.tee $0
+    local.get $0
+    f32.div
+    br $~CONDITION_RETURN/~lib/math/NativeMathf.rem
+   end
    local.get $0
    local.get $8
    i32.const 1
@@ -10015,178 +10005,179 @@
   (local $5 f64)
   (local $6 i32)
   (local $7 i32)
-  local.get $0
-  i64.reinterpret_f64
-  i64.const 32
-  i64.shr_u
-  i32.wrap_i64
-  local.tee $6
-  i32.const 2147483647
-  i32.and
-  i32.const 1072010280
-  i32.ge_u
-  local.tee $7
-  if
-   f64.const 0.7853981633974483
-   local.get $6
-   i32.const 0
-   i32.lt_s
-   if (result f64)
-    local.get $1
-    f64.neg
-    local.set $1
-    local.get $0
-    f64.neg
-   else
-    local.get $0
-   end
-   f64.sub
-   f64.const 3.061616997868383e-17
-   local.get $1
-   f64.sub
-   f64.add
-   local.set $0
-   f64.const 0
-   local.set $1
-  end
-  local.get $0
-  local.get $0
-  f64.mul
-  local.tee $4
-  local.get $4
-  f64.mul
-  local.set $3
-  local.get $0
-  local.get $1
-  local.get $4
-  local.get $4
-  local.get $0
-  f64.mul
-  local.tee $5
-  local.get $3
-  local.get $3
-  local.get $3
-  local.get $3
-  local.get $3
-  f64.const -1.8558637485527546e-05
-  f64.mul
-  f64.const 7.817944429395571e-05
-  f64.add
-  f64.mul
-  f64.const 5.880412408202641e-04
-  f64.add
-  f64.mul
-  f64.const 3.5920791075913124e-03
-  f64.add
-  f64.mul
-  f64.const 0.021869488294859542
-  f64.add
-  f64.mul
-  f64.const 0.13333333333320124
-  f64.add
-  local.get $4
-  local.get $3
-  local.get $3
-  local.get $3
-  local.get $3
-  local.get $3
-  f64.const 2.590730518636337e-05
-  f64.mul
-  f64.const 7.140724913826082e-05
-  f64.add
-  f64.mul
-  f64.const 2.464631348184699e-04
-  f64.add
-  f64.mul
-  f64.const 1.4562094543252903e-03
-  f64.add
-  f64.mul
-  f64.const 0.0088632398235993
-  f64.add
-  f64.mul
-  f64.const 0.05396825397622605
-  f64.add
-  f64.mul
-  f64.add
-  f64.mul
-  local.get $1
-  f64.add
-  f64.mul
-  f64.add
-  local.get $5
-  f64.const 0.3333333333333341
-  f64.mul
-  f64.add
-  local.tee $3
-  f64.add
-  local.set $1
-  local.get $7
-  if
-   f64.const 1
-   local.get $6
-   i32.const 30
-   i32.shr_s
-   i32.const 2
+  block $~CONDITION_RETURN/~lib/math/tan_kern (result f64)
+   local.get $0
+   i64.reinterpret_f64
+   i64.const 32
+   i64.shr_u
+   i32.wrap_i64
+   local.tee $6
+   i32.const 2147483647
    i32.and
-   f64.convert_i32_s
-   f64.sub
-   local.get $2
-   f64.convert_i32_s
+   i32.const 1072010280
+   i32.ge_u
+   local.tee $7
+   if
+    f64.const 0.7853981633974483
+    local.get $6
+    i32.const 0
+    i32.lt_s
+    if (result f64)
+     local.get $1
+     f64.neg
+     local.set $1
+     local.get $0
+     f64.neg
+    else
+     local.get $0
+    end
+    f64.sub
+    f64.const 3.061616997868383e-17
+    local.get $1
+    f64.sub
+    f64.add
+    local.set $0
+    f64.const 0
+    local.set $1
+   end
+   local.get $0
+   local.get $0
+   f64.mul
    local.tee $4
+   local.get $4
+   f64.mul
+   local.set $3
    local.get $0
    local.get $1
-   local.get $1
-   f64.mul
-   local.get $1
    local.get $4
-   f64.add
-   f64.div
+   local.get $4
+   local.get $0
+   f64.mul
+   local.tee $5
    local.get $3
-   f64.sub
-   f64.sub
-   f64.const 2
+   local.get $3
+   local.get $3
+   local.get $3
+   local.get $3
+   f64.const -1.8558637485527546e-05
    f64.mul
-   f64.sub
+   f64.const 7.817944429395571e-05
+   f64.add
    f64.mul
-   return
-  end
-  local.get $2
-  i32.const 1
-  i32.eq
-  if
+   f64.const 5.880412408202641e-04
+   f64.add
+   f64.mul
+   f64.const 3.5920791075913124e-03
+   f64.add
+   f64.mul
+   f64.const 0.021869488294859542
+   f64.add
+   f64.mul
+   f64.const 0.13333333333320124
+   f64.add
+   local.get $4
+   local.get $3
+   local.get $3
+   local.get $3
+   local.get $3
+   local.get $3
+   f64.const 2.590730518636337e-05
+   f64.mul
+   f64.const 7.140724913826082e-05
+   f64.add
+   f64.mul
+   f64.const 2.464631348184699e-04
+   f64.add
+   f64.mul
+   f64.const 1.4562094543252903e-03
+   f64.add
+   f64.mul
+   f64.const 0.0088632398235993
+   f64.add
+   f64.mul
+   f64.const 0.05396825397622605
+   f64.add
+   f64.mul
+   f64.add
+   f64.mul
    local.get $1
-   return
+   f64.add
+   f64.mul
+   f64.add
+   local.get $5
+   f64.const 0.3333333333333341
+   f64.mul
+   f64.add
+   local.tee $3
+   f64.add
+   local.set $1
+   local.get $7
+   if
+    f64.const 1
+    local.get $6
+    i32.const 30
+    i32.shr_s
+    i32.const 2
+    i32.and
+    f64.convert_i32_s
+    f64.sub
+    local.get $2
+    f64.convert_i32_s
+    local.tee $4
+    local.get $0
+    local.get $1
+    local.get $1
+    f64.mul
+    local.get $1
+    local.get $4
+    f64.add
+    f64.div
+    local.get $3
+    f64.sub
+    f64.sub
+    f64.const 2
+    f64.mul
+    f64.sub
+    f64.mul
+    br $~CONDITION_RETURN/~lib/math/tan_kern
+   end
+   local.get $1
+   local.get $2
+   i32.const 1
+   i32.eq
+   br_if $~CONDITION_RETURN/~lib/math/tan_kern
+   drop
+   f64.const -1
+   local.get $1
+   f64.div
+   local.tee $5
+   i64.reinterpret_f64
+   i64.const -4294967296
+   i64.and
+   f64.reinterpret_i64
+   local.tee $4
+   local.get $5
+   local.get $4
+   local.get $1
+   i64.reinterpret_f64
+   i64.const -4294967296
+   i64.and
+   f64.reinterpret_i64
+   local.tee $1
+   f64.mul
+   f64.const 1
+   f64.add
+   local.get $4
+   local.get $3
+   local.get $1
+   local.get $0
+   f64.sub
+   f64.sub
+   f64.mul
+   f64.add
+   f64.mul
+   f64.add
   end
-  f64.const -1
-  local.get $1
-  f64.div
-  local.tee $5
-  i64.reinterpret_f64
-  i64.const -4294967296
-  i64.and
-  f64.reinterpret_i64
-  local.tee $4
-  local.get $5
-  local.get $4
-  local.get $1
-  i64.reinterpret_f64
-  i64.const -4294967296
-  i64.and
-  f64.reinterpret_i64
-  local.tee $1
-  f64.mul
-  f64.const 1
-  f64.add
-  local.get $4
-  local.get $3
-  local.get $1
-  local.get $0
-  f64.sub
-  f64.sub
-  f64.mul
-  f64.add
-  f64.mul
-  f64.add
  )
  (func $~lib/math/NativeMath.tan (param $0 f64) (result f64)
   (local $1 f64)

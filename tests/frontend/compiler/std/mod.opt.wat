@@ -71,20 +71,21 @@
      f64.div
      br $~CONDITION_RETURN/~lib/math/NativeMath.mod
     end
-    local.get $0
     local.get $6
     i64.const 1
     i64.shl
     local.tee $9
     local.get $3
-    i64.ne
-    f64.convert_i32_u
-    f64.mul
-    local.get $3
-    local.get $9
-    i64.ge_u
-    br_if $~CONDITION_RETURN/~lib/math/NativeMath.mod
-    drop
+    i64.le_u
+    if
+     local.get $0
+     local.get $3
+     local.get $9
+     i64.ne
+     f64.convert_i32_u
+     f64.mul
+     br $~CONDITION_RETURN/~lib/math/NativeMath.mod
+    end
     local.get $5
     i64.eqz
     if (result i64)
@@ -331,20 +332,21 @@
      f32.div
      br $~CONDITION_RETURN/~lib/math/NativeMathf.mod
     end
-    local.get $0
     local.get $6
     i32.const 1
     i32.shl
     local.tee $8
     local.get $3
-    i32.ne
-    f32.convert_i32_u
-    f32.mul
-    local.get $3
-    local.get $8
-    i32.ge_u
-    br_if $~CONDITION_RETURN/~lib/math/NativeMathf.mod
-    drop
+    i32.le_u
+    if
+     local.get $0
+     local.get $3
+     local.get $8
+     i32.ne
+     f32.convert_i32_u
+     f32.mul
+     br $~CONDITION_RETURN/~lib/math/NativeMathf.mod
+    end
     local.get $5
     if (result i32)
      local.get $6

@@ -1984,8 +1984,6 @@
      local.tee $6
      i32.eq
      if (result i32)
-      local.get $0
-      i32.const 0
       local.get $3
       local.get $4
       i32.add
@@ -2003,19 +2001,22 @@
       i32.const 255
       i32.and
       local.tee $3
-      local.get $1
-      i32.xor
-      i32.sub
-      local.get $2
-      i32.const 8
-      i32.shr_s
-      i32.and
-      i32.add
-      local.get $3
       i32.const 2
       i32.lt_u
-      br_if $~CONDITION_RETURN/~lib/util/casemap/casemap
-      drop
+      if
+       local.get $0
+       i32.const 0
+       local.get $1
+       local.get $3
+       i32.xor
+       i32.sub
+       local.get $2
+       i32.const 8
+       i32.shr_s
+       i32.and
+       i32.add
+       br $~CONDITION_RETURN/~lib/util/casemap/casemap
+      end
       local.get $0
       i32.const 1
       i32.add
@@ -3025,7 +3026,6 @@
  )
  (func $~lib/string/String#codePointAt (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
-  (local $3 i32)
   block $~CONDITION_RETURN/~lib/string/String#codePointAt (result i32)
    i32.const -1
    local.get $0
@@ -3039,41 +3039,45 @@
    i32.le_u
    br_if $~CONDITION_RETURN/~lib/string/String#codePointAt
    drop
-   local.get $0
-   local.get $1
-   i32.const 1
-   i32.shl
-   i32.add
-   local.tee $3
-   i32.load16_u
-   local.tee $0
    local.get $1
    i32.const 1
    i32.add
    local.get $2
    i32.eq
    local.get $0
+   local.get $1
+   i32.const 1
+   i32.shl
+   i32.add
+   i32.load16_u
+   local.tee $2
    i32.const 64512
    i32.and
    i32.const 55296
    i32.ne
    i32.or
-   br_if $~CONDITION_RETURN/~lib/string/String#codePointAt
-   drop
+   if
+    local.get $2
+    br $~CONDITION_RETURN/~lib/string/String#codePointAt
+   end
+   local.get $2
    local.get $0
-   local.get $3
+   local.get $1
+   i32.const 1
+   i32.shl
+   i32.add
    i32.load16_u offset=2
-   local.tee $1
+   local.tee $0
    i32.const 64512
    i32.and
    i32.const 56320
    i32.ne
    br_if $~CONDITION_RETURN/~lib/string/String#codePointAt
    drop
-   local.get $0
+   local.get $2
    i32.const 10
    i32.shl
-   local.get $1
+   local.get $0
    i32.add
    i32.const 56613888
    i32.sub
