@@ -87,7 +87,6 @@ TEST(TestMemoryExposure, TestClassExposureDoesNotSpreadThroughAncestorsToSibling
   // Ancestor setters can operate on LeafClass1A, but objects from sibling branches cannot alias it.
   variableInfo.addMemoryExposureType("LeafClass1A");
   variableInfo.finalizeMemoryExposure();
-  variableInfo.finalizeMemoryExposure();
 
   EXPECT_THAT(variableInfo.getMemoryExposureTypeRegistry(),
               ::testing::ElementsAre("LeafClass1A", "MidClass1", "RootClass"));

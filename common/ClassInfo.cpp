@@ -22,22 +22,22 @@ namespace warpo {
 
 void ClassInfo::addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass,
                                bool const nullable) {
-  layoutFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+  layoutFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable, false});
 }
 
 void ClassInfo::addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                                 bool const nullable) {
-  declaredFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+                                 bool const nullable, bool const redeclared) {
+  declaredFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable, redeclared});
 }
 
 void InterfaceInfo::addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass,
                                    bool const nullable) {
-  layoutFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+  layoutFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable, false});
 }
 
 void InterfaceInfo::addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                                     bool const nullable) {
-  declaredFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
+                                     bool const nullable, bool const redeclared) {
+  declaredFields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable, redeclared});
 }
 
 } // namespace warpo

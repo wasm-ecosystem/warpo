@@ -48,7 +48,7 @@ public:
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
                 uint32_t const nullable);
   void addFieldDeclaration(std::string_view const className, std::string fieldName, std::string typeName,
-                           uint32_t const offset, uint32_t const nullable);
+                           uint32_t const offset, uint32_t const nullable, bool const redeclared);
 
   void addTemplateType(std::string_view const className, std::string_view const templateTypeName);
 

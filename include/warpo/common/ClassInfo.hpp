@@ -26,7 +26,7 @@ public:
   std::vector<FieldInfo> const &getLayoutFields() const noexcept { return layoutFields_; }
   // Declared fields contain every declaration, including redeclarations that reuse an inherited offset.
   void addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                        bool const nullable);
+                        bool const nullable, bool const redeclared);
   std::vector<FieldInfo> const &getDeclaredFields() const noexcept { return declaredFields_; }
 
   void addTemplateType(std::string_view const typeName) noexcept { templateTypes_.push_back(typeName); }
@@ -63,7 +63,7 @@ public:
 
   void addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
   void addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                        bool const nullable);
+                        bool const nullable, bool const redeclared);
 
   void setDebugInfoOffset(uint64_t offset) noexcept { debugInfoOffset_ = offset; }
   uint64_t getDebugInfoOffset() const noexcept { return debugInfoOffset_; }

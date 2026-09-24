@@ -137,17 +137,14 @@ bool isRedeclaredField(VariableInfo const *const variableInfo, AccessorName cons
   std::vector<std::string_view> descendants = hierarchy.getDescendants(setter.getOwner());
   relatedClasses.insert(relatedClasses.end(), descendants.begin(), descendants.end());
 
-  uint32_t declarationCount = 0;
   VariableInfo::ClassRegistry const &classRegistry = variableInfo->getClassRegistry();
   for (std::string_view const className : relatedClasses) {
     VariableInfo::ClassRegistry::const_iterator const classIt = classRegistry.find(className);
-    if (classIt == classRegistry.end())
-      continue;
-    for (FieldInfo const &field : classIt->second.getDeclaredFields()) {
-      if (field.getName() != setter.getField() || field.getOffsetInClass() != setterOffset)
-        continue;
-      if (++declarationCount > 1)
-        return true;
+    if (classIt != classRegistry.end()) {
+      for (FieldInfo const &field : classIt->second.getDeclaredFields()) {
+        if (field.getName() == setter.getField() && field.isRedeclared())
+          return true;
+      }
     }
   }
   return false;
@@ -844,8 +841,8 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterForRelatedSameNameGetter) {
   variableInfo.createClass("Derived", 2);
   variableInfo.addBaseClass("Derived", "Base");
   variableInfo.addField("Base", "value", "i32", 0, 0);
-  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0);
-  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0, false);
+  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0, true);
 
   runUnusedFieldStoreEliminating(*m, &variableInfo);
 
@@ -875,8 +872,8 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterWhenRedeclaredGetterIsUsed) {
   variableInfo.createClass("Base", 1);
   variableInfo.createClass("Derived", 2);
   variableInfo.addBaseClass("Derived", "Base");
-  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0);
-  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0, false);
+  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0, true);
 
   runUnusedFieldStoreEliminating(*m, &variableInfo);
 
@@ -902,8 +899,8 @@ TEST(UnusedFieldStoreEliminatingTest, KeepsSetterForRedeclaredFieldWhenGetterIsU
   variableInfo.createClass("Base", 1);
   variableInfo.createClass("Derived", 2);
   variableInfo.addBaseClass("Derived", "Base");
-  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0);
-  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("Base", "value", "i32", 0, 0, false);
+  variableInfo.addFieldDeclaration("Derived", "value", "i32", 0, 0, true);
 
   runUnusedFieldStoreEliminating(*m, &variableInfo);
 
@@ -933,8 +930,8 @@ TEST(UnusedFieldStoreEliminatingTest, DoesNotMatchGetterFromUnrelatedClass) {
   variableInfo.createClass("Second", 2);
   variableInfo.addField("First", "value", "i32", 0, 0);
   variableInfo.addField("Second", "value", "i32", 0, 0);
-  variableInfo.addFieldDeclaration("First", "value", "i32", 0, 0);
-  variableInfo.addFieldDeclaration("Second", "value", "i32", 0, 0);
+  variableInfo.addFieldDeclaration("First", "value", "i32", 0, 0, false);
+  variableInfo.addFieldDeclaration("Second", "value", "i32", 0, 0, false);
 
   runUnusedFieldStoreEliminating(*m, &variableInfo);
 

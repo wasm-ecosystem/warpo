@@ -27,7 +27,8 @@ export declare function _WarpoAddFieldDeclaration(
   fieldName: string,
   typeName: string,
   offset: u32,
-  nullable: bool
+  nullable: bool,
+  redeclared: bool
 ): void;
 export declare function _WarpoAddGlobal(variableName: string, typeName: string, nullable: bool, isMutable: bool): void;
 

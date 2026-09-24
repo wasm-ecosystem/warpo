@@ -70,13 +70,14 @@ void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t
 }
 
 void addFieldDeclaration(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
-                         uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx) {
+                         uint32_t const offset, uint32_t const nullable, uint32_t const redeclared,
+                         vb::WasmModule const *const ctx) {
   std::string const className = WarpRunner::getString(ctx, classNamePtr);
   std::string fieldName = WarpRunner::getString(ctx, fieldNamePtr);
   std::string typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addFieldDeclaration(className, std::move(fieldName), std::move(typeName), offset,
-                                                         nullable);
+                                                         nullable, redeclared != 0);
 }
 
 void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNamePtr, vb::WasmModule const *const ctx) {

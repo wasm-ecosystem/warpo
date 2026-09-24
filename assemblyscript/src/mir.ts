@@ -179,13 +179,20 @@ export function addField(clazz: Class, fieldName: string, fieldType: Type, offse
   );
 }
 
-export function addFieldDeclaration(clazz: Class, fieldName: string, fieldType: Type, offset: u32): void {
+export function addFieldDeclaration(
+  clazz: Class,
+  fieldName: string,
+  fieldType: Type,
+  offset: u32,
+  redeclared: bool
+): void {
   _WarpoAddFieldDeclaration(
     decodeURIComponent(classToMIRName(clazz)),
     fieldName,
     decodeURIComponent(typeToMIRName(fieldType)),
     offset,
-    fieldType.is(TypeFlags.Nullable)
+    fieldType.is(TypeFlags.Nullable),
+    redeclared
   );
 }
 

@@ -26,17 +26,18 @@ void VariableInfo::addField(std::string_view const className, std::string fieldN
 }
 
 void VariableInfo::addFieldDeclaration(std::string_view const className, std::string fieldName,
-                                       std::string const typeName, uint32_t const offset, uint32_t const nullable) {
+                                       std::string const typeName, uint32_t const offset, uint32_t const nullable,
+                                       bool const redeclared) {
   std::string_view const internedTypeName = stringPool_.internString(typeName);
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
   if (classIt != classRegistry_.end()) {
-    classIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0);
+    classIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0, redeclared);
     return;
   }
 
   InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
   assert(interfaceIt != interfaceRegistry_.end());
-  interfaceIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0);
+  interfaceIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0, redeclared);
 }
 
 void VariableInfo::createBaseType(std::string_view typeName) {

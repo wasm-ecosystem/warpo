@@ -1235,14 +1235,15 @@ function builtin_memory_expose(ctx: BuiltinFunctionContext): ExpressionRef {
   if (classReference && !classReference.isInterface && !classReference.hasDecorator(DecoratorFlags.Unmanaged)) {
     addMemoryExposureType(type);
     return module.nop();
+  } else {
+    compiler.error(
+      DiagnosticCode.Operation_0_cannot_be_applied_to_type_1,
+      ctx.reportNode.typeArgumentsRange,
+      "memory_expose",
+      type.toString()
+    );
+    return module.unreachable();
   }
-  compiler.error(
-    DiagnosticCode.Operation_0_cannot_be_applied_to_type_1,
-    ctx.reportNode.typeArgumentsRange,
-    "memory_expose",
-    type.toString()
-  );
-  return module.unreachable();
 }
 builtinFunctions.set(BuiltinNames.memory_expose, builtin_memory_expose);
 
