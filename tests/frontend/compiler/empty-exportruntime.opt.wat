@@ -1585,6 +1585,7 @@
     global.get $~lib/rt/itcms/white
     return_call $~lib/rt/itcms/Object#linkTo
    end
+   unreachable
   end
  )
  (func $~lib/rt/itcms/__collect
