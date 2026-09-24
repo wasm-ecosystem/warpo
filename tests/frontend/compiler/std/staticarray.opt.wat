@@ -4684,15 +4684,14 @@
   local.set $1
   i32.const 2
   global.set $~argumentsLength
+  i32.const 1
   local.get $1
   i32.const 20
   i32.sub
   i32.load offset=16
   i32.const 2
   i32.shr_u
-  local.set $0
-  i32.const 1
-  local.get $0
+  local.tee $0
   local.get $0
   i32.const 1
   i32.gt_s
