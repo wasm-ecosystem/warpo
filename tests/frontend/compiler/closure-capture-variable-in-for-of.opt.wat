@@ -1657,20 +1657,18 @@
   i32.const 12
   i32.const 4
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $2
   i32.const 4
   i32.add
   i64.const 1
   i64.store
-  local.get $0
-  local.set $3
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $2
   i32.store align=1
-  local.get $0
+  local.get $2
   i32.const 0
   i32.store
-  local.get $0
+  local.get $2
   i32.const 0
   call $~lib/rt/itcms/__link
   global.get $~lib/memory/__stack_pointer
@@ -1689,29 +1687,29 @@
   i32.const 8
   i32.const 1
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $1
   i32.const 32
   i64.load align=1
   i64.store align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $1
   i32.store align=1
   i32.const 16
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.tee $1
-  local.get $0
+  local.tee $0
+  local.get $1
   i32.store
-  local.get $1
   local.get $0
+  local.get $1
   call $~lib/rt/itcms/__link
-  local.get $1
   local.get $0
-  i32.store offset=4
   local.get $1
+  i32.store offset=4
+  local.get $0
   i32.const 8
   i32.store offset=8
-  local.get $1
+  local.get $0
   i32.const 2
   i32.store offset=12
   global.get $~lib/memory/__stack_pointer
@@ -1719,25 +1717,25 @@
   i32.add
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
   i32.store offset=4 align=1
   i32.const 8
   i32.const 6
   call $~lib/rt/itcms/__new
-  local.tee $0
-  local.get $1
-  i32.store offset=4
+  local.tee $3
   local.get $0
-  local.get $1
+  i32.store offset=4
+  local.get $3
+  local.get $0
   call $~lib/rt/itcms/__link
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $3
   i32.store offset=16 align=1
-  local.get $0
+  local.get $3
   call $~lib/array/ArrayIterator<i32>#next
-  local.set $2
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $2
+  local.get $0
   i32.store offset=12 align=1
   loop $for-of-loop|0
    i32.const 16
@@ -1752,27 +1750,27 @@
    local.get $1
    i32.store offset=8 align=1
    local.get $1
-   local.get $3
+   local.get $2
    i32.store
    local.get $1
-   local.get $3
-   call $~lib/rt/itcms/__link
    local.get $2
+   call $~lib/rt/itcms/__link
+   local.get $0
    if
     local.get $1
     i32.const 4
     i32.add
     local.tee $4
-    local.get $2
+    local.get $0
     i32.load
     i32.store
     i32.const 8
     i32.const 8
     call $~lib/rt/itcms/__new
-    local.tee $2
+    local.tee $0
     i32.const 1
     i32.store
-    local.get $2
+    local.get $0
     i32.const 4
     i32.add
     local.get $1
@@ -1782,17 +1780,17 @@
     i32.const 10
     i32.eq
     if
-     local.get $2
+     local.get $0
      global.set $closure-capture-variable-in-for-of/func1
     else
-     local.get $2
+     local.get $0
      global.set $closure-capture-variable-in-for-of/func2
     end
-    local.get $0
+    local.get $3
     call $~lib/array/ArrayIterator<i32>#next
-    local.set $2
+    local.set $0
     global.get $~lib/memory/__stack_pointer
-    local.get $2
+    local.get $0
     i32.store offset=4 align=1
     br $for-of-loop|0
    end

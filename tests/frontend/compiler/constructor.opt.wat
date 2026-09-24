@@ -85,12 +85,6 @@
    local.get $0
    call $~lib/rt/itcms/__visit
   end
-  i32.const 0
-  local.tee $0
-  if
-   local.get $0
-   call $~lib/rt/itcms/__visit
-  end
   global.get $constructor/ctorConditionallyReturnsThis
   local.tee $0
   if

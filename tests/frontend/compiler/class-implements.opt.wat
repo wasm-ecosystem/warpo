@@ -1701,13 +1701,6 @@
   i32.load
   i32.const 9
   i32.eq
-  if (result i32)
-   i32.const 4
-  else
-   i32.const 3
-  end
-  i32.const 3
-  i32.ne
   if
    i32.const 0
    i32.const 432
@@ -1726,13 +1719,6 @@
   i32.load
   i32.const 9
   i32.eq
-  if (result i32)
-   i32.const 4
-  else
-   i32.const 3
-  end
-  i32.const 3
-  i32.ne
   if
    i32.const 0
    i32.const 432
@@ -1754,13 +1740,6 @@
   i32.sub
   i32.load
   i32.const 9
-  i32.eq
-  if (result i32)
-   i32.const 4
-  else
-   i32.const 3
-  end
-  i32.const 4
   i32.ne
   if
    i32.const 0
@@ -2335,17 +2314,18 @@
   end
  )
  (func $byn$mgfn-shared$class-implements/I3#get:i@override (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+  (local $3 i32)
   block $case1
    local.get $2
    local.get $0
    i32.const 8
    i32.sub
    i32.load
-   local.tee $2
+   local.tee $3
    i32.ne
    if
     local.get $1
-    local.get $2
+    local.get $3
     i32.eq
     br_if $case1
     unreachable

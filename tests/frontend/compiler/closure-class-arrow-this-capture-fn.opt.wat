@@ -1755,8 +1755,6 @@
   global.get $~lib/memory/__stack_pointer
   global.get $closure-class-arrow-this-capture-fn/c
   i32.store align=1
-  global.get $closure-class-arrow-this-capture-fn/c
-  local.set $1
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.sub
@@ -1770,6 +1768,8 @@
   if
    unreachable
   end
+  global.get $closure-class-arrow-this-capture-fn/c
+  local.set $1
   i32.const 24
   i32.const 5
   call $~lib/rt/itcms/__new

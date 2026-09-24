@@ -1625,8 +1625,6 @@
   i32.add
   i64.const 1
   i64.store
-  local.get $0
-  local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
@@ -1642,20 +1640,19 @@
    i32.const 16
    i32.const 4
    call $~lib/rt/itcms/__new
-   local.tee $0
+   local.tee $1
    i32.const 8
    i32.add
    i64.const 1
    i64.store
-   local.get $0
-   local.tee $3
    local.get $1
-   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
    local.get $0
+   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+   local.get $1
    i32.const 4
    i32.add
    local.get $2
-   local.get $1
+   local.get $0
    i32.const 4
    i32.add
    i32.load
@@ -1664,20 +1661,20 @@
    i32.const 8
    i32.const 5
    call $~lib/rt/itcms/__new
-   local.tee $0
+   local.tee $3
    i32.const 1
    i32.store
-   local.get $0
+   local.get $3
    i32.const 4
    i32.add
-   local.get $3
+   local.get $1
    i32.store
    local.get $2
    if
-    local.get $0
+    local.get $3
     global.set $closure-capture-do-while-upper-level/func2
    else
-    local.get $0
+    local.get $3
     global.set $closure-capture-do-while-upper-level/func1
    end
    local.get $2
@@ -1688,7 +1685,7 @@
    i32.lt_s
    br_if $do-loop|0
   end
-  local.get $1
+  local.get $0
   i32.const 4
   i32.add
   i32.load

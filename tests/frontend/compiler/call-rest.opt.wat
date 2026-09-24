@@ -1,10 +1,10 @@
 (module
  (type $0 (func (param i32 i32) (result i32)))
- (type $1 (func (param i32 i32 i32) (result i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32)))
- (type $4 (func))
- (type $5 (func (param i32 i32 i32)))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32) (result i32)))
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 i32 i64)))
  (type $8 (func (param i32) (result i32)))
@@ -64,8 +64,6 @@
  (data $26.1 (i32.const 1048) "\01\00\00\00\0c\00\00\00\c0\03\00\00\e0\03\00\00\00\04")
  (data $27 (i32.const 1072) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\02\01")
  (data $27.1 (i32.const 1108) "\02A")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $call-rest/fn@varargs)
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/array/Array<i32>#__get (param $0 i32) (param $1 i32) (result i32)
@@ -89,36 +87,35 @@
   i32.add
   i32.load
  )
- (func $call-rest/fn (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+ (func $call-rest/fn (param $0 i32) (param $1 i32) (result i32)
+  (local $2 i32)
   (local $3 i32)
   local.get $0
-  local.get $1
+  i32.const 1
   i32.add
-  local.set $1
-  i32.const 0
   local.set $0
-  local.get $2
+  local.get $1
   i32.load offset=12
   local.set $3
   loop $for-loop|0
-   local.get $0
+   local.get $2
    local.get $3
    i32.lt_s
    if
-    local.get $2
-    local.get $0
-    call $~lib/array/Array<i32>#__get
     local.get $1
-    i32.add
-    local.set $1
+    local.get $2
+    call $~lib/array/Array<i32>#__get
     local.get $0
-    i32.const 1
     i32.add
     local.set $0
+    local.get $2
+    i32.const 1
+    i32.add
+    local.set $2
     br $for-loop|0
    end
   end
-  local.get $1
+  local.get $0
  )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
@@ -1686,7 +1683,7 @@
   global.set $~lib/memory/__stack_pointer
   local.get $1
  )
- (func $call-rest/fn@varargs (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+ (func $call-rest/fn@varargs (param $0 i32) (param $1 i32) (result i32)
   block $2of2
    block $1of2
     block $0of2
@@ -1699,17 +1696,16 @@
      unreachable
     end
     i32.const 0
-    local.set $1
+    local.set $0
    end
    i32.const 0
    i32.const 5
    i32.const 144
    call $~lib/rt/__newArray
-   local.set $2
+   local.set $1
   end
   local.get $0
   local.get $1
-  local.get $2
   return_call $call-rest/fn
  )
  (func $~lib/array/ensureCapacity (param $0 i32) (param $1 i32)
@@ -1737,7 +1733,7 @@
    end
    local.get $0
    i32.load
-   local.tee $4
+   local.tee $3
    block $__inlined_func$~lib/rt/itcms/__renew$111 (result i32)
     i32.const 1073741820
     local.get $2
@@ -1762,11 +1758,11 @@
     local.get $2
     i32.lt_u
     select
-    local.tee $3
-    local.get $4
+    local.tee $1
+    local.get $3
     i32.const 20
     i32.sub
-    local.tee $1
+    local.tee $2
     i32.load
     i32.const -4
     i32.and
@@ -1774,44 +1770,44 @@
     i32.sub
     i32.le_u
     if
+     local.get $2
      local.get $1
-     local.get $3
      i32.store offset=16
-     local.get $4
+     local.get $3
      br $__inlined_func$~lib/rt/itcms/__renew$111
     end
-    local.get $3
     local.get $1
+    local.get $2
     i32.load offset=12
     call $~lib/rt/itcms/__new
-    local.tee $2
-    local.get $4
+    local.tee $4
     local.get $3
     local.get $1
+    local.get $2
     i32.load offset=16
-    local.tee $1
+    local.tee $3
     local.get $1
     local.get $3
-    i32.gt_u
+    i32.lt_u
     select
     memory.copy
-    local.get $2
+    local.get $4
    end
-   local.tee $1
+   local.tee $3
    i32.ne
    if
     local.get $0
-    local.get $1
+    local.get $3
     i32.store
     local.get $0
-    local.get $1
+    local.get $3
     i32.store offset=4
     local.get $0
-    local.get $1
+    local.get $3
     call $~lib/rt/itcms/__link
    end
    local.get $0
-   local.get $3
+   local.get $1
    i32.store offset=8
   end
  )
@@ -2094,7 +2090,6 @@
   global.set $~lib/rt/itcms/fromSpace
   i32.const 1
   global.set $~argumentsLength
-  i32.const 1
   i32.const 0
   i32.const 0
   call $call-rest/fn@varargs
@@ -2110,7 +2105,6 @@
   end
   i32.const 2
   global.set $~argumentsLength
-  i32.const 1
   i32.const 2
   i32.const 0
   call $call-rest/fn@varargs
@@ -2124,7 +2118,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
   i32.const 2
   i32.const 1
   i32.const 4
@@ -2141,7 +2134,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
   i32.const 2
   i32.const 3
   i32.const 4
@@ -2160,7 +2152,6 @@
   end
   i32.const 1
   global.set $~argumentsLength
-  i32.const 1
   i32.const 0
   i32.const 0
   call $call-rest/fn@varargs
@@ -2176,7 +2167,6 @@
   end
   i32.const 2
   global.set $~argumentsLength
-  i32.const 1
   i32.const 2
   i32.const 0
   call $call-rest/fn@varargs
@@ -2202,7 +2192,6 @@
   i32.store align=1
   i32.const 3
   global.set $~argumentsLength
-  i32.const 1
   i32.const 2
   local.get $0
   call $call-rest/fn@varargs
@@ -2226,7 +2215,6 @@
   i32.store align=1
   i32.const 3
   global.set $~argumentsLength
-  i32.const 1
   i32.const 2
   local.get $0
   call $call-rest/fn@varargs

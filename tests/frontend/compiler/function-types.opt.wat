@@ -28,14 +28,10 @@
   i32.add
  )
  (func $function-types/makeAdder<i64>~anonymous|0 (param $0 i64) (param $1 i64) (result i64)
-  local.get $0
-  local.get $1
-  i64.add
+  unreachable
  )
  (func $function-types/makeAdder<f64>~anonymous|0 (param $0 f64) (param $1 f64) (result f64)
-  local.get $0
-  local.get $1
-  f64.add
+  unreachable
  )
  (func $function-types/doAddWithFn<i32> (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
@@ -47,48 +43,9 @@
  (func $~start
   i32.const 32
   global.set $function-types/i32Adder
-  i32.const 1
-  i32.const 2
-  call $function-types/makeAdder<i32>~anonymous|0
-  i32.const 3
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 11
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i64.const 10
-  i64.const 20
-  call $function-types/makeAdder<i64>~anonymous|0
-  i64.const 30
-  i64.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 15
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  f64.const 1.5
-  f64.const 2.5
-  call $function-types/makeAdder<f64>~anonymous|0
-  f64.const 4
-  f64.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 17
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
   i32.const 2
   i32.const 3
-  global.get $function-types/i32Adder
+  i32.const 32
   call $function-types/doAddWithFn<i32>
   i32.const 5
   i32.ne
@@ -96,19 +53,6 @@
    i32.const 0
    i32.const 64
    i32.const 23
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 3
-  i32.const 4
-  call $function-types/makeAdder<i32>~anonymous|0
-  i32.const 7
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 29
    i32.const 1
    call $~lib/builtins/abort
    unreachable

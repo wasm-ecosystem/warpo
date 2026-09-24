@@ -1,13 +1,13 @@
 (module
  (type $0 (func))
- (type $1 (func (param i32) (result i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32)))
- (type $4 (func (param i32 i32 i32) (result f64)))
- (type $5 (func (result i32)))
- (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (param i32 i32 i32)))
- (type $8 (func (param i32 i32 i64)))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32 i32 i32) (result f64)))
+ (type $4 (func (result i32)))
+ (type $5 (func (param i32 i32 i32 i32)))
+ (type $6 (func (param i32 i32 i32)))
+ (type $7 (func (param i32 i32 i64)))
+ (type $8 (func (param i32) (result i32)))
  (type $9 (func (param f64) (result f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
@@ -36,8 +36,6 @@
  (data $9.1 (i32.const 440) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $10 (i32.const 496) "\08\00\00\00 \00\00\00 \00\00\00 ")
  (data $10.1 (i32.const 520) " \00\00\00 \00\00\00 ")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $inlining/func_fe~anonymous|0)
  (export "test" (func $inlining/test))
  (export "foo" (func $inlining/foo))
  (export "bar" (func $inlining/bar))
@@ -45,9 +43,6 @@
  (start $~start)
  (func $inlining/test (result i32)
   i32.const 3
- )
- (func $inlining/func_fe~anonymous|0 (param $0 i32) (result i32)
-  local.get $0
  )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
@@ -1068,18 +1063,6 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  i32.const 2
-  call $inlining/func_fe~anonymous|0
-  i32.const 2
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 74
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
   memory.size
   i32.const 16
   i32.shl

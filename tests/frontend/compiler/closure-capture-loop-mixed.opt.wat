@@ -1670,7 +1670,6 @@
    i64.const 1
    i64.store
    local.get $1
-   local.tee $3
    local.get $2
    call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
    local.get $0
@@ -1687,19 +1686,17 @@
     i32.const 8
     i32.const 5
     call $~lib/rt/itcms/__new
-    local.tee $1
+    local.tee $3
     i32.const 2
     i32.store
-    local.get $1
+    local.get $3
     i32.const 4
     i32.add
-    local.get $3
-    i32.store
     local.get $1
-    local.set $3
+    i32.store
     local.get $0
     if
-     local.get $1
+     local.get $3
      global.set $closure-capture-loop-mixed/funcB2
     else
      local.get $3

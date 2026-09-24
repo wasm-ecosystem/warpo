@@ -215,6 +215,8 @@ static void optimize(AsModule const &m, Config const &config) {
     if (config.tailCall) {
       passRunner->add("tail-call");
     }
+    // Run the default Binaryen passes again at the end
+    passRunner->addDefaultOptimizationPasses();
     passRunner->run();
   }
   ensureValidate(*m.get());

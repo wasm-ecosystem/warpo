@@ -1,7 +1,7 @@
 (module
- (type $0 (func (param i32 i32 i32 i32)))
- (type $1 (func (param i32 i32) (result i32)))
- (type $2 (func))
+ (type $0 (func))
+ (type $1 (func (param i32 i32 i32 i32)))
+ (type $2 (func (param i32 i32) (result i32)))
  (type $3 (func (param i32 i32 f64 f64 f64 f64 f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
@@ -58,16 +58,9 @@
  (data $25.1 (i32.const 952) "\0c\00\00\00\08\00\00\00\02")
  (data $26 (i32.const 972) "\1c")
  (data $26.1 (i32.const 984) "\r\00\00\00\08\00\00\00\03")
- (table $0 4 4 funcref)
- (elem $0 (i32.const 1) $start:builtins~anonymous|0 $start:builtins~anonymous|1 $start:builtins~anonymous|2)
  (export "test" (func $start:builtins~anonymous|1))
  (export "memory" (memory $0))
  (start $~start)
- (func $start:builtins~anonymous|0 (param $0 i32) (param $1 i32) (result i32)
-  local.get $0
-  local.get $1
-  i32.add
- )
  (func $~lib/string/String.__eq (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (local $3 i32)
@@ -185,9 +178,6 @@
  )
  (func $start:builtins~anonymous|1
   nop
- )
- (func $start:builtins~anonymous|2 (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)
-  unreachable
  )
  (func $~start
   i32.const 1
@@ -360,9 +350,7 @@
   global.set $builtins/f
   f64.const 2
   global.set $builtins/F
-  global.get $builtins/f
-  global.get $builtins/f
-  f32.add
+  f32.const 2
   global.set $builtins/f
   f64.const 2
   global.set $builtins/F
@@ -526,32 +514,6 @@
   global.set $builtins/f
   f64.const 25
   global.set $builtins/F
-  i32.const 1
-  i32.const 2
-  call $start:builtins~anonymous|0
-  i32.const 3
-  i32.ne
-  if
-   i32.const 0
-   i32.const 96
-   i32.const 465
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 2
-  i32.const 3
-  call $start:builtins~anonymous|0
-  i32.const 5
-  i32.ne
-  if
-   i32.const 0
-   i32.const 96
-   i32.const 466
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
   i32.const 32
   i32.const 32
   call $~lib/string/String.__eq

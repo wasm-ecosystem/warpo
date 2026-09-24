@@ -1,8 +1,8 @@
 (module
- (type $0 (func))
- (type $1 (func (param i32 i32) (result i32)))
- (type $2 (func (param i32 i32 i32 i32)))
- (type $3 (func (param i32) (result i32)))
+ (type $0 (func (param i32 i32) (result i32)))
+ (type $1 (func (param i32 i32 i32 i32)))
+ (type $2 (func (param i32) (result i32)))
+ (type $3 (func))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
@@ -12,8 +12,6 @@
  (data $2.1 (i32.const 104) "\02\00\00\00\06\00\00\00f\006\004")
  (data $3 (i32.const 124) "\1c")
  (data $3.1 (i32.const 136) "\04\00\00\00\08\00\00\00\01")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $typealias/outer_function~inner_function)
  (export "alias" (func $typealias/alias))
  (export "memory" (memory $0))
  (start $~start)
@@ -132,20 +130,6 @@
   end
   i32.eqz
  )
- (func $typealias/outer_function~inner_function
-  i32.const 112
-  i32.const 112
-  call $~lib/string/String.__eq
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 17
-   i32.const 5
-   call $~lib/builtins/abort
-   unreachable
-  end
- )
  (func $typealias/alias (param $0 i32) (result i32)
   local.get $0
  )
@@ -162,6 +146,17 @@
    call $~lib/builtins/abort
    unreachable
   end
-  return_call $typealias/outer_function~inner_function
+  i32.const 112
+  i32.const 112
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 64
+   i32.const 17
+   i32.const 5
+   call $~lib/builtins/abort
+   unreachable
+  end
  )
 )
