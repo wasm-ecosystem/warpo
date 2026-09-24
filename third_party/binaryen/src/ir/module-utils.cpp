@@ -358,7 +358,7 @@ struct TypeInfos {
 
   // Multivalue control flow structures need a function type, but the identity
   // of the function type (i.e. what recursion group it is in or whether it is
-  // final) doesn't matter. Save them for the end to see if we can re-use an
+  // final) doesn't matter. Save them for the end to see if we can reuse an
   // existing function type with the necessary signature.
   InsertOrderedMap<Signature, size_t> controlFlowSignatures;
 
@@ -454,7 +454,6 @@ struct CodeScanner : PostWalker<CodeScanner> {
   void visitStructGet(StructGet* curr) { info.note(curr->ref->type); }
   void visitStructSet(StructSet* curr) { info.note(curr->ref->type); }
   void visitStructWait(StructWait* curr) { info.note(curr->ref->type); }
-  void visitStructNotify(StructNotify* curr) { info.note(curr->ref->type); }
   void visitArrayGet(ArrayGet* curr) { info.note(curr->ref->type); }
   void visitArraySet(ArraySet* curr) { info.note(curr->ref->type); }
   void visitContBind(ContBind* curr) {

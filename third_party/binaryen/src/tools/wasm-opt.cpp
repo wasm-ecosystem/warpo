@@ -74,7 +74,6 @@ willRemoveDebugInfo(const std::vector<OptimizationOptions::PassInfo>& passes) {
 //
 
 int main(int argc, const char* argv[]) {
-  Name entry;
   bool emitBinary = true;
   bool converge = false;
   bool fuzzExecBefore = false;
@@ -111,7 +110,7 @@ For more on how to optimize effectively, see
 
   https://github.com/WebAssembly/binaryen/wiki/Optimizer-Cookbook
   https://github.com/WebAssembly/binaryen/wiki/GC-Optimization-Guidebook
-                            )");
+)");
 
   options
     .add("--output",

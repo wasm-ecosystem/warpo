@@ -1475,17 +1475,6 @@
     br $for-loop|02
    end
   end
-  local.get $0
-  i32.const 10
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 35
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
   i32.const 1
   global.set $for/ran
   i32.const 0
@@ -1522,17 +1511,6 @@
    i32.const 10
    i32.ne
    br_if $for-loop|04
-  end
-  local.get $0
-  i32.const 10
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 57
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
   end
   i32.const 1
   global.set $for/ran

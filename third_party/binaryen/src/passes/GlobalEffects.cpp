@@ -138,10 +138,12 @@ std::map<Function*, FuncInfo> analyzeFuncs(Module& module,
         // below.
         funcInfo.effects->calls = false;
 
-        // Clear throws as well, as we are "forgetting" calls right now, and
-        // want to forget their throwing effect as well. If we see something
-        // else that throws, below, then we'll note that there.
+        // Clear throws and suspends as well, as we are "forgetting" calls right
+        // now, and want to forget their throwing and suspending effects as
+        // well. If we see something else that throws or suspends, below, then
+        // we'll note that there.
         funcInfo.effects->throws_ = false;
+        funcInfo.effects->suspends = false;
 
         struct CallScanner
           : public PostWalker<CallScanner,
@@ -179,11 +181,15 @@ std::map<Function*, FuncInfo> analyzeFuncs(Module& module,
               assert(options.worldMode == WorldMode::Open);
               funcInfo.effects = std::nullopt;
             } else {
-              // No call here, but update throwing if we see it. (Only do so,
-              // however, if we have effects; if we cleared it - see before -
-              // then we assume the worst anyhow, and have nothing to update.)
+              // No call here, but update throwing and suspending if we see it.
+              // (Only do so, however, if we have effects; if we cleared it -
+              // see before - then we assume the worst anyhow, and have nothing
+              // to update.)
               if (effects.throws_ && funcInfo.effects) {
                 funcInfo.effects->throws_ = true;
+              }
+              if (effects.suspends && funcInfo.effects) {
+                funcInfo.effects->suspends = true;
               }
             }
           }
@@ -321,9 +327,9 @@ void mergeMaybeEffects(std::shared_ptr<EffectAnalyzer>& dest,
   dest->mergeIn(*src);
 }
 
-// Propagate effects from callees to callers transitively
-// e.g. if A -> B -> C (A calls B which calls C)
-// Then B inherits effects from C and A inherits effects from both B and C.
+// Propagate effects from callees to callers transitively and populate direct
+// and indirect call effects. e.g. if A -> B -> C (A calls B which calls C),
+// then B inherits effects from C and A inherits effects from both B and C.
 //
 // Generate SCC for the call graph, then traverse it in reverse topological
 // order processing each callee before its callers. When traversing:
@@ -335,7 +341,7 @@ void propagateEffects(
   const PassOptions& passOptions,
   std::map<Function*, FuncInfo>& funcInfos,
   std::unordered_map<HeapType, std::shared_ptr<const EffectAnalyzer>>&
-    typeEffects,
+    indirectCallEffects,
   const CallGraph& callGraph) {
   // We only care about Functions that are roots, not types.
   // A type would be a root if a function exists with that type, but no-one
@@ -435,8 +441,8 @@ void propagateEffects(
     // Assign each function's effects to its CC effects.
     for (auto node : cc) {
       std::visit(overloaded{[&](HeapType type) {
-                              if (ccEffects != UnknownEffects) {
-                                typeEffects[type] = ccEffects;
+                              if (ccEffects) {
+                                indirectCallEffects[type] = ccEffects;
                               }
                             },
                             [&](Function* f) { f->effects = ccEffects; }},
@@ -455,6 +461,7 @@ struct GenerateGlobalEffects : public Pass {
     auto callGraph = buildCallGraph(
       *module, funcInfos, referencedFuncs, getPassOptions().worldMode);
 
+    module->indirectCallEffects.clear();
     propagateEffects(*module,
                      getPassOptions(),
                      funcInfos,
@@ -468,6 +475,7 @@ struct DiscardGlobalEffects : public Pass {
     for (auto& func : module->functions) {
       func->effects.reset();
     }
+    module->indirectCallEffects.clear();
   }
 };
 

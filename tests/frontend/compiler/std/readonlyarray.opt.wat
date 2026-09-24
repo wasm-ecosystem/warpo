@@ -2261,11 +2261,7 @@
   end
   local.get $0
   local.get $1
-  local.get $1
-  i32.const 10
-  i32.ge_u
-  i32.const 1
-  i32.add
+  i32.const 2
   local.get $1
   i32.const 10000
   i32.ge_u

@@ -1564,17 +1564,6 @@
    i32.ne
    br_if $while-continue|02
   end
-  local.get $0
-  i32.const 10
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 58
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
   i32.const 1
   global.set $while/ran
   i32.const 0
@@ -1852,32 +1841,10 @@
   global.set $~lib/memory/__stack_pointer
   i32.const 0
   global.set $while/ran
-  i32.const 0
-  local.set $0
-  loop $while-continue|07
-   local.get $0
-   i32.const 1
-   i32.add
-   local.tee $0
-   i32.const 0
-   i32.le_s
-   br_if $while-continue|07
-  end
   i32.const 1
   global.set $while/ran
   i32.const 0
   global.set $while/ran
-  i32.const 0
-  local.set $0
-  loop $while-continue|08
-   local.get $0
-   i32.const 1
-   i32.add
-   local.tee $0
-   i32.const 0
-   i32.le_s
-   br_if $while-continue|08
-  end
   i32.const 1
   global.set $while/ran
   i32.const 0
