@@ -1589,7 +1589,6 @@
   i64.const 1
   i64.store
   local.get $0
-  local.tee $1
   i32.const 0
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   local.get $0
@@ -1600,18 +1599,18 @@
   i32.const 8
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $1
   i32.const 1
   i32.store
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
-  local.get $1
-  i32.store
   local.get $0
+  i32.store
+  local.get $1
   i32.load offset=4
   global.set $~lib/rt/closure/env
-  local.get $0
+  local.get $1
   i32.load
   return_call_indirect (type $3)
  )

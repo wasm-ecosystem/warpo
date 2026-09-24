@@ -8,7 +8,6 @@
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $for/ran (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -1374,8 +1373,6 @@
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  i32.const 0
-  global.set $for/ran
   loop $for-loop|0
    local.get $0
    i32.const 10
@@ -1399,10 +1396,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   i32.const 0
   local.set $0
   loop $for-loop|00
@@ -1428,10 +1421,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   i32.const 10
   local.set $0
   loop $for-loop|01
@@ -1455,10 +1444,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   i32.const 0
   local.set $0
   loop $for-loop|02
@@ -1473,10 +1458,6 @@
     br $for-loop|02
    end
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   i32.const 10
   local.set $0
   loop $for-loop|03
@@ -1495,10 +1476,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   i32.const 0
   local.set $0
   loop $for-loop|04
@@ -1510,14 +1487,6 @@
    i32.ne
    br_if $for-loop|04
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   i32.const 0
   local.set $0
   loop $for-loop|05
@@ -1543,18 +1512,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   i32.const 0
   local.set $0
   loop $for-loop|06
@@ -1630,10 +1587,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
-  i32.const 0
-  global.set $for/ran
   memory.size
   i32.const 16
   i32.shl
@@ -1727,14 +1680,10 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  i32.const 0
-  global.set $for/ran
   i32.const 0
   local.set $1
   global.get $~lib/memory/__stack_pointer
@@ -1801,8 +1750,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $for/ran
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add

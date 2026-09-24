@@ -1,7 +1,6 @@
 (module
  (type $0 (func (param i64) (result i64)))
  (type $1 (func))
- (global $const-folding/w (mut i32) (i32.const 0))
  (global $const-folding/x (mut i32) (i32.const 0))
  (memory $0 0)
  (export "x" (global $const-folding/x))
@@ -18,10 +17,6 @@
   i64.add
  )
  (func $~start
-  i32.const 21
-  global.set $const-folding/w
-  i32.const 30
-  global.set $const-folding/w
   i32.const 30
   global.set $const-folding/x
  )

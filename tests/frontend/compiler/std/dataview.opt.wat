@@ -1914,8 +1914,6 @@
   i32.const 8
   i32.shl
   local.get $0
-  i32.const 65535
-  i32.and
   i32.const 8
   i32.shr_u
   i32.or

@@ -1621,12 +1621,7 @@
    i32.sub
    i32.load
    i32.const 5
-   i32.ne
-   if (result i32)
-    i32.const 0
-   else
-    i32.const 1
-   end
+   i32.eq
   else
    i32.const 0
   end
@@ -1670,12 +1665,7 @@
    i32.sub
    i32.load
    i32.const 5
-   i32.ne
-   if (result i32)
-    i32.const 0
-   else
-    i32.const 1
-   end
+   i32.eq
   else
    i32.const 0
   end

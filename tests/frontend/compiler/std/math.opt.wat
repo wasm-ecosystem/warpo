@@ -11111,23 +11111,19 @@
   i64.const 32
   i64.shr_u
   i32.wrap_i64
-  local.tee $3
+  local.tee $7
   i32.const 2147483647
   i32.and
-  local.tee $6
+  local.tee $3
   i32.const 1072243195
   i32.le_u
-  local.get $6
+  local.get $3
   i32.const 2139095040
   i32.ge_u
   i32.or
   i32.eqz
   if
    block $__inlined_func$~lib/math/rempio2$3 (result i32)
-    local.get $3
-    i32.const 31
-    i32.shr_u
-    local.set $7
     local.get $0
     i64.const 32
     i64.shr_u
@@ -11141,6 +11137,8 @@
      i32.const 1
      local.set $6
      local.get $7
+     i32.const 31
+     i32.shr_u
      if (result f64)
       local.get $1
       f64.const 1.5707963267341256
@@ -11321,11 +11319,6 @@
     call $~lib/math/pio2_large_quot
    end
    drop
-   global.get $~lib/math/rempio2_y0
-   local.tee $2
-   local.get $2
-   f64.mul
-   local.set $1
   end
  )
  (func $~lib/math/dtoi32 (param $0 f64) (result i32)
@@ -35541,12 +35534,8 @@
   f64.const 0
   f64.const 1
   call $~lib/math/NativeMath.pow
-  local.set $0
-  i32.const 0
-  local.get $0
   i64.reinterpret_f64
   i64.eqz
-  i32.or
   i32.eqz
   if
    i32.const 0
@@ -35559,14 +35548,9 @@
   f64.const -0
   f64.const 1
   call $~lib/math/NativeMath.pow
-  local.set $0
-  i32.const 0
-  local.get $0
   i64.reinterpret_f64
   i64.const -9223372036854775808
-  i64.eq
-  i32.or
-  i32.eqz
+  i64.ne
   if
    i32.const 0
    i32.const 32
@@ -35696,12 +35680,8 @@
   f64.const inf
   f64.const -1
   call $~lib/math/NativeMath.pow
-  local.set $0
-  i32.const 0
-  local.get $0
   i64.reinterpret_f64
   i64.eqz
-  i32.or
   i32.eqz
   if
    i32.const 0
@@ -35714,14 +35694,9 @@
   f64.const -inf
   f64.const -1
   call $~lib/math/NativeMath.pow
-  local.set $0
-  i32.const 0
-  local.get $0
   i64.reinterpret_f64
   i64.const -9223372036854775808
-  i64.eq
-  i32.or
-  i32.eqz
+  i64.ne
   if
    i32.const 0
    i32.const 32

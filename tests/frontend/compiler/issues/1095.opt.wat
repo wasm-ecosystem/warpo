@@ -1,7 +1,7 @@
 (module
- (type $0 (func (param i32)))
- (type $1 (func (param i32 i32)))
- (type $2 (func))
+ (type $0 (func (param i32 i32)))
+ (type $1 (func))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32 i32 i32)))
  (type $4 (func (param i32 i32 i32)))
  (type $5 (func (param i32 i32 i64)))
@@ -265,28 +265,6 @@
     i32.and
     local.set $0
     br $while-continue|0
-   end
-  end
- )
- (func $~lib/rt/itcms/__visit (param $0 i32)
-  local.get $0
-  if
-   global.get $~lib/rt/itcms/white
-   local.get $0
-   i32.const 20
-   i32.sub
-   local.tee $0
-   i32.load offset=4
-   i32.const 3
-   i32.and
-   i32.eq
-   if
-    local.get $0
-    call $~lib/rt/itcms/Object#makeGray
-    global.get $~lib/rt/itcms/visitCount
-    i32.const 1
-    i32.add
-    global.set $~lib/rt/itcms/visitCount
    end
   end
  )
@@ -954,7 +932,27 @@
    end
    local.get $0
    i32.load
-   return_call $~lib/rt/itcms/__visit
+   local.tee $0
+   if
+    global.get $~lib/rt/itcms/white
+    local.get $0
+    i32.const 20
+    i32.sub
+    local.tee $0
+    i32.load offset=4
+    i32.const 3
+    i32.and
+    i32.eq
+    if
+     local.get $0
+     call $~lib/rt/itcms/Object#makeGray
+     global.get $~lib/rt/itcms/visitCount
+     i32.const 1
+     i32.add
+     global.set $~lib/rt/itcms/visitCount
+    end
+   end
+   return
   end
   unreachable
  )

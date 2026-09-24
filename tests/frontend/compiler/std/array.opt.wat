@@ -4695,8 +4695,7 @@
   return_call $~lib/util/number/itoa32
  )
  (func $start:std/array~anonymous|26 (param $0 i32) (param $1 i32) (param $2 i32) (result f32)
-  local.get $0
-  f32.convert_i32_s
+  unreachable
  )
  (func $start:std/array~anonymous|27 (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $2
@@ -7649,27 +7648,27 @@
   call $~lib/rt/__decrease_sp
   local.get $0
   call $~lib/array/Array<i32>#constructor@new
-  local.set $2
+  local.set $1
   global.get $~lib/memory/__stack_pointer
-  local.get $2
+  local.get $1
   i32.store align=1
   loop $for-loop|0
    local.get $0
-   local.get $1
+   local.get $2
    i32.gt_s
    if
-    local.get $2
     local.get $1
+    local.get $2
     call $~lib/math/NativeMath.random
     local.get $0
     f64.convert_i32_s
     f64.mul
     i32.trunc_f64_s
     call $~lib/array/Array<i32>#__set
-    local.get $1
+    local.get $2
     i32.const 1
     i32.add
-    local.set $1
+    local.set $2
     br $for-loop|0
    end
   end
@@ -7677,7 +7676,7 @@
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $2
+  local.get $1
  )
  (func $std/array/assertSorted<i32> (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -7755,27 +7754,27 @@
   i32.sub
   i32.const 1
   i32.add
-  local.tee $5
+  local.tee $6
   local.get $3
   i32.sub
   i32.const 1
   i32.and
   i32.sub
-  local.get $5
+  local.get $6
   i32.const 1
   i32.and
   local.get $3
   select
   i32.add
-  local.set $6
+  local.set $7
   loop $for-loop|0
    local.get $2
-   local.get $6
+   local.get $7
    i32.ge_s
    if
     global.get $~lib/memory/__stack_pointer
     local.get $0
-    local.get $6
+    local.get $7
     i32.const 2
     i32.shl
     i32.add
@@ -7792,7 +7791,7 @@
     local.get $3
     i32.store offset=8 align=1
     local.get $3
-    local.set $8
+    local.set $6
     global.get $~lib/memory/__stack_pointer
     local.get $5
     i32.store offset=28 align=1
@@ -7810,14 +7809,14 @@
      local.get $5
      i32.store offset=4 align=1
      local.get $5
-     local.set $8
+     local.set $6
      global.get $~lib/memory/__stack_pointer
      local.get $3
      i32.store align=1
      local.get $3
      local.set $5
     end
-    local.get $6
+    local.get $7
     i32.const 1
     i32.sub
     local.set $3
@@ -7833,13 +7832,13 @@
        i32.const 2
        i32.shl
        i32.add
-       local.tee $9
+       local.tee $8
        i32.load
-       local.tee $7
+       local.tee $9
        i32.store offset=32 align=1
        i32.const 2
        global.set $~argumentsLength
-       local.get $7
+       local.get $9
        local.get $5
        local.get $4
        i32.load
@@ -7847,8 +7846,8 @@
        i32.const 0
        i32.le_s
        br_if $while-break|1
+       local.get $8
        local.get $9
-       local.get $7
        i32.store offset=8
        local.get $3
        i32.const 1
@@ -7877,22 +7876,22 @@
        i32.const 2
        i32.shl
        i32.add
-       local.tee $7
-       i32.load
        local.tee $5
+       i32.load
+       local.tee $8
        i32.store offset=28 align=1
        i32.const 2
        global.set $~argumentsLength
-       local.get $5
        local.get $8
+       local.get $6
        local.get $4
        i32.load
        call_indirect (type $0)
        i32.const 0
        i32.le_s
        br_if $while-break|2
-       local.get $7
        local.get $5
+       local.get $8
        i32.store offset=4
        local.get $3
        i32.const 1
@@ -7907,12 +7906,12 @@
     i32.const 2
     i32.shl
     i32.add
-    local.get $8
-    i32.store offset=4
     local.get $6
+    i32.store offset=4
+    local.get $7
     i32.const 2
     i32.add
-    local.set $6
+    local.set $7
     br $for-loop|0
    end
   end
@@ -8915,47 +8914,46 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
+  local.get $1
+  i32.const 0
+  local.get $1
+  i32.const 0
+  i32.gt_s
+  select
+  local.tee $1
   local.get $0
   i32.const 20
   i32.sub
   i32.load offset=16
   i32.const 1
   i32.shr_u
-  local.set $2
-  i32.const 0
-  local.get $1
-  i32.const 0
-  local.get $1
-  i32.const 0
-  i32.gt_s
-  select
-  local.tee $1
-  local.get $2
-  local.get $1
-  local.get $2
-  i32.lt_s
-  select
-  local.tee $4
-  local.tee $1
+  local.tee $3
   local.get $1
   local.get $3
-  i32.gt_s
+  i32.lt_s
+  select
+  local.tee $2
+  local.tee $1
+  i32.const 0
+  local.get $1
+  i32.const 0
+  i32.le_s
   select
   i32.const 1
   i32.shl
   local.set $1
-  local.get $3
-  local.get $4
-  local.get $3
-  local.get $4
-  i32.gt_s
+  local.get $2
+  i32.const 0
+  local.get $2
+  i32.const 0
+  i32.ge_s
   select
   i32.const 1
   i32.shl
   local.tee $4
   local.get $1
   i32.sub
-  local.tee $3
+  local.tee $2
   i32.eqz
   if
    i32.const 10512
@@ -8964,7 +8962,7 @@
   local.get $1
   i32.eqz
   local.get $4
-  local.get $2
+  local.get $3
   i32.const 1
   i32.shl
   i32.eq
@@ -8973,16 +8971,16 @@
    local.get $0
    return
   end
-  local.get $3
+  local.get $2
   i32.const 2
   call $~lib/rt/itcms/__new
-  local.tee $2
+  local.tee $3
   local.get $0
   local.get $1
   i32.add
-  local.get $3
-  memory.copy
   local.get $2
+  memory.copy
+  local.get $3
  )
  (func $~lib/util/number/itoa_buffered<i32> (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -16677,9 +16675,7 @@
      i32.load offset=4
      i32.add
      i32.load
-     local.get $1
-     local.get $0
-     call $start:std/array~anonymous|25
+     call $~lib/util/number/itoa32
      local.tee $5
      i32.store
      local.get $2
@@ -16699,30 +16695,30 @@
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   local.tee $0
+   local.tee $2
    i32.store align=1
    i32.const 0
    local.set $1
    i32.const 4
    call $~lib/rt/__decrease_sp
-   local.get $0
+   local.get $2
    i32.load offset=12
    local.tee $3
    i32.const 2
    i32.const 9
    i32.const 0
    call $~lib/rt/__newArray
-   local.set $2
+   local.set $0
    global.get $~lib/memory/__stack_pointer
-   local.get $2
+   local.get $0
    i32.store align=1
-   local.get $2
+   local.get $0
    i32.load offset=4
    local.set $4
    loop $for-loop|05
     local.get $1
     local.get $3
-    local.get $0
+    local.get $2
     i32.load offset=12
     local.tee $5
     local.get $3
@@ -16738,13 +16734,11 @@
      local.tee $5
      i32.add
      local.get $5
-     local.get $0
+     local.get $2
      i32.load offset=4
      i32.add
      i32.load
-     local.get $1
-     local.get $0
-     call $start:std/array~anonymous|26
+     f32.convert_i32_s
      f32.store
      local.get $1
      i32.const 1
@@ -16757,7 +16751,7 @@
    i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $2
+   local.get $0
    i32.load offset=12
    i32.const 4
    i32.ne
@@ -16769,7 +16763,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $2
+   local.get $0
    i32.const 0
    call $~lib/array/Array<f32>#__get
    global.get $std/array/arr
@@ -22043,11 +22037,11 @@
    local.get $1
    local.get $2
    i32.and
-   local.tee $3
+   local.tee $2
    call $~lib/util/number/decimalCount32
    local.set $1
    local.get $0
-   local.get $3
+   local.get $2
    local.get $1
    call $~lib/util/number/utoa32_dec_lut
    local.get $1

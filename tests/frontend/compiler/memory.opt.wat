@@ -157,21 +157,8 @@
   global.set $memory/ptr
   i32.const 152
   global.set $memory/ptr
-  global.get $memory/ptr
-  i32.const 4
-  i32.add
   i32.const 156
   global.set $memory/ptr
-  i32.const 156
-  i32.ne
-  if
-   i32.const 0
-   i32.const 48
-   i32.const 36
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
   global.get $memory/ptr
   i32.const 2
   i32.add
@@ -295,21 +282,8 @@
   global.set $memory/ptr
   i32.const 200
   global.set $memory/ptr
-  global.get $memory/ptr
-  i32.const 4
-  i32.add
   i32.const 204
   global.set $memory/ptr
-  i32.const 204
-  i32.ne
-  if
-   i32.const 0
-   i32.const 48
-   i32.const 58
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
   global.get $memory/ptr
   i32.const 2
   i32.add
