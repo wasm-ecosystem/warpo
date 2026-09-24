@@ -1792,9 +1792,12 @@
  )
  (func $~lib/math/ipow32 (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
-  block $~CONDITION_RETURN/~lib/math/ipow32 (result i32)
-   i32.const 1
-   local.set $2
+  i32.const 1
+  local.set $2
+  local.get $0
+  i32.const 2
+  i32.eq
+  if
    i32.const 1
    local.get $1
    i32.shl
@@ -1803,14 +1806,15 @@
    i32.const 32
    i32.lt_u
    select
+   return
+  end
+  local.get $1
+  i32.const 0
+  i32.le_s
+  if
    local.get $0
-   i32.const 2
+   i32.const -1
    i32.eq
-   br_if $~CONDITION_RETURN/~lib/math/ipow32
-   drop
-   local.get $1
-   i32.const 0
-   i32.le_s
    if
     i32.const -1
     i32.const 1
@@ -1818,71 +1822,50 @@
     i32.const 1
     i32.and
     select
+    return
+   end
+   local.get $1
+   i32.eqz
+   local.get $0
+   i32.const 1
+   i32.eq
+   i32.or
+   return
+  else
+   local.get $1
+   i32.const 1
+   i32.eq
+   if
     local.get $0
-    i32.const -1
-    i32.eq
-    br_if $~CONDITION_RETURN/~lib/math/ipow32
-    drop
-    local.get $1
-    i32.eqz
-    local.get $0
-    i32.const 1
-    i32.eq
-    i32.or
     return
    else
     local.get $1
-    i32.const 1
+    i32.const 2
     i32.eq
     if
      local.get $0
+     local.get $0
+     i32.mul
      return
     else
      local.get $1
-     i32.const 2
-     i32.eq
+     i32.const 32
+     i32.lt_s
      if
-      local.get $0
-      local.get $0
-      i32.mul
-      return
-     else
-      local.get $1
-      i32.const 32
-      i32.lt_s
-      if
-       block $break|0
-        block $case4|0
-         block $case3|0
-          block $case2|0
-           block $case1|0
-            block $case0|0
-             i32.const 31
-             local.get $1
-             i32.clz
-             i32.sub
-             br_table $case4|0 $case3|0 $case2|0 $case1|0 $case0|0 $break|0
-            end
-            local.get $0
-            i32.const 1
+      block $break|0
+       block $case4|0
+        block $case3|0
+         block $case2|0
+          block $case1|0
+           block $case0|0
+            i32.const 31
             local.get $1
-            i32.const 1
-            i32.and
-            select
-            local.set $2
-            local.get $1
-            i32.const 1
-            i32.shr_u
-            local.set $1
-            local.get $0
-            local.get $0
-            i32.mul
-            local.set $0
+            i32.clz
+            i32.sub
+            br_table $case4|0 $case3|0 $case2|0 $case1|0 $case0|0 $break|0
            end
            local.get $0
-           local.get $2
-           i32.mul
-           local.get $2
+           i32.const 1
            local.get $1
            i32.const 1
            i32.and
@@ -1942,38 +1925,55 @@
         i32.and
         select
         local.set $2
+        local.get $1
+        i32.const 1
+        i32.shr_u
+        local.set $1
+        local.get $0
+        local.get $0
+        i32.mul
+        local.set $0
        end
+       local.get $0
        local.get $2
-       return
+       i32.mul
+       local.get $2
+       local.get $1
+       i32.const 1
+       i32.and
+       select
+       local.set $2
       end
+      local.get $2
+      return
      end
     end
    end
-   loop $while-continue|1
-    local.get $1
-    if
-     local.get $0
-     local.get $2
-     i32.mul
-     local.get $2
-     local.get $1
-     i32.const 1
-     i32.and
-     select
-     local.set $2
-     local.get $1
-     i32.const 1
-     i32.shr_u
-     local.set $1
-     local.get $0
-     local.get $0
-     i32.mul
-     local.set $0
-     br $while-continue|1
-    end
-   end
-   local.get $2
   end
+  loop $while-continue|1
+   local.get $1
+   if
+    local.get $0
+    local.get $2
+    i32.mul
+    local.get $2
+    local.get $1
+    i32.const 1
+    i32.and
+    select
+    local.set $2
+    local.get $1
+    i32.const 1
+    i32.shr_u
+    local.set $1
+    local.get $0
+    local.get $0
+    i32.mul
+    local.set $0
+    br $while-continue|1
+   end
+  end
+  local.get $2
  )
  (func $~lib/string/String.__eq (param $0 i32) (result i32)
   (local $1 i32)

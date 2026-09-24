@@ -2025,16 +2025,18 @@
   global.set $issues/2730/boxCalls
   global.get $issues/2730/box
   local.tee $0
-  i32.const 4
   local.get $0
   i32.load
   local.tee $0
-  local.get $0
-  i32.mul
-  local.get $0
   i32.const 2
   i32.eq
-  select
+  if (result i32)
+   i32.const 4
+  else
+   local.get $0
+   local.get $0
+   i32.mul
+  end
   i32.store
   global.get $issues/2730/box
   i32.load

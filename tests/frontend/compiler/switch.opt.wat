@@ -1998,27 +1998,27 @@
   i32.const 3
  )
  (func $switch/BarClass.__eq (param $0 i32) (param $1 i32) (result i32)
-  block $~CONDITION_RETURN/switch/BarClass.__eq (result i32)
+  local.get $0
+  local.get $1
+  i32.eq
+  if
    i32.const 1
-   local.get $0
-   local.get $1
-   i32.eq
-   br_if $~CONDITION_RETURN/switch/BarClass.__eq
-   drop
-   i32.const 0
-   local.get $1
-   i32.eqz
-   local.get $0
-   i32.eqz
-   i32.or
-   br_if $~CONDITION_RETURN/switch/BarClass.__eq
-   drop
-   local.get $0
-   i32.load
-   local.get $1
-   i32.load
-   i32.eq
+   return
   end
+  local.get $1
+  i32.eqz
+  local.get $0
+  i32.eqz
+  i32.or
+  if
+   i32.const 0
+   return
+  end
+  local.get $0
+  i32.load
+  local.get $1
+  i32.load
+  i32.eq
  )
  (func $switch/doSwitchClassInstanceWithOverload (param $0 i32) (result i32)
   (local $1 i32)

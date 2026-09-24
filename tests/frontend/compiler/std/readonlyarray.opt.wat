@@ -2079,46 +2079,46 @@
  (func $~lib/array/Array<i32>#indexOf (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (local $3 i32)
-  block $~CONDITION_RETURN/~lib/array/Array<i32>#indexOf (result i32)
+  local.get $0
+  i32.load offset=12
+  local.tee $3
+  i32.eqz
+  local.get $3
+  i32.const 0
+  i32.le_s
+  i32.or
+  if
    i32.const -1
-   local.get $0
-   i32.load offset=12
-   local.tee $3
-   i32.eqz
+   return
+  end
+  local.get $0
+  i32.load offset=4
+  local.set $0
+  loop $while-continue|0
+   local.get $2
    local.get $3
-   i32.const 0
-   i32.le_s
-   i32.or
-   br_if $~CONDITION_RETURN/~lib/array/Array<i32>#indexOf
-   drop
-   local.get $0
-   i32.load offset=4
-   local.set $0
-   loop $while-continue|0
+   i32.lt_s
+   if
+    local.get $0
     local.get $2
-    local.get $3
-    i32.lt_s
+    i32.const 2
+    i32.shl
+    i32.add
+    i32.load
+    local.get $1
+    i32.eq
     if
      local.get $2
-     local.get $0
-     local.get $2
-     i32.const 2
-     i32.shl
-     i32.add
-     i32.load
-     local.get $1
-     i32.eq
-     br_if $~CONDITION_RETURN/~lib/array/Array<i32>#indexOf
-     drop
-     local.get $2
-     i32.const 1
-     i32.add
-     local.set $2
-     br $while-continue|0
+     return
     end
+    local.get $2
+    i32.const 1
+    i32.add
+    local.set $2
+    br $while-continue|0
    end
-   i32.const -1
   end
+  i32.const -1
  )
  (func $~lib/util/number/utoa32_dec_lut (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
@@ -2511,7 +2511,7 @@
    local.get $7
    i32.lt_s
    if
-    block $~CONDITION_RETURN/~lib/string/String#substring (result i32)
+    block $__inlined_func$~lib/string/String#substring$145 (result i32)
      local.get $0
      i32.const 20
      i32.sub
@@ -2556,7 +2556,7 @@
      i32.sub
      local.tee $2
      i32.eqz
-     br_if $~CONDITION_RETURN/~lib/string/String#substring
+     br_if $__inlined_func$~lib/string/String#substring$145
      drop
      local.get $0
      local.get $3
@@ -2567,7 +2567,7 @@
      i32.shl
      i32.eq
      i32.and
-     br_if $~CONDITION_RETURN/~lib/string/String#substring
+     br_if $__inlined_func$~lib/string/String#substring$145
      drop
      local.get $2
      i32.const 2
@@ -3149,13 +3149,13 @@
    i32.const 4
    i32.eq
    if
-    block $~CONDITION_RETURN/~lib/array/Array<i32>#lastIndexOf (result i32)
+    block $__inlined_func$~lib/array/Array<i32>#lastIndexOf$184 (result i32)
      i32.const -1
      local.get $1
      i32.load offset=12
      local.tee $0
      i32.eqz
-     br_if $~CONDITION_RETURN/~lib/array/Array<i32>#lastIndexOf
+     br_if $__inlined_func$~lib/array/Array<i32>#lastIndexOf$184
      drop
      local.get $0
      i32.const 1
@@ -3178,7 +3178,7 @@
        i32.load
        i32.const 2
        i32.eq
-       br_if $~CONDITION_RETURN/~lib/array/Array<i32>#lastIndexOf
+       br_if $__inlined_func$~lib/array/Array<i32>#lastIndexOf$184
        drop
        local.get $0
        i32.const 1

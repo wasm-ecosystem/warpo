@@ -2733,7 +2733,7 @@
   call $~lib/rt/itcms/__link
   i32.const 0
   local.set $0
-  block $~CONDITION_RETURN/~lib/util/string/joinStringArray (result i32)
+  block $__inlined_func$~lib/util/string/joinStringArray$145 (result i32)
    i32.const 1024
    i32.const 988
    i32.load
@@ -2745,7 +2745,7 @@
    local.tee $2
    i32.const 0
    i32.lt_s
-   br_if $~CONDITION_RETURN/~lib/util/string/joinStringArray
+   br_if $__inlined_func$~lib/util/string/joinStringArray$145
    drop
    local.get $2
    i32.eqz
@@ -2758,7 +2758,7 @@
     else
      i32.const 1024
     end
-    br $~CONDITION_RETURN/~lib/util/string/joinStringArray
+    br $__inlined_func$~lib/util/string/joinStringArray$145
    end
    loop $for-loop|0
     local.get $0

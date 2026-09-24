@@ -20,7 +20,7 @@
   (local $7 f64)
   (local $8 i64)
   (local $9 i64)
-  block $~CONDITION_RETURN/std/mod/check<f64> (result i32)
+  block $__inlined_func$std/mod/check<f64> (result i32)
    block $~CONDITION_RETURN/~lib/math/NativeMath.mod (result f64)
     local.get $0
     local.get $0
@@ -223,7 +223,7 @@
    local.get $2
    local.get $2
    f64.ne
-   br_if $~CONDITION_RETURN/std/mod/check<f64>
+   br_if $__inlined_func$std/mod/check<f64>
    drop
    f64.const 1
    local.get $2
@@ -235,14 +235,14 @@
    local.get $2
    f64.const 0
    f64.eq
-   br_if $~CONDITION_RETURN/std/mod/check<f64>
+   br_if $__inlined_func$std/mod/check<f64>
    drop
    local.get $2
    local.get $7
    f64.eq
   end
   if (result i32)
-   block $~CONDITION_RETURN/std/mod/check<f64>0 (result i32)
+   block $__inlined_func$std/mod/check<f64>$1 (result i32)
     local.get $0
     local.get $1
     call $std/mod/mod
@@ -252,7 +252,7 @@
     local.get $2
     local.get $2
     f64.ne
-    br_if $~CONDITION_RETURN/std/mod/check<f64>0
+    br_if $__inlined_func$std/mod/check<f64>$1
     drop
     f64.const 1
     local.get $2
@@ -264,7 +264,7 @@
     local.get $2
     f64.const 0
     f64.eq
-    br_if $~CONDITION_RETURN/std/mod/check<f64>0
+    br_if $__inlined_func$std/mod/check<f64>$1
     drop
     local.get $0
     local.get $2
@@ -281,7 +281,7 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  block $~CONDITION_RETURN/std/mod/check<f32> (result i32)
+  block $__inlined_func$std/mod/check<f32>$2 (result i32)
    block $~CONDITION_RETURN/~lib/math/NativeMathf.mod (result f32)
     local.get $0
     local.get $0
@@ -480,7 +480,7 @@
    local.get $2
    local.get $2
    f32.ne
-   br_if $~CONDITION_RETURN/std/mod/check<f32>
+   br_if $__inlined_func$std/mod/check<f32>$2
    drop
    f32.const 1
    local.get $2
@@ -492,7 +492,7 @@
    local.get $2
    f32.const 0
    f32.eq
-   br_if $~CONDITION_RETURN/std/mod/check<f32>
+   br_if $__inlined_func$std/mod/check<f32>$2
    drop
    local.get $0
    local.get $2

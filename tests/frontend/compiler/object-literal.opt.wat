@@ -1837,7 +1837,7 @@
   i32.const 123
   i32.store
   local.get $0
-  block $~CONDITION_RETURN/~lib/string/String#substring (result i32)
+  block $__inlined_func$~lib/string/String#substring$109 (result i32)
    i32.const 28
    i32.load
    i32.const 1
@@ -1873,7 +1873,7 @@
    i32.sub
    local.tee $2
    i32.eqz
-   br_if $~CONDITION_RETURN/~lib/string/String#substring
+   br_if $__inlined_func$~lib/string/String#substring$109
    drop
    i32.const 32
    local.get $3
@@ -1884,7 +1884,7 @@
    i32.shl
    i32.eq
    i32.and
-   br_if $~CONDITION_RETURN/~lib/string/String#substring
+   br_if $__inlined_func$~lib/string/String#substring$109
    drop
    local.get $2
    i32.const 2
