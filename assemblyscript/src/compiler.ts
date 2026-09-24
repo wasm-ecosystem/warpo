@@ -418,6 +418,13 @@ class LoopClosureTupleInfo {
   ) {}
 }
 
+class DeferredObjectLiteralSetter {
+  constructor(
+    public setterInstance: Function,
+    public valueLocal: Local
+  ) {}
+}
+
 /** Compiler interface. */
 export class Compiler extends DiagnosticEmitter {
   /** Program reference. */
@@ -10011,7 +10018,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     // Iterate through the members defined in our expression
-    let deferredProperties = new Array<Property>();
+    let deferredSetters = new Array<DeferredObjectLiteralSetter>();
     for (let i = 0; i < numNames; ++i) {
       let memberName = names[i].text;
       let member = classReference.getMember(memberName);
@@ -10064,7 +10071,16 @@ export class Compiler extends DiagnosticEmitter {
 
       // Defer real properties to be set after fields are initialized
       if (!propertyInstance.isField) {
-        deferredProperties.push(propertyInstance);
+        let propertyType = propertyInstance.type;
+        let valueLocal = flow.getTempLocal(propertyType);
+        exprs.push(
+          module.local_set(
+            valueLocal.index,
+            this.compileExpression(values[i], propertyType, Constraints.ConvImplicit),
+            propertyType.isManaged
+          )
+        );
+        deferredSetters.push(new DeferredObjectLiteralSetter(setterInstance, valueLocal));
         continue;
       }
 
@@ -10086,15 +10102,16 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     // Call deferred real property setters after
-    for (let i = 0, k = deferredProperties.length; i < k; ++i) {
-      let propertyInstance = deferredProperties[i];
-      let setterInstance = assert(propertyInstance.setterInstance);
+    for (let i = 0, k = deferredSetters.length; i < k; ++i) {
+      let deferredSetter = deferredSetters[i];
+      let setterInstance = deferredSetter.setterInstance;
+      let valueLocal = deferredSetter.valueLocal;
       exprs.push(
         this.makeCallDirect(
           setterInstance,
           [
             module.local_get(tempLocal.index, classTypeRef),
-            this.compileExpression(values[i], propertyInstance.type, Constraints.ConvImplicit),
+            module.local_get(valueLocal.index, valueLocal.type.toRef()),
           ],
           setterInstance.identifierNode
         )
