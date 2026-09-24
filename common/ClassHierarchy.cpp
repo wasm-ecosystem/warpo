@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
+#include <unordered_set>
 
 #include "warpo/common/ClassHierarchy.hpp"
 
@@ -30,18 +31,18 @@ std::vector<std::string_view> ClassHierarchy::getAncestors(std::string_view cons
 }
 
 std::vector<std::string_view> ClassHierarchy::getDescendants(std::string_view const className) const {
-  std::vector<std::string_view> descendants;
+  std::unordered_set<std::string_view> descendants;
   std::vector<std::string_view> pending = getDirectSubclasses(className);
   while (!pending.empty()) {
     std::string_view const child = pending.back();
     pending.pop_back();
-    if (std::find(descendants.begin(), descendants.end(), child) != descendants.end())
+    if (descendants.contains(child))
       continue;
-    descendants.push_back(child);
+    descendants.insert(child);
     std::vector<std::string_view> directChildren = getDirectSubclasses(child);
     pending.insert(pending.end(), directChildren.begin(), directChildren.end());
   }
-  return descendants;
+  return std::vector<std::string_view>(descendants.begin(), descendants.end());
 }
 
 std::string_view ClassHierarchy::getParentClass(std::string_view const className) const noexcept {

@@ -32,12 +32,12 @@ void VariableInfo::addFieldDeclaration(std::string_view const className, std::st
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
   if (classIt != classRegistry_.end()) {
     classIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0, redeclared);
-    return;
-  }
+  } else {
 
-  InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
-  assert(interfaceIt != interfaceRegistry_.end());
-  interfaceIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0, redeclared);
+    InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
+    assert(interfaceIt != interfaceRegistry_.end());
+    interfaceIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0, redeclared);
+  }
 }
 
 void VariableInfo::createBaseType(std::string_view typeName) {
