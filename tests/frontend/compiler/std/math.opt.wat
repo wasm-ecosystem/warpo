@@ -280,31 +280,15 @@
    br_if $~CONDITION_RETURN/std/math/check<f64>
    drop
    i32.const 0
-   block $__inlined_func$std/math/ulperr$43 (result f64)
+   local.get $4
+   local.get $5
+   i32.and
+   if (result f64)
     f64.const 0
-    local.get $4
-    local.get $5
-    i32.and
-    br_if $__inlined_func$std/math/ulperr$43
-    drop
+   else
     local.get $3
     if
-     local.get $2
-     local.get $0
-     i64.reinterpret_f64
-     i64.const 63
-     i64.shr_u
-     i32.wrap_i64
-     local.get $1
-     i64.reinterpret_f64
-     i64.const 63
-     i64.shr_u
-     i32.wrap_i64
-     i32.eq
-     br_if $__inlined_func$std/math/ulperr$43
-     drop
-     f64.const inf
-     br $__inlined_func$std/math/ulperr$43
+     unreachable
     end
     local.get $0
     local.get $0
@@ -452,29 +436,15 @@
    br_if $~CONDITION_RETURN/std/math/check<f32>
    drop
    i32.const 0
-   block $__inlined_func$std/math/ulperrf$44 (result f32)
+   local.get $4
+   local.get $5
+   i32.and
+   if (result f32)
     f32.const 0
-    local.get $4
-    local.get $5
-    i32.and
-    br_if $__inlined_func$std/math/ulperrf$44
-    drop
+   else
     local.get $3
     if
-     local.get $2
-     local.get $0
-     i32.reinterpret_f32
-     i32.const 31
-     i32.shr_u
-     local.get $1
-     i32.reinterpret_f32
-     i32.const 31
-     i32.shr_u
-     i32.eq
-     br_if $__inlined_func$std/math/ulperrf$44
-     drop
-     f32.const inf
-     br $__inlined_func$std/math/ulperrf$44
+     unreachable
     end
     local.get $0
     local.get $0

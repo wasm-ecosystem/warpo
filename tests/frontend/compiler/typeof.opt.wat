@@ -1389,35 +1389,14 @@
         i32.const 0
         global.set $~lib/rt/itcms/visitCount
         call $~lib/rt/itcms/visitRoots
-        global.get $~lib/rt/itcms/toSpace
         global.get $~lib/rt/itcms/iter
         i32.load offset=4
         i32.const -4
         i32.and
+        local.tee $0
+        global.get $~lib/rt/itcms/toSpace
         i32.eq
         if
-         i32.const 33564
-         local.set $0
-         loop $while-continue|0
-          local.get $0
-          i32.const 33564
-          i32.lt_u
-          if
-           local.get $0
-           i32.load
-           call $~lib/rt/itcms/__visit
-           local.get $0
-           i32.const 4
-           i32.add
-           local.set $0
-           br $while-continue|0
-          end
-         end
-         global.get $~lib/rt/itcms/iter
-         i32.load offset=4
-         i32.const -4
-         i32.and
-         local.set $0
          loop $while-continue|2
           local.get $0
           global.get $~lib/rt/itcms/toSpace
@@ -1451,7 +1430,6 @@
            br $while-continue|2
           end
          end
-<<<<<<< HEAD
          global.get $~lib/rt/itcms/fromSpace
          local.set $0
          global.get $~lib/rt/itcms/toSpace
@@ -1460,76 +1438,6 @@
          global.set $~lib/rt/itcms/toSpace
          local.get $1
          global.set $~lib/rt/itcms/white
-=======
-         i32.const 0
-         global.set $~lib/rt/itcms/visitCount
-         call $~lib/rt/itcms/visitRoots
-         global.get $~lib/rt/itcms/iter
-         i32.load offset=4
-         i32.const -4
-         i32.and
-         local.tee $0
-         global.get $~lib/rt/itcms/toSpace
-         i32.eq
-         if
-          loop $while-continue|2
-           local.get $0
-           global.get $~lib/rt/itcms/toSpace
-           i32.ne
-           if
-            local.get $1
-            local.get $0
-            i32.load offset=4
-            i32.const 3
-            i32.and
-            i32.ne
-            if
-             local.get $0
-             local.get $0
-             i32.load offset=4
-             i32.const -4
-             i32.and
-             local.get $1
-             i32.or
-             i32.store offset=4
-             local.get $0
-             i32.const 20
-             i32.add
-             call $~lib/rt/__visit_members
-            end
-            local.get $0
-            i32.load offset=4
-            i32.const -4
-            i32.and
-            local.set $0
-            br $while-continue|2
-           end
-          end
-          global.get $~lib/rt/itcms/fromSpace
-          local.set $0
-          global.get $~lib/rt/itcms/toSpace
-          global.set $~lib/rt/itcms/fromSpace
-          local.get $0
-          global.set $~lib/rt/itcms/toSpace
-          local.get $1
-          global.set $~lib/rt/itcms/white
-          local.get $0
-          i32.load offset=4
-          i32.const -4
-          i32.and
-          global.set $~lib/rt/itcms/iter
-          i32.const 2
-          global.set $~lib/rt/itcms/state
-         end
-         global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$84
-        end
-        global.get $~lib/rt/itcms/iter
-        local.tee $0
-        global.get $~lib/rt/itcms/toSpace
-        i32.ne
-        if
->>>>>>> main
          local.get $0
          i32.load offset=4
          i32.const -4

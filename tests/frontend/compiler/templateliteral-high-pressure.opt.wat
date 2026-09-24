@@ -1690,23 +1690,35 @@
   global.get $~lib/memory/__stack_pointer
   i32.const 30096
   i32.store offset=12 align=1
-  call $~lib/util/number/itoa32
-  local.set $0
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.const 49
+  i32.store16
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store offset=8 align=1
-  call $~lib/util/number/itoa32
-  local.set $1
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $1
+  i32.const 49
+  i32.store16
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store offset=4 align=1
-  call $~lib/util/number/itoa32
-  local.set $3
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $3
+  i32.const 49
+  i32.store16
   global.get $~lib/memory/__stack_pointer
   local.get $3
   i32.store align=1
-  call $~lib/util/number/itoa32
-  local.set $2
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $2
+  i32.const 49
+  i32.store16
   i32.const 1
   local.get $0
   call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
@@ -1729,43 +1741,7 @@
    i32.load
    i32.const 2
    i32.shr_u
-<<<<<<< HEAD
    local.tee $2
-=======
-   global.set $templateliteral-high-pressure/len
-   global.get $~lib/memory/__stack_pointer
-   i32.const 30096
-   i32.store offset=12 align=1
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $0
-   i32.const 49
-   i32.store16
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store offset=8 align=1
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $1
-   i32.const 49
-   i32.store16
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store offset=4 align=1
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $3
-   i32.const 49
-   i32.store16
-   global.get $~lib/memory/__stack_pointer
-   local.get $3
-   i32.store align=1
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $2
-   i32.const 49
-   i32.store16
->>>>>>> main
    i32.const 1
    i32.sub
    local.tee $3
