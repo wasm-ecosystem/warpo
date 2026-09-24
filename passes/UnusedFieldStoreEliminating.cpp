@@ -126,8 +126,7 @@ wasm::Name getGetterName(std::string_view const owner, std::string_view const fi
   return getterName;
 }
 
-bool isRedeclaredField(VariableInfo const *const variableInfo, AccessorName const &setter,
-                       uint32_t const setterOffset) {
+bool isRedeclaredField(VariableInfo const *const variableInfo, AccessorName const &setter) {
   if (variableInfo == nullptr)
     return false;
 
@@ -188,7 +187,7 @@ public:
       return;
     if (variableInfo_ != nullptr && variableInfo_->getMemoryExposureTypeRegistry().contains(setter->getOwner()))
       return;
-    if (isRedeclaredField(variableInfo_, *setter, *setterOffset))
+    if (isRedeclaredField(variableInfo_, *setter))
       return;
     setterOffsets_.emplace(call->target, *setterOffset);
   }
