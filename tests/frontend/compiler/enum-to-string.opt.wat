@@ -157,74 +157,6 @@
    i32.eqz
   end
  )
- (func $enum-to-string/InlineEnum#__enum_to_string (param $0 i32) (result i32)
-  block $~CONDITION_RETURN/enum-to-string/InlineEnum#__enum_to_string (result i32)
-   i32.const 192
-   local.get $0
-   i32.const 2
-   i32.eq
-   br_if $~CONDITION_RETURN/enum-to-string/InlineEnum#__enum_to_string
-   drop
-   i32.const 224
-   local.get $0
-   i32.const 1
-   i32.eq
-   br_if $~CONDITION_RETURN/enum-to-string/InlineEnum#__enum_to_string
-   drop
-   i32.const 256
-   local.get $0
-   i32.eqz
-   br_if $~CONDITION_RETURN/enum-to-string/InlineEnum#__enum_to_string
-   drop
-   unreachable
-  end
- )
- (func $enum-to-string/EnumWithInit#__enum_to_string (param $0 i32) (result i32)
-  block $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string (result i32)
-   i32.const 32
-   local.get $0
-   i32.const 4
-   i32.eq
-   br_if $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string
-   drop
-   i32.const 64
-   local.get $0
-   i32.const 2
-   i32.eq
-   br_if $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string
-   drop
-   i32.const 96
-   local.get $0
-   i32.const 1
-   i32.eq
-   br_if $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string
-   drop
-   unreachable
-  end
- )
- (func $enum-to-string/EnumWithDup#__enum_to_string (param $0 i32) (result i32)
-  (local $1 i32)
-  block $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string (result i32)
-   i32.const 32
-   local.get $0
-   i32.const 1
-   i32.eq
-   local.tee $1
-   br_if $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string
-   drop
-   i32.const 64
-   local.get $0
-   i32.const 2
-   i32.eq
-   br_if $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string
-   drop
-   i32.const 96
-   local.get $1
-   br_if $~CONDITION_RETURN/enum-to-string/EnumWithInit#__enum_to_string
-   drop
-   unreachable
-  end
- )
  (func $~start
   i32.const 0
   call $enum-to-string/Enum#__enum_to_string
@@ -278,8 +210,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  call $enum-to-string/InlineEnum#__enum_to_string
+  i32.const 256
   i32.const 256
   call $~lib/string/String.__eq
   i32.eqz
@@ -291,8 +222,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $enum-to-string/InlineEnum#__enum_to_string
+  i32.const 224
   i32.const 224
   call $~lib/string/String.__eq
   i32.eqz
@@ -304,8 +234,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $enum-to-string/InlineEnum#__enum_to_string
+  i32.const 192
   i32.const 192
   call $~lib/string/String.__eq
   i32.eqz
@@ -317,8 +246,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $enum-to-string/EnumWithInit#__enum_to_string
+  i32.const 96
   i32.const 96
   call $~lib/string/String.__eq
   i32.eqz
@@ -330,8 +258,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $enum-to-string/EnumWithInit#__enum_to_string
+  i32.const 64
   i32.const 64
   call $~lib/string/String.__eq
   i32.eqz
@@ -343,8 +270,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
-  call $enum-to-string/EnumWithInit#__enum_to_string
+  i32.const 32
   i32.const 32
   call $~lib/string/String.__eq
   i32.eqz
@@ -356,8 +282,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $enum-to-string/EnumWithDup#__enum_to_string
+  i32.const 32
   i32.const 32
   call $~lib/string/String.__eq
   i32.eqz
@@ -369,8 +294,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $enum-to-string/EnumWithDup#__enum_to_string
+  i32.const 64
   i32.const 64
   call $~lib/string/String.__eq
   i32.eqz
@@ -382,8 +306,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $enum-to-string/EnumWithDup#__enum_to_string
+  i32.const 32
   i32.const 32
   call $~lib/string/String.__eq
   i32.eqz

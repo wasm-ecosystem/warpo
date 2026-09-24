@@ -133,7 +133,7 @@ static void optimize(AsModule const &m, Config const &config) {
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->addDefaultGlobalOptimizationPrePasses();
     passRunner->addDefaultFunctionOptimizationPasses();
-    passRunner->add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
+    // passRunner->add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
     passRunner->addDefaultGlobalOptimizationPostPasses();
     passRunner->add(std::unique_ptr<wasm::Pass>{createAdvancedInliningPass()});
     passRunner->add(std::unique_ptr<wasm::Pass>{createInstrSimplifier()});

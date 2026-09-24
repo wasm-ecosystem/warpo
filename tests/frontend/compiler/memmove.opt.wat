@@ -15,13 +15,12 @@
   (local $5 i32)
   block $~CONDITION_RETURN/memmove/memmove (result i32)
    local.get $0
+   local.tee $3
    local.get $0
    local.get $1
    i32.eq
    br_if $~CONDITION_RETURN/memmove/memmove
    drop
-   local.get $0
-   local.set $3
    local.get $0
    local.get $1
    i32.lt_u

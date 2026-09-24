@@ -85,6 +85,8 @@ void OptLower::run(wasm::Module *m) {
   wasm::PassRunner runner{getPassRunner()};
 
   preprocess(runner);
+  runner.add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
+  preprocess(runner);
 
   // only for test purpose
   if (TestOnlyControlGroup.get())
