@@ -993,41 +993,6 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  i32.const 1
-  call $start:function-expression~anonymous|0
-  i32.const 1
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 4
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 2
-  call $start:function-expression~anonymous|0
-  i32.const 2
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 9
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  call $start:function-expression~anonymous|3
-  i32.const 1
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 15
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
   i32.const 224
   call $function-expression/testOmitted
   i32.const 3
@@ -1065,46 +1030,7 @@
    unreachable
   end
   i32.const 1
-  i32.const 2
-  call $start:function-expression~anonymous|4
-  i32.const 3
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 33
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 1
-  i32.const 2
-  call $start:function-expression~anonymous|5
-  i32.const 1
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 34
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 1
-  i32.const 2
-  call $start:function-expression~anonymous|6
-  i32.const 42
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 35
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 1
-  call $start:function-expression~anonymous|7
+  i32.const 448
   i32.load
   call_indirect (type $0)
   i32.const 25
@@ -1118,7 +1044,7 @@
    unreachable
   end
   i32.const 1
-  call $function-expression/testLocal~anonymous|0
+  i32.const 512
   i32.load
   call_indirect (type $0)
   i32.const 25

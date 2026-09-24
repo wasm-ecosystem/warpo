@@ -2348,35 +2348,34 @@
   i32.const 8
   i64.const 2
   call $~lib/rt/__newTuple
-  local.set $0
+  local.set $1
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $1
   i32.store align=1
-  local.get $0
+  local.get $1
   i32.const 1
   i32.store
-  local.get $0
+  local.get $1
   i32.const 4
   i32.const 736
   call $~lib/tuple/SmallTuple#__set<~lib/string/String>
   i32.const 8
   i64.const 2
   call $~lib/rt/__newTuple
-  local.tee $1
-  local.get $0
+  local.tee $0
+  local.get $1
   i32.load
   i32.const 4
   i32.add
   i32.store
-  local.get $1
-  i32.const 4
   local.get $0
+  i32.const 4
+  local.get $1
   i32.const 4
   i32.add
   i32.load
   call $~lib/tuple/SmallTuple#__set<~lib/string/String>
-  local.get $1
-  local.tee $0
+  local.get $0
   i32.load
   i32.const 5
   i32.ne
@@ -2779,35 +2778,35 @@
   i32.const 8
   i64.const 2
   call $~lib/rt/__newTuple
-  local.set $0
+  local.set $1
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $1
   i32.store align=1
-  local.get $0
+  local.get $1
   i32.const 5
   i32.store
   i32.const 8
   i64.const 2
   call $~lib/rt/__newTuple
-  local.tee $1
+  local.tee $0
   i32.const 6
   i32.store
-  local.get $1
+  local.get $0
   i32.const 4
   i32.const 1120
   call $~lib/tuple/SmallTuple#__set<~lib/string/String>
-  local.get $0
-  i32.const 4
   local.get $1
+  i32.const 4
+  local.get $0
   call $~lib/tuple/SmallTuple#__set<~lib/string/String>
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $1
   i32.store offset=4 align=1
-  local.get $0
+  local.get $1
   i32.load
   i32.const 5
   i32.ne
@@ -2819,7 +2818,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
   i32.load
@@ -2834,7 +2833,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
   i32.load
@@ -2852,7 +2851,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
   i32.load
@@ -2868,30 +2867,29 @@
    unreachable
   end
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
   i32.load
-  local.tee $1
+  local.tee $2
   i32.store align=1
   i32.const 8
   i64.const 2
   call $~lib/rt/__newTuple
-  local.tee $2
-  local.get $1
+  local.tee $0
+  local.get $2
   i32.load
   i32.const 2
   i32.add
   i32.store
-  local.get $2
+  local.get $0
   i32.const 4
-  local.get $1
+  local.get $2
   i32.const 4
   i32.add
   i32.load
   call $~lib/tuple/SmallTuple#__set<~lib/string/String>
-  local.get $2
-  local.tee $1
+  local.get $0
   i32.load
   i32.const 8
   i32.ne
@@ -2903,7 +2901,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
+  local.get $0
   i32.const 4
   i32.add
   i32.load
@@ -2918,7 +2916,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
   i32.load

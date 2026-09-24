@@ -4,10 +4,9 @@
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32) (result i32)))
  (type $4 (func (param i32 i32 i32 i32)))
- (type $5 (func (param i32 f32 i32 i32) (result i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
- (type $8 (func (param f32) (result f32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param f32) (result f32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -37,8 +36,6 @@
  (data $11 (i32.const 524) "<")
  (data $11.1 (i32.const 536) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $12 (i32.const 592) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00\00\00\00\00 ")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $start:infer-generic~anonymous|0)
  (export "test1" (func $infer-generic/test1))
  (export "test2" (func $infer-generic/test2))
  (export "test3" (func $infer-generic/test2))
@@ -47,14 +44,6 @@
  (export "inferAssert" (func $infer-generic/inferAssert))
  (export "memory" (memory $0))
  (start $~start)
- (func $start:infer-generic~anonymous|0 (param $0 i32) (param $1 f32) (param $2 i32) (param $3 i32) (result i32)
-  local.get $1
-  f32.const 0
-  f32.ne
-  i32.const 0
-  local.get $0
-  select
- )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
@@ -963,7 +952,6 @@
    select
    i32.lt_s
    if
-    local.get $3
     i32.const 132
     i32.load
     local.get $0
@@ -971,9 +959,11 @@
     i32.shl
     i32.add
     f32.load
-    local.get $0
-    i32.const 128
-    call $start:infer-generic~anonymous|0
+    f32.const 0
+    f32.ne
+    i32.const 0
+    local.get $3
+    select
     local.set $3
     local.get $0
     i32.const 1

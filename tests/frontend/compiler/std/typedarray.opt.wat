@@ -2196,40 +2196,6 @@
    end
   end
  )
- (func $~lib/arraybuffer/ArrayBufferView#constructor (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  local.get $1
-  i32.const 1073741820
-  local.get $2
-  i32.shr_u
-  i32.gt_u
-  if
-   i32.const 32
-   i32.const 80
-   i32.const 20
-   i32.const 59
-   call $~lib/builtins/abort
-   unreachable
-  end
-  local.get $0
-  local.get $1
-  local.get $2
-  i32.shl
-  local.tee $2
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.tee $1
-  i32.store
-  local.get $0
-  local.get $1
-  call $~lib/rt/itcms/__link
-  local.get $0
-  local.get $1
-  i32.store offset=4
-  local.get $0
-  local.get $2
-  i32.store offset=8
-  local.get $0
- )
  (func $~lib/arraybuffer/ArrayBufferView#get:byteOffset (param $0 i32) (result i32)
   local.get $0
   i32.load offset=4
@@ -9848,47 +9814,46 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
+  local.get $1
+  i32.const 0
+  local.get $1
+  i32.const 0
+  i32.gt_s
+  select
+  local.tee $1
   local.get $0
   i32.const 20
   i32.sub
   i32.load offset=16
   i32.const 1
   i32.shr_u
-  local.set $2
-  i32.const 0
-  local.get $1
-  i32.const 0
-  local.get $1
-  i32.const 0
-  i32.gt_s
-  select
-  local.tee $1
-  local.get $2
-  local.get $1
-  local.get $2
-  i32.lt_s
-  select
-  local.tee $4
-  local.tee $1
+  local.tee $3
   local.get $1
   local.get $3
-  i32.gt_s
+  i32.lt_s
+  select
+  local.tee $2
+  local.tee $1
+  i32.const 0
+  local.get $1
+  i32.const 0
+  i32.le_s
   select
   i32.const 1
   i32.shl
   local.set $1
-  local.get $3
-  local.get $4
-  local.get $3
-  local.get $4
-  i32.gt_s
+  local.get $2
+  i32.const 0
+  local.get $2
+  i32.const 0
+  i32.ge_s
   select
   i32.const 1
   i32.shl
   local.tee $4
   local.get $1
   i32.sub
-  local.tee $3
+  local.tee $2
   i32.eqz
   if
    i32.const 6752
@@ -9897,7 +9862,7 @@
   local.get $1
   i32.eqz
   local.get $4
-  local.get $2
+  local.get $3
   i32.const 1
   i32.shl
   i32.eq
@@ -9906,16 +9871,16 @@
    local.get $0
    return
   end
-  local.get $3
+  local.get $2
   i32.const 2
   call $~lib/rt/itcms/__new
-  local.tee $2
+  local.tee $3
   local.get $0
   local.get $1
   i32.add
-  local.get $3
-  memory.copy
   local.get $2
+  memory.copy
+  local.get $3
  )
  (func $~lib/typedarray/Int8Array#join (param $0 i32) (result i32)
   (local $1 i32)
@@ -40855,16 +40820,42 @@
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store align=1
+  local.get $0
+  i32.const 1073741820
+  local.get $2
+  i32.shr_u
+  i32.gt_u
+  if
+   i32.const 32
+   i32.const 80
+   i32.const 20
+   i32.const 59
+   call $~lib/builtins/abort
+   unreachable
+  end
   local.get $1
   local.get $0
   local.get $2
-  call $~lib/arraybuffer/ArrayBufferView#constructor
-  local.set $0
+  i32.shl
+  local.tee $2
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.store
+  local.get $1
+  local.get $0
+  call $~lib/rt/itcms/__link
+  local.get $1
+  local.get $0
+  i32.store offset=4
+  local.get $1
+  local.get $2
+  i32.store offset=8
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $1
  )
  (func $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (local $4 i32)
@@ -40959,13 +40950,12 @@
   i32.store16
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int16Array#set<~lib/typedarray/Int16Array> (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32)
-  (local $5 i32)
+  local.get $4
   local.get $1
   i32.load offset=8
   local.get $2
   i32.shr_u
-  local.tee $5
-  local.get $4
+  local.tee $4
   i32.add
   local.get $0
   i32.load offset=8
@@ -40986,7 +40976,7 @@
   i32.add
   local.get $1
   i32.load offset=4
-  local.get $5
+  local.get $4
   local.get $2
   i32.shl
   memory.copy
@@ -41018,7 +41008,6 @@
  (func $byn$mgfn-shared$~lib/typedarray/Int32Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32) (result i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i32)
   local.get $0
   i32.load offset=8
   local.get $3
@@ -41027,15 +41016,15 @@
   i32.const 12
   local.get $4
   call $~lib/rt/itcms/__new
-  local.tee $6
+  local.tee $4
   local.get $0
   i32.load
-  local.tee $7
+  local.tee $6
   i32.store
+  local.get $4
   local.get $6
-  local.get $7
   call $~lib/rt/itcms/__link
-  local.get $6
+  local.get $4
   local.get $0
   i32.load offset=4
   local.get $1
@@ -41064,7 +41053,7 @@
   i32.shl
   i32.add
   i32.store offset=4
-  local.get $6
+  local.get $4
   local.get $2
   i32.const 0
   i32.lt_s
@@ -41097,7 +41086,7 @@
   local.get $3
   i32.shl
   i32.store offset=8
-  local.get $6
+  local.get $4
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int64Array#__set (param $0 i32) (param $1 i32) (param $2 i64) (param $3 i32)
   local.get $1
@@ -41144,11 +41133,11 @@
    local.get $1
    local.get $2
    i32.and
-   local.tee $3
+   local.tee $2
    call $~lib/util/number/decimalCount32
    local.set $1
    local.get $0
-   local.get $3
+   local.get $2
    local.get $1
    call $~lib/util/number/utoa32_dec_lut
    local.get $1

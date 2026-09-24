@@ -1620,17 +1620,15 @@
   i32.const 12
   i32.const 4
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $2
   i32.const 4
   i32.add
   i64.const 1
   i64.store
-  local.get $0
-  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $2
   i32.store offset=4 align=1
-  local.get $0
+  local.get $2
   i32.const 0
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   i32.const 10
@@ -1677,9 +1675,7 @@
     i32.add
     local.get $0
     i32.store
-    local.get $0
-    i32.const 4
-    i32.add
+    local.get $3
     i32.load
     if
      local.get $1

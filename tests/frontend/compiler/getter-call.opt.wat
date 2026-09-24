@@ -2,11 +2,11 @@
  (type $0 (func))
  (type $1 (func (param i32)))
  (type $2 (func (param i32 i32)))
- (type $3 (func (result i32)))
- (type $4 (func (param i32 i32 i32 i32)))
- (type $5 (func (param i32 i32 i32)))
- (type $6 (func (param i32 i32 i64)))
- (type $7 (func (param i32) (result i32)))
+ (type $3 (func (param i32 i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i64)))
+ (type $6 (func (param i32) (result i32)))
+ (type $7 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -31,8 +31,6 @@
  (data $8 (i32.const 412) "\1c")
  (data $8.1 (i32.const 424) "\05\00\00\00\08\00\00\00\01")
  (data $9 (i32.const 448) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 ")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $getter-call/C#get:x~anonymous|0)
  (export "test" (func $getter-call/test))
  (export "memory" (memory $0))
  (start $~start)
@@ -881,9 +879,6 @@
    end
   end
  )
- (func $getter-call/C#get:x~anonymous|0 (result i32)
-  i32.const 42
- )
  (func $getter-call/test (result i32)
   (local $0 i32)
   (local $1 i32)
@@ -1329,7 +1324,7 @@
   i32.const 0
   i32.const 0
   memory.fill
-  return_call $getter-call/C#get:x~anonymous|0
+  i32.const 42
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid

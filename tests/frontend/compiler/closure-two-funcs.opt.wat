@@ -1636,10 +1636,8 @@
   i32.add
   local.get $1
   i32.store
-  local.get $2
-  local.set $1
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $2
   i32.store offset=4 align=1
   local.get $0
   i32.load offset=4
@@ -1647,10 +1645,10 @@
   local.get $0
   i32.load
   call_indirect (type $0)
-  local.get $1
+  local.get $2
   i32.load offset=4
   global.set $~lib/rt/closure/env
-  local.get $1
+  local.get $2
   i32.load
   call_indirect (type $0)
   i32.add

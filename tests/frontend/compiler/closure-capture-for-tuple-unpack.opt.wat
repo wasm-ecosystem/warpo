@@ -1641,11 +1641,11 @@
   i32.const 4
   i64.const 1
   call $~lib/rt/__newTuple
-  local.set $3
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $3
+  local.get $2
   i32.store offset=12 align=1
-  local.get $3
+  local.get $2
   i32.const 0
   i32.const 0
   call $~lib/tuple/SmallTuple#__set<~lib/string/String>
@@ -1661,35 +1661,35 @@
   call $~lib/tuple/SmallTuple#__set<~lib/string/String>
   local.get $0
   i32.load
-  local.set $2
+  local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.const 4
   i32.add
   i32.load
-  local.tee $0
+  local.tee $3
   i32.store offset=8 align=1
   loop $for-loop|0
    i32.const 12
    i64.const 5
    call $~lib/rt/__newTuple
-   local.set $1
+   local.set $0
    global.get $~lib/memory/__stack_pointer
-   local.get $1
+   local.get $0
    i32.store offset=4 align=1
-   local.get $1
+   local.get $0
    i32.const 0
-   local.get $3
+   local.get $2
    call $~lib/tuple/SmallTuple#__set<~lib/string/String>
-   local.get $1
+   local.get $0
    i32.const 4
    i32.add
    local.tee $4
-   local.get $2
-   i32.store
    local.get $1
-   i32.const 8
+   i32.store
    local.get $0
+   i32.const 8
+   local.get $3
    call $~lib/tuple/SmallTuple#__set<~lib/string/String>
    local.get $4
    i32.load
@@ -1699,43 +1699,41 @@
     i32.const 8
     i32.const 5
     call $~lib/rt/itcms/__new
-    local.tee $0
+    local.tee $1
     i32.const 1
     i32.store
+    local.get $1
+    i32.const 4
+    i32.add
     local.get $0
-    i32.const 4
-    i32.add
-    local.get $1
     i32.store
-    local.get $1
-    i32.const 4
-    i32.add
+    local.get $4
     i32.load
     i32.const 10
     i32.eq
     if
-     local.get $0
+     local.get $1
      global.set $closure-capture-for-tuple-unpack/first
     else
-     local.get $0
+     local.get $1
      global.set $closure-capture-for-tuple-unpack/second
     end
-    local.get $1
+    local.get $0
     i32.const 4
     i32.add
     i32.load
-    local.set $2
+    local.set $1
     global.get $~lib/memory/__stack_pointer
-    local.get $1
+    local.get $0
     i32.const 8
     i32.add
     i32.load
-    local.tee $0
+    local.tee $3
     i32.store align=1
-    local.get $2
+    local.get $1
     i32.const 10
     i32.add
-    local.set $2
+    local.set $1
     br $for-loop|0
    end
   end

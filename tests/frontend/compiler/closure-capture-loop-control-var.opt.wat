@@ -1597,6 +1597,7 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
+  (local $4 i32)
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.sub
@@ -1613,17 +1614,15 @@
   i32.const 12
   i32.const 4
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $2
   i32.const 4
   i32.add
   i64.const 1
   i64.store
-  local.get $0
-  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $2
   i32.store offset=4 align=1
-  local.get $0
+  local.get $2
   i32.const 0
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   loop $for-loop|0
@@ -1645,9 +1644,10 @@
    i32.const 4
    i32.add
    local.tee $3
-   local.get $1
+   local.tee $1
+   local.get $4
    i32.store
-   local.get $3
+   local.get $1
    i32.load
    i32.const 2
    i32.lt_s
@@ -1663,9 +1663,7 @@
     i32.add
     local.get $0
     i32.store
-    local.get $0
-    i32.const 4
-    i32.add
+    local.get $3
     i32.load
     if
      local.get $1
@@ -1680,7 +1678,7 @@
     i32.load
     i32.const 1
     i32.add
-    local.set $1
+    local.set $4
     br $for-loop|0
    end
   end

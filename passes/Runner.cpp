@@ -29,7 +29,6 @@
 #include "InstrSimplifier.hpp"
 #include "MergeDataSection.hpp"
 #include "Runner.hpp"
-#include "TailCall.hpp"
 #include "UnusedFieldStoreEliminating.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
@@ -217,9 +216,10 @@ static void optimize(AsModule const &m, Config const &config) {
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createMergeDataSectionPass()});
     if (config.tailCall) {
-      passRunner->add("vacuum");
-      passRunner->add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
+      passRunner->add("tail-call");
     }
+    // Run the default Binaryen passes again at the end
+    passRunner->addDefaultOptimizationPasses();
     passRunner->run();
   }
   ensureValidate(*m.get());

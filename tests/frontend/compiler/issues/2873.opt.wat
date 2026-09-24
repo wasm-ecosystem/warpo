@@ -2884,47 +2884,46 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
+  local.get $1
+  i32.const 0
+  local.get $1
+  i32.const 0
+  i32.gt_s
+  select
+  local.tee $1
   local.get $0
   i32.const 20
   i32.sub
   i32.load offset=16
   i32.const 1
   i32.shr_u
-  local.set $2
-  i32.const 0
-  local.get $1
-  i32.const 0
-  local.get $1
-  i32.const 0
-  i32.gt_s
-  select
-  local.tee $1
-  local.get $2
-  local.get $1
-  local.get $2
-  i32.lt_s
-  select
-  local.tee $4
-  local.tee $1
+  local.tee $3
   local.get $1
   local.get $3
-  i32.gt_s
+  i32.lt_s
+  select
+  local.tee $2
+  local.tee $1
+  i32.const 0
+  local.get $1
+  i32.const 0
+  i32.le_s
   select
   i32.const 1
   i32.shl
   local.set $1
-  local.get $3
-  local.get $4
-  local.get $3
-  local.get $4
-  i32.gt_s
+  local.get $2
+  i32.const 0
+  local.get $2
+  i32.const 0
+  i32.ge_s
   select
   i32.const 1
   i32.shl
   local.tee $4
   local.get $1
   i32.sub
-  local.tee $3
+  local.tee $2
   i32.eqz
   if
    i32.const 2128
@@ -2933,7 +2932,7 @@
   local.get $1
   i32.eqz
   local.get $4
-  local.get $2
+  local.get $3
   i32.const 1
   i32.shl
   i32.eq
@@ -2942,15 +2941,15 @@
    local.get $0
    return
   end
-  local.get $3
+  local.get $2
   call $~lib/rt/itcms/__new
-  local.tee $2
+  local.tee $3
   local.get $0
   local.get $1
   i32.add
-  local.get $3
-  memory.copy
   local.get $2
+  memory.copy
+  local.get $3
  )
  (func $~lib/util/number/dtoa_buffered<f64> (param $0 i32) (param $1 f64) (result i32)
   (local $2 i32)

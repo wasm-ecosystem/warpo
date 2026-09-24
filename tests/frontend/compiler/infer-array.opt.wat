@@ -1929,9 +1929,7 @@
    local.tee $0
    i32.load offset=12
    i32.eqz
-   if
-    br $folding-inner0
-   end
+   br_if $folding-inner0
    local.get $0
    i32.load offset=4
    drop
@@ -1969,9 +1967,7 @@
    local.tee $0
    i32.load offset=12
    i32.eqz
-   if
-    br $folding-inner0
-   end
+   br_if $folding-inner0
    local.get $0
    i32.load offset=4
    drop
@@ -1983,9 +1979,7 @@
    local.tee $0
    i32.load offset=12
    i32.eqz
-   if
-    br $folding-inner0
-   end
+   br_if $folding-inner0
    local.get $0
    i32.load offset=4
    drop
@@ -2007,9 +2001,7 @@
    i32.load offset=12
    i32.const 1
    i32.le_u
-   if
-    br $folding-inner0
-   end
+   br_if $folding-inner0
    local.get $0
    i32.load offset=4
    drop
@@ -2187,9 +2179,7 @@
    local.get $0
    i32.load offset=12
    i32.eqz
-   if
-    br $folding-inner0
-   end
+   br_if $folding-inner0
    local.get $0
    i32.load offset=4
    i32.load

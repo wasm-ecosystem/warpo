@@ -1653,19 +1653,19 @@
   i32.const 1
   local.get $1
   i32.shl
-  local.tee $1
+  local.tee $2
   i32.const 1
   call $~lib/rt/itcms/__new
-  local.tee $2
+  local.tee $1
   i32.store
   local.get $0
-  local.get $2
+  local.get $1
   call $~lib/rt/itcms/__link
   local.get $0
-  local.get $2
+  local.get $1
   i32.store offset=4
   local.get $0
-  local.get $1
+  local.get $2
   i32.store offset=8
   local.get $0
  )

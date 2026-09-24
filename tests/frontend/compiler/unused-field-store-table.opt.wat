@@ -2,10 +2,10 @@
  (type $0 (func))
  (type $1 (func (param i32)))
  (type $2 (func (param i32 i32)))
- (type $3 (func (param i32) (result i32)))
- (type $4 (func (param i32 i32 i32 i32)))
- (type $5 (func (param i32 i32 i32)))
- (type $6 (func (param i32 i32 i64)))
+ (type $3 (func (param i32 i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i64)))
+ (type $6 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -33,8 +33,6 @@
  (data $9 (i32.const 444) "L")
  (data $9.1 (i32.const 456) "\02\00\00\006\00\00\00u\00n\00u\00s\00e\00d\00-\00f\00i\00e\00l\00d\00-\00s\00t\00o\00r\00e\00-\00t\00a\00b\00l\00e\00.\00t\00s")
  (data $10 (i32.const 528) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 ")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $unused-field-store-table/readValue)
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -888,10 +886,6 @@
    end
   end
  )
- (func $unused-field-store-table/readValue (param $0 i32) (result i32)
-  local.get $0
-  i32.load
- )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $~lib/function/Function<%28unused-field-store-table/Packet%29=>i32>
@@ -1398,7 +1392,7 @@
   i32.const 1
   i32.store
   global.get $unused-field-store-table/packet
-  call $unused-field-store-table/readValue
+  i32.load
   i32.const 1
   i32.ne
   if

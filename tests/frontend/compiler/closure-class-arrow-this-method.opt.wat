@@ -1720,7 +1720,7 @@
   global.get $closure-class-arrow-this-method/m
   i32.store align=1
   global.get $closure-class-arrow-this-method/m
-  local.set $1
+  local.set $2
   i32.const 16
   i32.const 5
   call $~lib/rt/itcms/__new
@@ -1730,32 +1730,31 @@
   i64.const 3
   i64.store
   local.get $0
-  local.tee $2
   i32.const 0
   i32.const 0
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   local.get $0
   i32.const 4
-  local.get $1
+  local.get $2
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   i32.const 8
   i32.const 6
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $1
   i32.const 1
   i32.store
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
-  local.get $2
-  i32.store
   local.get $0
+  i32.store
+  local.get $1
   i32.load offset=4
   global.set $~lib/rt/closure/env
-  local.get $0
+  local.get $1
   i32.load
   call_indirect (type $5)
-  local.get $1
+  local.get $2
   i32.load
   i32.add
   i32.const 20
