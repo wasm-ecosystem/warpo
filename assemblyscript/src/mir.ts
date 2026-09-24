@@ -7,6 +7,7 @@ import {
   _WarpoAddBaseInterface,
   _WarpoAddInterface,
   _WarpoAddField,
+  _WarpoAddFieldDeclaration,
   _WarpoAddGlobal,
   _WarpoAddMemoryExposureType,
   _WarpoEnterScope,
@@ -175,6 +176,23 @@ export function addField(clazz: Class, fieldName: string, fieldType: Type, offse
     decodeURIComponent(typeToMIRName(fieldType)),
     offset,
     fieldType.is(TypeFlags.Nullable)
+  );
+}
+
+export function addFieldDeclaration(
+  clazz: Class,
+  fieldName: string,
+  fieldType: Type,
+  offset: u32,
+  redeclared: bool
+): void {
+  _WarpoAddFieldDeclaration(
+    decodeURIComponent(classToMIRName(clazz)),
+    fieldName,
+    decodeURIComponent(typeToMIRName(fieldType)),
+    offset,
+    fieldType.is(TypeFlags.Nullable),
+    redeclared
   );
 }
 

@@ -160,7 +160,7 @@ static std::unordered_set<std::string_view> collectReachableTypes(VariableInfo c
       worklist.push_back(parentName);
     }
 
-    for (FieldInfo const &field : classInfo.getFields()) {
+    for (FieldInfo const &field : classInfo.getLayoutFields()) {
       if (reachableTypes.insert(field.getType()).second) {
         worklist.push_back(field.getType());
       }
@@ -626,7 +626,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIn
     }
 
     // Add member fields
-    std::vector<FieldInfo> const &fields = classInfo.getFields();
+    std::vector<FieldInfo> const &fields = classInfo.getLayoutFields();
     for (FieldInfo const &field : fields) {
       llvm::DWARFYAML::Entry memberEntry;
       memberEntry.AbbrCode = memberAbbrev.Code;

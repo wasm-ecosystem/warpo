@@ -1,59 +1,55 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <deque>
+#include <vector>
 
+#include "warpo/common/ClassHierarchy.hpp"
 #include "warpo/common/MemoryExposure.hpp"
 #include "warpo/common/VariableInfo.hpp"
 
 namespace warpo {
 
-void MemoryExposure::addExposureImplication(ExposureImplications &implications, std::string_view const triggerTypeName,
-                                            std::string_view const impliedTypeName) {
-  implications[triggerTypeName].push_back(impliedTypeName);
+void MemoryExposure::addType(std::string_view const typeName) {
+  seedTypes_.emplace(typeName);
+  types_.emplace(typeName);
 }
-
-void MemoryExposure::addToWorkList(WorkList &workList, std::string_view const typeName) {
-  if (types_.emplace(typeName).second)
-    workList.push_back(typeName);
-}
-
-void MemoryExposure::addType(std::string_view const typeName) { types_.emplace(typeName); }
 
 void MemoryExposure::finalize(VariableInfo const &variableInfo) {
-  VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
-  VariableInfo::InterfaceRegistry const &interfaceRegistry = variableInfo.getInterfaceRegistry();
-  ExposureImplications implications;
+  ClassHierarchy const hierarchy{variableInfo};
+  types_ = seedTypes_;
 
-  for (auto const &[className, classInfo] : classRegistry) {
-    std::string_view const parentName = classInfo.getParentName();
-    if (classRegistry.contains(parentName)) {
-      addExposureImplication(implications, className, parentName);
-      addExposureImplication(implications, parentName, className);
-    }
-    for (std::string_view const interfaceName : classInfo.getInterfaces())
-      if (interfaceRegistry.contains(interfaceName))
-        addExposureImplication(implications, interfaceName, className);
-  }
+  // Expand each direct exposure independently. Reprocessing an ancestor as a seed would reach the root class and
+  // incorrectly expose every sibling branch below it.
+  auto const addClassFamily = [this, &hierarchy](std::string_view const className) {
+    types_.emplace(className);
+    for (std::string_view const ancestor : hierarchy.getAncestors(className))
+      types_.emplace(ancestor);
+    for (std::string_view const descendant : hierarchy.getDescendants(className))
+      types_.emplace(descendant);
+  };
 
-  for (auto const &[interfaceName, interfaceInfo] : interfaceRegistry) {
-    std::string_view const parentName = interfaceInfo.getParentName();
-    if (interfaceRegistry.contains(parentName))
-      addExposureImplication(implications, parentName, interfaceName);
-  }
-
-  WorkList workList;
-  for (std::string_view const typeName : types_)
-    workList.push_back(typeName);
-
-  while (!workList.empty()) {
-    std::string_view const typeName = workList.front();
-    workList.pop_front();
-    ExposureImplications::const_iterator const implicationIt = implications.find(typeName);
-    if (implicationIt == implications.end())
+  for (std::string_view const seed : seedTypes_) {
+    if (hierarchy.isClass(seed)) {
+      addClassFamily(seed);
       continue;
-    for (std::string_view const impliedTypeName : implicationIt->second)
-      addToWorkList(workList, impliedTypeName);
+    }
+    if (!hierarchy.isInterface(seed))
+      continue;
+
+    TypeRegistry visitedInterfaces;
+    std::vector<std::string_view> pendingInterfaces{seed};
+    while (!pendingInterfaces.empty()) {
+      std::string_view const interfaceName = pendingInterfaces.back();
+      pendingInterfaces.pop_back();
+      if (!visitedInterfaces.emplace(interfaceName).second)
+        continue;
+
+      types_.emplace(interfaceName);
+      for (std::string_view const subInterface : hierarchy.getDirectSubinterfaces(interfaceName))
+        pendingInterfaces.push_back(subInterface);
+      for (std::string_view const implementer : hierarchy.getDirectImplementers(interfaceName))
+        addClassFamily(implementer);
+    }
   }
 }
 
@@ -66,7 +62,7 @@ void MemoryExposure::finalize(VariableInfo const &variableInfo) {
 
 namespace warpo::ut {
 
-TEST(TestMemoryExposure, TestMultiLevelClassHierarchyBidirectionalExposure) {
+TEST(TestMemoryExposure, TestClassExposureDoesNotSpreadThroughAncestorsToSiblingBranches) {
   // Hierarchy:
   // RootClass <- MidClass1 <- LeafClass1A, LeafClass1B
   // RootClass <- MidClass2 <- LeafClass2
@@ -88,14 +84,12 @@ TEST(TestMemoryExposure, TestMultiLevelClassHierarchyBidirectionalExposure) {
   variableInfo.addBaseClass("LeafClass2", "MidClass2");
   variableInfo.addBaseClass("UnrelatedDerived", "UnrelatedBase");
 
-  // Exposing a leaf should propagate up through MidClass1 to RootClass,
-  // and down to all siblings/subtrees under RootClass (MidClass2, LeafClass1B, LeafClass2)
+  // Ancestor setters can operate on LeafClass1A, but objects from sibling branches cannot alias it.
   variableInfo.addMemoryExposureType("LeafClass1A");
   variableInfo.finalizeMemoryExposure();
 
-  EXPECT_THAT(
-      variableInfo.getMemoryExposureTypeRegistry(),
-      ::testing::ElementsAre("LeafClass1A", "LeafClass1B", "LeafClass2", "MidClass1", "MidClass2", "RootClass"));
+  EXPECT_THAT(variableInfo.getMemoryExposureTypeRegistry(),
+              ::testing::ElementsAre("LeafClass1A", "MidClass1", "RootClass"));
 }
 
 TEST(TestMemoryExposure, TestMultipleRootsAndComplexInterfaceDAG) {
@@ -142,15 +136,15 @@ TEST(TestMemoryExposure, TestMultipleRootsAndComplexInterfaceDAG) {
   // - Sub-interfaces of ITop2: IMidJoin, ISub2
   // - Sub-interfaces of IMidJoin: IBottom
   // - Implementers of IBottom: ClassDerived
-  // - ClassDerived propagates to its class hierarchy: ClassBase, ClassSibling
+  // - ClassDerived adds its ancestor ClassBase, but not the sibling ClassSibling
   // - Implementers of ISub2: UnrelatedClass
   // - Note: ITop1 is an interface, interfaces do not pull in their parents or unrelated peer interfaces
   variableInfo.addMemoryExposureType("ITop2");
   variableInfo.finalizeMemoryExposure();
 
-  EXPECT_THAT(variableInfo.getMemoryExposureTypeRegistry(),
-              ::testing::ElementsAre("ClassBase", "ClassDerived", "ClassSibling", "IBottom", "IMidJoin", "ISub2",
-                                     "ITop2", "UnrelatedClass"));
+  EXPECT_THAT(
+      variableInfo.getMemoryExposureTypeRegistry(),
+      ::testing::ElementsAre("ClassBase", "ClassDerived", "IBottom", "IMidJoin", "ISub2", "ITop2", "UnrelatedClass"));
 }
 
 TEST(TestMemoryExposure, TestClassExposureDoesNotExposeImplementedInterface) {
@@ -221,14 +215,12 @@ TEST(TestMemoryExposure, TestDeepClassHierarchyWithMultipleBranchesAndMidExposed
   variableInfo.addBaseClass("Level3A_1", "Level2A_1");
   variableInfo.addBaseClass("OtherChild", "OtherRoot");
 
-  // Exposing a middle node (Level1A) should traverse up to root Level0,
-  // down to cousin branch Level1B & Level2B_1, and down to all its descendants.
+  // Exposing a middle node traverses to its ancestors and descendants, but not its cousin branch.
   variableInfo.addMemoryExposureType("Level1A");
   variableInfo.finalizeMemoryExposure();
 
-  EXPECT_THAT(
-      variableInfo.getMemoryExposureTypeRegistry(),
-      ::testing::ElementsAre("Level0", "Level1A", "Level1B", "Level2A_1", "Level2A_2", "Level2B_1", "Level3A_1"));
+  EXPECT_THAT(variableInfo.getMemoryExposureTypeRegistry(),
+              ::testing::ElementsAre("Level0", "Level1A", "Level2A_1", "Level2A_2", "Level3A_1"));
 }
 
 TEST(TestMemoryExposure, TestDisjointClassTreesWithCrossTreeInterfaceAndMultipleSeeds) {
@@ -270,14 +262,12 @@ TEST(TestMemoryExposure, TestDisjointClassTreesWithCrossTreeInterfaceAndMultiple
   variableInfo.addInterface("AlphaLeaf2", "IBridge");
   variableInfo.addInterface("BetaRoot", "IBridge");
 
-  // Case 1: Exposing AlphaLeaf1 will expose all of Tree 1 (Alpha*),
-  // but does NOT expose IBridge (class exposure doesn't propagate up to interfaces),
-  // so Tree 2 (Beta*) and Tree 3 (Gamma*) remain unexposed.
+  // Exposing AlphaLeaf1 adds its ancestors, but not its sibling AlphaLeaf2 or the interface that sibling implements.
   variableInfo.addMemoryExposureType("AlphaLeaf1");
   variableInfo.finalizeMemoryExposure();
 
   EXPECT_THAT(variableInfo.getMemoryExposureTypeRegistry(),
-              ::testing::ElementsAre("AlphaLeaf1", "AlphaLeaf2", "AlphaMid", "AlphaRoot"));
+              ::testing::ElementsAre("AlphaLeaf1", "AlphaMid", "AlphaRoot"));
 }
 
 TEST(TestMemoryExposure, TestMultipleClassSeedsAcrossForest) {

@@ -16,13 +16,28 @@ void VariableInfo::addField(std::string_view const className, std::string fieldN
   std::string_view const internedTypeName = stringPool_.internString(typeName);
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
   if (classIt != classRegistry_.end()) {
-    classIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
+    classIt->second.addLayoutField(std::move(fieldName), internedTypeName, offset, nullable != 0);
     return;
   }
 
   InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
   assert(interfaceIt != interfaceRegistry_.end());
-  interfaceIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
+  interfaceIt->second.addLayoutField(std::move(fieldName), internedTypeName, offset, nullable != 0);
+}
+
+void VariableInfo::addFieldDeclaration(std::string_view const className, std::string fieldName,
+                                       std::string const typeName, uint32_t const offset, uint32_t const nullable,
+                                       bool const redeclared) {
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
+  ClassRegistry::iterator const classIt = classRegistry_.find(className);
+  if (classIt != classRegistry_.end()) {
+    classIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0, redeclared);
+  } else {
+
+    InterfaceRegistry::iterator const interfaceIt = interfaceRegistry_.find(className);
+    assert(interfaceIt != interfaceRegistry_.end());
+    interfaceIt->second.addDeclaredField(std::move(fieldName), internedTypeName, offset, nullable != 0, redeclared);
+  }
 }
 
 void VariableInfo::createBaseType(std::string_view typeName) {
@@ -244,8 +259,8 @@ TEST(TestVariableInfo, TestCreateInterface) {
   ASSERT_NE(readableIt, interfaceRegistry.end());
   EXPECT_EQ(readableIt->second.getName(), "Readable");
   EXPECT_EQ(readableIt->second.getParentName(), "BaseInterface");
-  ASSERT_EQ(readableIt->second.getFields().size(), 1);
-  EXPECT_EQ(readableIt->second.getFields()[0].getName(), "length");
+  ASSERT_EQ(readableIt->second.getLayoutFields().size(), 1);
+  EXPECT_EQ(readableIt->second.getLayoutFields()[0].getName(), "length");
   ASSERT_EQ(readableIt->second.getTemplateTypes().size(), 1);
   EXPECT_EQ(readableIt->second.getTemplateTypes()[0], "i32");
 
@@ -293,10 +308,10 @@ TEST(TestVariableInfo, TestCreateClass) {
 
   EXPECT_EQ(personClass.getName(), "Person");
   EXPECT_EQ(personClass.getRtid(), 1U);
-  EXPECT_EQ(personClass.getFields().size(), 3);
+  EXPECT_EQ(personClass.getLayoutFields().size(), 3);
 
   // Verify Person fields
-  const std::vector<FieldInfo> &personFields = personClass.getFields();
+  const std::vector<FieldInfo> &personFields = personClass.getLayoutFields();
   EXPECT_EQ(personFields[0].getName(), "name");
   EXPECT_EQ(personFields[0].getType(), "~lib/string/String");
   EXPECT_EQ(personFields[0].getOffsetInClass(), 0);
@@ -319,10 +334,10 @@ TEST(TestVariableInfo, TestCreateClass) {
 
   EXPECT_EQ(employeeClass.getName(), "Employee");
   EXPECT_EQ(employeeClass.getRtid(), 2U);
-  EXPECT_EQ(employeeClass.getFields().size(), 6);
+  EXPECT_EQ(employeeClass.getLayoutFields().size(), 6);
 
   // Verify Employee fields
-  const std::vector<FieldInfo> &employeeFields = employeeClass.getFields();
+  const std::vector<FieldInfo> &employeeFields = employeeClass.getLayoutFields();
   EXPECT_EQ(employeeFields[0].getName(), "name");
   EXPECT_EQ(employeeFields[0].getType(), "~lib/string/String");
   EXPECT_EQ(employeeFields[0].getOffsetInClass(), 0);

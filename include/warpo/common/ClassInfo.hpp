@@ -21,8 +21,13 @@ public:
   void addBaseInterface(std::string_view const parentName) noexcept { parentName_ = parentName; }
   std::string_view getParentName() const noexcept { return parentName_; }
 
-  void addMember(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
-  std::vector<FieldInfo> const &getFields() const noexcept { return fields_; }
+  // Layout fields introduce a new storage entry; redeclarations are not included.
+  void addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
+  std::vector<FieldInfo> const &getLayoutFields() const noexcept { return layoutFields_; }
+  // Declared fields contain every declaration, including redeclarations that reuse an inherited offset.
+  void addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                        bool const nullable, bool const redeclared);
+  std::vector<FieldInfo> const &getDeclaredFields() const noexcept { return declaredFields_; }
 
   void addTemplateType(std::string_view const typeName) noexcept { templateTypes_.push_back(typeName); }
   std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
@@ -38,7 +43,8 @@ public:
 private:
   std::string_view name_;
   std::string_view parentName_;
-  std::vector<FieldInfo> fields_;
+  std::vector<FieldInfo> layoutFields_;
+  std::vector<FieldInfo> declaredFields_;
   std::vector<std::string_view> templateTypes_;
   std::deque<SubProgramInfo> memberFunctions_;
 };
@@ -50,9 +56,14 @@ public:
 
   std::string_view getName() const noexcept { return name_; }
   std::optional<uint32_t> getRtid() const noexcept { return rtid_; }
-  std::vector<FieldInfo> const &getFields() const noexcept { return fields_; }
+  // Layout fields introduce a new storage entry; redeclarations are not included.
+  std::vector<FieldInfo> const &getLayoutFields() const noexcept { return layoutFields_; }
+  // Declared fields contain every declaration, including redeclarations that reuse an inherited offset.
+  std::vector<FieldInfo> const &getDeclaredFields() const noexcept { return declaredFields_; }
 
-  void addMember(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
+  void addLayoutField(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
+  void addDeclaredField(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                        bool const nullable, bool const redeclared);
 
   void setDebugInfoOffset(uint64_t offset) noexcept { debugInfoOffset_ = offset; }
   uint64_t getDebugInfoOffset() const noexcept { return debugInfoOffset_; }
@@ -78,7 +89,8 @@ private:
   std::optional<uint32_t> rtid_;
   std::string_view parentName_;
   size_t debugInfoOffset_{SIZE_MAX};
-  std::vector<FieldInfo> fields_;
+  std::vector<FieldInfo> layoutFields_;
+  std::vector<FieldInfo> declaredFields_;
   std::vector<std::string_view> interfaces_;
   std::vector<std::string_view> templateTypes_;
   std::deque<SubProgramInfo> memberFunctions_;

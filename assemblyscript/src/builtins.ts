@@ -159,6 +159,7 @@ export namespace BuiltinNames {
   export const inline_always = "~lib/builtins/inline.always";
   export const instantiate = "~lib/builtins/instantiate";
   export const idof = "~lib/builtins/idof";
+  export const memory_expose = "~lib/warpo/memory/memory_expose";
 
   export const i8 = "~lib/builtins/i8";
   export const i16 = "~lib/builtins/i16";
@@ -1222,6 +1223,29 @@ function builtin_idof(ctx: BuiltinFunctionContext): ExpressionRef {
   return module.unreachable();
 }
 builtinFunctions.set(BuiltinNames.idof, builtin_idof);
+
+// memory_expose<T> -> void
+function builtin_memory_expose(ctx: BuiltinFunctionContext): ExpressionRef {
+  let compiler = ctx.compiler;
+  let module = compiler.module;
+  let type = checkConstantType(ctx);
+  compiler.currentType = Type.void;
+  if (!type) return module.unreachable();
+  let classReference = type.getClass();
+  if (classReference && !classReference.isInterface && !classReference.hasDecorator(DecoratorFlags.Unmanaged)) {
+    addMemoryExposureType(type);
+    return module.nop();
+  } else {
+    compiler.error(
+      DiagnosticCode.Operation_0_cannot_be_applied_to_type_1,
+      ctx.reportNode.typeArgumentsRange,
+      "memory_expose",
+      type.toString()
+    );
+    return module.unreachable();
+  }
+}
+builtinFunctions.set(BuiltinNames.memory_expose, builtin_memory_expose);
 
 // === Math ===================================================================================
 

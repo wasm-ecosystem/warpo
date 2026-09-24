@@ -29,6 +29,7 @@
 #include "InstrSimplifier.hpp"
 #include "MergeDataSection.hpp"
 #include "Runner.hpp"
+#include "UnusedFieldStoreEliminating.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
 #include "parser/wat-parser.h"
@@ -99,6 +100,8 @@ static void lowering(AsModule const &m, Config const &config) {
       passRunner->add("generate-global-effects");
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
+      passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedFieldStoreEliminatingPass(&m.variableInfo_)});
     passRunner->add(std::unique_ptr<wasm::Pass>{createConstructorNewOutliningPass()});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
       passRunner->add(std::make_unique<closure::OptLower>(&m.variableInfo_));

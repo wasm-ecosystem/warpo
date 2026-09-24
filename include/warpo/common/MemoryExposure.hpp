@@ -3,11 +3,8 @@
 
 #pragma once
 
-#include <deque>
 #include <set>
 #include <string_view>
-#include <unordered_map>
-#include <vector>
 
 namespace warpo {
 
@@ -23,13 +20,7 @@ public:
   TypeRegistry const &getTypes() const noexcept { return types_; }
 
 private:
-  using ExposureImplications = std::unordered_map<std::string_view, std::vector<std::string_view>>;
-  using WorkList = std::deque<std::string_view>;
-
-  static void addExposureImplication(ExposureImplications &implications, std::string_view triggerTypeName,
-                                     std::string_view impliedTypeName);
-  void addToWorkList(WorkList &workList, std::string_view typeName);
-
+  TypeRegistry seedTypes_;
   TypeRegistry types_;
 };
 
