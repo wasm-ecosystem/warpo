@@ -127,9 +127,11 @@ public:
     nofunc = 13 << UsedBits,
     nocont = 14 << UsedBits,
     noexn = 15 << UsedBits,
+    waitqueue = 16 << UsedBits,
+    nowaitqueue = 17 << UsedBits,
   };
   static constexpr BasicHeapType _last_basic_type =
-    BasicHeapType(noexn | SharedMask);
+    BasicHeapType(nowaitqueue | SharedMask);
 
   // BasicHeapType can be implicitly upgraded to HeapType
   constexpr HeapType(BasicHeapType id) : id(id) {}
@@ -628,11 +630,15 @@ constexpr HeapType struct_ = HeapType::struct_;
 constexpr HeapType array = HeapType::array;
 constexpr HeapType exn = HeapType::exn;
 constexpr HeapType string = HeapType::string;
+constexpr HeapType sharedWaitqueue =
+  HeapType(HeapType::waitqueue).getBasic(Shared);
 constexpr HeapType none = HeapType::none;
 constexpr HeapType noext = HeapType::noext;
 constexpr HeapType nofunc = HeapType::nofunc;
 constexpr HeapType nocont = HeapType::nocont;
 constexpr HeapType noexn = HeapType::noexn;
+constexpr HeapType sharedNowaitqueue =
+  HeapType(HeapType::nowaitqueue).getBasic(Shared);
 
 // Certain heap types are used by standard operations. Provide central accessors
 // for them to avoid having to build them everywhere they are used.
@@ -703,7 +709,6 @@ struct Field {
     NotPacked,
     i8,
     i16,
-    WaitQueue,
   } packedType; // applicable iff type=i32
   Mutability mutable_;
 
@@ -803,14 +808,22 @@ struct TypeBuilder {
   // function.
   template<typename F> void copyHeapType(size_t i, HeapType type, F map) {
     assert(!type.isBasic());
+    // Supertypes, descriptor types, and described types cannot be basic heap
+    // types. Only set them if the mapping takes them to defined types.
     if (auto super = type.getDeclaredSuperType()) {
-      setSubType(i, map(*super));
+      if (auto mapped = map(*super); !mapped.isBasic()) {
+        setSubType(i, mapped);
+      }
     }
     if (auto desc = type.getDescriptorType()) {
-      setDescriptor(i, map(*desc));
+      if (auto mapped = map(*desc); !mapped.isBasic()) {
+        setDescriptor(i, mapped);
+      }
     }
     if (auto desc = type.getDescribedType()) {
-      setDescribed(i, map(*desc));
+      if (auto mapped = map(*desc); !mapped.isBasic()) {
+        setDescribed(i, mapped);
+      }
     }
     setOpen(i, type.isOpen());
     setShared(i, type.getShared());
@@ -820,8 +833,11 @@ struct TypeBuilder {
         return t;
       }
       assert(t.isRef());
-      return getTempRefType(
-        map(t.getHeapType()), t.getNullability(), t.getExactness());
+      auto mapped = map(t.getHeapType());
+      auto null = t.getNullability();
+      // References to basic heap types cannot be exact.
+      auto exact = mapped.isBasic() ? Inexact : t.getExactness();
+      return getTempRefType(mapped, null, exact);
     };
     auto copyType = [&](Type t) -> Type {
       if (t.isTuple()) {
@@ -894,6 +910,7 @@ struct TypeBuilder {
   void createRecGroup(size_t i, size_t length);
 
   void setOpen(size_t i, bool open = true);
+  bool isOpen(size_t i) const;
   void setShared(size_t i, Shareability share = Shared);
 
   enum class ErrorReasonKind {
@@ -909,8 +926,6 @@ struct TypeBuilder {
     InvalidFuncType,
     // A shared type with shared-everything disabled.
     InvalidSharedType,
-    // WaitQueue was used with shared-everything disabled.
-    InvalidWaitQueue,
     // A string type with strings disabled.
     InvalidStringType,
     // A non-shared field of a shared heap type.
@@ -933,6 +948,8 @@ struct TypeBuilder {
     InvalidUnsharedDescribes,
     // The custom descriptors feature is missing.
     RequiresCustomDescriptors,
+    // The descriptor and described types have mismatched finality.
+    MismatchedDescriptorFinality,
     // Two rec groups with different shapes would have the same shapes after
     // the binary writer generalizes refined types that use disabled features.
     RecGroupCollision,
@@ -1022,6 +1039,7 @@ struct TypeBuilder {
       builder.setOpen(index, open);
       return *this;
     }
+    bool isOpen() const { return builder.isOpen(index); }
     Entry& setShared(Shareability share = Shared) {
       builder.setShared(index, share);
       return *this;
@@ -1222,12 +1240,14 @@ inline bool HeapType::isBottom() const {
       case array:
       case exn:
       case string:
+      case waitqueue:
         return false;
       case none:
       case noext:
       case nofunc:
       case nocont:
       case noexn:
+      case nowaitqueue:
         return true;
     }
   }

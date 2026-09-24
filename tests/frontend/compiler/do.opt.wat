@@ -1495,28 +1495,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $2
-  i32.const 1
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 44
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
-  local.get $1
-  i32.const 9
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 45
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
   i32.const 1
   global.set $do/ran
   i32.const 0
@@ -1531,17 +1509,6 @@
    i32.const 10
    i32.ne
    br_if $do-loop|02
-  end
-  local.get $0
-  i32.const 10
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 57
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
   end
   i32.const 1
   global.set $do/ran

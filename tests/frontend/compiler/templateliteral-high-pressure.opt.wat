@@ -7,7 +7,6 @@
  (type $5 (func (param i32 i32 i64)))
  (type $6 (func (param i32 i32) (result i32)))
  (type $7 (func (param i32) (result i32)))
- (type $8 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $templateliteral-high-pressure/len (mut i32) (i32.const 0))
@@ -1526,121 +1525,6 @@
   memory.fill
   local.get $1
  )
- (func $~lib/util/number/itoa32 (result i32)
-  (local $0 i32)
-  (local $1 i32)
-  (local $2 i32)
-  (local $3 i32)
-  i32.const 2
-  call $~lib/rt/itcms/__new
-  local.set $2
-  i32.const 1
-  local.set $1
-  i32.const 1
-  local.set $0
-  loop $while-continue|0
-   local.get $0
-   i32.const 10000
-   i32.ge_u
-   if
-    local.get $0
-    i32.const 10000
-    i32.rem_u
-    local.set $3
-    local.get $0
-    i32.const 10000
-    i32.div_u
-    local.set $0
-    local.get $2
-    local.get $1
-    i32.const 4
-    i32.sub
-    local.tee $1
-    i32.const 1
-    i32.shl
-    i32.add
-    local.get $3
-    i32.const 100
-    i32.div_u
-    i32.const 2
-    i32.shl
-    i32.const 30764
-    i32.add
-    i64.load32_u
-    local.get $3
-    i32.const 100
-    i32.rem_u
-    i32.const 2
-    i32.shl
-    i32.const 30764
-    i32.add
-    i64.load32_u
-    i64.const 32
-    i64.shl
-    i64.or
-    i64.store
-    br $while-continue|0
-   end
-  end
-  local.get $0
-  i32.const 100
-  i32.ge_u
-  if
-   local.get $2
-   local.get $1
-   i32.const 2
-   i32.sub
-   local.tee $1
-   i32.const 1
-   i32.shl
-   i32.add
-   local.get $0
-   i32.const 100
-   i32.rem_u
-   i32.const 2
-   i32.shl
-   i32.const 30764
-   i32.add
-   i32.load
-   i32.store
-   local.get $0
-   i32.const 100
-   i32.div_u
-   local.set $0
-  end
-  local.get $0
-  i32.const 10
-  i32.ge_u
-  if
-   local.get $2
-   local.get $1
-   i32.const 2
-   i32.sub
-   i32.const 1
-   i32.shl
-   i32.add
-   local.get $0
-   i32.const 2
-   i32.shl
-   i32.const 30764
-   i32.add
-   i32.load
-   i32.store
-  else
-   local.get $2
-   local.get $1
-   i32.const 1
-   i32.sub
-   i32.const 1
-   i32.shl
-   i32.add
-   local.get $0
-   i32.const 48
-   i32.add
-   i32.store16
-  end
-  local.get $2
- )
  (func $~lib/staticarray/StaticArray<~lib/string/String>#__uset (param $0 i32) (param $1 i32)
   local.get $0
   i32.const 2
@@ -1803,23 +1687,35 @@
    global.get $~lib/memory/__stack_pointer
    i32.const 30096
    i32.store offset=12 align=1
-   call $~lib/util/number/itoa32
-   local.set $0
+   i32.const 2
+   call $~lib/rt/itcms/__new
+   local.tee $0
+   i32.const 49
+   i32.store16
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store offset=8 align=1
-   call $~lib/util/number/itoa32
-   local.set $1
+   i32.const 2
+   call $~lib/rt/itcms/__new
+   local.tee $1
+   i32.const 49
+   i32.store16
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4 align=1
-   call $~lib/util/number/itoa32
-   local.set $3
+   i32.const 2
+   call $~lib/rt/itcms/__new
+   local.tee $3
+   i32.const 49
+   i32.store16
    global.get $~lib/memory/__stack_pointer
    local.get $3
    i32.store align=1
-   call $~lib/util/number/itoa32
-   local.set $2
+   i32.const 2
+   call $~lib/rt/itcms/__new
+   local.tee $2
+   i32.const 49
+   i32.store16
    i32.const 1
    local.get $0
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset

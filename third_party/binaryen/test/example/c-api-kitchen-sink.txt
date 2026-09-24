@@ -47,12 +47,13 @@ BinaryenFeatureMemory64: 2048
 BinaryenFeatureRelaxedSIMD: 4096
 BinaryenFeatureExtendedConst: 8192
 BinaryenFeatureStrings: 16384
-BinaryenFeatureRelaxedAtomics: 4194304
+BinaryenFeatureAcquireReleaseAtomics: 4194304
 BinaryenFeatureCustomPageSizes: 8388608
 BinaryenFeatureMultibyte: 16777216
 BinaryenFeatureWideArithmetic: 33554432
 BinaryenFeatureCompactImports: 67108864
-BinaryenFeatureAll: 134217727
+BinaryenFeatureRelaxedAtomics: 134217728
+BinaryenFeatureAll: 268435455
 (f32.neg
  (f32.const -33.61199951171875)
 )
@@ -2192,6 +2193,16 @@ BinaryenFeatureAll: 134217727
         (nop)
        )
       )
+      (block $catch_all_dest
+       (try_table (catch_all $catch_all_dest)
+        (throw $a-tag
+         (i32.const 0)
+        )
+       )
+      )
+      (throw_ref
+       (ref.null noexn)
+      )
       (i32.atomic.store
        (i32.const 0)
        (i32.atomic.load
@@ -2304,6 +2315,20 @@ BinaryenFeatureAll: 134217727
       (struct.set $1 0
        (global.get $i32Struct-global)
        (i32.const 0)
+      )
+      (drop
+       (struct.wait $1 0
+        (global.get $i32Struct-global)
+        (waitqueue.new)
+        (i32.const 0)
+        (i64.const 0)
+       )
+      )
+      (drop
+       (waitqueue.notify
+        (waitqueue.new)
+        (i32.const 0)
+       )
       )
       (drop
        (array.new_default $0
@@ -3106,7 +3131,7 @@ Fence memory order: 2
  (type $0 (func))
  (memory $0 1 1)
  (export "memory" (memory $0))
- (func $relaxed-atomics (type $0)
+ (func $acquire-release-atomics (type $0)
   (block $body
    (drop
     (i32.atomic.load acqrel
@@ -3131,6 +3156,43 @@ Fence memory order: 2
     )
    )
    (atomic.fence acqrel)
+  )
+ )
+)
+Load memory order: 1
+Store memory order: 1
+RMW memory order: 1
+Cmpxchg memory order: 1
+Fence memory order: 1
+(module
+ (type $0 (func))
+ (memory $0 1 1)
+ (export "memory" (memory $0))
+ (func $relaxed-atomics (type $0)
+  (block $body
+   (drop
+    (i32.atomic.load relaxed
+     (i32.const 0)
+    )
+   )
+   (i32.atomic.store relaxed
+    (i32.const 0)
+    (i32.const 1)
+   )
+   (drop
+    (i32.atomic.rmw.add relaxed
+     (i32.const 0)
+     (i32.const 1)
+    )
+   )
+   (drop
+    (i32.atomic.rmw.cmpxchg relaxed
+     (i32.const 0)
+     (i32.const 0)
+     (i32.const 1)
+    )
+   )
+   (atomic.fence relaxed)
   )
  )
 )
