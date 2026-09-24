@@ -383,9 +383,8 @@ enum EncodedType {
   f64 = -0x4,  // 0x7c
   v128 = -0x5, // 0x7b
   // packed types
-  i8 = -0x8,         // 0x78
-  i16 = -0x9,        // 0x77
-  waitQueue = -0x24, // 0x5c
+  i8 = -0x8,  // 0x78
+  i16 = -0x9, // 0x77
   // reference types
   nullfuncref = -0xd,   // 0x73
   nullexternref = -0xe, // 0x72
@@ -425,21 +424,23 @@ enum EncodedType {
 };
 
 enum EncodedHeapType {
-  nofunc = -0xd,   // 0x73
-  noext = -0xe,    // 0x72
-  none = -0xf,     // 0x71
-  func = -0x10,    // 0x70
-  ext = -0x11,     // 0x6f
-  any = -0x12,     // 0x6e
-  eq = -0x13,      // 0x6d
-  exn = -0x17,     // 0x69
-  noexn = -0xc,    // 0x74
-  cont = -0x18,    // 0x68
-  nocont = -0x0b,  // 0x75
-  i31 = -0x14,     // 0x6c
-  struct_ = -0x15, // 0x6b
-  array = -0x16,   // 0x6a
-  string = -0x19,  // 0x67
+  nofunc = -0xd,       // 0x73
+  noext = -0xe,        // 0x72
+  none = -0xf,         // 0x71
+  func = -0x10,        // 0x70
+  ext = -0x11,         // 0x6f
+  any = -0x12,         // 0x6e
+  eq = -0x13,          // 0x6d
+  exn = -0x17,         // 0x69
+  noexn = -0xc,        // 0x74
+  cont = -0x18,        // 0x68
+  nocont = -0x0b,      // 0x75
+  i31 = -0x14,         // 0x6c
+  struct_ = -0x15,     // 0x6b
+  array = -0x16,       // 0x6a
+  string = -0x19,      // 0x67
+  waitqueue = -0x24,   // 0x5c
+  nowaitqueue = -0x25, // 0x5b
 };
 
 namespace CustomSections {
@@ -475,11 +476,12 @@ extern const char* FP16Feature;
 extern const char* BulkMemoryOptFeature;
 extern const char* CallIndirectOverlongFeature;
 extern const char* CustomDescriptorsFeature;
-extern const char* RelaxedAtomicsFeature;
+extern const char* AcquireReleaseAtomicsFeature;
 extern const char* MultibyteFeature;
 extern const char* CustomPageSizesFeature;
 extern const char* WideArithmeticFeature;
 extern const char* CompactImportsFeature;
+extern const char* RelaxedAtomicsFeature;
 
 enum Subsection {
   NameModule = 0,
@@ -721,7 +723,9 @@ enum ASTNodes {
   AtomicFence = 0x03,
   Pause = 0x04,
   StructWait = 0x05,
-  StructNotify = 0x06,
+  WaitqueueNotify = 0x06,
+  WaitqueueNew = 0x07,
+  Publish = 0x0f,
 
   I32AtomicLoad = 0x10,
   I64AtomicLoad = 0x11,
@@ -1232,6 +1236,7 @@ enum ASTNodes {
 
   OrderSeqCst = 0x0,
   OrderAcqRel = 0x1,
+  OrderRelaxed = 0x2,
   StructAtomicGet = 0x5c,
   StructAtomicGetS = 0x5d,
   StructAtomicGetU = 0x5e,

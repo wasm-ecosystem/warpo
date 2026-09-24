@@ -360,9 +360,6 @@ Ref Wasm2JSBuilder::processWasm(Module* wasm, Name funcName) {
   // First, do the lowering to a JS-friendly subset.
   {
     PassRunner runner(wasm, options);
-    if (flags.emscripten) {
-      runner.add("llvm-nontrapping-fptoint-lowering");
-    }
     // TODO: only legalize if necessary - emscripten would already do so, and
     //       likely other toolchains. but spec test suite needs that.
     runner.add("legalize-js-interface");
@@ -2351,7 +2348,15 @@ Ref Wasm2JSBuilder::processExpression(Expression* curr,
       unimplemented(curr);
       WASM_UNREACHABLE("unimp");
     }
-    Ref visitStructNotify(StructNotify* curr) {
+    Ref visitWaitqueueNew(WaitqueueNew* curr) {
+      unimplemented(curr);
+      WASM_UNREACHABLE("unimp");
+    }
+    Ref visitWaitqueueNotify(WaitqueueNotify* curr) {
+      unimplemented(curr);
+      WASM_UNREACHABLE("unimp");
+    }
+    Ref visitPublish(Publish* curr) {
       unimplemented(curr);
       WASM_UNREACHABLE("unimp");
     }

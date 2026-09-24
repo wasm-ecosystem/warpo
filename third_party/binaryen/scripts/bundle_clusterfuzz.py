@@ -88,9 +88,11 @@ if len(sys.argv) >= 3:
     # Delete the argument, as importing |shared| scans it.
     sys.argv.pop()
 
-from test import fuzzing # noqa
-from test import shared # noqa
-from test import support # noqa
+from test import (  # ruff: ignore[module-import-not-at-top-of-file]
+    fuzzing,
+    shared,
+    support,
+)
 
 # Pick where to get the builds
 if build_dir:
@@ -109,11 +111,12 @@ features = [
     '--disable-fp16',
     '--disable-strings',
     '--disable-stack-switching',
-    '--disable-relaxed-atomics',
     '--disable-multibyte',
+    '--disable-relaxed-atomics',
 ]
 
-with tarfile.open(output_file, "w:gz") as tar:
+# Use fast compression (level 1) to speed up bundling with only a modest size increase.
+with tarfile.open(output_file, 'w:gz', compresslevel=1) as tar:
     # run.py
     run = os.path.join(shared.options.binaryen_root, 'scripts', 'clusterfuzz', 'run.py')
     print(f'  .. run:         {run}')

@@ -155,20 +155,33 @@ public:
                     Name mem);
   Result<> makeStore(
     unsigned bytes, Address offset, unsigned align, Type type, Name mem);
-  Result<> makeAtomicLoad(
-    unsigned bytes, Address offset, Type type, Name mem, MemoryOrder order);
-  Result<> makeAtomicStore(
-    unsigned bytes, Address offset, Type type, Name mem, MemoryOrder order);
+  Result<> makeAtomicLoad(unsigned bytes,
+                          Address offset,
+                          Address align,
+                          Type type,
+                          Name mem,
+                          MemoryOrder order);
+  Result<> makeAtomicStore(unsigned bytes,
+                           Address offset,
+                           Address align,
+                           Type type,
+                           Name mem,
+                           MemoryOrder order);
   Result<> makeAtomicRMW(AtomicRMWOp op,
                          unsigned bytes,
                          Address offset,
+                         Address align,
                          Type type,
                          Name mem,
                          MemoryOrder order);
-  Result<> makeAtomicCmpxchg(
-    unsigned bytes, Address offset, Type type, Name mem, MemoryOrder order);
-  Result<> makeAtomicWait(Type type, Address offset, Name mem);
-  Result<> makeAtomicNotify(Address offset, Name mem);
+  Result<> makeAtomicCmpxchg(unsigned bytes,
+                             Address offset,
+                             Address align,
+                             Type type,
+                             Name mem,
+                             MemoryOrder order);
+  Result<> makeAtomicWait(Type type, Address offset, Address align, Name mem);
+  Result<> makeAtomicNotify(Address offset, Address align, Name mem);
   Result<> makeAtomicFence(MemoryOrder order);
   Result<> makePause();
   Result<> makeSIMDExtract(SIMDExtractOp op, uint8_t lane);
@@ -233,8 +246,8 @@ public:
   Result<> makeRefGetDesc(HeapType type);
   Result<> makeBrOn(Index label,
                     BrOnOp op,
-                    Type in = Type::none,
-                    Type out = Type::none,
+                    std::optional<Type> in = std::nullopt,
+                    std::optional<Type> out = std::nullopt,
                     const CodeAnnotation& annotations = {});
   Result<> makeStructNew(HeapType type, bool isDesc);
   Result<> makeStructNewDefault(HeapType type, bool isDesc);
@@ -245,7 +258,9 @@ public:
   makeStructRMW(AtomicRMWOp op, HeapType type, Index field, MemoryOrder order);
   Result<> makeStructCmpxchg(HeapType type, Index field, MemoryOrder order);
   Result<> makeStructWait(HeapType type, Index index);
-  Result<> makeStructNotify(HeapType type, Index index);
+  Result<> makeWaitqueueNew();
+  Result<> makeWaitqueueNotify();
+  Result<> makePublish();
   Result<> makeArrayNew(HeapType type);
   Result<> makeArrayNewDefault(HeapType type);
   Result<> makeArrayNewData(HeapType type, Name data);
@@ -253,9 +268,17 @@ public:
   Result<> makeArrayNewFixed(HeapType type, uint32_t arity);
   Result<> makeArrayGet(HeapType type, bool signed_, MemoryOrder order);
   Result<> makeArraySet(HeapType type, MemoryOrder order);
-  Result<>
-  makeArrayLoad(HeapType arrayType, unsigned bytes, bool signed_, Type type);
-  Result<> makeArrayStore(HeapType arrayType, unsigned bytes, Type type);
+  Result<> makeArrayLoad(HeapType arrayType,
+                         unsigned bytes,
+                         bool signed_,
+                         Address offset,
+                         Address align,
+                         Type type);
+  Result<> makeArrayStore(HeapType arrayType,
+                          unsigned bytes,
+                          Address offset,
+                          Address align,
+                          Type type);
   Result<> makeArrayLen();
   Result<> makeArrayCopy(HeapType destType, HeapType srcType);
   Result<> makeArrayFill(HeapType type);

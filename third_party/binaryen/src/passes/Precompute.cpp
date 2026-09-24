@@ -158,8 +158,10 @@ public:
       case MemoryOrder::SeqCst:
         // This can never be precomputed away because it synchronizes with other
         // threads.
+        // TODO: Unify with other memory orderings below.
         return Flow(NONCONSTANT_FLOW);
       case MemoryOrder::AcqRel:
+      case MemoryOrder::Relaxed:
         // This synchronizes only with writes to the same data, so it can still
         // be precomputed if the data is not shared with other threads.
         if (curr->ref->type.getHeapType().isShared()) {
@@ -201,8 +203,10 @@ public:
       case MemoryOrder::SeqCst:
         // This can never be precomputed away because it synchronizes with other
         // threads.
+        // TODO: Unify with other memory orderings below.
         return Flow(NONCONSTANT_FLOW);
       case MemoryOrder::AcqRel:
+      case MemoryOrder::Relaxed:
         // This synchronizes only with writes to the same data, so it can still
         // be precomputed if the data is not shared with other threads.
         if (curr->ref->type.getHeapType().isShared()) {
@@ -1099,7 +1103,7 @@ private:
   // string.
   bool isValidUTF16Literal(const Literal& value) {
     bool expectLowSurrogate = false;
-    for (auto& v : value.getGCData()->values) {
+    for (auto& v : value.getGCData()->getLiterals()) {
       auto c = v.getInteger();
       if (c >= 0xDC00 && c <= 0xDFFF) {
         if (expectLowSurrogate) {

@@ -2745,15 +2745,19 @@ void BinaryInstWriter::visitStructWait(StructWait* curr) {
   o << U32LEB(curr->index);
 }
 
-void BinaryInstWriter::visitStructNotify(StructNotify* curr) {
-  if (curr->ref->type.isNull()) {
-    emitUnreachable();
-    return;
-  }
+void BinaryInstWriter::visitWaitqueueNew(WaitqueueNew* curr) {
   o << static_cast<int8_t>(BinaryConsts::AtomicPrefix)
-    << U32LEB(BinaryConsts::StructNotify);
-  parent.writeIndexedHeapType(curr->ref->type.getHeapType());
-  o << U32LEB(curr->index);
+    << U32LEB(BinaryConsts::WaitqueueNew);
+}
+
+void BinaryInstWriter::visitWaitqueueNotify(WaitqueueNotify* curr) {
+  o << static_cast<int8_t>(BinaryConsts::AtomicPrefix)
+    << U32LEB(BinaryConsts::WaitqueueNotify);
+}
+
+void BinaryInstWriter::visitPublish(Publish* curr) {
+  o << static_cast<int8_t>(BinaryConsts::AtomicPrefix)
+    << U32LEB(BinaryConsts::Publish);
 }
 
 void BinaryInstWriter::visitArrayNew(ArrayNew* curr) {
@@ -2828,24 +2832,34 @@ void BinaryInstWriter::visitArraySet(ArraySet* curr) {
 }
 
 void BinaryInstWriter::visitArrayLoad(ArrayLoad* curr) {
+  if (curr->type == Type::unreachable) {
+    return;
+  }
   if (curr->ref->type.isNull()) {
     emitUnreachable();
     return;
   }
   emitLoadOpcode(curr->bytes, curr->signed_, curr->type);
-  uint32_t alignmentBits = BinaryConsts::HasBackingArrayMask;
+  uint32_t alignmentBits =
+    Bits::log2(curr->align) | BinaryConsts::HasBackingArrayMask;
   o << U32LEB(alignmentBits);
+  o << U32LEB(curr->offset);
   parent.writeIndexedHeapType(curr->ref->type.getHeapType());
 }
 
 void BinaryInstWriter::visitArrayStore(ArrayStore* curr) {
+  if (curr->type == Type::unreachable) {
+    return;
+  }
   if (curr->ref->type.isNull()) {
     emitUnreachable();
     return;
   }
   emitStoreOpcode(curr->bytes, curr->value->type);
-  uint32_t alignmentBits = BinaryConsts::HasBackingArrayMask;
+  uint32_t alignmentBits =
+    Bits::log2(curr->align) | BinaryConsts::HasBackingArrayMask;
   o << U32LEB(alignmentBits);
+  o << U32LEB(curr->offset);
   parent.writeIndexedHeapType(curr->ref->type.getHeapType());
 }
 
@@ -3532,7 +3546,8 @@ void BinaryInstWriter::emitMemoryAccess(size_t alignment,
     case MemoryOrder::Unordered:
     case MemoryOrder::SeqCst:
       break;
-    case MemoryOrder::AcqRel: {
+    case MemoryOrder::AcqRel:
+    case MemoryOrder::Relaxed: {
       shouldWriteMemoryOrder = true;
       alignmentBits |= BinaryConsts::HasMemoryOrderMask;
       break;

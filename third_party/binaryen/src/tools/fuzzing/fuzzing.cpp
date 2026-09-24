@@ -31,9 +31,50 @@
 #include "wasm-io.h"
 #include "wasm-type.h"
 
+#include "tools/fuzzing/fuzz-stats.h"
+
 namespace wasm {
 
 namespace {
+
+struct FuzzStatsCollector
+  : public FuzzStats::PatternCollectorBase<FuzzStatsCollector> {
+  // Collect the occurrences of various cast instructions. Casts are
+  // particularly important for fuzzing. Meant as a sample for running
+  // experiments collecting other interesting patterns.
+  void visitBrOn(BrOn* curr) {
+    switch (curr->op) {
+      case BrOnNull:
+        record("br_on_null");
+        break;
+      case BrOnNonNull:
+        record("br_on_non_null");
+        break;
+      case BrOnCast:
+        record("br_on_cast");
+        break;
+      case BrOnCastFail:
+        record("br_on_cast_fail");
+        break;
+      case BrOnCastDescEq:
+        record("br_on_cast_desc_eq");
+        break;
+      case BrOnCastDescEqFail:
+        record("br_on_cast_desc_eq_fail");
+        break;
+    }
+  }
+
+  void visitRefCast(RefCast* curr) {
+    if (curr->desc) {
+      record("ref_cast_desc_eq");
+    } else {
+      record("ref_cast");
+    }
+  }
+
+  void visitRefTest(RefTest* curr) { record("ref_test"); }
+};
 
 std::vector<Type> getLoggableTypes(const FeatureSet& features) {
   std::vector<Type> loggableTypes = {
@@ -54,7 +95,7 @@ std::vector<Type> getLoggableTypes(const FeatureSet& features) {
 }
 
 std::vector<MemoryOrder> getMemoryOrders(const FeatureSet& features) {
-  return features.hasRelaxedAtomics()
+  return features.hasAcquireReleaseAtomics()
            ? std::vector{MemoryOrder::AcqRel, MemoryOrder::SeqCst}
            : std::vector{MemoryOrder::SeqCst};
 }
@@ -418,6 +459,8 @@ void TranslateToFuzzReader::build() {
   if (againstJS) {
     mutateJSBoundary();
   }
+
+  FuzzStatsCollector().collect(wasm);
 }
 
 void TranslateToFuzzReader::setupMemory() {
@@ -968,12 +1011,12 @@ void TranslateToFuzzReader::finalizeTable() {
       }
     }
 
-    // The code above raises table->initial to a size large enough to accomodate
-    // all of its segments, with the intention of avoiding a trap during
-    // startup. However a single segment of (say) size 4GB would have a table of
-    // that size, which will use a lot of memory and execute very slowly, so we
-    // prefer in the fuzzer to trap on such a thing. To achieve that, set a
-    // reasonable limit for the maximum table size.
+    // The code above raises table->initial to a size large enough to
+    // accommodate all of its segments, with the intention of avoiding a trap
+    // during startup. However a single segment of (say) size 4GB would have a
+    // table of that size, which will use a lot of memory and execute very
+    // slowly, so we prefer in the fuzzer to trap on such a thing. To achieve
+    // that, set a reasonable limit for the maximum table size.
     //
     // This also avoids an issue that arises from table->initial being an
     // Address (64 bits) but Table::kMaxSize being an Index (32 bits), as a
@@ -2839,6 +2882,10 @@ Expression* TranslateToFuzzReader::_makeConcrete(Type type) {
                 &Self::makeStringMeasure,
                 &Self::makeStringGet);
   }
+  if (type == Type::i64) {
+    options.add(FeatureSet::WideArithmetic | FeatureSet::Multivalue,
+                &Self::makeWideIntExtract);
+  }
   if (type.isTuple()) {
     if (type == Types::getI64Pair() && oneIn(2)) {
       options.add(FeatureSet::WideArithmetic, &Self::makeWideIntExpression);
@@ -2866,8 +2913,10 @@ Expression* TranslateToFuzzReader::_makeConcrete(Type type) {
     if (type.isCastable()) {
       // Exact casts are only allowed with custom descriptors enabled.
       if (type.isInexact() || wasm.features.hasCustomDescriptors()) {
+        // Casts are very fundamental to WasmGC, and a potential source of
+        // security issues, so we prioritize them as very important.
         options.add(FeatureSet::ReferenceTypes | FeatureSet::GC,
-                    &Self::makeRefCast);
+                    WeightedOption{&Self::makeRefCast, VeryImportant});
       }
     }
     if (heapType.getDescribedType()) {
@@ -3549,6 +3598,15 @@ Expression* TranslateToFuzzReader::makeWideIntMul(Type type) {
 
 Expression* TranslateToFuzzReader::makeWideIntExpression(Type type) {
   return oneIn(2) ? makeWideIntAddSub(type) : makeWideIntMul(type);
+}
+
+Expression* TranslateToFuzzReader::makeWideIntExtract(Type type) {
+  assert(wasm.features.hasWideArithmetic());
+  assert(wasm.features.hasMultivalue());
+  assert(type == Type::i64);
+  auto* child = makeWideIntExpression(Types::getI64Pair());
+  Index index = upTo(2);
+  return builder.makeTupleExtract(child, index);
 }
 
 Expression* TranslateToFuzzReader::makeTupleExtract(Type type) {
@@ -4355,6 +4413,11 @@ Expression* TranslateToFuzzReader::makeBasicRef(Type type) {
         return builder.makeRefAs(RefAsNonNull, null);
       }
       return null;
+    }
+
+    case HeapType::waitqueue:
+    case HeapType::nowaitqueue: {
+      WASM_UNREACHABLE("waitqueue is unimplemented in the fuzzer");
     }
   }
   WASM_UNREACHABLE("invalid basic ref type");
@@ -5813,8 +5876,18 @@ Expression* TranslateToFuzzReader::makeBrOn(Type type) {
       WASM_UNREACHABLE("bad br_on op");
     }
   }
-  return fixFlowingType(
-    builder.makeBrOn(op, targetName, make(refType), castType));
+  auto* ref = make(refType);
+  if (op == BrOnCast || op == BrOnCastFail) {
+    auto desc = castType.getHeapType().getDescriptorType();
+    if (desc && !oneIn(2)) {
+      auto descOp = op == BrOnCast ? BrOnCastDescEq : BrOnCastDescEqFail;
+      auto descType = Type(*desc, Nullable, castType.getExactness());
+      auto* descRef = makeTrappingRefUse(descType);
+      auto* brOn = builder.makeBrOn(descOp, targetName, ref, castType, descRef);
+      return fixFlowingType(brOn);
+    }
+  }
+  return fixFlowingType(builder.makeBrOn(op, targetName, ref, castType));
 }
 
 Expression* TranslateToFuzzReader::makeContBind(Type type) {
@@ -6572,6 +6645,7 @@ Exactness TranslateToFuzzReader::getSubType(Exactness exactness) {
 }
 
 HeapType TranslateToFuzzReader::getSubType(HeapType type) {
+  assert(wasm.features.hasReferenceTypes());
   if (oneIn(3)) {
     return type;
   }
@@ -6580,7 +6654,6 @@ HeapType TranslateToFuzzReader::getSubType(HeapType type) {
     switch (type.getBasic(Unshared)) {
       case HeapType::func:
         // TODO: Typed function references.
-        assert(wasm.features.hasReferenceTypes());
         return pick(FeatureOptions<HeapType>()
                       .add(HeapTypes::func)
                       .add(FeatureSet::GC, HeapTypes::nofunc))
@@ -6588,7 +6661,6 @@ HeapType TranslateToFuzzReader::getSubType(HeapType type) {
       case HeapType::cont:
         return pick(HeapTypes::cont, HeapTypes::nocont).getBasic(share);
       case HeapType::ext: {
-        assert(wasm.features.hasReferenceTypes());
         auto options = FeatureOptions<HeapType>()
                          .add(HeapTypes::ext)
                          .add(FeatureSet::GC, HeapTypes::noext);
@@ -6599,7 +6671,6 @@ HeapType TranslateToFuzzReader::getSubType(HeapType type) {
         return pick(options).getBasic(share);
       }
       case HeapType::any: {
-        assert(wasm.features.hasReferenceTypes());
         assert(wasm.features.hasGC());
         return pick(HeapTypes::any,
                     HeapTypes::eq,
@@ -6610,7 +6681,6 @@ HeapType TranslateToFuzzReader::getSubType(HeapType type) {
           .getBasic(share);
       }
       case HeapType::eq:
-        assert(wasm.features.hasReferenceTypes());
         assert(wasm.features.hasGC());
         return pick(HeapTypes::eq,
                     HeapTypes::i31,
@@ -6636,6 +6706,10 @@ HeapType TranslateToFuzzReader::getSubType(HeapType type) {
       case HeapType::nocont:
       case HeapType::noexn:
         break;
+      case HeapType::waitqueue:
+      case HeapType::nowaitqueue: {
+        WASM_UNREACHABLE("waitqueue is unimplemented in the fuzzer");
+      }
     }
   }
   // Look for an interesting subtype.
