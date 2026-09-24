@@ -1360,7 +1360,7 @@ struct PrintExpressionContents
         o << "f16x8.demote_f64x2_zero";
         break;
       case InvalidUnary:
-        WASM_UNREACHABLE("unvalid unary operator");
+        WASM_UNREACHABLE("invalid unary operator");
     }
     restoreNormalColor(o);
   }
@@ -2033,7 +2033,7 @@ struct PrintExpressionContents
         break;
 
       case InvalidBinary:
-        WASM_UNREACHABLE("unvalid binary operator");
+        WASM_UNREACHABLE("invalid binary operator");
     }
     restoreNormalColor(o);
   }
@@ -2329,6 +2329,9 @@ struct PrintExpressionContents
       case MemoryOrder::AcqRel:
         o << " acqrel";
         break;
+      case MemoryOrder::Relaxed:
+        o << " relaxed";
+        break;
     }
   }
 
@@ -2399,13 +2402,13 @@ struct PrintExpressionContents
     o << ' ';
     o << curr->index;
   }
-  void visitStructNotify(StructNotify* curr) {
-    printMedium(o, "struct.notify");
-    o << ' ';
-    printHeapTypeName(curr->ref->type.getHeapType());
-    o << ' ';
-    o << curr->index;
+  void visitWaitqueueNew(WaitqueueNew* curr) {
+    printMedium(o, "waitqueue.new");
   }
+  void visitWaitqueueNotify(WaitqueueNotify* curr) {
+    printMedium(o, "waitqueue.notify");
+  }
+  void visitPublish(Publish* curr) { printMedium(o, "publish"); }
   void visitArrayNew(ArrayNew* curr) {
     printMedium(o, "array.new");
     if (curr->isWithDefault()) {
@@ -2479,6 +2482,12 @@ struct PrintExpressionContents
     printMinor(o, "type ");
     printHeapTypeName(curr->ref->type.getHeapType());
     o << ')';
+    if (curr->offset) {
+      o << " offset=" << curr->offset;
+    }
+    if (curr->align != curr->bytes) {
+      o << " align=" << curr->align;
+    }
   }
 
   void visitArrayStore(ArrayStore* curr) {
@@ -2492,6 +2501,12 @@ struct PrintExpressionContents
     printMinor(o, "type ");
     printHeapTypeName(curr->ref->type.getHeapType());
     o << ')';
+    if (curr->offset) {
+      o << " offset=" << curr->offset;
+    }
+    if (curr->align != curr->bytes) {
+      o << " align=" << curr->align;
+    }
   }
   void visitArrayLen(ArrayLen* curr) { printMedium(o, "array.len"); }
   void visitArrayCopy(ArrayCopy* curr) {
@@ -2775,8 +2790,9 @@ void PrintSExpression::printMetadata(Expression* curr) {
       if (auto iter = currFunction->expressionLocations.find(curr);
           iter != currFunction->expressionLocations.end()) {
         Colors::grey(o);
-        o << ";; code offset: 0x" << std::hex << iter->second.start << std::dec
-          << '\n';
+        const auto& span = iter->second;
+        o << ";; code offset: 0x" << std::hex << span.start << " - 0x"
+          << span.end << std::dec << '\n';
         restoreNormalColor(o);
         doIndent(o, indent);
       }
@@ -3869,13 +3885,13 @@ static std::ostream& printStackIR(StackIR* ir, PrintSExpression& printer) {
     }
     switch (inst->op) {
       case StackInst::Basic: {
-        doIndent();
         // Pop is a pseudo instruction and should not be printed in the stack IR
         // format to make it valid wat form.
         if (inst->origin->is<Pop>()) {
-          break;
+          continue;
         }
 
+        doIndent();
         PrintExpressionContents(printer).visit(inst->origin);
         break;
       }
@@ -4029,6 +4045,9 @@ std::ostream& operator<<(std::ostream& os, wasm::MemoryOrder mo) {
   switch (mo) {
     case wasm::MemoryOrder::Unordered:
       os << "Unordered";
+      break;
+    case wasm::MemoryOrder::Relaxed:
+      os << "Relaxed";
       break;
     case wasm::MemoryOrder::SeqCst:
       os << "SeqCst";

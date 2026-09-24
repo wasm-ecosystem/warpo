@@ -76,11 +76,12 @@ const char* FP16Feature = "fp16";
 const char* BulkMemoryOptFeature = "bulk-memory-opt";
 const char* CallIndirectOverlongFeature = "call-indirect-overlong";
 const char* CustomDescriptorsFeature = "custom-descriptors";
-const char* RelaxedAtomicsFeature = "relaxed-atomics";
+const char* AcquireReleaseAtomicsFeature = "acquire-release-atomics";
 const char* MultibyteFeature = "multibyte";
 const char* CustomPageSizesFeature = "custom-page-sizes";
 const char* WideArithmeticFeature = "wide-arithmetic";
 const char* CompactImportsFeature = "compact-imports";
+const char* RelaxedAtomicsFeature = "relaxed-atomics";
 
 } // namespace BinaryConsts::CustomSections
 
@@ -95,7 +96,6 @@ const Name ToolchainInlineHint = "binaryen.inline";
 
 } // namespace Annotations
 
-Name STACK_POINTER("__stack_pointer");
 Name MODULE("module");
 Name START("start");
 Name GLOBAL("global");
@@ -120,17 +120,11 @@ Name NULL_("null");
 Name CALL("call");
 Name CALL_INDIRECT("call_indirect");
 Name BLOCK("block");
-Name BR_IF("br_if");
 Name THEN("then");
 Name ELSE("else");
-Name _NAN("NaN");
-Name _INFINITY("Infinity");
-Name NEG_INFINITY("-infinity");
-Name NEG_NAN("-nan");
 Name CASE("case");
 Name BR("br");
 Name FUNCREF("funcref");
-Name FAKE_RETURN("__binaryen_fake_return");
 Name DELEGATE_CALLER_TARGET("__binaryen_delegate_caller_target");
 Name MUT("mut");
 Name SPECTEST("spectest");
@@ -812,8 +806,7 @@ void WideIntAddSub::finalize() {
       rightHigh->type == Type::unreachable) {
     type = Type::unreachable;
   } else {
-    static Type i64Pair = Types::getI64Pair();
-    type = i64Pair;
+    type = Types::getI64Pair();
   }
 }
 
@@ -821,8 +814,7 @@ void WideIntMul::finalize() {
   if (left->type == Type::unreachable || right->type == Type::unreachable) {
     type = Type::unreachable;
   } else {
-    static Type i64Pair = Types::getI64Pair();
-    type = i64Pair;
+    type = Types::getI64Pair();
   }
 }
 
@@ -1221,6 +1213,10 @@ void BrOn::finalize() {
       if (castType.isNullable()) {
         // Nulls take the branch, so the result is non-nullable.
         type = ref->type.with(NonNullable);
+      } else if (desc && desc->type.isNull()) {
+        // Cast will never be executed and the instruction will not be emitted.
+        // Model this with an uninhabitable result type.
+        type = desc->type.with(NonNullable);
       } else {
         // Nulls do not take the branch, so the result is non-nullable only if
         // the input is.
@@ -1268,6 +1264,11 @@ Type BrOn::getSentType() {
       // The same as the result type of br_on_cast (if reachable).
       if (ref->type == Type::unreachable) {
         return Type::unreachable;
+      }
+      if (desc && desc->type.isNull()) {
+        // Cast will never be executed and the branch will not be taken.
+        // Model this with an uninhabitable sent type.
+        return desc->type.with(NonNullable);
       }
       if (castType.isNullable()) {
         return ref->type.with(NonNullable);
@@ -1333,9 +1334,30 @@ void StructCmpxchg::finalize() {
   }
 }
 
-void StructWait::finalize() { type = Type::i32; }
+void StructWait::finalize() {
+  if (ref->type == Type::unreachable || waitqueue->type == Type::unreachable ||
+      expected->type == Type::unreachable ||
+      timeout->type == Type::unreachable) {
+    type = Type::unreachable;
+  } else {
+    type = Type::i32;
+  }
+}
 
-void StructNotify::finalize() { type = Type::i32; }
+void WaitqueueNew::finalize() {
+  type = Type(HeapTypes::sharedWaitqueue, NonNullable);
+}
+
+void WaitqueueNotify::finalize() {
+  if (waitqueue->type == Type::unreachable ||
+      count->type == Type::unreachable) {
+    type = Type::unreachable;
+  } else {
+    type = Type::i32;
+  }
+}
+
+void Publish::finalize() { type = ref->type; }
 
 void ArrayNew::finalize() {
   if (size->type == Type::unreachable ||

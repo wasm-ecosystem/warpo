@@ -70,8 +70,9 @@ struct Address {
 
 enum class MemoryOrder : uint8_t {
   Unordered,
-  SeqCst,
+  Relaxed,
   AcqRel,
+  SeqCst,
 };
 
 enum class IRProfile { Normal, Poppy };
@@ -672,6 +673,9 @@ enum WideIntMulOp {
 
 class Expression {
 public:
+  // The type of the expression: its *output*, not necessarily its input(s)
+  Type type = Type::none;
+
   enum Id : uint8_t {
     InvalidId = 0,
     BlockId,
@@ -778,15 +782,19 @@ public:
     ResumeThrowId,
     StackSwitchId,
     StructWaitId,
-    StructNotifyId,
     WideIntAddSubId,
     WideIntMulId,
+    WaitqueueNewId,
+    WaitqueueNotifyId,
+    PublishId,
     NumExpressionIds
   };
-  Id _id;
 
-  // the type of the expression: its *output*, not necessarily its input(s)
-  Type type = Type::none;
+  // Placing this *after* the Type allows tail-padding reuse on some ABIs: the
+  // ID is only 1 byte, leaving lots of padding on 64-bit systems, which
+  // derived classes can sometimes reuse (if they have a suitable field up
+  // front; the classes below are sorted to optimize that).
+  Id _id;
 
   Expression(Id id) : _id(id) {}
 
@@ -945,9 +953,9 @@ class Call : public SpecificExpression<Expression::CallId> {
 public:
   Call(MixedArena& allocator) : operands(allocator) {}
 
+  bool isReturn = false;
   ExpressionList operands;
   Name target;
-  bool isReturn = false;
 
   void finalize();
 };
@@ -955,11 +963,12 @@ public:
 class CallIndirect : public SpecificExpression<Expression::CallIndirectId> {
 public:
   CallIndirect(MixedArena& allocator) : operands(allocator) {}
+
+  bool isReturn = false;
   HeapType heapType;
   ExpressionList operands;
   Expression* target;
   Name table;
-  bool isReturn = false;
 
   void finalize();
 };
@@ -1013,11 +1022,12 @@ public:
 
   uint8_t bytes;
   bool signed_ = false;
+  MemoryOrder order = MemoryOrder::Unordered;
+
   Address offset;
   Address align;
   Expression* ptr;
   Name memory;
-  MemoryOrder order = MemoryOrder::Unordered;
 
   bool isAtomic() const { return order != MemoryOrder::Unordered; }
 
@@ -1032,13 +1042,14 @@ public:
   Store(MixedArena& allocator) : Store() {}
 
   uint8_t bytes;
+  MemoryOrder order = MemoryOrder::Unordered;
+
   Address offset;
   Address align;
   Expression* ptr;
   Expression* value;
   Type valueType;
   Name memory;
-  MemoryOrder order;
 
   bool isAtomic() const { return order != MemoryOrder::Unordered; }
 
@@ -1051,12 +1062,12 @@ public:
   AtomicRMW(MixedArena& allocator) : AtomicRMW() {}
 
   AtomicRMWOp op;
+  MemoryOrder order = MemoryOrder::SeqCst;
   uint8_t bytes;
   Address offset;
   Expression* ptr;
   Expression* value;
   Name memory;
-  MemoryOrder order = MemoryOrder::SeqCst;
 
   void finalize();
 };
@@ -1067,12 +1078,12 @@ public:
   AtomicCmpxchg(MixedArena& allocator) : AtomicCmpxchg() {}
 
   uint8_t bytes;
+  MemoryOrder order = MemoryOrder::SeqCst;
   Address offset;
   Expression* ptr;
   Expression* expected;
   Expression* replacement;
   Name memory;
-  MemoryOrder order = MemoryOrder::SeqCst;
 
   void finalize();
 };
@@ -1124,9 +1135,9 @@ public:
   SIMDExtract() = default;
   SIMDExtract(MixedArena& allocator) : SIMDExtract() {}
 
+  uint8_t index;
   SIMDExtractOp op;
   Expression* vec;
-  uint8_t index;
 
   void finalize();
 };
@@ -1136,9 +1147,9 @@ public:
   SIMDReplace() = default;
   SIMDReplace(MixedArena& allocator) : SIMDReplace() {}
 
+  uint8_t index;
   SIMDReplaceOp op;
   Expression* vec;
-  uint8_t index;
   Expression* value;
 
   void finalize();
@@ -1632,8 +1643,8 @@ public:
   TupleExtract() = default;
   TupleExtract(MixedArena& allocator) {}
 
-  Expression* tuple;
   Index index;
+  Expression* tuple;
 
   void finalize();
 };
@@ -1653,8 +1664,8 @@ public:
   I31Get() = default;
   I31Get(MixedArena& allocator) {}
 
-  Expression* i31;
   bool signed_ = false;
+  Expression* i31;
 
   void finalize();
 };
@@ -1662,9 +1673,10 @@ public:
 class CallRef : public SpecificExpression<Expression::CallRefId> {
 public:
   CallRef(MixedArena& allocator) : operands(allocator) {}
+
+  bool isReturn = false;
   ExpressionList operands;
   Expression* target;
-  bool isReturn = false;
 
   void finalize();
 };
@@ -1752,11 +1764,11 @@ public:
   StructGet() = default;
   StructGet(MixedArena& allocator) {}
 
-  Index index;
-  Expression* ref;
   // Packed fields have a sign.
   bool signed_ = false;
   MemoryOrder order = MemoryOrder::Unordered;
+  Index index;
+  Expression* ref;
 
   bool isAtomic() const { return order != MemoryOrder::Unordered; }
 
@@ -1768,10 +1780,10 @@ public:
   StructSet() = default;
   StructSet(MixedArena& allocator) {}
 
+  MemoryOrder order = MemoryOrder::Unordered;
   Index index;
   Expression* ref;
   Expression* value;
-  MemoryOrder order = MemoryOrder::Unordered;
 
   bool isAtomic() const { return order != MemoryOrder::Unordered; }
 
@@ -1784,10 +1796,10 @@ public:
   StructRMW(MixedArena& allocator) {}
 
   AtomicRMWOp op;
+  MemoryOrder order;
   Index index;
   Expression* ref;
   Expression* value;
-  MemoryOrder order;
 
   void finalize();
 };
@@ -1797,11 +1809,11 @@ public:
   StructCmpxchg() = default;
   StructCmpxchg(MixedArena& allocator) {}
 
+  MemoryOrder order;
   Index index;
   Expression* ref;
   Expression* expected;
   Expression* replacement;
-  MemoryOrder order;
 
   void finalize();
 };
@@ -1812,6 +1824,7 @@ public:
   StructWait(MixedArena& allocator) : StructWait() {}
 
   Expression* ref;
+  Expression* waitqueue;
   Expression* expected;
   Expression* timeout;
   Index index;
@@ -1819,14 +1832,32 @@ public:
   void finalize();
 };
 
-class StructNotify : public SpecificExpression<Expression::StructNotifyId> {
+class WaitqueueNew : public SpecificExpression<Expression::WaitqueueNewId> {
 public:
-  StructNotify() = default;
-  StructNotify(MixedArena& allocator) : StructNotify() {}
+  WaitqueueNew() = default;
+  WaitqueueNew(MixedArena& allocator) : WaitqueueNew() {}
+
+  void finalize();
+};
+
+class WaitqueueNotify
+  : public SpecificExpression<Expression::WaitqueueNotifyId> {
+public:
+  WaitqueueNotify() = default;
+  WaitqueueNotify(MixedArena& allocator) : WaitqueueNotify() {}
+
+  Expression* waitqueue;
+  Expression* count;
+
+  void finalize();
+};
+
+class Publish : public SpecificExpression<Expression::PublishId> {
+public:
+  Publish() = default;
+  Publish(MixedArena& allocator) : Publish() {}
 
   Expression* ref;
-  Expression* count;
-  Index index;
 
   void finalize();
 };
@@ -1885,11 +1916,11 @@ public:
   ArrayGet() = default;
   ArrayGet(MixedArena& allocator) {}
 
-  Expression* ref;
-  Expression* index;
   // Packed fields have a sign.
   bool signed_ = false;
   MemoryOrder order = MemoryOrder::Unordered;
+  Expression* ref;
+  Expression* index;
 
   bool isAtomic() const { return order != MemoryOrder::Unordered; }
 
@@ -1901,10 +1932,10 @@ public:
   ArraySet() = default;
   ArraySet(MixedArena& allocator) {}
 
+  MemoryOrder order = MemoryOrder::Unordered;
   Expression* ref;
   Expression* index;
   Expression* value;
-  MemoryOrder order = MemoryOrder::Unordered;
 
   bool isAtomic() const { return order != MemoryOrder::Unordered; }
 
@@ -1918,6 +1949,8 @@ public:
 
   uint8_t bytes;
   bool signed_ = false;
+  Address offset = 0;
+  Address align = 0;
   Expression* ref;
   Expression* index;
 
@@ -1930,6 +1963,8 @@ public:
   ArrayStore(MixedArena& allocator) {}
 
   uint8_t bytes;
+  Address offset = 0;
+  Address align = 0;
   Expression* ref;
   Expression* index;
   Expression* value;
@@ -2007,11 +2042,11 @@ public:
   ArrayRMW() = default;
   ArrayRMW(MixedArena& allocator) {}
 
+  MemoryOrder order;
   AtomicRMWOp op;
   Expression* ref;
   Expression* index;
   Expression* value;
-  MemoryOrder order;
 
   void finalize();
 };
@@ -2021,11 +2056,11 @@ public:
   ArrayCmpxchg() = default;
   ArrayCmpxchg(MixedArena& allocator) {}
 
+  MemoryOrder order;
   Expression* ref;
   Expression* index;
   Expression* expected;
   Expression* replacement;
-  MemoryOrder order;
 
   void finalize();
 };
@@ -2727,6 +2762,9 @@ public:
   Name name;
 
   std::unordered_map<HeapType, TypeNames> typeNames;
+
+  // The source binary's type indices. Used in some cases for preserving
+  // ordering of types.
   std::unordered_map<HeapType, Index> typeIndices;
 
   // Potential effects for bodies of indirect calls to this type. Populated by
@@ -2743,6 +2781,7 @@ public:
   // This data is only meaningful for indirect calls. If no indirect call
   // exists to a function, the data can be out of date (no effort is made to
   // clean up the data if e.g. all indirect calls to a function are removed).
+  //
   // TODO: Account for exactness here.
   std::unordered_map<HeapType, std::shared_ptr<const EffectAnalyzer>>
     indirectCallEffects;

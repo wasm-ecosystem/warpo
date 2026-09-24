@@ -18,6 +18,7 @@
 #include <fstream>
 #include <optional>
 
+#include "ir/memory-utils.h"
 #include "ir/module-utils.h"
 #include "ir/names.h"
 #include "ir/table-utils.h"
@@ -26,6 +27,7 @@
 #include "support/bits.h"
 #include "support/stdckdint.h"
 #include "support/string.h"
+#include "support/utilities.h"
 #include "wasm-annotations.h"
 #include "wasm-binary.h"
 #include "wasm-debug.h"
@@ -337,51 +339,160 @@ void WasmBinaryWriter::writeImports() {
     return;
   }
   auto start = startSection(BinaryConsts::Section::Import);
-  o << U32LEB(num);
-  auto writeImportHeader = [&](Importable* import) {
-    writeInlineString(import->module.view());
-    writeInlineString(import->base.view());
+
+  using ImportItem = std::variant<Function*, Global*, Tag*, Memory*, Table*>;
+  std::vector<ImportItem> imports;
+  imports.reserve(num);
+
+  ModuleUtils::iterImports(*wasm,
+                           [&](ImportItem item) { imports.push_back(item); });
+
+  auto getModule = [](const ImportItem& item) -> Name {
+    return std::visit([](auto* i) { return i->module; }, item);
   };
-  ModuleUtils::iterImportedFunctions(*wasm, [&](Function* func) {
-    writeImportHeader(func);
-    uint32_t kind = ExternalKind::Function;
-    if (func->type.isExact()) {
-      kind |= BinaryConsts::ExactImport;
+  auto getBase = [](const ImportItem& item) -> Name {
+    return std::visit([](auto* i) { return i->base; }, item);
+  };
+
+  auto shareImportType = [&](const ImportItem& a, const ImportItem& b) -> bool {
+    return std::visit(
+      overloaded{
+        [](Function* a, Function* b) { return a->type == b->type; },
+        [](Global* a, Global* b) {
+          return a->type == b->type && a->mutable_ == b->mutable_;
+        },
+        [](Tag* a, Tag* b) { return a->type == b->type; },
+        [](Memory* a, Memory* b) { return MemoryUtils::sameType(*a, *b); },
+        [](Table* a, Table* b) { return TableUtils::sameType(*a, *b); },
+        [](const auto& a, const auto& b) { return false; }},
+      a,
+      b);
+  };
+
+  struct ImportGroup {
+    enum Kind { Single, SharedAll, SharedModule } kind;
+    size_t start;
+    size_t count;
+  };
+
+  std::vector<ImportGroup> groups;
+  if (wasm->features.hasCompactImports()) {
+    size_t i = 0;
+    size_t numImports = imports.size();
+    while (i < numImports) {
+      // If the next import shares the module and type, then greedily collect
+      // the following imports as long as they share both the module and type.
+      size_t run = 1;
+      while (i + run < numImports &&
+             getModule(imports[i]) == getModule(imports[i + run]) &&
+             shareImportType(imports[i], imports[i + run])) {
+        ++run;
+      }
+      if (run > 1) {
+        groups.push_back({ImportGroup::SharedAll, i, run});
+        i += run;
+        continue;
+      }
+      // Otherwise, try greedily collecting imports that share just the module.
+      while (i + run < numImports &&
+             getModule(imports[i]) == getModule(imports[i + run])) {
+        ++run;
+      }
+      if (run > 1) {
+        groups.push_back({ImportGroup::SharedModule, i, run});
+        i += run;
+        continue;
+      }
+      // Otherwise, just use a normal import.
+      groups.push_back({ImportGroup::Single, i, 1});
+      ++i;
     }
-    o << U32LEB(kind) << U32LEB(getTypeIndex(func->type.getHeapType()));
-  });
-  ModuleUtils::iterImportedGlobals(*wasm, [&](Global* global) {
-    writeImportHeader(global);
-    o << U32LEB(int32_t(ExternalKind::Global));
-    writeType(global->type);
-    o << U32LEB(global->mutable_);
-  });
-  ModuleUtils::iterImportedTags(*wasm, [&](Tag* tag) {
-    writeImportHeader(tag);
-    o << U32LEB(int32_t(ExternalKind::Tag));
-    o << uint8_t(0); // Reserved 'attribute' field. Always 0.
-    o << U32LEB(getTypeIndex(tag->type));
-  });
-  ModuleUtils::iterImportedMemories(*wasm, [&](Memory* memory) {
-    writeImportHeader(memory);
-    o << U32LEB(int32_t(ExternalKind::Memory));
-    writeResizableLimits(memory->initial,
-                         memory->max,
-                         memory->hasMax(),
-                         memory->shared,
-                         memory->is64(),
-                         memory->pageSizeLog2);
-  });
-  ModuleUtils::iterImportedTables(*wasm, [&](Table* table) {
-    writeImportHeader(table);
-    o << U32LEB(int32_t(ExternalKind::Table));
-    writeType(table->type);
-    writeResizableLimits(table->initial,
-                         table->max,
-                         table->hasMax(),
-                         /*shared=*/false,
-                         table->is64());
-  });
+  } else {
+    for (size_t i = 0; i < imports.size(); ++i) {
+      groups.push_back({ImportGroup::Single, i, 1});
+    }
+  }
+
+  o << U32LEB(groups.size());
+
+  auto writeImportDesc = [&](const ImportItem& item) {
+    std::visit(overloaded{[&](Function* func) {
+                            uint32_t kind = ExternalKind::Function;
+                            if (func->type.isExact()) {
+                              kind |= BinaryConsts::ExactImport;
+                            }
+                            o << U32LEB(kind)
+                              << U32LEB(getTypeIndex(func->type.getHeapType()));
+                          },
+                          [&](Global* global) {
+                            o << U32LEB(int32_t(ExternalKind::Global));
+                            writeType(global->type);
+                            o << U32LEB(global->mutable_);
+                          },
+                          [&](Tag* tag) {
+                            o << U32LEB(int32_t(ExternalKind::Tag));
+                            // Reserved 'attribute' field. Always 0.
+                            o << uint8_t(0);
+                            o << U32LEB(getTypeIndex(tag->type));
+                          },
+                          [&](Memory* memory) {
+                            o << U32LEB(int32_t(ExternalKind::Memory));
+                            writeResizableLimits(memory->initial,
+                                                 memory->max,
+                                                 memory->hasMax(),
+                                                 memory->shared,
+                                                 memory->is64(),
+                                                 memory->pageSizeLog2);
+                          },
+                          [&](Table* table) {
+                            o << U32LEB(int32_t(ExternalKind::Table));
+                            writeType(table->type);
+                            writeResizableLimits(table->initial,
+                                                 table->max,
+                                                 table->hasMax(),
+                                                 /*shared=*/false,
+                                                 table->is64());
+                          }},
+               item);
+  };
+
+  for (const auto& group : groups) {
+    switch (group.kind) {
+      case ImportGroup::Single: {
+        const auto& item = imports[group.start];
+        writeInlineString(getModule(item).view());
+        writeInlineString(getBase(item).view());
+        writeImportDesc(item);
+        break;
+      }
+      case ImportGroup::SharedAll: {
+        const auto& first = imports[group.start];
+        writeInlineString(getModule(first).view());
+        writeInlineString("");
+        o << uint8_t(BinaryConsts::CompactImportsSharedAll);
+        writeImportDesc(first);
+        o << U32LEB(group.count);
+        for (size_t i = 0; i < group.count; ++i) {
+          writeInlineString(getBase(imports[group.start + i]).view());
+        }
+        break;
+      }
+      case ImportGroup::SharedModule: {
+        const auto& first = imports[group.start];
+        writeInlineString(getModule(first).view());
+        writeInlineString("");
+        o << uint8_t(BinaryConsts::CompactImportsSharedModule);
+        o << U32LEB(group.count);
+        for (size_t i = 0; i < group.count; ++i) {
+          const auto& item = imports[group.start + i];
+          writeInlineString(getBase(item).view());
+          writeImportDesc(item);
+        }
+        break;
+      }
+    }
+  }
+
   finishSection(start);
 }
 
@@ -1483,14 +1594,16 @@ void WasmBinaryWriter::writeFeaturesSection() {
         return BinaryConsts::CustomSections::CallIndirectOverlongFeature;
       case FeatureSet::CustomDescriptors:
         return BinaryConsts::CustomSections::CustomDescriptorsFeature;
-      case FeatureSet::RelaxedAtomics:
-        return BinaryConsts::CustomSections::RelaxedAtomicsFeature;
+      case FeatureSet::AcquireReleaseAtomics:
+        return BinaryConsts::CustomSections::AcquireReleaseAtomicsFeature;
       case FeatureSet::CustomPageSizes:
         return BinaryConsts::CustomSections::CustomPageSizesFeature;
       case FeatureSet::WideArithmetic:
         return BinaryConsts::CustomSections::WideArithmeticFeature;
       case FeatureSet::CompactImports:
         return BinaryConsts::CustomSections::CompactImportsFeature;
+      case FeatureSet::RelaxedAtomics:
+        return BinaryConsts::CustomSections::RelaxedAtomicsFeature;
       case FeatureSet::None:
       case FeatureSet::Default:
       case FeatureSet::All:
@@ -1902,6 +2015,12 @@ void WasmBinaryWriter::writeType(Type type) {
         case HeapType::nocont:
           o << S32LEB(BinaryConsts::EncodedType::nullcontref);
           return;
+        case HeapType::waitqueue:
+          o << S32LEB(BinaryConsts::EncodedHeapType::waitqueue);
+          return;
+        case HeapType::nowaitqueue:
+          o << S32LEB(BinaryConsts::EncodedHeapType::nowaitqueue);
+          return;
       }
     }
     if (type.isNullable()) {
@@ -2004,6 +2123,12 @@ void WasmBinaryWriter::writeHeapType(HeapType type, Exactness exactness) {
     case HeapType::nocont:
       ret = BinaryConsts::EncodedHeapType::nocont;
       break;
+    case HeapType::waitqueue:
+      ret = BinaryConsts::EncodedHeapType::waitqueue;
+      break;
+    case HeapType::nowaitqueue:
+      ret = BinaryConsts::EncodedHeapType::nowaitqueue;
+      break;
   }
   o << S64LEB(ret); // TODO: Actually s33
 }
@@ -2018,8 +2143,6 @@ void WasmBinaryWriter::writeField(const Field& field) {
       o << S32LEB(BinaryConsts::EncodedType::i8);
     } else if (field.packedType == Field::i16) {
       o << S32LEB(BinaryConsts::EncodedType::i16);
-    } else if (field.packedType == Field::WaitQueue) {
-      o << S32LEB(BinaryConsts::EncodedType::waitQueue);
     } else {
       WASM_UNREACHABLE("invalid packed type");
     }
@@ -2040,6 +2163,9 @@ void WasmBinaryWriter::writeMemoryOrder(MemoryOrder order, bool isRMW) {
       break;
     case MemoryOrder::AcqRel:
       code = BinaryConsts::OrderAcqRel;
+      break;
+    case MemoryOrder::Relaxed:
+      code = BinaryConsts::OrderRelaxed;
       break;
   }
   if (isRMW) {
@@ -2477,6 +2603,12 @@ bool WasmBinaryReader::getBasicHeapType(int64_t code, HeapType& out) {
     case BinaryConsts::EncodedHeapType::nocont:
       out = HeapType::nocont;
       return true;
+    case BinaryConsts::EncodedHeapType::waitqueue:
+      out = HeapType::waitqueue;
+      return true;
+    case BinaryConsts::EncodedHeapType::nowaitqueue:
+      out = HeapType::nowaitqueue;
+      return true;
     default:
       return false;
   }
@@ -2762,10 +2894,6 @@ void WasmBinaryReader::readTypes() {
     if (typeCode == BinaryConsts::EncodedType::i16) {
       auto mutable_ = readMutability();
       return Field(Field::i16, mutable_);
-    }
-    if (typeCode == BinaryConsts::EncodedType::waitQueue) {
-      auto mutable_ = readMutability();
-      return Field(Field::WaitQueue, mutable_);
     }
     // It's a regular wasm value.
     auto type = makeType(typeCode);
@@ -3394,7 +3522,8 @@ Result<> WasmBinaryReader::readLoad(unsigned bytes, bool signed_, Type type) {
   auto [mem, align, offset, backing] = getMemarg();
   if (backing == BackingType::Array) {
     HeapType arrayType = getIndexedHeapType();
-    return builder.makeArrayLoad(arrayType, bytes, signed_, type);
+    return builder.makeArrayLoad(
+      arrayType, bytes, signed_, offset, align, type);
   }
   return builder.makeLoad(bytes, signed_, offset, align, type, mem);
 }
@@ -3403,7 +3532,7 @@ Result<> WasmBinaryReader::readStore(unsigned bytes, Type type) {
   auto [mem, align, offset, backing] = getMemarg();
   if (backing == BackingType::Array) {
     HeapType arrayType = getIndexedHeapType();
-    return builder.makeArrayStore(arrayType, bytes, type);
+    return builder.makeArrayStore(arrayType, bytes, offset, align, type);
   }
   return builder.makeStore(bytes, offset, align, type, mem);
 }
@@ -3805,105 +3934,111 @@ Result<> WasmBinaryReader::readInst() {
       auto op = getU32LEB();
       switch (op) {
         case BinaryConsts::I32AtomicLoad8U: {
-          // TODO: pass align through for validation.
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicLoad(1, offset, Type::i32, mem, memoryOrder);
+          return builder.makeAtomicLoad(
+            1, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicLoad16U: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicLoad(2, offset, Type::i32, mem, memoryOrder);
+          return builder.makeAtomicLoad(
+            2, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicLoad: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicLoad(4, offset, Type::i32, mem, memoryOrder);
+          return builder.makeAtomicLoad(
+            4, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicLoad8U: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicLoad(1, offset, Type::i64, mem, memoryOrder);
+          return builder.makeAtomicLoad(
+            1, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicLoad16U: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicLoad(2, offset, Type::i64, mem, memoryOrder);
+          return builder.makeAtomicLoad(
+            2, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicLoad32U: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicLoad(4, offset, Type::i64, mem, memoryOrder);
+          return builder.makeAtomicLoad(
+            4, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicLoad: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicLoad(8, offset, Type::i64, mem, memoryOrder);
+          return builder.makeAtomicLoad(
+            8, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicStore8: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
           return builder.makeAtomicStore(
-            1, offset, Type::i32, mem, memoryOrder);
+            1, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicStore16: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
           return builder.makeAtomicStore(
-            2, offset, Type::i32, mem, memoryOrder);
+            2, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicStore: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
           return builder.makeAtomicStore(
-            4, offset, Type::i32, mem, memoryOrder);
+            4, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicStore8: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
           return builder.makeAtomicStore(
-            1, offset, Type::i64, mem, memoryOrder);
+            1, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicStore16: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
           return builder.makeAtomicStore(
-            2, offset, Type::i64, mem, memoryOrder);
+            2, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicStore32: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
           return builder.makeAtomicStore(
-            4, offset, Type::i64, mem, memoryOrder);
+            4, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicStore: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
           return builder.makeAtomicStore(
-            8, offset, Type::i64, mem, memoryOrder);
+            8, offset, align, Type::i64, mem, memoryOrder);
         }
 
 #define RMW(op)                                                                \
   case BinaryConsts::I32AtomicRMW##op: {                                       \
     auto [mem, align, offset, memoryOrder] = getRMWMemarg();                   \
     return builder.makeAtomicRMW(                                              \
-      RMW##op, 4, offset, Type::i32, mem, memoryOrder);                        \
+      RMW##op, 4, offset, align, Type::i32, mem, memoryOrder);                 \
   }                                                                            \
   case BinaryConsts::I32AtomicRMW##op##8U: {                                   \
     auto [mem, align, offset, memoryOrder] = getRMWMemarg();                   \
     return builder.makeAtomicRMW(                                              \
-      RMW##op, 1, offset, Type::i32, mem, memoryOrder);                        \
+      RMW##op, 1, offset, align, Type::i32, mem, memoryOrder);                 \
   }                                                                            \
   case BinaryConsts::I32AtomicRMW##op##16U: {                                  \
     auto [mem, align, offset, memoryOrder] = getRMWMemarg();                   \
     return builder.makeAtomicRMW(                                              \
-      RMW##op, 2, offset, Type::i32, mem, memoryOrder);                        \
+      RMW##op, 2, offset, align, Type::i32, mem, memoryOrder);                 \
   }                                                                            \
   case BinaryConsts::I64AtomicRMW##op: {                                       \
     auto [mem, align, offset, memoryOrder] = getRMWMemarg();                   \
     return builder.makeAtomicRMW(                                              \
-      RMW##op, 8, offset, Type::i64, mem, memoryOrder);                        \
+      RMW##op, 8, offset, align, Type::i64, mem, memoryOrder);                 \
   }                                                                            \
   case BinaryConsts::I64AtomicRMW##op##8U: {                                   \
     auto [mem, align, offset, memoryOrder] = getRMWMemarg();                   \
     return builder.makeAtomicRMW(                                              \
-      RMW##op, 1, offset, Type::i64, mem, memoryOrder);                        \
+      RMW##op, 1, offset, align, Type::i64, mem, memoryOrder);                 \
   }                                                                            \
   case BinaryConsts::I64AtomicRMW##op##16U: {                                  \
     auto [mem, align, offset, memoryOrder] = getRMWMemarg();                   \
     return builder.makeAtomicRMW(                                              \
-      RMW##op, 2, offset, Type::i64, mem, memoryOrder);                        \
+      RMW##op, 2, offset, align, Type::i64, mem, memoryOrder);                 \
   }                                                                            \
   case BinaryConsts::I64AtomicRMW##op##32U: {                                  \
     auto [mem, align, offset, memoryOrder] = getRMWMemarg();                   \
     return builder.makeAtomicRMW(                                              \
-      RMW##op, 4, offset, Type::i64, mem, memoryOrder);                        \
+      RMW##op, 4, offset, align, Type::i64, mem, memoryOrder);                 \
   }
 
           RMW(Add);
@@ -3916,49 +4051,49 @@ Result<> WasmBinaryReader::readInst() {
         case BinaryConsts::I32AtomicCmpxchg: {
           auto [mem, align, offset, memoryOrder] = getRMWMemarg();
           return builder.makeAtomicCmpxchg(
-            4, offset, Type::i32, mem, memoryOrder);
+            4, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicCmpxchg8U: {
           auto [mem, align, offset, memoryOrder] = getRMWMemarg();
           return builder.makeAtomicCmpxchg(
-            1, offset, Type::i32, mem, memoryOrder);
+            1, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicCmpxchg16U: {
           auto [mem, align, offset, memoryOrder] = getRMWMemarg();
           return builder.makeAtomicCmpxchg(
-            2, offset, Type::i32, mem, memoryOrder);
+            2, offset, align, Type::i32, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicCmpxchg: {
           auto [mem, align, offset, memoryOrder] = getRMWMemarg();
           return builder.makeAtomicCmpxchg(
-            8, offset, Type::i64, mem, memoryOrder);
+            8, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicCmpxchg8U: {
           auto [mem, align, offset, memoryOrder] = getRMWMemarg();
           return builder.makeAtomicCmpxchg(
-            1, offset, Type::i64, mem, memoryOrder);
+            1, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicCmpxchg16U: {
           auto [mem, align, offset, memoryOrder] = getRMWMemarg();
           return builder.makeAtomicCmpxchg(
-            2, offset, Type::i64, mem, memoryOrder);
+            2, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I64AtomicCmpxchg32U: {
           auto [mem, align, offset, memoryOrder] = getRMWMemarg();
           return builder.makeAtomicCmpxchg(
-            4, offset, Type::i64, mem, memoryOrder);
+            4, offset, align, Type::i64, mem, memoryOrder);
         }
         case BinaryConsts::I32AtomicWait: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicWait(Type::i32, offset, mem);
+          return builder.makeAtomicWait(Type::i32, offset, align, mem);
         }
         case BinaryConsts::I64AtomicWait: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicWait(Type::i64, offset, mem);
+          return builder.makeAtomicWait(Type::i64, offset, align, mem);
         }
         case BinaryConsts::AtomicNotify: {
           auto [mem, align, offset, memoryOrder] = getAtomicMemarg();
-          return builder.makeAtomicNotify(offset, mem);
+          return builder.makeAtomicNotify(offset, align, mem);
         }
         case BinaryConsts::AtomicFence: {
           MemoryOrder order = getMemoryOrder(/*isRMW=*/false);
@@ -4041,10 +4176,14 @@ Result<> WasmBinaryReader::readInst() {
           auto index = getU32LEB();
           return builder.makeStructWait(structType, index);
         }
-        case BinaryConsts::StructNotify: {
-          auto structType = getIndexedHeapType();
-          auto index = getU32LEB();
-          return builder.makeStructNotify(structType, index);
+        case BinaryConsts::WaitqueueNotify: {
+          return builder.makeWaitqueueNotify();
+        }
+        case BinaryConsts::WaitqueueNew: {
+          return builder.makeWaitqueueNew();
+        }
+        case BinaryConsts::Publish: {
+          return builder.makePublish();
         }
       }
       return Err{"unknown atomic operation " + std::to_string(op)};
@@ -4111,12 +4250,10 @@ Result<> WasmBinaryReader::readInst() {
           return builder.makeElemDrop(elem);
         }
         case BinaryConsts::F32_F16LoadMem: {
-          auto [mem, align, offset, backing] = getMemarg();
-          return builder.makeLoad(2, false, offset, align, Type::f32, mem);
+          return readLoad(2, false, Type::f32);
         }
         case BinaryConsts::F32_F16StoreMem: {
-          auto [mem, align, offset, backing] = getMemarg();
-          return builder.makeStore(2, offset, align, Type::f32, mem);
+          return readStore(2, Type::f32);
         }
       }
       return Err{"unknown misc operation: " + std::to_string(op)};
@@ -4666,12 +4803,10 @@ Result<> WasmBinaryReader::readInst() {
         case BinaryConsts::V128Const:
           return builder.makeConst(getVec128Literal());
         case BinaryConsts::V128Store: {
-          auto [mem, align, offset, backing] = getMemarg();
-          return builder.makeStore(16, offset, align, Type::v128, mem);
+          return readStore(16, Type::v128);
         }
         case BinaryConsts::V128Load: {
-          auto [mem, align, offset, backing] = getMemarg();
-          return builder.makeLoad(16, false, offset, align, Type::v128, mem);
+          return readLoad(16, false, Type::v128);
         }
         case BinaryConsts::V128Load8Splat: {
           auto [mem, align, offset, backing] = getMemarg();
@@ -5198,8 +5333,15 @@ void WasmBinaryReader::readElementSegments() {
 
     if (isDeclarative) {
       // Declared segments are needed in wasm text and binary, but not in
-      // Binaryen IR; skip over the segment
-      [[maybe_unused]] auto type = getU32LEB();
+      // Binaryen IR; skip over the segment.
+      if (usesExpressions) {
+        [[maybe_unused]] auto type = getType();
+      } else {
+        auto elemKind = getU32LEB();
+        if (elemKind != 0x0) {
+          throwError("unexpected passive segment elemkind, expected 0, got " + std::to_string(elemKind));
+        }
+      }
       auto num = getU32LEB();
       for (Index i = 0; i < num; i++) {
         if (usesExpressions) {
@@ -5234,7 +5376,7 @@ void WasmBinaryReader::readElementSegments() {
       } else {
         auto elemKind = getU32LEB();
         if (elemKind != 0x0) {
-          throwError("Invalid kind (!= funcref(0)) since !usesExpressions.");
+          throwError("unexpected passive segment elemkind, expected 0, got " + std::to_string(elemKind));
         }
       }
     }
@@ -5497,14 +5639,17 @@ void WasmBinaryReader::readFeatures(size_t sectionPos, size_t payloadLen) {
       feature = FeatureSet::FP16;
     } else if (name == BinaryConsts::CustomSections::CustomDescriptorsFeature) {
       feature = FeatureSet::CustomDescriptors;
-    } else if (name == BinaryConsts::CustomSections::RelaxedAtomicsFeature) {
-      feature = FeatureSet::RelaxedAtomics;
+    } else if (name ==
+               BinaryConsts::CustomSections::AcquireReleaseAtomicsFeature) {
+      feature = FeatureSet::AcquireReleaseAtomics;
     } else if (name == BinaryConsts::CustomSections::CustomPageSizesFeature) {
       feature = FeatureSet::CustomPageSizes;
     } else if (name == BinaryConsts::CustomSections::WideArithmeticFeature) {
       feature = FeatureSet::WideArithmetic;
     } else if (name == BinaryConsts::CustomSections::CompactImportsFeature) {
       feature = FeatureSet::CompactImports;
+    } else if (name == BinaryConsts::CustomSections::RelaxedAtomicsFeature) {
+      feature = FeatureSet::RelaxedAtomics;
     } else {
       // Silently ignore unknown features (this may be and old binaryen running
       // on a new wasm).
@@ -5759,6 +5904,7 @@ WasmBinaryReader::readMemoryAccess(bool isAtomic, bool isRMW) {
       throwError(
         "Memory index and memory order are not allowed for array backing.");
     }
+    offset = getU32LEB();
   } else {
     WASM_UNREACHABLE("Invalid backing type");
   }
@@ -5803,6 +5949,16 @@ MemoryOrder WasmBinaryReader::getMemoryOrder(bool isRMW) {
     case ((BinaryConsts::OrderAcqRel << 4) | BinaryConsts::OrderAcqRel):
       if (isRMW) {
         return MemoryOrder::AcqRel;
+      }
+      break;
+    case BinaryConsts::OrderRelaxed:
+      if (!isRMW) {
+        return MemoryOrder::Relaxed;
+      }
+      throwError("RMW memory orders must match");
+    case ((BinaryConsts::OrderRelaxed << 4) | BinaryConsts::OrderRelaxed):
+      if (isRMW) {
+        return MemoryOrder::Relaxed;
       }
       break;
   }

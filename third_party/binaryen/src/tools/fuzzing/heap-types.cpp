@@ -263,23 +263,18 @@ struct HeapTypeGeneratorImpl {
     // by a described type. Only structs may have descriptor chains.
     if (!isDescriptor && std::get_if<StructKind>(&typeKinds.back()) &&
         remainingUncommitted && features.hasCustomDescriptors()) {
+      // If we have a supertype, our descriptor chain must be exactly as
+      // long as the supertype's descriptor chain. Otherwise, usually add at
+      // least one descriptor if we have space.
+      size_t length = 0;
       if (super) {
-        // If we have a supertype, our descriptor chain must be at least as
-        // long as the supertype's descriptor chain.
-        size_t length = descriptorChainLengths[*super];
-        if (rand.oneIn(2)) {
-          length += rand.upToSquared(remainingUncommitted - length);
-        }
-        descriptorChainLengths[i] = length;
-        numPlannedDescriptors += length;
-      } else {
-        // We can choose to start a brand new chain at this type.
-        if (rand.oneIn(2)) {
-          size_t length = rand.upToSquared(remainingUncommitted);
-          descriptorChainLengths[i] = length;
-          numPlannedDescriptors += length;
-        }
+        length = descriptorChainLengths[*super];
+      } else if (remainingUncommitted && !rand.oneIn(4)) {
+        length = 1 + rand.upToSquared(remainingUncommitted - length);
       }
+      assert(length <= remainingUncommitted);
+      descriptorChainLengths[i] = length;
+      numPlannedDescriptors += length;
     }
     // If this type has a descriptor chain, then we need to be able to
     // choose to generate the next type in the chain in the future.
@@ -291,8 +286,14 @@ struct HeapTypeGeneratorImpl {
   void populateTypes() {
     // Create the heap types.
     for (; index < builder.size(); ++index) {
-      // Types without nontrivial subtypes may be marked final.
-      builder[index].setOpen(subtypeIndices[index].size() > 1 || rand.oneIn(2));
+      // Types without nontrivial subtypes may be marked final. Descriptors
+      // must have the same finality as their described types.
+      if (describedIndices[index]) {
+        builder[index].setOpen(builder[*describedIndices[index]].isOpen());
+      } else {
+        builder[index].setOpen(subtypeIndices[index].size() > 1 ||
+                               rand.oneIn(2));
+      }
       auto kind = typeKinds[index];
       auto share = HeapType(builder[index]).getShared();
       bool isDesc = describedIndices[index].has_value();
@@ -691,6 +692,10 @@ struct HeapTypeGeneratorImpl {
         case HeapType::nocont:
         case HeapType::noexn:
           return type;
+        case HeapType::waitqueue:
+        case HeapType::nowaitqueue: {
+          WASM_UNREACHABLE("waitqueue is unimplemented in the fuzzer");
+        }
       }
       WASM_UNREACHABLE("unexpected type");
     }
@@ -763,6 +768,10 @@ struct HeapTypeGeneratorImpl {
       case HeapType::noexn:
         candidates.push_back(HeapTypes::exn.getBasic(share));
         break;
+      case HeapType::waitqueue:
+      case HeapType::nowaitqueue: {
+        WASM_UNREACHABLE("waitqueue is unimplemented in the fuzzer");
+      }
     }
     assert(!candidates.empty());
     return rand.pick(candidates);
