@@ -162,129 +162,131 @@
   (local $1 i32)
   (local $2 i32)
   local.get $0
+  i32.eqz
   if
-   global.get $~lib/rt/itcms/white
+   return
+  end
+  global.get $~lib/rt/itcms/white
+  local.get $0
+  i32.const 20
+  i32.sub
+  local.tee $0
+  i32.load offset=4
+  i32.const 3
+  i32.and
+  i32.eq
+  if
    local.get $0
-   i32.const 20
-   i32.sub
-   local.tee $0
-   i32.load offset=4
-   i32.const 3
-   i32.and
+   global.get $~lib/rt/itcms/iter
    i32.eq
    if
     local.get $0
-    global.get $~lib/rt/itcms/iter
-    i32.eq
+    i32.load offset=8
+    local.tee $1
+    if (result i32)
+     local.get $1
+    else
+     i32.const 0
+     i32.const 128
+     i32.const 147
+     i32.const 30
+     call $~lib/builtins/abort
+     unreachable
+    end
+    global.set $~lib/rt/itcms/iter
+   end
+   block $__inlined_func$~lib/rt/itcms/Object#unlink$103
+    local.get $0
+    i32.load offset=4
+    i32.const -4
+    i32.and
+    local.tee $2
+    i32.eqz
     if
      local.get $0
      i32.load offset=8
-     local.tee $1
-     if (result i32)
-      local.get $1
-     else
-      i32.const 0
-      i32.const 128
-      i32.const 147
-      i32.const 30
-      call $~lib/builtins/abort
-      unreachable
-     end
-     global.set $~lib/rt/itcms/iter
-    end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$103
-     local.get $0
-     i32.load offset=4
-     i32.const -4
-     i32.and
-     local.tee $2
      i32.eqz
-     if
-      local.get $0
-      i32.load offset=8
-      i32.eqz
-      local.get $0
-      i32.const 33604
-      i32.lt_u
-      i32.and
-      i32.eqz
-      if
-       i32.const 0
-       i32.const 128
-       i32.const 127
-       i32.const 18
-       call $~lib/builtins/abort
-       unreachable
-      end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$103
-     end
      local.get $0
-     i32.load offset=8
-     local.tee $1
+     i32.const 33604
+     i32.lt_u
+     i32.and
      i32.eqz
      if
       i32.const 0
       i32.const 128
-      i32.const 131
-      i32.const 16
+      i32.const 127
+      i32.const 18
       call $~lib/builtins/abort
       unreachable
      end
-     local.get $2
-     local.get $1
-     i32.store offset=8
-     local.get $1
-     local.get $2
-     local.get $1
-     i32.load offset=4
-     i32.const 3
-     i32.and
-     i32.or
-     i32.store offset=4
+     br $__inlined_func$~lib/rt/itcms/Object#unlink$103
     end
     local.get $0
-    global.get $~lib/rt/itcms/toSpace
-    local.get $0
-    i32.load offset=12
-    local.tee $0
-    i32.const 2
-    i32.le_u
-    if (result i32)
-     i32.const 1
-    else
-     local.get $0
-     i32.const 768
-     i32.load
-     i32.gt_u
-     if
-      i32.const 256
-      i32.const 320
-      i32.const 22
-      i32.const 28
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 2
-     i32.shl
-     i32.const 772
-     i32.add
-     i32.load
-     i32.const 32
-     i32.and
+    i32.load offset=8
+    local.tee $1
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 131
+     i32.const 16
+     call $~lib/builtins/abort
+     unreachable
     end
-    if (result i32)
-     global.get $~lib/rt/itcms/white
-     i32.eqz
-    else
-     i32.const 2
-    end
-    call $~lib/rt/itcms/Object#linkTo
-    global.get $~lib/rt/itcms/visitCount
-    i32.const 1
-    i32.add
-    global.set $~lib/rt/itcms/visitCount
+    local.get $2
+    local.get $1
+    i32.store offset=8
+    local.get $1
+    local.get $2
+    local.get $1
+    i32.load offset=4
+    i32.const 3
+    i32.and
+    i32.or
+    i32.store offset=4
    end
+   local.get $0
+   global.get $~lib/rt/itcms/toSpace
+   local.get $0
+   i32.load offset=12
+   local.tee $0
+   i32.const 2
+   i32.le_u
+   if (result i32)
+    i32.const 1
+   else
+    local.get $0
+    i32.const 768
+    i32.load
+    i32.gt_u
+    if
+     i32.const 256
+     i32.const 320
+     i32.const 22
+     i32.const 28
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 2
+    i32.shl
+    i32.const 772
+    i32.add
+    i32.load
+    i32.const 32
+    i32.and
+   end
+   if (result i32)
+    global.get $~lib/rt/itcms/white
+    i32.eqz
+   else
+    i32.const 2
+   end
+   call $~lib/rt/itcms/Object#linkTo
+   global.get $~lib/rt/itcms/visitCount
+   i32.const 1
+   i32.add
+   global.set $~lib/rt/itcms/visitCount
   end
  )
  (func $~lib/rt/tlsf/removeBlock (param $0 i32) (param $1 i32)
@@ -688,115 +690,115 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
-   local.get $2
+  local.get $2
+  local.get $1
+  i64.extend_i32_u
+  i64.lt_u
+  if
+   i32.const 0
+   i32.const 400
+   i32.const 357
+   i32.const 14
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $1
+  i32.const 19
+  i32.add
+  i32.const -16
+  i32.and
+  i32.const 4
+  i32.sub
+  local.set $1
+  local.get $0
+  i32.load offset=1568
+  local.tee $4
+  if
+   local.get $4
+   i32.const 4
+   i32.add
    local.get $1
-   i64.extend_i32_u
-   i64.lt_u
+   i32.gt_u
    if
     i32.const 0
     i32.const 400
-    i32.const 357
-    i32.const 14
+    i32.const 365
+    i32.const 16
     call $~lib/builtins/abort
     unreachable
    end
    local.get $1
-   i32.const 19
-   i32.add
-   i32.const -16
-   i32.and
-   i32.const 4
+   i32.const 16
    i32.sub
-   local.set $1
-   local.get $0
-   i32.load offset=1568
-   local.tee $4
+   local.tee $3
+   local.get $4
+   i32.eq
    if
     local.get $4
-    i32.const 4
-    i32.add
-    local.get $1
-    i32.gt_u
-    if
-     i32.const 0
-     i32.const 400
-     i32.const 365
-     i32.const 16
-     call $~lib/builtins/abort
-     unreachable
-    end
-    local.get $1
-    i32.const 16
-    i32.sub
-    local.tee $3
-    local.get $4
-    i32.eq
-    if
-     local.get $4
-     i32.load
-     local.set $5
-     local.get $3
-     local.set $1
-    end
-   else
-    local.get $0
-    i32.const 1572
-    i32.add
-    local.get $1
-    i32.gt_u
-    if
-     i32.const 0
-     i32.const 400
-     i32.const 378
-     i32.const 5
-     call $~lib/builtins/abort
-     unreachable
-    end
+    i32.load
+    local.set $5
+    local.get $3
+    local.set $1
    end
-   local.get $2
-   i32.wrap_i64
-   i32.const -16
-   i32.and
-   local.get $1
-   i32.sub
-   local.tee $3
-   i32.const 20
-   i32.lt_u
-   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
-   local.get $1
-   local.get $5
-   i32.const 2
-   i32.and
-   local.get $3
-   i32.const 8
-   i32.sub
-   local.tee $3
-   i32.const 1
-   i32.or
-   i32.or
-   i32.store
-   local.get $1
-   i32.const 0
-   i32.store offset=4
-   local.get $1
-   i32.const 0
-   i32.store offset=8
-   local.get $1
-   i32.const 4
-   i32.add
-   local.get $3
-   i32.add
-   local.tee $3
-   i32.const 2
-   i32.store
+  else
    local.get $0
-   local.get $3
-   i32.store offset=1568
-   local.get $0
+   i32.const 1572
+   i32.add
    local.get $1
-   return_call $~lib/rt/tlsf/insertBlock
+   i32.gt_u
+   if
+    i32.const 0
+    i32.const 400
+    i32.const 378
+    i32.const 5
+    call $~lib/builtins/abort
+    unreachable
+   end
   end
+  local.get $2
+  i32.wrap_i64
+  i32.const -16
+  i32.and
+  local.get $1
+  i32.sub
+  local.tee $3
+  i32.const 20
+  i32.lt_u
+  if
+   return
+  end
+  local.get $1
+  local.get $5
+  i32.const 2
+  i32.and
+  local.get $3
+  i32.const 8
+  i32.sub
+  local.tee $3
+  i32.const 1
+  i32.or
+  i32.or
+  i32.store
+  local.get $1
+  i32.const 0
+  i32.store offset=4
+  local.get $1
+  i32.const 0
+  i32.store offset=8
+  local.get $1
+  i32.const 4
+  i32.add
+  local.get $3
+  i32.add
+  local.tee $3
+  i32.const 2
+  i32.store
+  local.get $0
+  local.get $3
+  i32.store offset=1568
+  local.get $0
+  local.get $1
+  return_call $~lib/rt/tlsf/insertBlock
  )
  (func $~lib/rt/tlsf/initialize
   (local $0 i32)
@@ -1410,116 +1412,115 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  local.get $0
-  local.get $1
-  i32.eq
-  if
+  block $~CONDITION_RETURN/~lib/string/String.__eq (result i32)
    i32.const 1
-   return
-  end
-  local.get $1
-  i32.eqz
-  local.get $0
-  i32.eqz
-  i32.or
-  if
-   i32.const 0
-   return
-  end
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  local.tee $3
-  local.get $1
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  i32.ne
-  if
-   i32.const 0
-   return
-  end
-  block $__inlined_func$~lib/util/string/compareImpl$73 (result i32)
    local.get $0
-   local.tee $2
-   i32.const 7
-   i32.and
    local.get $1
-   i32.const 7
-   i32.and
-   i32.or
+   i32.eq
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
+   i32.const 0
+   local.get $1
    i32.eqz
-   local.get $3
-   local.tee $0
-   i32.const 4
-   i32.ge_u
-   i32.and
-   if
-    loop $do-loop|0
-     local.get $2
-     i64.load
-     local.get $1
-     i64.load
-     i64.eq
+   local.get $0
+   i32.eqz
+   i32.or
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
+   i32.const 0
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $3
+   local.get $1
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   i32.ne
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
+   block $__inlined_func$~lib/util/string/compareImpl$73 (result i32)
+    local.get $0
+    local.tee $2
+    i32.const 7
+    i32.and
+    local.get $1
+    i32.const 7
+    i32.and
+    i32.or
+    i32.eqz
+    local.get $3
+    local.tee $0
+    i32.const 4
+    i32.ge_u
+    i32.and
+    if
+     loop $do-loop|0
+      local.get $2
+      i64.load
+      local.get $1
+      i64.load
+      i64.eq
+      if
+       local.get $2
+       i32.const 8
+       i32.add
+       local.set $2
+       local.get $1
+       i32.const 8
+       i32.add
+       local.set $1
+       local.get $0
+       i32.const 4
+       i32.sub
+       local.tee $0
+       i32.const 4
+       i32.ge_u
+       br_if $do-loop|0
+      end
+     end
+    end
+    loop $while-continue|1
+     local.get $0
+     local.tee $3
+     i32.const 1
+     i32.sub
+     local.set $0
+     local.get $3
      if
       local.get $2
-      i32.const 8
+      i32.load16_u
+      local.tee $3
+      local.get $1
+      i32.load16_u
+      local.tee $4
+      i32.ne
+      if
+       local.get $3
+       local.get $4
+       i32.sub
+       br $__inlined_func$~lib/util/string/compareImpl$73
+      end
+      local.get $2
+      i32.const 2
       i32.add
       local.set $2
       local.get $1
-      i32.const 8
+      i32.const 2
       i32.add
       local.set $1
-      local.get $0
-      i32.const 4
-      i32.sub
-      local.tee $0
-      i32.const 4
-      i32.ge_u
-      br_if $do-loop|0
+      br $while-continue|1
      end
     end
+    i32.const 0
    end
-   loop $while-continue|1
-    local.get $0
-    local.tee $3
-    i32.const 1
-    i32.sub
-    local.set $0
-    local.get $3
-    if
-     local.get $2
-     i32.load16_u
-     local.tee $3
-     local.get $1
-     i32.load16_u
-     local.tee $4
-     i32.ne
-     if
-      local.get $3
-      local.get $4
-      i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$73
-     end
-     local.get $2
-     i32.const 2
-     i32.add
-     local.set $2
-     local.get $1
-     i32.const 2
-     i32.add
-     local.set $1
-     br $while-continue|1
-    end
-   end
-   i32.const 0
+   i32.eqz
   end
-  i32.eqz
  )
  (func $class-overloading/A#a<i32>@override (param $0 i32)
   block $default
@@ -1636,532 +1637,532 @@
  (func $~start
   (local $0 i32)
   global.get $~started
+  if
+   return
+  end
+  i32.const 1
+  global.set $~started
+  memory.size
+  i32.const 16
+  i32.shl
+  i32.const 33604
+  i32.sub
+  i32.const 1
+  i32.shr_u
+  global.set $~lib/rt/itcms/threshold
+  i32.const 180
+  i32.const 176
+  i32.store
+  i32.const 184
+  i32.const 176
+  i32.store
+  i32.const 176
+  global.set $~lib/rt/itcms/pinSpace
+  i32.const 212
+  i32.const 208
+  i32.store
+  i32.const 216
+  i32.const 208
+  i32.store
+  i32.const 208
+  global.set $~lib/rt/itcms/toSpace
+  i32.const 356
+  i32.const 352
+  i32.store
+  i32.const 360
+  i32.const 352
+  i32.store
+  i32.const 352
+  global.set $~lib/rt/itcms/fromSpace
+  i32.const 5
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/a
+  global.get $class-overloading/a
+  call $class-overloading/A#a<i32>@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
   i32.eqz
   if
-   i32.const 1
-   global.set $~started
-   memory.size
-   i32.const 16
-   i32.shl
-   i32.const 33604
-   i32.sub
-   i32.const 1
-   i32.shr_u
-   global.set $~lib/rt/itcms/threshold
-   i32.const 180
-   i32.const 176
-   i32.store
-   i32.const 184
-   i32.const 176
-   i32.store
-   i32.const 176
-   global.set $~lib/rt/itcms/pinSpace
-   i32.const 212
-   i32.const 208
-   i32.store
-   i32.const 216
-   i32.const 208
-   i32.store
-   i32.const 208
-   global.set $~lib/rt/itcms/toSpace
-   i32.const 356
-   i32.const 352
-   i32.store
-   i32.const 360
-   i32.const 352
-   i32.store
-   i32.const 352
-   global.set $~lib/rt/itcms/fromSpace
-   i32.const 5
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/a
-   global.get $class-overloading/a
-   call $class-overloading/A#a<i32>@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 46
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 49
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 52
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 55
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 6
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/c
-   i32.const 32
-   global.set $class-overloading/which
-   i32.const 496
-   global.set $class-overloading/which
-   i32.const 496
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 61
-    i32.const 5
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 592
-   global.set $class-overloading/which
-   i32.const 592
-   i32.const 592
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 83
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   i32.const 592
-   global.set $class-overloading/which
-   i32.const 592
-   i32.const 592
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 86
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   i32.const 592
-   global.set $class-overloading/which
-   i32.const 592
-   i32.const 592
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 89
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 592
-   global.set $class-overloading/which
-   i32.const 592
-   i32.const 592
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 91
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 7
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/a
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#a<i32>@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 101
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 104
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 107
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 109
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 8
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/a
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#a<i32>@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 119
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 122
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 125
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 496
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 127
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 9
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/a
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#a<i32>@override
-   global.get $class-overloading/which
-   i32.const 624
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 153
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 624
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 156
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 624
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 159
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 32
-   global.set $class-overloading/which
-   global.get $class-overloading/a
-   call $class-overloading/A#b@override
-   global.get $class-overloading/which
-   i32.const 624
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 162
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 10
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/ia
-   i32.const 32
-   global.set $class-overloading/which
-   block $__inlined_func$class-overloading/IA#foo@override$28
-    block $case1
-     global.get $class-overloading/ia
-     i32.const 8
-     i32.sub
-     i32.load
-     local.tee $0
-     i32.const 10
-     i32.ne
-     if
-      local.get $0
-      i32.const 11
-      i32.eq
-      br_if $case1
-      unreachable
-     end
-     i32.const 656
-     global.set $class-overloading/which
-     br $__inlined_func$class-overloading/IA#foo@override$28
-    end
-    i32.const 688
-    global.set $class-overloading/which
-   end
-   global.get $class-overloading/which
-   i32.const 656
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 178
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   i32.const 11
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/ic
-   i32.const 32
-   global.set $class-overloading/which
-   block $__inlined_func$class-overloading/IA#foo@override$29
-    block $case10
-     global.get $class-overloading/ic
-     i32.const 8
-     i32.sub
-     i32.load
-     local.tee $0
-     i32.const 10
-     i32.ne
-     if
-      local.get $0
-      i32.const 11
-      i32.eq
-      br_if $case10
-      unreachable
-     end
-     i32.const 656
-     global.set $class-overloading/which
-     br $__inlined_func$class-overloading/IA#foo@override$29
-    end
-    i32.const 688
-    global.set $class-overloading/which
-   end
-   global.get $class-overloading/which
-   i32.const 688
-   call $~lib/string/String.__eq
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 528
-    i32.const 192
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.sub
-   global.set $~lib/memory/__stack_pointer
-   global.get $~lib/memory/__stack_pointer
    i32.const 0
-   i32.store align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 836
-   i32.lt_s
-   if
-    unreachable
-   end
-   i32.const 13
-   call $~lib/rt/itcms/__new
-   global.set $class-overloading/b2
-   global.get $~lib/memory/__stack_pointer
-   global.get $class-overloading/b2
-   i32.store align=1
-   block $__inlined_func$class-overloading/A2#foo@override$84 (result i32)
-    global.get $class-overloading/b2
+   i32.const 528
+   i32.const 46
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 49
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 52
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 55
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 6
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/c
+  i32.const 32
+  global.set $class-overloading/which
+  i32.const 496
+  global.set $class-overloading/which
+  i32.const 496
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 61
+   i32.const 5
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 592
+  global.set $class-overloading/which
+  i32.const 592
+  i32.const 592
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 83
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  i32.const 592
+  global.set $class-overloading/which
+  i32.const 592
+  i32.const 592
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 86
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  i32.const 592
+  global.set $class-overloading/which
+  i32.const 592
+  i32.const 592
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 89
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 592
+  global.set $class-overloading/which
+  i32.const 592
+  i32.const 592
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 91
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 7
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/a
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#a<i32>@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 101
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 104
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 107
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 109
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 8
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/a
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#a<i32>@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 119
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 122
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 125
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 496
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 127
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 9
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/a
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#a<i32>@override
+  global.get $class-overloading/which
+  i32.const 624
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 153
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 624
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 156
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 624
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 159
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 32
+  global.set $class-overloading/which
+  global.get $class-overloading/a
+  call $class-overloading/A#b@override
+  global.get $class-overloading/which
+  i32.const 624
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 162
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 10
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/ia
+  i32.const 32
+  global.set $class-overloading/which
+  block $__inlined_func$class-overloading/IA#foo@override$28
+   block $case1
+    global.get $class-overloading/ia
     i32.const 8
     i32.sub
     i32.load
-    i32.const 13
-    i32.eq
+    local.tee $0
+    i32.const 10
+    i32.ne
     if
-     i32.const 14
-     call $~lib/rt/itcms/__new
-     i32.const 8
-     i32.sub
-     i32.load
-     i32.const 14
+     local.get $0
+     i32.const 11
      i32.eq
-     if (result i32)
-      i32.const 3
-     else
-      i32.const 720
-      i32.const 528
-      i32.const 201
-      i32.const 5
-      call $~lib/builtins/abort
-      unreachable
-     end
-     br $__inlined_func$class-overloading/A2#foo@override$84
+     br_if $case1
+     unreachable
     end
-    i32.const 720
-    i32.const 528
-    i32.const 213
-    i32.const 5
-    call $~lib/builtins/abort
-    unreachable
+    i32.const 656
+    global.set $class-overloading/which
+    br $__inlined_func$class-overloading/IA#foo@override$28
    end
-   i32.const 3
-   i32.ne
-   local.set $0
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   local.get $0
+   i32.const 688
+   global.set $class-overloading/which
+  end
+  global.get $class-overloading/which
+  i32.const 656
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 178
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 11
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/ic
+  i32.const 32
+  global.set $class-overloading/which
+  block $__inlined_func$class-overloading/IA#foo@override$29
+   block $case10
+    global.get $class-overloading/ic
+    i32.const 8
+    i32.sub
+    i32.load
+    local.tee $0
+    i32.const 10
+    i32.ne
+    if
+     local.get $0
+     i32.const 11
+     i32.eq
+     br_if $case10
+     unreachable
+    end
+    i32.const 656
+    global.set $class-overloading/which
+    br $__inlined_func$class-overloading/IA#foo@override$29
+   end
+   i32.const 688
+   global.set $class-overloading/which
+  end
+  global.get $class-overloading/which
+  i32.const 688
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 192
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 836
+  i32.lt_s
+  if
+   unreachable
+  end
+  i32.const 13
+  call $~lib/rt/itcms/__new
+  global.set $class-overloading/b2
+  global.get $~lib/memory/__stack_pointer
+  global.get $class-overloading/b2
+  i32.store align=1
+  block $__inlined_func$class-overloading/A2#foo@override$84 (result i32)
+   global.get $class-overloading/b2
+   i32.const 8
+   i32.sub
+   i32.load
+   i32.const 13
+   i32.eq
    if
-    i32.const 0
-    i32.const 528
-    i32.const 224
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
+    i32.const 14
+    call $~lib/rt/itcms/__new
+    i32.const 8
+    i32.sub
+    i32.load
+    i32.const 14
+    i32.eq
+    if (result i32)
+     i32.const 3
+    else
+     i32.const 720
+     i32.const 528
+     i32.const 201
+     i32.const 5
+     call $~lib/builtins/abort
+     unreachable
+    end
+    br $__inlined_func$class-overloading/A2#foo@override$84
    end
+   i32.const 720
+   i32.const 528
+   i32.const 213
+   i32.const 5
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 3
+  i32.ne
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
+  if
+   i32.const 0
+   i32.const 528
+   i32.const 224
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
   end
  )
 )

@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "../ConditionalReturn.hpp"
 #include "../helper/BinaryenExt.hpp"
 #include "../helper/Matcher.hpp"
 #include "BaseLower.hpp"
@@ -164,6 +165,7 @@ private:
 void FastLower::run(wasm::Module *m) {
   wasm::PassRunner runner{getPassRunner()};
   std::shared_ptr<MaxShadowStackOffsets> const maxShadowStackOffsets_ = ToStackReplacer::addToPass(runner);
+  runner.add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
   runner.add(std::unique_ptr<Pass>(new PrologEpilogInserter(nullptr, maxShadowStackOffsets_)));
   runner.run();
 

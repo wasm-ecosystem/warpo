@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
-#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
 
+#include "../ConditionalReturn.hpp"
 #include "BaseLower.hpp"
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
@@ -84,6 +84,8 @@ void OptLower::preprocess(wasm::PassRunner &runner) {
 void OptLower::run(wasm::Module *m) {
   wasm::PassRunner runner{getPassRunner()};
 
+  preprocess(runner);
+  runner.add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
   preprocess(runner);
 
   // only for test purpose

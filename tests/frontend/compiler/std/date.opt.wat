@@ -556,24 +556,26 @@
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
+  i32.eqz
   if
-   global.get $~lib/rt/itcms/white
+   return
+  end
+  global.get $~lib/rt/itcms/white
+  local.get $0
+  i32.const 20
+  i32.sub
+  local.tee $0
+  i32.load offset=4
+  i32.const 3
+  i32.and
+  i32.eq
+  if
    local.get $0
-   i32.const 20
-   i32.sub
-   local.tee $0
-   i32.load offset=4
-   i32.const 3
-   i32.and
-   i32.eq
-   if
-    local.get $0
-    call $~lib/rt/itcms/Object#makeGray
-    global.get $~lib/rt/itcms/visitCount
-    i32.const 1
-    i32.add
-    global.set $~lib/rt/itcms/visitCount
-   end
+   call $~lib/rt/itcms/Object#makeGray
+   global.get $~lib/rt/itcms/visitCount
+   i32.const 1
+   i32.add
+   global.set $~lib/rt/itcms/visitCount
   end
  )
  (func $~lib/rt/tlsf/removeBlock (param $0 i32) (param $1 i32)
@@ -977,115 +979,115 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
-   local.get $2
+  local.get $2
+  local.get $1
+  i64.extend_i32_u
+  i64.lt_u
+  if
+   i32.const 0
+   i32.const 512
+   i32.const 357
+   i32.const 14
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $1
+  i32.const 19
+  i32.add
+  i32.const -16
+  i32.and
+  i32.const 4
+  i32.sub
+  local.set $1
+  local.get $0
+  i32.load offset=1568
+  local.tee $4
+  if
+   local.get $4
+   i32.const 4
+   i32.add
    local.get $1
-   i64.extend_i32_u
-   i64.lt_u
+   i32.gt_u
    if
     i32.const 0
     i32.const 512
-    i32.const 357
-    i32.const 14
+    i32.const 365
+    i32.const 16
     call $~lib/builtins/abort
     unreachable
    end
    local.get $1
-   i32.const 19
-   i32.add
-   i32.const -16
-   i32.and
-   i32.const 4
+   i32.const 16
    i32.sub
-   local.set $1
-   local.get $0
-   i32.load offset=1568
-   local.tee $4
+   local.tee $3
+   local.get $4
+   i32.eq
    if
     local.get $4
-    i32.const 4
-    i32.add
-    local.get $1
-    i32.gt_u
-    if
-     i32.const 0
-     i32.const 512
-     i32.const 365
-     i32.const 16
-     call $~lib/builtins/abort
-     unreachable
-    end
-    local.get $1
-    i32.const 16
-    i32.sub
-    local.tee $3
-    local.get $4
-    i32.eq
-    if
-     local.get $4
-     i32.load
-     local.set $5
-     local.get $3
-     local.set $1
-    end
-   else
-    local.get $0
-    i32.const 1572
-    i32.add
-    local.get $1
-    i32.gt_u
-    if
-     i32.const 0
-     i32.const 512
-     i32.const 378
-     i32.const 5
-     call $~lib/builtins/abort
-     unreachable
-    end
+    i32.load
+    local.set $5
+    local.get $3
+    local.set $1
    end
-   local.get $2
-   i32.wrap_i64
-   i32.const -16
-   i32.and
-   local.get $1
-   i32.sub
-   local.tee $3
-   i32.const 20
-   i32.lt_u
-   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
-   local.get $1
-   local.get $5
-   i32.const 2
-   i32.and
-   local.get $3
-   i32.const 8
-   i32.sub
-   local.tee $3
-   i32.const 1
-   i32.or
-   i32.or
-   i32.store
-   local.get $1
-   i32.const 0
-   i32.store offset=4
-   local.get $1
-   i32.const 0
-   i32.store offset=8
-   local.get $1
-   i32.const 4
-   i32.add
-   local.get $3
-   i32.add
-   local.tee $3
-   i32.const 2
-   i32.store
+  else
    local.get $0
-   local.get $3
-   i32.store offset=1568
-   local.get $0
+   i32.const 1572
+   i32.add
    local.get $1
-   return_call $~lib/rt/tlsf/insertBlock
+   i32.gt_u
+   if
+    i32.const 0
+    i32.const 512
+    i32.const 378
+    i32.const 5
+    call $~lib/builtins/abort
+    unreachable
+   end
   end
+  local.get $2
+  i32.wrap_i64
+  i32.const -16
+  i32.and
+  local.get $1
+  i32.sub
+  local.tee $3
+  i32.const 20
+  i32.lt_u
+  if
+   return
+  end
+  local.get $1
+  local.get $5
+  i32.const 2
+  i32.and
+  local.get $3
+  i32.const 8
+  i32.sub
+  local.tee $3
+  i32.const 1
+  i32.or
+  i32.or
+  i32.store
+  local.get $1
+  i32.const 0
+  i32.store offset=4
+  local.get $1
+  i32.const 0
+  i32.store offset=8
+  local.get $1
+  i32.const 4
+  i32.add
+  local.get $3
+  i32.add
+  local.tee $3
+  i32.const 2
+  i32.store
+  local.get $0
+  local.get $3
+  i32.store offset=1568
+  local.get $0
+  local.get $1
+  return_call $~lib/rt/tlsf/insertBlock
  )
  (func $~lib/rt/tlsf/initialize
   (local $0 i32)
@@ -2020,22 +2022,23 @@
   i64.add
  )
  (func $~lib/date/Date#setUTCDate (param $0 i32) (param $1 i32)
+  local.get $1
   local.get $0
   i32.load offset=8
-  local.get $1
-  i32.ne
+  i32.eq
   if
-   local.get $0
-   local.get $0
-   i32.load
-   local.get $0
-   i32.load offset=4
-   local.get $1
-   local.get $0
-   i64.load offset=16
-   call $~lib/date/join
-   return_call $~lib/date/Date#setTime
+   return
   end
+  local.get $0
+  local.get $0
+  i32.load
+  local.get $0
+  i32.load offset=4
+  local.get $1
+  local.get $0
+  i64.load offset=16
+  call $~lib/date/join
+  return_call $~lib/date/Date#setTime
  )
  (func $~lib/date/Date#setUTCMonth@varargs (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -2073,22 +2076,23 @@
   end
  )
  (func $~lib/date/Date#setUTCFullYear (param $0 i32) (param $1 i32)
+  local.get $1
   local.get $0
   i32.load
-  local.get $1
-  i32.ne
+  i32.eq
   if
-   local.get $0
-   local.get $1
-   local.get $0
-   i32.load offset=4
-   local.get $0
-   i32.load offset=8
-   local.get $0
-   i64.load offset=16
-   call $~lib/date/join
-   return_call $~lib/date/Date#setTime
+   return
   end
+  local.get $0
+  local.get $1
+  local.get $0
+  i32.load offset=4
+  local.get $0
+  i32.load offset=8
+  local.get $0
+  i64.load offset=16
+  call $~lib/date/join
+  return_call $~lib/date/Date#setTime
  )
  (func $~lib/date/dayOfWeek (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   i32.const 7
@@ -2435,56 +2439,58 @@
  (func $~lib/rt/itcms/__link (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   local.get $1
+  i32.eqz
+  if
+   return
+  end
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 240
+   i32.const 296
+   i32.const 14
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $~lib/rt/itcms/white
+  local.get $1
+  i32.const 20
+  i32.sub
+  local.tee $1
+  i32.load offset=4
+  i32.const 3
+  i32.and
+  i32.eq
   if
    local.get $0
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 240
-    i32.const 296
-    i32.const 14
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $~lib/rt/itcms/white
-   local.get $1
    i32.const 20
    i32.sub
-   local.tee $1
+   local.tee $0
    i32.load offset=4
    i32.const 3
    i32.and
+   local.tee $3
+   global.get $~lib/rt/itcms/white
+   i32.eqz
    i32.eq
    if
     local.get $0
-    i32.const 20
-    i32.sub
-    local.tee $0
-    i32.load offset=4
-    i32.const 3
-    i32.and
-    local.tee $3
-    global.get $~lib/rt/itcms/white
-    i32.eqz
+    local.get $1
+    local.get $2
+    select
+    return_call $~lib/rt/itcms/Object#makeGray
+   else
+    global.get $~lib/rt/itcms/state
+    i32.const 1
     i32.eq
+    local.get $3
+    i32.const 3
+    i32.eq
+    i32.and
     if
-     local.get $0
      local.get $1
-     local.get $2
-     select
      return_call $~lib/rt/itcms/Object#makeGray
-    else
-     global.get $~lib/rt/itcms/state
-     i32.const 1
-     i32.eq
-     local.get $3
-     i32.const 3
-     i32.eq
-     i32.and
-     if
-      local.get $1
-      return_call $~lib/rt/itcms/Object#makeGray
-     end
     end
    end
   end
@@ -2919,46 +2925,45 @@
  )
  (func $~lib/string/String.__eq (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
-  local.get $0
-  local.get $1
-  i32.eq
-  if
+  block $~CONDITION_RETURN/~lib/string/String.__eq (result i32)
    i32.const 1
-   return
-  end
-  local.get $1
-  i32.eqz
-  local.get $0
-  i32.eqz
-  i32.or
-  if
+   local.get $0
+   local.get $1
+   i32.eq
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
    i32.const 0
-   return
-  end
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  local.tee $2
-  local.get $1
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  i32.ne
-  if
+   local.get $1
+   i32.eqz
+   local.get $0
+   i32.eqz
+   i32.or
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
    i32.const 0
-   return
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $2
+   local.get $1
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   i32.ne
+   br_if $~CONDITION_RETURN/~lib/string/String.__eq
+   drop
+   local.get $0
+   i32.const 0
+   local.get $1
+   local.get $2
+   call $~lib/util/string/compareImpl
+   i32.eqz
   end
-  local.get $0
-  i32.const 0
-  local.get $1
-  local.get $2
-  call $~lib/util/string/compareImpl
-  i32.eqz
  )
  (func $~lib/rt/__newBuffer (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
@@ -3287,70 +3292,68 @@
  (func $~lib/string/String#indexOf (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
   (local $4 i32)
-  local.get $2
-  i32.const 0
-  local.get $2
-  i32.const 0
-  i32.gt_s
-  select
-  local.tee $2
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  local.tee $3
-  local.get $2
-  local.get $3
-  i32.lt_s
-  select
-  local.set $2
-  local.get $1
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  local.tee $4
-  i32.eqz
-  if
+  block $~CONDITION_RETURN/~lib/string/String#indexOf (result i32)
    local.get $2
-   return
-  end
-  local.get $3
-  i32.eqz
-  if
-   i32.const -1
-   return
-  end
-  local.get $3
-  local.get $4
-  i32.sub
-  local.set $3
-  loop $for-loop|0
+   i32.const 0
+   local.get $2
+   i32.const 0
+   i32.gt_s
+   select
+   local.tee $2
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $3
    local.get $2
    local.get $3
-   i32.le_s
-   if
-    local.get $0
+   i32.lt_s
+   select
+   local.tee $2
+   local.get $1
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $4
+   i32.eqz
+   br_if $~CONDITION_RETURN/~lib/string/String#indexOf
+   drop
+   i32.const -1
+   local.get $3
+   i32.eqz
+   br_if $~CONDITION_RETURN/~lib/string/String#indexOf
+   drop
+   local.get $3
+   local.get $4
+   i32.sub
+   local.set $3
+   loop $for-loop|0
     local.get $2
-    local.get $1
-    local.get $4
-    call $~lib/util/string/compareImpl
-    i32.eqz
+    local.get $3
+    i32.le_s
     if
      local.get $2
-     return
+     local.get $0
+     local.get $2
+     local.get $1
+     local.get $4
+     call $~lib/util/string/compareImpl
+     i32.eqz
+     br_if $~CONDITION_RETURN/~lib/string/String#indexOf
+     drop
+     local.get $2
+     i32.const 1
+     i32.add
+     local.set $2
+     br $for-loop|0
     end
-    local.get $2
-    i32.const 1
-    i32.add
-    local.set $2
-    br $for-loop|0
    end
+   i32.const -1
   end
-  i32.const -1
  )
  (func $~lib/string/String#substring (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -3462,153 +3465,163 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  i32.const 1
-  i32.shr_u
-  local.tee $2
-  i32.eqz
-  if
+  block $~CONDITION_RETURN/~lib/util/string/strtol<i32> (result i32)
    i32.const 0
-   return
-  end
-  local.get $0
-  i32.load16_u
-  local.set $1
-  loop $while-continue|0
-   block $__inlined_func$~lib/util/string/isSpace$115 (result i32)
-    local.get $1
-    i32.const 128
-    i32.or
-    i32.const 160
-    i32.eq
-    local.get $1
-    i32.const 9
-    i32.sub
-    i32.const 4
-    i32.le_u
-    i32.or
-    local.get $1
-    i32.const 5760
-    i32.lt_u
-    br_if $__inlined_func$~lib/util/string/isSpace$115
-    drop
-    i32.const 1
-    local.get $1
-    i32.const -8192
-    i32.add
-    i32.const 10
-    i32.le_u
-    br_if $__inlined_func$~lib/util/string/isSpace$115
-    drop
-    i32.const 1
-    local.get $1
-    i32.const 5760
-    i32.eq
-    local.get $1
-    i32.const 8232
-    i32.eq
-    i32.or
-    local.get $1
-    i32.const 8233
-    i32.eq
-    local.get $1
-    i32.const 8239
-    i32.eq
-    i32.or
-    i32.or
-    local.get $1
-    i32.const 8287
-    i32.eq
-    local.get $1
-    i32.const 12288
-    i32.eq
-    i32.or
-    local.get $1
-    i32.const 65279
-    i32.eq
-    i32.or
-    i32.or
-    br_if $__inlined_func$~lib/util/string/isSpace$115
-    drop
-    i32.const 0
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $2
+   i32.eqz
+   br_if $~CONDITION_RETURN/~lib/util/string/strtol<i32>
+   drop
+   local.get $0
+   i32.load16_u
+   local.set $1
+   loop $while-continue|0
+    block $__inlined_func$~lib/util/string/isSpace$115 (result i32)
+     local.get $1
+     i32.const 128
+     i32.or
+     i32.const 160
+     i32.eq
+     local.get $1
+     i32.const 9
+     i32.sub
+     i32.const 4
+     i32.le_u
+     i32.or
+     local.get $1
+     i32.const 5760
+     i32.lt_u
+     br_if $__inlined_func$~lib/util/string/isSpace$115
+     drop
+     i32.const 1
+     local.get $1
+     i32.const -8192
+     i32.add
+     i32.const 10
+     i32.le_u
+     br_if $__inlined_func$~lib/util/string/isSpace$115
+     drop
+     i32.const 1
+     local.get $1
+     i32.const 5760
+     i32.eq
+     local.get $1
+     i32.const 8232
+     i32.eq
+     i32.or
+     local.get $1
+     i32.const 8233
+     i32.eq
+     local.get $1
+     i32.const 8239
+     i32.eq
+     i32.or
+     i32.or
+     local.get $1
+     i32.const 8287
+     i32.eq
+     local.get $1
+     i32.const 12288
+     i32.eq
+     i32.or
+     local.get $1
+     i32.const 65279
+     i32.eq
+     i32.or
+     i32.or
+     br_if $__inlined_func$~lib/util/string/isSpace$115
+     drop
+     i32.const 0
+    end
+    if
+     local.get $0
+     i32.const 2
+     i32.add
+     local.tee $0
+     i32.load16_u
+     local.set $1
+     local.get $2
+     i32.const 1
+     i32.sub
+     local.set $2
+     br $while-continue|0
+    end
    end
-   if
+   i32.const 1
+   local.set $5
+   local.get $1
+   i32.const 45
+   i32.eq
+   local.tee $3
+   local.get $1
+   i32.const 43
+   i32.eq
+   i32.or
+   if (result i32)
+    i32.const 0
+    local.get $2
+    i32.const 1
+    i32.sub
+    local.tee $2
+    i32.eqz
+    br_if $~CONDITION_RETURN/~lib/util/string/strtol<i32>
+    drop
+    i32.const -1
+    i32.const 1
+    local.get $3
+    select
+    local.set $5
     local.get $0
     i32.const 2
     i32.add
     local.tee $0
     i32.load16_u
-    local.set $1
-    local.get $2
-    i32.const 1
-    i32.sub
-    local.set $2
-    br $while-continue|0
+   else
+    local.get $1
    end
-  end
-  i32.const 1
-  local.set $4
-  local.get $1
-  i32.const 43
-  i32.eq
-  local.get $1
-  i32.const 45
-  i32.eq
-  i32.or
-  if (result i32)
-   local.get $2
-   i32.const 1
-   i32.sub
-   local.tee $2
-   i32.eqz
-   if
-    i32.const 0
-    return
-   end
-   i32.const -1
-   i32.const 1
-   local.get $1
-   i32.const 45
+   i32.const 48
    i32.eq
-   select
-   local.set $4
-   local.get $0
+   local.get $2
    i32.const 2
-   i32.add
-   local.tee $0
-   i32.load16_u
-  else
-   local.get $1
-  end
-  i32.const 48
-  i32.eq
-  local.get $2
-  i32.const 2
-  i32.gt_s
-  i32.and
-  if
-   block $break|1
-    block $case2|1
-     block $case1|1
-      local.get $0
-      i32.load16_u offset=2
-      i32.const 32
-      i32.or
-      local.tee $1
-      i32.const 98
-      i32.ne
-      if
-       local.get $1
-       i32.const 111
-       i32.eq
-       br_if $case1|1
-       local.get $1
-       i32.const 120
-       i32.eq
-       br_if $case2|1
+   i32.gt_s
+   i32.and
+   if
+    block $break|1
+     block $case2|1
+      block $case1|1
+       local.get $0
+       i32.load16_u offset=2
+       i32.const 32
+       i32.or
+       local.tee $3
+       i32.const 98
+       i32.ne
+       if
+        local.get $3
+        i32.const 111
+        i32.eq
+        br_if $case1|1
+        local.get $3
+        i32.const 120
+        i32.eq
+        br_if $case2|1
+        br $break|1
+       end
+       local.get $0
+       i32.const 4
+       i32.add
+       local.set $0
+       local.get $2
+       i32.const 2
+       i32.sub
+       local.set $2
+       i32.const 2
+       local.set $4
        br $break|1
       end
       local.get $0
@@ -3619,8 +3632,8 @@
       i32.const 2
       i32.sub
       local.set $2
-      i32.const 2
-      local.set $3
+      i32.const 8
+      local.set $4
       br $break|1
      end
      local.get $0
@@ -3631,102 +3644,90 @@
      i32.const 2
      i32.sub
      local.set $2
-     i32.const 8
-     local.set $3
-     br $break|1
+     i32.const 16
+     local.set $4
     end
-    local.get $0
-    i32.const 4
-    i32.add
-    local.set $0
-    local.get $2
-    i32.const 2
-    i32.sub
-    local.set $2
-    i32.const 16
-    local.set $3
    end
-  end
-  local.get $3
-  i32.const 10
-  local.get $3
-  select
-  local.set $3
-  local.get $2
-  i32.const 1
-  i32.sub
-  local.set $6
-  loop $while-continue|2
-   block $while-break|2
-    local.get $2
-    local.tee $1
-    i32.const 1
-    i32.sub
-    local.set $2
-    local.get $1
-    if
-     local.get $0
-     i32.load16_u
-     local.tee $1
-     i32.const 48
+   local.get $4
+   i32.const 10
+   local.get $4
+   select
+   local.set $1
+   local.get $2
+   i32.const 1
+   i32.sub
+   local.set $4
+   loop $while-continue|2
+    block $while-break|2
+     local.get $2
+     local.tee $3
+     i32.const 1
      i32.sub
-     i32.const 10
-     i32.lt_u
-     if (result i32)
-      local.get $1
+     local.set $2
+     local.get $3
+     if
+      local.get $0
+      i32.load16_u
+      local.tee $3
       i32.const 48
       i32.sub
-     else
+      i32.const 10
+      i32.lt_u
+      if (result i32)
+       local.get $3
+       i32.const 48
+       i32.sub
+      else
+       local.get $3
+       i32.const 55
+       i32.sub
+       local.get $3
+       i32.const 87
+       i32.sub
+       local.get $3
+       local.get $3
+       i32.const 97
+       i32.sub
+       i32.const 25
+       i32.le_u
+       select
+       local.get $3
+       i32.const 65
+       i32.sub
+       i32.const 25
+       i32.le_u
+       select
+      end
+      local.tee $3
       local.get $1
-      i32.const 55
-      i32.sub
-      local.get $1
-      i32.const 87
-      i32.sub
-      local.get $1
-      local.get $1
-      i32.const 97
-      i32.sub
-      i32.const 25
-      i32.le_u
-      select
-      local.get $1
-      i32.const 65
-      i32.sub
-      i32.const 25
-      i32.le_u
-      select
-     end
-     local.tee $1
-     local.get $3
-     i32.ge_u
-     if
-      local.get $2
-      local.get $6
-      i32.eq
+      i32.ge_u
       if
        i32.const 0
-       return
+       local.get $2
+       local.get $4
+       i32.eq
+       br_if $~CONDITION_RETURN/~lib/util/string/strtol<i32>
+       drop
+       br $while-break|2
       end
-      br $while-break|2
+      local.get $1
+      local.get $6
+      i32.mul
+      local.get $3
+      i32.add
+      local.set $6
+      local.get $0
+      i32.const 2
+      i32.add
+      local.set $0
+      br $while-continue|2
      end
-     local.get $3
-     local.get $5
-     i32.mul
-     local.get $1
-     i32.add
-     local.set $5
-     local.get $0
-     i32.const 2
-     i32.add
-     local.set $0
-     br $while-continue|2
     end
    end
+   local.get $5
+   local.get $6
+   i32.mul
   end
-  local.get $4
-  local.get $5
-  i32.mul
  )
  (func $~lib/rt/__newArray (param $0 i32) (result i32)
   (local $1 i32)
@@ -3934,261 +3935,271 @@
   block $__inlined_func$~lib/string/String#split$272 (result i32)
    i32.const 12
    call $~lib/rt/__decrease_sp
-   block $folding-inner1
-    block $folding-inner0
-     local.get $2
-     i32.eqz
-     br_if $folding-inner0
-     local.get $1
-     i32.eqz
-     if
-      i32.const 1
-      call $~lib/rt/__newArray
-      local.set $1
-      global.get $~lib/memory/__stack_pointer
-      local.get $1
-      i32.store offset=4 align=1
-      local.get $1
-      i32.load offset=12
-      i32.eqz
-      if
-       local.get $1
-       i32.const 1
-       call $~lib/array/ensureCapacity
-       local.get $1
-       i32.const 1
-       i32.store offset=12
-      end
-      local.get $1
-      i32.load offset=4
-      local.get $0
-      i32.store
-      local.get $1
-      local.get $0
-      i32.const 1
-      call $~lib/rt/itcms/__link
-      global.get $~lib/memory/__stack_pointer
-      i32.const 12
-      i32.add
-      global.set $~lib/memory/__stack_pointer
-      local.get $1
-      br $__inlined_func$~lib/string/String#split$272
-     end
-     local.get $0
-     i32.const 20
-     i32.sub
-     i32.load offset=16
-     i32.const 1
-     i32.shr_u
-     local.set $3
-     local.get $2
-     local.set $5
-     local.get $1
-     i32.const 20
-     i32.sub
-     i32.load offset=16
-     i32.const 1
-     i32.shr_u
-     local.tee $8
-     if
-      local.get $3
-      i32.eqz
-      if
-       i32.const 1
-       call $~lib/rt/__newArray
-       local.tee $0
-       i32.load offset=4
-       i32.const 2432
-       i32.store
-       global.get $~lib/memory/__stack_pointer
-       i32.const 12
-       i32.add
-       global.set $~lib/memory/__stack_pointer
-       local.get $0
-       br $__inlined_func$~lib/string/String#split$272
-      end
-     else
-      local.get $3
-      i32.eqz
-      br_if $folding-inner0
-      local.get $3
-      local.get $5
-      local.get $3
-      local.get $5
-      i32.lt_s
-      select
-      local.tee $3
-      call $~lib/rt/__newArray
-      local.set $2
-      global.get $~lib/memory/__stack_pointer
-      local.get $2
-      i32.store offset=4 align=1
-      local.get $2
-      i32.load offset=4
-      local.set $5
-      i32.const 0
-      local.set $1
-      loop $for-loop|0
-       local.get $1
-       local.get $3
-       i32.lt_s
-       if
-        i32.const 2
-        i32.const 2
-        call $~lib/rt/itcms/__new
-        local.tee $4
-        local.get $0
-        local.get $1
-        i32.const 1
-        i32.shl
-        i32.add
-        i32.load16_u
-        i32.store16
-        local.get $5
-        local.get $1
-        i32.const 2
-        i32.shl
-        i32.add
-        local.get $4
-        i32.store
-        local.get $2
-        local.get $4
-        i32.const 1
-        call $~lib/rt/itcms/__link
-        local.get $1
-        i32.const 1
-        i32.add
-        local.set $1
-        br $for-loop|0
-       end
-      end
-      global.get $~lib/memory/__stack_pointer
-      i32.const 12
-      i32.add
-      global.set $~lib/memory/__stack_pointer
-      local.get $2
-      br $__inlined_func$~lib/string/String#split$272
-     end
+   block $~CONDITION_RETURN/~lib/string/String#split (result i32)
+    local.get $2
+    i32.eqz
+    if
      i32.const 0
+     call $~lib/rt/__newArray
+     br $~CONDITION_RETURN/~lib/string/String#split
+    end
+    local.get $1
+    i32.eqz
+    if
+     i32.const 1
+     call $~lib/rt/__newArray
+     local.set $1
+     global.get $~lib/memory/__stack_pointer
+     local.get $1
+     i32.store offset=4 align=1
+     local.get $1
+     i32.load offset=12
+     i32.eqz
+     if
+      local.get $1
+      i32.const 1
+      call $~lib/array/ensureCapacity
+      local.get $1
+      i32.const 1
+      i32.store offset=12
+     end
+     local.get $1
+     i32.load offset=4
+     local.get $0
+     i32.store
+     local.get $1
+     local.get $0
+     i32.const 1
+     call $~lib/rt/itcms/__link
+     global.get $~lib/memory/__stack_pointer
+     i32.const 12
+     i32.add
+     global.set $~lib/memory/__stack_pointer
+     local.get $1
+     br $__inlined_func$~lib/string/String#split$272
+    end
+    local.get $0
+    i32.const 20
+    i32.sub
+    i32.load offset=16
+    i32.const 1
+    i32.shr_u
+    local.set $3
+    local.get $2
+    local.set $5
+    local.get $1
+    i32.const 20
+    i32.sub
+    i32.load offset=16
+    i32.const 1
+    i32.shr_u
+    local.tee $8
+    if
+     local.get $3
+     i32.eqz
+     if
+      i32.const 1
+      call $~lib/rt/__newArray
+      local.tee $0
+      i32.load offset=4
+      i32.const 2432
+      i32.store
+      global.get $~lib/memory/__stack_pointer
+      i32.const 12
+      i32.add
+      global.set $~lib/memory/__stack_pointer
+      local.get $0
+      br $__inlined_func$~lib/string/String#split$272
+     end
+    else
+     local.get $3
+     i32.eqz
+     if
+      i32.const 0
+      call $~lib/rt/__newArray
+      br $~CONDITION_RETURN/~lib/string/String#split
+     end
+     local.get $3
+     local.get $5
+     local.get $3
+     local.get $5
+     i32.lt_s
+     select
+     local.tee $3
      call $~lib/rt/__newArray
      local.set $2
      global.get $~lib/memory/__stack_pointer
      local.get $2
      i32.store offset=4 align=1
-     loop $while-continue|1
-      local.get $0
+     local.get $2
+     i32.load offset=4
+     local.set $5
+     i32.const 0
+     local.set $1
+     loop $for-loop|0
       local.get $1
-      local.get $4
-      call $~lib/string/String#indexOf
-      local.tee $7
-      i32.const -1
-      i32.xor
+      local.get $3
+      i32.lt_s
       if
-       local.get $7
+       i32.const 2
+       i32.const 2
+       call $~lib/rt/itcms/__new
+       local.tee $4
+       local.get $0
+       local.get $1
+       i32.const 1
+       i32.shl
+       i32.add
+       i32.load16_u
+       i32.store16
+       local.get $5
+       local.get $1
+       i32.const 2
+       i32.shl
+       i32.add
        local.get $4
-       i32.sub
-       local.tee $6
-       i32.const 0
-       i32.gt_s
-       if
-        local.get $6
-        i32.const 1
-        i32.shl
-        local.tee $9
-        i32.const 2
-        call $~lib/rt/itcms/__new
-        local.set $6
-        global.get $~lib/memory/__stack_pointer
-        local.get $6
-        i32.store offset=8 align=1
-        local.get $6
-        local.get $0
-        local.get $4
-        i32.const 1
-        i32.shl
-        i32.add
-        local.get $9
-        memory.copy
-        local.get $2
-        local.get $6
-        call $~lib/array/Array<~lib/string/String>#push
-       else
-        local.get $2
-        i32.const 2432
-        call $~lib/array/Array<~lib/string/String>#push
-       end
-       local.get $10
+       i32.store
+       local.get $2
+       local.get $4
+       i32.const 1
+       call $~lib/rt/itcms/__link
+       local.get $1
        i32.const 1
        i32.add
-       local.tee $10
-       local.get $5
-       i32.eq
-       br_if $folding-inner1
-       local.get $7
-       local.get $8
-       i32.add
-       local.set $4
-       br $while-continue|1
+       local.set $1
+       br $for-loop|0
       end
      end
-     local.get $4
-     i32.eqz
-     if
-      local.get $2
-      local.get $0
-      call $~lib/array/Array<~lib/string/String>#push
-      br $folding-inner1
-     end
-     local.get $3
-     local.get $4
-     i32.sub
-     local.tee $1
-     i32.const 0
-     i32.gt_s
-     if
-      local.get $1
-      i32.const 1
-      i32.shl
-      local.tee $3
-      i32.const 2
-      call $~lib/rt/itcms/__new
-      local.set $1
-      global.get $~lib/memory/__stack_pointer
-      local.get $1
-      i32.store offset=8 align=1
-      local.get $1
-      local.get $0
-      local.get $4
-      i32.const 1
-      i32.shl
-      i32.add
-      local.get $3
-      memory.copy
-      local.get $2
-      local.get $1
-      call $~lib/array/Array<~lib/string/String>#push
-     else
-      local.get $2
-      i32.const 2432
-      call $~lib/array/Array<~lib/string/String>#push
-     end
-     br $folding-inner1
+     global.get $~lib/memory/__stack_pointer
+     i32.const 12
+     i32.add
+     global.set $~lib/memory/__stack_pointer
+     local.get $2
+     br $__inlined_func$~lib/string/String#split$272
     end
     i32.const 0
     call $~lib/rt/__newArray
-    local.set $0
+    local.set $2
+    global.get $~lib/memory/__stack_pointer
+    local.get $2
+    i32.store offset=4 align=1
+    loop $while-continue|1
+     local.get $0
+     local.get $1
+     local.get $4
+     call $~lib/string/String#indexOf
+     local.tee $7
+     i32.const -1
+     i32.xor
+     if
+      local.get $7
+      local.get $4
+      i32.sub
+      local.tee $6
+      i32.const 0
+      i32.gt_s
+      if
+       local.get $6
+       i32.const 1
+       i32.shl
+       local.tee $9
+       i32.const 2
+       call $~lib/rt/itcms/__new
+       local.set $6
+       global.get $~lib/memory/__stack_pointer
+       local.get $6
+       i32.store offset=8 align=1
+       local.get $6
+       local.get $0
+       local.get $4
+       i32.const 1
+       i32.shl
+       i32.add
+       local.get $9
+       memory.copy
+       local.get $2
+       local.get $6
+       call $~lib/array/Array<~lib/string/String>#push
+      else
+       local.get $2
+       i32.const 2432
+       call $~lib/array/Array<~lib/string/String>#push
+      end
+      local.get $2
+      local.get $10
+      i32.const 1
+      i32.add
+      local.tee $10
+      local.get $5
+      i32.eq
+      br_if $~CONDITION_RETURN/~lib/string/String#split
+      drop
+      local.get $7
+      local.get $8
+      i32.add
+      local.set $4
+      br $while-continue|1
+     end
+    end
+    local.get $4
+    i32.eqz
+    if
+     local.get $2
+     local.get $0
+     call $~lib/array/Array<~lib/string/String>#push
+     global.get $~lib/memory/__stack_pointer
+     i32.const 12
+     i32.add
+     global.set $~lib/memory/__stack_pointer
+     local.get $2
+     br $__inlined_func$~lib/string/String#split$272
+    end
+    local.get $3
+    local.get $4
+    i32.sub
+    local.tee $1
+    i32.const 0
+    i32.gt_s
+    if
+     local.get $1
+     i32.const 1
+     i32.shl
+     local.tee $3
+     i32.const 2
+     call $~lib/rt/itcms/__new
+     local.set $1
+     global.get $~lib/memory/__stack_pointer
+     local.get $1
+     i32.store offset=8 align=1
+     local.get $1
+     local.get $0
+     local.get $4
+     i32.const 1
+     i32.shl
+     i32.add
+     local.get $3
+     memory.copy
+     local.get $2
+     local.get $1
+     call $~lib/array/Array<~lib/string/String>#push
+    else
+     local.get $2
+     i32.const 2432
+     call $~lib/array/Array<~lib/string/String>#push
+    end
     global.get $~lib/memory/__stack_pointer
     i32.const 12
     i32.add
     global.set $~lib/memory/__stack_pointer
-    local.get $0
+    local.get $2
     br $__inlined_func$~lib/string/String#split$272
    end
+   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 12
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $2
+   local.get $0
   end
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -4763,2306 +4774,2306 @@
   (local $1 i64)
   (local $2 i32)
   global.get $~started
-  i32.eqz
   if
-   i32.const 1
-   global.set $~started
-   block $__inlined_func$start:std/date$267
-    block $folding-inner0
-     i32.const 1970
-     i32.const 1
-     i32.const 1
+   return
+  end
+  i32.const 1
+  global.set $~started
+  block $__inlined_func$start:std/date$267
+   block $folding-inner0
+    i32.const 1970
+    i32.const 1
+    i32.const 1
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    call $~lib/date/epochMillis
+    local.tee $1
+    i64.const -8640000000000000
+    i64.lt_s
+    local.get $1
+    i64.const 8640000000000000
+    i64.gt_s
+    i32.or
+    br_if $folding-inner0
+    local.get $1
+    i64.eqz
+    i32.eqz
+    if
      i32.const 0
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     call $~lib/date/epochMillis
-     local.tee $1
-     i64.const -8640000000000000
-     i64.lt_s
-     local.get $1
-     i64.const 8640000000000000
-     i64.gt_s
-     i32.or
-     br_if $folding-inner0
-     local.get $1
-     i64.eqz
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 3
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1970
-     i32.const 1
-     i32.const 1
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     call $~lib/date/epochMillis
-     local.tee $1
-     i64.const -8640000000000000
-     i64.lt_s
-     local.get $1
-     i64.const 8640000000000000
-     i64.gt_s
-     i32.or
-     br_if $folding-inner0
-     local.get $1
-     i64.eqz
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 4
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1970
-     i32.const 1
-     i32.const 1
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     call $~lib/date/epochMillis
-     local.tee $1
-     i64.const -8640000000000000
-     i64.lt_s
-     local.get $1
-     i64.const 8640000000000000
-     i64.gt_s
-     i32.or
-     br_if $folding-inner0
-     local.get $1
-     i64.eqz
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 5
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1990
-     i32.const 1
-     i32.const 1
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     call $~lib/date/epochMillis
-     local.tee $1
-     i64.const -8640000000000000
-     i64.lt_s
-     local.get $1
-     i64.const 8640000000000000
-     i64.gt_s
-     i32.or
-     br_if $folding-inner0
-     local.get $1
-     i64.const 631152000000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 6
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const -90
-     i32.const 1
-     i32.const 1
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     call $~lib/date/epochMillis
-     local.tee $1
-     i64.const -8640000000000000
-     i64.lt_s
-     local.get $1
-     i64.const 8640000000000000
-     i64.gt_s
-     i32.or
-     br_if $folding-inner0
-     local.get $1
-     i64.const -65007360000000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 7
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 2018
-     i32.const 11
-     i32.const 10
-     i32.const 11
-     i32.const 0
-     i32.const 0
-     i32.const 1
-     call $~lib/date/epochMillis
-     local.tee $1
-     i64.const -8640000000000000
-     i64.lt_s
-     local.get $1
-     i64.const 8640000000000000
-     i64.gt_s
-     i32.or
-     br_if $folding-inner0
-     local.get $1
-     i64.const 1541847600001
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 8
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 275760
-     i32.const 9
-     i32.const 13
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     i32.const 0
-     call $~lib/date/epochMillis
-     local.tee $1
-     i64.const -8640000000000000
-     i64.lt_s
-     local.get $1
-     i64.const 8640000000000000
-     i64.gt_s
-     i32.or
-     br_if $folding-inner0
-     local.get $1
-     i64.const 8640000000000000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 9
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     memory.size
-     i32.const 16
-     i32.shl
-     i32.const 40212
-     i32.sub
-     i32.const 1
-     i32.shr_u
-     global.set $~lib/rt/itcms/threshold
-     i32.const 292
-     i32.const 288
-     i32.store
-     i32.const 296
-     i32.const 288
-     i32.store
-     i32.const 288
-     global.set $~lib/rt/itcms/pinSpace
-     i32.const 324
-     i32.const 320
-     i32.store
-     i32.const 328
-     i32.const 320
-     i32.store
-     i32.const 320
-     global.set $~lib/rt/itcms/toSpace
-     i32.const 468
-     i32.const 464
-     i32.store
-     i32.const 472
-     i32.const 464
-     i32.store
-     i32.const 464
-     global.set $~lib/rt/itcms/fromSpace
-     i64.const 1541847600001
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i64.load offset=16
-     i64.const 1541847600001
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 18
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i64.const 1541847600002
-     call $~lib/date/Date#setTime
-     local.get $0
-     i64.load offset=16
-     i64.const 1541847600002
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 20
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 5918283958183706
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     i32.const 189512
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 28
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=4
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 29
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=8
-     i32.const 14
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 30
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCHours
-     i32.const 22
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 31
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMinutes
-     i32.const 9
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 32
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCSeconds
-     i32.const 43
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 33
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     i32.const 706
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 34
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 123814991274
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     i32.const 1973
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 40
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=4
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 41
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=8
-     i32.const 4
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 42
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCHours
-     i32.const 1
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 43
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMinutes
+     i32.const 128
      i32.const 3
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 44
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCSeconds
-     i32.const 11
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 45
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     i32.const 274
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 46
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 399464523963984
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     call $~lib/date/Date#getUTCMilliseconds
-     i32.const 984
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 52
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 12
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 54
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 568
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     i32.const 568
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 56
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 0
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     i64.load offset=16
-     i64.const 399464523963000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 59
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 999
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     i64.load offset=16
-     i64.const 399464523963999
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 61
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 2000
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 64
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i64.load offset=16
-     i64.const 399464523965000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 65
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const -2000
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 67
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i64.load offset=16
-     i64.const 399464523963000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 68
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 372027318331986
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     call $~lib/date/Date#getUTCSeconds
-     i32.const 31
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 74
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 12
-     call $~lib/date/Date#setUTCSeconds
-     local.get $0
-     call $~lib/date/Date#getUTCSeconds
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 76
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 50
-     call $~lib/date/Date#setUTCSeconds
-     local.get $0
-     call $~lib/date/Date#getUTCSeconds
-     i32.const 50
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 78
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 0
-     call $~lib/date/Date#setUTCSeconds
-     local.get $0
-     i64.load offset=16
-     i64.const 372027318300986
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 81
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 59
-     call $~lib/date/Date#setUTCSeconds
-     local.get $0
-     i64.load offset=16
-     i64.const 372027318359986
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 83
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 372027318331986
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     call $~lib/date/Date#getUTCMinutes
-     i32.const 45
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 89
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 12
-     call $~lib/date/Date#setUTCMinutes
-     local.get $0
-     call $~lib/date/Date#getUTCMinutes
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 91
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 50
-     call $~lib/date/Date#setUTCMinutes
-     local.get $0
-     call $~lib/date/Date#getUTCMinutes
-     i32.const 50
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 93
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 0
-     call $~lib/date/Date#setUTCMinutes
-     local.get $0
-     i64.load offset=16
-     i64.const 372027315631986
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 96
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 59
-     call $~lib/date/Date#setUTCMinutes
-     local.get $0
-     i64.load offset=16
-     i64.const 372027319171986
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 98
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 372027318331986
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     call $~lib/date/Date#getUTCHours
-     i32.const 17
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 104
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 12
-     call $~lib/date/Date#setUTCHours
-     local.get $0
-     call $~lib/date/Date#getUTCHours
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 106
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 2
-     call $~lib/date/Date#setUTCHours
-     local.get $0
-     call $~lib/date/Date#getUTCHours
-     i32.const 2
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 108
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 0
-     call $~lib/date/Date#setUTCHours
-     local.get $0
-     i64.load offset=16
-     i64.const 372027257131986
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 111
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 23
-     call $~lib/date/Date#setUTCHours
-     local.get $0
-     i64.load offset=16
-     i64.const 372027339931986
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 113
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 123814991274
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     i32.const 1973
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 119
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=4
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 120
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 12
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i32.load offset=8
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 124
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 2
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i32.load offset=8
-     i32.const 2
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 126
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 1
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i32.const 30
-     call $~lib/date/Date#setUTCDate
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 0
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i32.const 1
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i32.const 31
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i32.const 2024
-     call $~lib/date/Date#setUTCFullYear
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 1
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i32.load offset=4
      i32.const 3
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 141
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 1
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i32.const 29
-     call $~lib/date/Date#setUTCDate
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 1
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i64.load offset=16
-     i64.const 1709168591274
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 146
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=4
-     i32.const 2
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 147
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=8
-     i32.const 29
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 148
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMinutes
-     i32.const 3
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 149
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCSeconds
-     i32.const 11
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 150
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     i32.const 274
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 151
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1362106799999
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.const 20
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i64.load offset=16
-     i64.const 1363748399999
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 155
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 1
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i64.load offset=16
-     i64.const 1362106799999
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 157
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 1000
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     i64.load offset=16
-     i64.const 1362106800000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 160
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 3600000
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     i64.load offset=16
-     i64.const 1362110400000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 163
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 3600001
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     i64.load offset=16
-     i64.const 1362114000001
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 166
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 3600001
-     call $~lib/date/Date#setUTCMilliseconds
-     local.get $0
-     i64.load offset=16
-     i64.const 1362117600001
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 169
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 123814991274
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.const -2208
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i64.load offset=16
-     i64.const -67301808726
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 173
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 123814991274
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.const 2208
-     call $~lib/date/Date#setUTCDate
-     local.get $0
-     i64.load offset=16
-     i64.const 314240591274
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 177
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1467763200000
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     i32.const 3
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 187
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1467763199999
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     i32.const 2
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 188
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1467849599999
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     i32.const 3
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 189
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1467849600000
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     i32.const 4
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 190
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1468022400000
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     i32.const 6
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 192
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1468022399999
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     i32.const 5
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 193
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1468108799999
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     i32.const 6
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 194
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1468108800000
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     local.get $0
-     i32.load offset=4
-     local.get $0
-     i32.load offset=8
-     call $~lib/date/dayOfWeek
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 195
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 7899943856218720
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load offset=4
-     i32.const 4
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 201
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 10
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i32.load offset=4
-     i32.const 11
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 203
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 2
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i32.load offset=4
-     i32.const 3
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 205
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i64.load offset=16
-     i64.const 7899941177818720
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 206
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 0
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i64.load offset=16
-     i64.const 7899936080218720
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 209
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 11
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i64.load offset=16
-     i64.const 7899964937818720
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 211
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const -1
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i32.load offset=4
-     i32.const 12
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 215
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i64.load offset=16
-     i64.const 7899933401818720
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 216
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 1
-     global.set $~argumentsLength
-     local.get $0
-     i32.const 12
-     call $~lib/date/Date#setUTCMonth@varargs
-     local.get $0
-     i32.load offset=4
-     i32.const 1
-     i32.sub
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 218
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i64.load offset=16
-     i64.const 7899936080218720
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 219
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 7941202527925698
-     call $~lib/date/Date#constructor@new
-     local.tee $0
-     i32.load
-     i32.const 253616
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 225
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 1976
-     call $~lib/date/Date#setUTCFullYear
-     local.get $0
-     i32.load
-     i32.const 1976
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 227
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 20212
-     call $~lib/date/Date#setUTCFullYear
-     local.get $0
-     i32.load
-     i32.const 20212
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 229
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.const 71
-     call $~lib/date/Date#setUTCFullYear
-     local.get $0
-     i32.load
-     i32.const 71
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 231
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 8
-     call $~lib/rt/__decrease_sp
-     i64.const -62167219200000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 2672
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 237
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -62167219200001
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 2752
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 239
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -62127219200000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 2832
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 241
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1231231231020
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 2912
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 243
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1231231231456
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 2992
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 245
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 322331231231020
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 3072
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 247
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 253402300799999
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 3152
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 249
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 253402300800000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 3232
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 251
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -62847038769226
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 3312
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 253
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -61536067200000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toDateString
-     i32.const 4240
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 259
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1580601600000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toDateString
-     i32.const 4304
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 261
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -62183116800000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toDateString
-     i32.const 4368
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 264
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -61536067200000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toTimeString
-     i32.const 4480
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 270
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 253402300799999
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toTimeString
-     i32.const 4528
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 273
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -61536067200000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toUTCString
-     i32.const 5424
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 279
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 1580741613467
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toUTCString
-     i32.const 5504
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 281
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -62183116800000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     call $~lib/date/Date#toUTCString
-     i32.const 5584
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 284
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 5664
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192067200000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 291
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 5936
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192067200000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 293
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 5984
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 11860387200000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 295
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6032
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 299
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6096
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496456
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 303
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6176
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496456
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 307
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6256
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192141296456
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 311
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6336
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192092696456
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 315
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6416
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496450
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 319
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6480
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496450
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 323
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6560
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496450
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 327
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6640
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496456
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 331
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6720
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496456
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 335
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6800
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496456
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 339
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6896
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const -62167219200000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 342
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6928
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const -62135596800000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 345
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6960
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 189302400000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 348
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6992
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 191980800000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 351
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 5664
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192067200000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 354
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 7040
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112440000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 357
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i32.const 6032
-     call $~lib/date/Date.fromString
-     i64.load offset=16
-     i64.const 192112496000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 360
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const -8640000000000000
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store offset=4 align=1
-     i64.const 8640000000000000
-     call $~lib/date/Date#constructor@new
-     local.set $2
-     global.get $~lib/memory/__stack_pointer
-     local.get $2
-     i32.store align=1
-     local.get $0
-     i64.load offset=16
-     i64.const -8640000000000000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 378
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $2
-     i64.load offset=16
-     i64.const 8640000000000000
-     i64.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 379
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load
-     i32.const -271821
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 381
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $2
-     i32.load
-     i32.const 275760
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 382
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=4
-     i32.const 4
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 384
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $2
-     i32.load offset=4
-     i32.const 9
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 385
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=8
-     i32.const 20
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 387
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $2
-     i32.load offset=8
-     i32.const 13
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 388
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 7104
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 390
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $2
-     call $~lib/date/Date#toISOString
-     i32.const 7184
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 391
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     i64.const 8639999999999999
-     call $~lib/date/Date#constructor@new
-     local.set $2
-     global.get $~lib/memory/__stack_pointer
-     local.get $2
-     i32.store offset=4 align=1
-     i64.const -8639999999999999
-     call $~lib/date/Date#constructor@new
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store align=1
-     local.get $0
-     i32.load
-     i32.const -271821
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 396
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=4
-     i32.const 4
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 397
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     i32.load offset=8
-     i32.const 20
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 398
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCHours
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 399
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMinutes
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 400
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCSeconds
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 401
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#getUTCMilliseconds
-     i32.const 1
-     i32.ne
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 402
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $2
-     call $~lib/date/Date#toISOString
-     i32.const 7264
-     call $~lib/string/String.__eq
-     i32.eqz
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 404
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     local.get $0
-     call $~lib/date/Date#toISOString
-     i32.const 7344
-     call $~lib/string/String.__eq
-     i32.eqz
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     i32.const 8
-     i32.add
-     global.set $~lib/memory/__stack_pointer
-     local.get $0
-     if
-      i32.const 0
-      i32.const 128
-      i32.const 405
-      i32.const 3
-      call $~lib/builtins/abort
-      unreachable
-     end
-     br $__inlined_func$start:std/date$267
+     call $~lib/builtins/abort
+     unreachable
     end
-    i32.const 32
-    i32.const 80
-    i32.const 34
-    i32.const 26
-    call $~lib/builtins/abort
-    unreachable
+    i32.const 1970
+    i32.const 1
+    i32.const 1
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    call $~lib/date/epochMillis
+    local.tee $1
+    i64.const -8640000000000000
+    i64.lt_s
+    local.get $1
+    i64.const 8640000000000000
+    i64.gt_s
+    i32.or
+    br_if $folding-inner0
+    local.get $1
+    i64.eqz
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 4
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1970
+    i32.const 1
+    i32.const 1
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    call $~lib/date/epochMillis
+    local.tee $1
+    i64.const -8640000000000000
+    i64.lt_s
+    local.get $1
+    i64.const 8640000000000000
+    i64.gt_s
+    i32.or
+    br_if $folding-inner0
+    local.get $1
+    i64.eqz
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 5
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1990
+    i32.const 1
+    i32.const 1
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    call $~lib/date/epochMillis
+    local.tee $1
+    i64.const -8640000000000000
+    i64.lt_s
+    local.get $1
+    i64.const 8640000000000000
+    i64.gt_s
+    i32.or
+    br_if $folding-inner0
+    local.get $1
+    i64.const 631152000000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 6
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const -90
+    i32.const 1
+    i32.const 1
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    call $~lib/date/epochMillis
+    local.tee $1
+    i64.const -8640000000000000
+    i64.lt_s
+    local.get $1
+    i64.const 8640000000000000
+    i64.gt_s
+    i32.or
+    br_if $folding-inner0
+    local.get $1
+    i64.const -65007360000000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 7
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 2018
+    i32.const 11
+    i32.const 10
+    i32.const 11
+    i32.const 0
+    i32.const 0
+    i32.const 1
+    call $~lib/date/epochMillis
+    local.tee $1
+    i64.const -8640000000000000
+    i64.lt_s
+    local.get $1
+    i64.const 8640000000000000
+    i64.gt_s
+    i32.or
+    br_if $folding-inner0
+    local.get $1
+    i64.const 1541847600001
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 8
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 275760
+    i32.const 9
+    i32.const 13
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    i32.const 0
+    call $~lib/date/epochMillis
+    local.tee $1
+    i64.const -8640000000000000
+    i64.lt_s
+    local.get $1
+    i64.const 8640000000000000
+    i64.gt_s
+    i32.or
+    br_if $folding-inner0
+    local.get $1
+    i64.const 8640000000000000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 9
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    memory.size
+    i32.const 16
+    i32.shl
+    i32.const 40212
+    i32.sub
+    i32.const 1
+    i32.shr_u
+    global.set $~lib/rt/itcms/threshold
+    i32.const 292
+    i32.const 288
+    i32.store
+    i32.const 296
+    i32.const 288
+    i32.store
+    i32.const 288
+    global.set $~lib/rt/itcms/pinSpace
+    i32.const 324
+    i32.const 320
+    i32.store
+    i32.const 328
+    i32.const 320
+    i32.store
+    i32.const 320
+    global.set $~lib/rt/itcms/toSpace
+    i32.const 468
+    i32.const 464
+    i32.store
+    i32.const 472
+    i32.const 464
+    i32.store
+    i32.const 464
+    global.set $~lib/rt/itcms/fromSpace
+    i64.const 1541847600001
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i64.load offset=16
+    i64.const 1541847600001
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 18
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i64.const 1541847600002
+    call $~lib/date/Date#setTime
+    local.get $0
+    i64.load offset=16
+    i64.const 1541847600002
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 20
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 5918283958183706
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    i32.const 189512
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 28
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=4
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 29
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=8
+    i32.const 14
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 30
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCHours
+    i32.const 22
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 31
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMinutes
+    i32.const 9
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 32
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCSeconds
+    i32.const 43
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 33
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    i32.const 706
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 34
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 123814991274
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    i32.const 1973
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 40
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=4
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 41
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=8
+    i32.const 4
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 42
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCHours
+    i32.const 1
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 43
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMinutes
+    i32.const 3
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 44
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCSeconds
+    i32.const 11
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 45
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    i32.const 274
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 46
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 399464523963984
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    call $~lib/date/Date#getUTCMilliseconds
+    i32.const 984
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 52
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 12
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 54
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 568
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    i32.const 568
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 56
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 0
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    i64.load offset=16
+    i64.const 399464523963000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 59
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 999
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    i64.load offset=16
+    i64.const 399464523963999
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 61
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 2000
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 64
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i64.load offset=16
+    i64.const 399464523965000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 65
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const -2000
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 67
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i64.load offset=16
+    i64.const 399464523963000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 68
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 372027318331986
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    call $~lib/date/Date#getUTCSeconds
+    i32.const 31
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 74
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 12
+    call $~lib/date/Date#setUTCSeconds
+    local.get $0
+    call $~lib/date/Date#getUTCSeconds
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 76
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 50
+    call $~lib/date/Date#setUTCSeconds
+    local.get $0
+    call $~lib/date/Date#getUTCSeconds
+    i32.const 50
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 78
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 0
+    call $~lib/date/Date#setUTCSeconds
+    local.get $0
+    i64.load offset=16
+    i64.const 372027318300986
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 81
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 59
+    call $~lib/date/Date#setUTCSeconds
+    local.get $0
+    i64.load offset=16
+    i64.const 372027318359986
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 83
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 372027318331986
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    call $~lib/date/Date#getUTCMinutes
+    i32.const 45
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 89
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 12
+    call $~lib/date/Date#setUTCMinutes
+    local.get $0
+    call $~lib/date/Date#getUTCMinutes
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 91
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 50
+    call $~lib/date/Date#setUTCMinutes
+    local.get $0
+    call $~lib/date/Date#getUTCMinutes
+    i32.const 50
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 93
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 0
+    call $~lib/date/Date#setUTCMinutes
+    local.get $0
+    i64.load offset=16
+    i64.const 372027315631986
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 96
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 59
+    call $~lib/date/Date#setUTCMinutes
+    local.get $0
+    i64.load offset=16
+    i64.const 372027319171986
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 98
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 372027318331986
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    call $~lib/date/Date#getUTCHours
+    i32.const 17
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 104
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 12
+    call $~lib/date/Date#setUTCHours
+    local.get $0
+    call $~lib/date/Date#getUTCHours
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 106
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 2
+    call $~lib/date/Date#setUTCHours
+    local.get $0
+    call $~lib/date/Date#getUTCHours
+    i32.const 2
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 108
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 0
+    call $~lib/date/Date#setUTCHours
+    local.get $0
+    i64.load offset=16
+    i64.const 372027257131986
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 111
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 23
+    call $~lib/date/Date#setUTCHours
+    local.get $0
+    i64.load offset=16
+    i64.const 372027339931986
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 113
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 123814991274
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    i32.const 1973
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 119
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=4
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 120
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 12
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i32.load offset=8
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 124
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 2
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i32.load offset=8
+    i32.const 2
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 126
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 1
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i32.const 30
+    call $~lib/date/Date#setUTCDate
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 0
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i32.const 1
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i32.const 31
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i32.const 2024
+    call $~lib/date/Date#setUTCFullYear
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 1
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i32.load offset=4
+    i32.const 3
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 141
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 1
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i32.const 29
+    call $~lib/date/Date#setUTCDate
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 1
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i64.load offset=16
+    i64.const 1709168591274
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 146
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=4
+    i32.const 2
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 147
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=8
+    i32.const 29
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 148
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMinutes
+    i32.const 3
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 149
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCSeconds
+    i32.const 11
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 150
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    i32.const 274
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 151
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1362106799999
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.const 20
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i64.load offset=16
+    i64.const 1363748399999
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 155
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 1
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i64.load offset=16
+    i64.const 1362106799999
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 157
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 1000
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    i64.load offset=16
+    i64.const 1362106800000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 160
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 3600000
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    i64.load offset=16
+    i64.const 1362110400000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 163
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 3600001
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    i64.load offset=16
+    i64.const 1362114000001
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 166
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 3600001
+    call $~lib/date/Date#setUTCMilliseconds
+    local.get $0
+    i64.load offset=16
+    i64.const 1362117600001
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 169
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 123814991274
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.const -2208
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i64.load offset=16
+    i64.const -67301808726
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 173
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 123814991274
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.const 2208
+    call $~lib/date/Date#setUTCDate
+    local.get $0
+    i64.load offset=16
+    i64.const 314240591274
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 177
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1467763200000
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    i32.const 3
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 187
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1467763199999
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    i32.const 2
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 188
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1467849599999
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    i32.const 3
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 189
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1467849600000
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    i32.const 4
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 190
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1468022400000
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    i32.const 6
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 192
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1468022399999
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    i32.const 5
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 193
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1468108799999
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    i32.const 6
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 194
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1468108800000
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    local.get $0
+    i32.load offset=4
+    local.get $0
+    i32.load offset=8
+    call $~lib/date/dayOfWeek
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 195
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 7899943856218720
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load offset=4
+    i32.const 4
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 201
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 10
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i32.load offset=4
+    i32.const 11
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 203
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 2
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i32.load offset=4
+    i32.const 3
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 205
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i64.load offset=16
+    i64.const 7899941177818720
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 206
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 0
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i64.load offset=16
+    i64.const 7899936080218720
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 209
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 11
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i64.load offset=16
+    i64.const 7899964937818720
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 211
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const -1
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i32.load offset=4
+    i32.const 12
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 215
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i64.load offset=16
+    i64.const 7899933401818720
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 216
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 1
+    global.set $~argumentsLength
+    local.get $0
+    i32.const 12
+    call $~lib/date/Date#setUTCMonth@varargs
+    local.get $0
+    i32.load offset=4
+    i32.const 1
+    i32.sub
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 218
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i64.load offset=16
+    i64.const 7899936080218720
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 219
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 7941202527925698
+    call $~lib/date/Date#constructor@new
+    local.tee $0
+    i32.load
+    i32.const 253616
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 225
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 1976
+    call $~lib/date/Date#setUTCFullYear
+    local.get $0
+    i32.load
+    i32.const 1976
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 227
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 20212
+    call $~lib/date/Date#setUTCFullYear
+    local.get $0
+    i32.load
+    i32.const 20212
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 229
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 71
+    call $~lib/date/Date#setUTCFullYear
+    local.get $0
+    i32.load
+    i32.const 71
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 231
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 8
+    call $~lib/rt/__decrease_sp
+    i64.const -62167219200000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 2672
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 237
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -62167219200001
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 2752
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 239
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -62127219200000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 2832
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 241
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1231231231020
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 2912
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 243
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1231231231456
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 2992
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 245
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 322331231231020
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 3072
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 247
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 253402300799999
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 3152
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 249
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 253402300800000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 3232
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 251
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -62847038769226
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 3312
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 253
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -61536067200000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toDateString
+    i32.const 4240
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 259
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1580601600000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toDateString
+    i32.const 4304
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 261
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -62183116800000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toDateString
+    i32.const 4368
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 264
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -61536067200000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toTimeString
+    i32.const 4480
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 270
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 253402300799999
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toTimeString
+    i32.const 4528
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 273
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -61536067200000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toUTCString
+    i32.const 5424
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 279
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 1580741613467
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toUTCString
+    i32.const 5504
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 281
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -62183116800000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    call $~lib/date/Date#toUTCString
+    i32.const 5584
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 284
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 5664
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192067200000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 291
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 5936
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192067200000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 293
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 5984
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 11860387200000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 295
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6032
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 299
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6096
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496456
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 303
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6176
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496456
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 307
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6256
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192141296456
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 311
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6336
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192092696456
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 315
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6416
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496450
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 319
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6480
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496450
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 323
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6560
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496450
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 327
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6640
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496456
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 331
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6720
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496456
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 335
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6800
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496456
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 339
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6896
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const -62167219200000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 342
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6928
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const -62135596800000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 345
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6960
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 189302400000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 348
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6992
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 191980800000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 351
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 5664
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192067200000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 354
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 7040
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112440000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 357
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 6032
+    call $~lib/date/Date.fromString
+    i64.load offset=16
+    i64.const 192112496000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 360
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const -8640000000000000
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store offset=4 align=1
+    i64.const 8640000000000000
+    call $~lib/date/Date#constructor@new
+    local.set $2
+    global.get $~lib/memory/__stack_pointer
+    local.get $2
+    i32.store align=1
+    local.get $0
+    i64.load offset=16
+    i64.const -8640000000000000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 378
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $2
+    i64.load offset=16
+    i64.const 8640000000000000
+    i64.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 379
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load
+    i32.const -271821
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 381
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $2
+    i32.load
+    i32.const 275760
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 382
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=4
+    i32.const 4
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 384
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $2
+    i32.load offset=4
+    i32.const 9
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 385
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=8
+    i32.const 20
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 387
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $2
+    i32.load offset=8
+    i32.const 13
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 388
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 7104
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 390
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $2
+    call $~lib/date/Date#toISOString
+    i32.const 7184
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 391
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i64.const 8639999999999999
+    call $~lib/date/Date#constructor@new
+    local.set $2
+    global.get $~lib/memory/__stack_pointer
+    local.get $2
+    i32.store offset=4 align=1
+    i64.const -8639999999999999
+    call $~lib/date/Date#constructor@new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    local.get $0
+    i32.load
+    i32.const -271821
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 396
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=4
+    i32.const 4
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 397
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.load offset=8
+    i32.const 20
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 398
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCHours
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 399
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMinutes
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 400
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCSeconds
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 401
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#getUTCMilliseconds
+    i32.const 1
+    i32.ne
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 402
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $2
+    call $~lib/date/Date#toISOString
+    i32.const 7264
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 404
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    call $~lib/date/Date#toISOString
+    i32.const 7344
+    call $~lib/string/String.__eq
+    i32.eqz
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    i32.const 8
+    i32.add
+    global.set $~lib/memory/__stack_pointer
+    local.get $0
+    if
+     i32.const 0
+     i32.const 128
+     i32.const 405
+     i32.const 3
+     call $~lib/builtins/abort
+     unreachable
+    end
+    br $__inlined_func$start:std/date$267
    end
+   i32.const 32
+   i32.const 80
+   i32.const 34
+   i32.const 26
+   call $~lib/builtins/abort
+   unreachable
   end
  )
  (func $~lib/date/Date#constructor@new (param $0 i64) (result i32)

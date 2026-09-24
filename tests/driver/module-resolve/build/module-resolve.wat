@@ -147,70 +147,60 @@
   (local $3 i32)
   i32.const 8
   call $~lib/rt/__decrease_sp
-  local.get $left
-  local.get $right
-  i32.eq
-  if
-   i32.const 1
-   local.set $3
-   i32.const 8
-   call $~lib/rt/__increase_sp
-   local.get $3
-   return
-  end
-  local.get $left
-  i32.const 0
-  i32.eq
-  if (result i32)
-   i32.const 1
-  else
+  block $~CONDITION_RETURN/~lib/string/String.__eq (result i32)
+   local.get $left
    local.get $right
+   i32.eq
+   if
+    i32.const 1
+    br $~CONDITION_RETURN/~lib/string/String.__eq
+   end
+   local.get $left
    i32.const 0
    i32.eq
-  end
-  if
+   if (result i32)
+    i32.const 1
+   else
+    local.get $right
+    i32.const 0
+    i32.eq
+   end
+   if
+    i32.const 0
+    br $~CONDITION_RETURN/~lib/string/String.__eq
+   end
+   local.get $left
    i32.const 0
+   call $~lib/rt/__tmptostack
+   call $~lib/string/String#get:length
+   local.set $leftLength
+   local.get $leftLength
+   local.get $right
+   i32.const 0
+   call $~lib/rt/__tmptostack
+   call $~lib/string/String#get:length
+   i32.ne
+   if
+    i32.const 0
+    br $~CONDITION_RETURN/~lib/string/String.__eq
+   end
+   local.get $left
+   i32.const 0
+   call $~lib/rt/__tmptostack
+   i32.const 0
+   local.get $right
+   i32.const 4
+   call $~lib/rt/__tmptostack
+   i32.const 0
+   local.get $leftLength
+   call $~lib/util/string/compareImpl
+   i32.eqz
    local.set $3
    i32.const 8
    call $~lib/rt/__increase_sp
    local.get $3
    return
   end
-  local.get $left
-  i32.const 0
-  call $~lib/rt/__tmptostack
-  call $~lib/string/String#get:length
-  local.set $leftLength
-  local.get $leftLength
-  local.get $right
-  i32.const 0
-  call $~lib/rt/__tmptostack
-  call $~lib/string/String#get:length
-  i32.ne
-  if
-   i32.const 0
-   local.set $3
-   i32.const 8
-   call $~lib/rt/__increase_sp
-   local.get $3
-   return
-  end
-  local.get $left
-  i32.const 0
-  call $~lib/rt/__tmptostack
-  i32.const 0
-  local.get $right
-  i32.const 4
-  call $~lib/rt/__tmptostack
-  i32.const 0
-  local.get $leftLength
-  call $~lib/util/string/compareImpl
-  i32.eqz
-  local.set $3
-  i32.const 8
-  call $~lib/rt/__increase_sp
-  local.get $3
-  return
   local.set $3
   i32.const 8
   call $~lib/rt/__increase_sp

@@ -14,62 +14,62 @@
  (export "_start" (func $~start))
  (func $~start
   global.get $~started
-  i32.eqz
   if
+   return
+  end
+  i32.const 1
+  global.set $~started
+  global.get $mutable-globals/external
+  i32.const 123
+  i32.ne
+  if
+   i32.const 0
+   i32.const 32
+   i32.const 5
    i32.const 1
-   global.set $~started
-   global.get $mutable-globals/external
-   i32.const 123
-   i32.ne
-   if
-    i32.const 0
-    i32.const 32
-    i32.const 5
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $mutable-globals/internal
-   i32.const 124
-   i32.ne
-   if
-    i32.const 0
-    i32.const 32
-    i32.const 6
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $mutable-globals/external
-   i32.const 10
-   i32.add
-   global.set $mutable-globals/external
-   global.get $mutable-globals/internal
-   i32.const 10
-   i32.add
-   global.set $mutable-globals/internal
-   global.get $mutable-globals/external
-   i32.const 133
-   i32.ne
-   if
-    i32.const 0
-    i32.const 32
-    i32.const 11
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $mutable-globals/internal
-   i32.const 134
-   i32.ne
-   if
-    i32.const 0
-    i32.const 32
-    i32.const 12
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $mutable-globals/internal
+  i32.const 124
+  i32.ne
+  if
+   i32.const 0
+   i32.const 32
+   i32.const 6
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $mutable-globals/external
+  i32.const 10
+  i32.add
+  global.set $mutable-globals/external
+  global.get $mutable-globals/internal
+  i32.const 10
+  i32.add
+  global.set $mutable-globals/internal
+  global.get $mutable-globals/external
+  i32.const 133
+  i32.ne
+  if
+   i32.const 0
+   i32.const 32
+   i32.const 11
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $mutable-globals/internal
+  i32.const 134
+  i32.ne
+  if
+   i32.const 0
+   i32.const 32
+   i32.const 12
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
   end
  )
 )
