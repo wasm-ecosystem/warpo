@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fmt/base.h>
+#include <sstream>
 #include <unordered_set>
 
 #include "AbbrevFactory.hpp"
@@ -755,7 +756,31 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
   dumpOptions.ShowAddresses = false;
   dwarfContext->dump(dumpStream, dumpOptions);
   dumpStream.flush();
-  return dumpOutput;
+
+  dumpOptions.ShowAddresses = true;
+  std::string addressDump;
+  llvm::raw_string_ostream addressDumpStream{addressDump};
+  dwarfContext->dump(addressDumpStream, dumpOptions);
+  addressDumpStream.flush();
+
+  std::istringstream addressInput{addressDump};
+  std::vector<std::string> addressLines;
+  std::string line;
+  while (std::getline(addressInput, line)) {
+    if (line.find("DW_AT_low_pc") != std::string::npos || line.find("DW_AT_high_pc") != std::string::npos)
+      addressLines.push_back(line);
+  }
+
+  std::istringstream input{dumpOutput};
+  std::ostringstream output;
+  size_t addressLineIndex = 0U;
+  while (std::getline(input, line)) {
+    if ((line.find("DW_AT_low_pc") != std::string::npos || line.find("DW_AT_high_pc") != std::string::npos) &&
+        addressLineIndex < addressLines.size())
+      line = addressLines[addressLineIndex++];
+    output << line << '\n';
+  }
+  return output.str();
 }
 
 static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
