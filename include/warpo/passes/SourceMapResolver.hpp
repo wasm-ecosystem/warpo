@@ -9,10 +9,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
-
-namespace wasm {
-struct BinaryLocations;
-} // namespace wasm
+#include <wasm-binary.h>
 
 namespace warpo::passes {
 
@@ -31,7 +28,8 @@ public:
   enum class ResolveBias { Previous, Next };
 
   explicit SourceMapResolver(std::string const &sourceMap, uint32_t wasmByteSize, uint32_t codeSectionOffset,
-                             wasm::BinaryLocations const &binaryLocations);
+                             std::vector<wasm::WasmBinaryWriter::TableOfContents::Entry> const &functionBodies,
+                             wasm::Module const &module);
 
   static uint32_t getCodeSectionOffset(std::vector<uint8_t> const &wasmBinary);
 

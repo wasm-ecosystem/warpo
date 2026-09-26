@@ -50,7 +50,9 @@ uint32_t SourceMapResolver::getCodeSectionOffset(std::vector<uint8_t> const &was
 }
 
 SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t const wasmByteSize,
-                                     uint32_t const codeSectionOffset, wasm::BinaryLocations const &binaryLocations) {
+                                     uint32_t const codeSectionOffset,
+                                     std::vector<wasm::WasmBinaryWriter::TableOfContents::Entry> const &functionBodies,
+                                     wasm::Module const &module) {
   if (!sourceMap.empty()) {
     std::vector<char> sourceMapBuffer{sourceMap.begin(), sourceMap.end()};
     sourceMapBuffer.push_back('\0');
@@ -80,10 +82,23 @@ SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t cons
       mappings_.emplace_back(generatedOffset, std::move(sourceLocation));
     }
   }
-  for (auto const &[func, locations] : binaryLocations.functions) {
-    std::string const functionName = func->name.toString();
-    functionRanges_.emplace(functionName, BytecodeRange{.lowPc = codeSectionOffset + locations.declarations,
-                                                        .highPc = codeSectionOffset + locations.end});
+  std::unordered_map<std::string, BytecodeRange> trackedFunctionRanges;
+  for (auto const &function : module.functions) {
+    std::string const functionName = function->name.toString();
+    if (function->funcLocation.end > function->funcLocation.declarations)
+      trackedFunctionRanges.emplace(functionName,
+                                    BytecodeRange{.lowPc = codeSectionOffset + function->funcLocation.declarations,
+                                                  .highPc = codeSectionOffset + function->funcLocation.end});
+  }
+  for (auto const &functionBody : functionBodies) {
+    auto const trackedRange = trackedFunctionRanges.find(functionBody.name.toString());
+    if (trackedRange != trackedFunctionRanges.end()) {
+      functionRanges_.emplace(functionBody.name.toString(), trackedRange->second);
+      continue;
+    }
+    functionRanges_.emplace(functionBody.name.toString(),
+                            BytecodeRange{.lowPc = static_cast<uint32_t>(functionBody.offset - 2U),
+                                          .highPc = static_cast<uint32_t>(functionBody.offset + functionBody.size)});
   }
 }
 

@@ -1,7 +1,0 @@
-[
-  {
-    "name": "func$other",
-    "root": true,
-    "export": "test"
-  }
-]
