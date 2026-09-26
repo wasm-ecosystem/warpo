@@ -34,26 +34,9 @@ void BinaryWriter::write() {
     std::string const sourceMap = sourceMapStream_.str();
     assert(!sourceMap.empty() && "DWARF emission requires source map emission");
     std::vector<uint8_t> const wasmBinary{buffer_.begin(), buffer_.end()};
-    size_t offset = 8U;
-    uint32_t codeSectionOffset = 0U;
-    while (offset < wasmBinary.size()) {
-      uint8_t const sectionId = wasmBinary[offset++];
-      uint32_t sectionSize = 0U;
-      uint32_t shift = 0U;
-      uint8_t byte = 0U;
-      do {
-        byte = wasmBinary[offset++];
-        sectionSize |= static_cast<uint32_t>(byte & 0x7FU) << shift;
-        shift += 7U;
-      } while ((byte & 0x80U) != 0U);
-      if (sectionId == 10U) {
-        codeSectionOffset = static_cast<uint32_t>(offset);
-        break;
-      }
-      offset += sectionSize;
-    }
-    SourceMapResolver const sourceMapResolver{sourceMap, static_cast<uint32_t>(buffer_.size()), codeSectionOffset,
-                                              writer_.tableOfContents.functionBodies, *m_.get()};
+    uint32_t const offsetAdjustment = SourceMapResolver::getCodeSectionOffsetAdjustment(wasmBinary);
+    SourceMapResolver const sourceMapResolver{sourceMap, static_cast<uint32_t>(buffer_.size()), offsetAdjustment,
+                                              writer_.tableOfContents.functionBodies};
     debugSections_ = DwarfGenerator::generateDebugSections(
         m_.variableInfo_,
         [this](std::string_view const globalName) -> std::optional<uint32_t> {

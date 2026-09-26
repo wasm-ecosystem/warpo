@@ -27,11 +27,10 @@ public:
 
   enum class ResolveBias { Previous, Next };
 
-  explicit SourceMapResolver(std::string const &sourceMap, uint32_t wasmByteSize, uint32_t codeSectionOffset,
-                             std::vector<wasm::WasmBinaryWriter::TableOfContents::Entry> const &functionBodies,
-                             wasm::Module const &module);
+  explicit SourceMapResolver(std::string const &sourceMap, uint32_t wasmByteSize, uint32_t offsetAdjustment,
+                             std::vector<wasm::WasmBinaryWriter::TableOfContents::Entry> const &functionBodies);
 
-  static uint32_t getCodeSectionOffset(std::vector<uint8_t> const &wasmBinary);
+  static uint32_t getCodeSectionOffsetAdjustment(std::vector<uint8_t> const &wasmBinary);
 
   std::optional<SourceLocation> resolveGeneratedOffset(uint32_t generatedOffset,
                                                        ResolveBias bias = ResolveBias::Previous) const;
