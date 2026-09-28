@@ -34,9 +34,9 @@ void BinaryWriter::write() {
     std::string const sourceMap = sourceMapStream_.str();
     assert(!sourceMap.empty() && "DWARF emission requires source map emission");
     std::vector<uint8_t> const wasmBinary{buffer_.begin(), buffer_.end()};
-    uint32_t const codeSectionOffset = SourceMapResolver::getCodeSectionOffset(wasmBinary);
-    SourceMapResolver const sourceMapResolver{sourceMap, static_cast<uint32_t>(buffer_.size()), codeSectionOffset,
-                                              writer_.getBinaryLocations()};
+    uint32_t const offsetAdjustment = SourceMapResolver::getCodeSectionOffsetAdjustment(wasmBinary);
+    SourceMapResolver const sourceMapResolver{sourceMap, static_cast<uint32_t>(buffer_.size()), offsetAdjustment,
+                                              writer_.tableOfContents.functionBodies};
     debugSections_ = DwarfGenerator::generateDebugSections(
         m_.variableInfo_,
         [this](std::string_view const globalName) -> std::optional<uint32_t> {

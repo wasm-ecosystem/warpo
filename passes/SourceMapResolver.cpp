@@ -34,23 +34,28 @@ uint32_t readU32Leb(std::vector<uint8_t> const &buffer, size_t &offset) {
 SourceMapResolver::Mapping::Mapping(uint32_t const generatedOffset, std::optional<SourceLocation> sourceLocation)
     : generatedOffset(generatedOffset), sourceLocation(std::move(sourceLocation)) {}
 
-uint32_t SourceMapResolver::getCodeSectionOffset(std::vector<uint8_t> const &wasmBinary) {
+uint32_t SourceMapResolver::getCodeSectionOffsetAdjustment(std::vector<uint8_t> const &wasmBinary) {
   assert(wasmBinary.size() >= 8U);
   size_t offset = 8U;
   while (offset < wasmBinary.size()) {
     uint8_t const sectionId = wasmBinary[offset++];
+    size_t const lebStart = offset;
     uint32_t const sectionSize = readU32Leb(wasmBinary, offset);
-    uint32_t const sectionPayloadOffset = static_cast<uint32_t>(offset);
-    if (sectionId == codeSectionId)
-      return sectionPayloadOffset;
+    if (sectionId == codeSectionId) {
+      uint32_t const sizeLebLength = static_cast<uint32_t>(offset - lebStart);
+      // Upstream Binaryen records TableOfContents offsets before shrinking the section size LEB placeholder (5 bytes).
+      // The actual binary offset is adjusted by the difference between 5 bytes and the final LEB length.
+      return 5U - sizeLebLength;
+    }
     offset += sectionSize;
   }
   assert(false && "Wasm binary must contain a code section");
   return 0U;
 }
 
-SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t const wasmByteSize,
-                                     uint32_t const codeSectionOffset, wasm::BinaryLocations const &binaryLocations) {
+SourceMapResolver::SourceMapResolver(
+    std::string const &sourceMap, uint32_t const wasmByteSize, uint32_t const offsetAdjustment,
+    std::vector<wasm::WasmBinaryWriter::TableOfContents::Entry> const &functionBodies) {
   if (!sourceMap.empty()) {
     std::vector<char> sourceMapBuffer{sourceMap.begin(), sourceMap.end()};
     sourceMapBuffer.push_back('\0');
@@ -80,10 +85,11 @@ SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t cons
       mappings_.emplace_back(generatedOffset, std::move(sourceLocation));
     }
   }
-  for (auto const &[func, locations] : binaryLocations.functions) {
-    std::string const functionName = func->name.toString();
-    functionRanges_.emplace(functionName, BytecodeRange{.lowPc = codeSectionOffset + locations.declarations,
-                                                        .highPc = codeSectionOffset + locations.end});
+  for (auto const &functionBody : functionBodies) {
+    functionRanges_.emplace(
+        functionBody.name.toString(),
+        BytecodeRange{.lowPc = static_cast<uint32_t>(functionBody.offset - offsetAdjustment),
+                      .highPc = static_cast<uint32_t>(functionBody.offset + functionBody.size - offsetAdjustment)});
   }
 }
 

@@ -1,6 +1,0 @@
-(module
-  (import "env" "imported_third" (func $imported_third))
-  (func $qux (export "qux")
-    (call $imported_third)
-  )
-)
