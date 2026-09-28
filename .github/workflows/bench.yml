@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+          submodules: true
 
       - uses: actions/setup-node@v4
         with:
@@ -53,11 +54,23 @@ jobs:
           set -euo pipefail
           echo "bootstrap=$(stat -c%s tests/bootstrap/tmp/release/assemblyscript.warpo-test-bootstrap.wasm)" >> "$GITHUB_OUTPUT"
 
+      - name: Clean submodules before base checkout
+        run: |
+          git submodule deinit -f --all || true
+          rm -rf third_party/binaryen .git/modules
+
       - name: Checkout base commit
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           clean: true
+
+      - name: Update submodules for base commit if needed
+        run: |
+          if [ -f .gitmodules ]; then
+            git submodule sync
+            git submodule update --init --depth 1 third_party/binaryen
+          fi
 
       - name: Install base dependencies
         run: npm ci

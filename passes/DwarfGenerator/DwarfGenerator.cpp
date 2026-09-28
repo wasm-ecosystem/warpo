@@ -752,7 +752,7 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
   dumpOptions.SummarizeTypes = false;
   dumpOptions.Verbose = false;
   dumpOptions.DisplayRawContents = false;
-  dumpOptions.ShowAddresses = false;
+  dumpOptions.ShowAddresses = true;
   dwarfContext->dump(dumpStream, dumpOptions);
   dumpStream.flush();
   return dumpOutput;
