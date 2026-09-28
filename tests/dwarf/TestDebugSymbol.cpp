@@ -248,10 +248,7 @@ std::string filterLibSubprograms(std::string const &dump, warpo::passes::SourceM
   std::ostringstream normalizedOutput;
   LineReader normalizedReader(normalizedInput);
   while (normalizedReader.next(line)) {
-    removeDwarfEntryOffset(line);
     removeTypeReferenceOffset(line);
-    if (line.find_first_not_of(" \t\r") == std::string::npos)
-      continue;
     normalizedOutput << line << '\n';
   }
   return normalizedOutput.str();
