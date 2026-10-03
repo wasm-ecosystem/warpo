@@ -4,48 +4,36 @@
 
 //
 // Purpose:
-// - Many void functions contain repeated early-return checks (guard statements).
-// - This pass rewrites `(if (cond) (return))` to a `br_if` that targets an enclosing block,
-//   keeping control flow as a simple branch instead of a mid-body return.
+// - Before GC epilogue insertion, this pass lets guard returns
+//   branch to a single function-level exit block.
 //
 // Source (TS) intent:
 //   if (cond) return;
 //   useValue();
 //
 // WAT (before):
-//   (func $f (param $x i32)
-//     local.get $x
-//     if
-//       return
-//     end
-//     i32.const 1
-//     drop
-//   )
+//   if
+//     return
+//   end
+//   if
+//     return
+//   end
 //
-// WAT (after): the `if` becomes a `br_if` to an enclosing block.
-//   (func $f (param $x i32)
-//     (block $CONDITION_RETURN#0
-//       local.get $x
-//       br_if $CONDITION_RETURN#0
-//       i32.const 1
-//       drop
-//     )
-//   )
-//
-// NOTE: The outermost block is the function body block, not a real block opcode.
+// WAT (after):
+//   block $return
+//     br_if $return ;; first condition
+//     br_if $return ;; second condition
+//   end
 //
 
-// TODO: extend this pass to handle functions with non-void return types.
-
-#include <cassert>
-#include <deque>
 #include <fmt/format.h>
 #include <memory>
+#include <vector>
 
 #include "ConditionalReturn.hpp"
 #include "fmt/base.h"
-#include "helper/Matcher.hpp"
-#include "pass.h"
+#include "ir/branch-utils.h"
+#include "ir/names.h"
 #include "support/name.h"
 #include "warpo/support/Debug.hpp"
 #include "wasm-builder.h"
@@ -59,149 +47,168 @@ namespace warpo::passes {
 namespace {
 
 struct Scanner : public wasm::PostWalker<Scanner> {
-  std::deque<wasm::Expression **> targetIfs_;
+  std::vector<wasm::Expression **> targetIfs_;
+
+  static bool isReturnGuard(wasm::If *expr) {
+    return expr->ifFalse == nullptr && expr->ifTrue != nullptr && expr->ifTrue->is<wasm::Return>();
+  }
+
+  static bool isSimpleNonVoidGuard(wasm::If *expr) {
+    if (!isReturnGuard(expr))
+      return false;
+    auto *const returnValue = expr->ifTrue->cast<wasm::Return>()->value;
+    if (returnValue == nullptr || !returnValue->is<wasm::Const>())
+      return false;
+    if (expr->condition->is<wasm::LocalGet>())
+      return true;
+    auto *const unary = expr->condition->dynCast<wasm::Unary>();
+    return unary != nullptr && unary->value->is<wasm::LocalGet>();
+  }
+
   void visitIf(wasm::If *expr) {
-    using namespace matcher;
-    M const matcher = isIf(!_if::hasFalse(), _if::ifTrue(isReturn()));
-    if (matcher(*expr)) {
+    if (isReturnGuard(expr))
       targetIfs_.push_back(getCurrentPointer());
-    }
   }
 };
 
 wasm::Name getBlockName(std::string_view funcName) { return fmt::format("~CONDITION_RETURN/{}", funcName); }
 
 wasm::Name getValidBlockName(wasm::Function *func) {
-  if (auto *const block = func->body->dynCast<wasm::Block>()) {
-    if (!block->name.isNull())
-      return block->name;
-  }
-  return getBlockName(func->name.view());
+  if (auto *const block = func->body->dynCast<wasm::Block>(); block != nullptr && !block->name.isNull())
+    return block->name;
+  wasm::BranchUtils::NameSet const names = wasm::BranchUtils::getBranchTargets(func->body);
+  return wasm::Names::getValidName(getBlockName(func->name.view()),
+                                   [&](wasm::Name const name) { return !names.contains(name); });
 }
 
-} // namespace
-
-void optimizeConditionalReturns(wasm::Module *m, wasm::Function *func) {
-  // to simplify the implement, we only handle functions return void
-  if (func->getResults() != wasm::Type::none)
-    return;
+void optimizeConditionalReturnsImpl(wasm::Module *m, wasm::Function *func) {
+  wasm::Type const resultType = func->getResults();
   Scanner scanner{};
-  scanner.walk(func->body);
+  if (resultType == wasm::Type::none) {
+    scanner.walk(func->body);
+  } else if (auto *const block = func->body->dynCast<wasm::Block>()) {
+    for (wasm::Expression *&expr : block->list) {
+      if (auto *const ifExpr = expr->dynCast<wasm::If>(); ifExpr != nullptr && Scanner::isSimpleNonVoidGuard(ifExpr))
+        scanner.targetIfs_.push_back(&expr);
+    }
+  }
 
-  if (!scanner.targetIfs_.empty()) {
-    if (support::isDebug(PASS_NAME, func->name.view())) {
-      fmt::println("[" PASS_NAME
-                   "] fn '{}' has {} (if (cond) (return)) patterns which can be converted to (br_if (cond))",
-                   func->name.view(), scanner.targetIfs_.size());
-    }
-    wasm::Builder b{*m};
-    wasm::Name const targetName = getValidBlockName(func);
-    for (wasm::Expression **const expr : scanner.targetIfs_) {
-      assert((*expr)->is<wasm::If>());
-      *expr = b.makeBreak(targetName, nullptr, (*expr)->cast<wasm::If>()->condition);
-    }
-    // func->body could be IfExpr, we should update it at the end.
-    wasm::Block *targetBlock;
-    if (auto *const block = func->body->dynCast<wasm::Block>()) {
-      targetBlock = block;
+  if (scanner.targetIfs_.empty() || (resultType != wasm::Type::none && scanner.targetIfs_.size() < 2))
+    return;
+
+  if (support::isDebug(PASS_NAME, func->name.view())) {
+    fmt::println("[" PASS_NAME "] fn '{}' has {} (if (cond) (return)) patterns which can be converted to branches",
+                 func->name.view(), scanner.targetIfs_.size());
+  }
+  wasm::Builder b{*m};
+  wasm::Name const targetName = getValidBlockName(func);
+
+  for (wasm::Expression **const expr : scanner.targetIfs_) {
+    auto *const ifExpr = (*expr)->cast<wasm::If>();
+    auto *const returnExpr = ifExpr->ifTrue->cast<wasm::Return>();
+    if (resultType == wasm::Type::none) {
+      *expr = b.makeBreak(targetName, nullptr, ifExpr->condition);
     } else {
-      targetBlock = b.makeBlock(func->body);
+      *expr = b.makeIf(ifExpr->condition, b.makeBreak(targetName, returnExpr->value));
     }
-    targetBlock->name = targetName;
+  }
 
-    func->body = targetBlock;
+  if (auto *const block = func->body->dynCast<wasm::Block>()) {
+    block->name = targetName;
+    block->finalize(resultType);
+  } else {
+    func->body = b.makeBlock(targetName, {func->body}, resultType);
   }
 }
 
-namespace {
+struct ConditionalReturn final : wasm::Pass {
+  ConditionalReturn() { name = PASS_NAME; }
 
-struct ConditionalReturnOptimizer : public wasm::Pass {
-  std::unique_ptr<Pass> create() override { return std::make_unique<ConditionalReturnOptimizer>(); }
-  bool isFunctionParallel() override { return true; }
-  bool modifiesBinaryenIR() override { return true; }
-
-  void runOnFunction(wasm::Module *m, wasm::Function *func) override { optimizeConditionalReturns(m, func); }
+  void run(wasm::Module *m) override {
+    for (auto &func : m->functions) {
+      if (!func->imported() && func->getResults() == wasm::Type::none)
+        optimizeConditionalReturnsImpl(m, func.get());
+    }
+  }
 };
 
 } // namespace
-} // namespace warpo::passes
 
-wasm::Pass *warpo::passes::createConditionalReturnPass() { return new ConditionalReturnOptimizer(); }
+void optimizeConditionalReturns(wasm::Module *m, wasm::Function *func) { optimizeConditionalReturnsImpl(m, func); }
+
+wasm::Pass *createConditionalReturnPass() { return new ConditionalReturn(); }
+
+} // namespace warpo::passes
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
 #include <gtest/gtest.h>
 
+#include "GC/GCInfo.hpp"
+#include "GC/PrologEpilogInserter.hpp"
 #include "Runner.hpp"
 #include "pass.h"
+#include "wasm-validator.h"
 
 namespace warpo::passes::ut {
 
-TEST(ConditionalReturnTest, FunctionBodyIsBlock) {
+namespace {
+
+struct ResultCounter : wasm::PostWalker<ResultCounter> {
+  wasm::Name const target_;
+  std::size_t branches_ = 0;
+  std::size_t valuedBranches_ = 0;
+
+  explicit ResultCounter(wasm::Name const target) : target_(target) {}
+
+  void visitBreak(wasm::Break *expr) {
+    if (expr->name != target_)
+      return;
+    ++branches_;
+    if (expr->value != nullptr)
+      ++valuedBranches_;
+  }
+};
+
+struct RestoreCounter : wasm::PostWalker<RestoreCounter> {
+  std::size_t calls_ = 0;
+
+  void visitCall(wasm::Call *expr) {
+    if (expr->target == gc::FnIncreaseSP)
+      ++calls_;
+  }
+};
+
+ResultCounter countResults(wasm::Function *func) {
+  ResultCounter result{getBlockName(func->name.view())};
+  result.walk(func->body);
+  return result;
+}
+
+} // namespace
+
+TEST(ConditionalReturnTest, SingleNonVoidGuardIsSkipped) {
   auto m = loadWat(R"(
     (module
-      (func $main (param i32)
+      (func $main (param i32) (result i32)
         local.get 0
         if
+          i32.const 42
           return
         end
-          local.get 0
-        drop
+        i32.const 0
       )
     )
   )");
   wasm::Function *const func = m->getFunction("main");
-  wasm::Expression *const condition = func->body->cast<wasm::Block>()->list[0]->cast<wasm::If>()->condition;
+  wasm::Expression *const body = func->body;
 
-  wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
-  runner.runOnFunction(func);
+  optimizeConditionalReturns(m.get(), func);
 
-  ASSERT_TRUE(func->body->is<wasm::Block>());
-  wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, getBlockName(func->name.view()));
-  ASSERT_EQ(block->list.size(), 2U);
-  ASSERT_TRUE(block->list[0]->is<wasm::Break>());
-  wasm::Break *const break_ = block->list[0]->cast<wasm::Break>();
-  EXPECT_EQ(break_->name, getBlockName(func->name.view()));
-  EXPECT_EQ(break_->condition, condition);
+  EXPECT_EQ(func->body, body);
 }
 
-TEST(ConditionalReturnTest, FunctionBodyIsBlockWithName) {
-  constexpr const char *BlockName = "block_name";
-  auto m = loadWat(fmt::format(R"(
-    (module
-      (func $main (param i32)
-        block ${}
-          local.get 0
-          if
-            return
-          end
-            local.get 0
-          drop
-        end
-      )
-    )
-  )",
-                               BlockName));
-  wasm::Function *const func = m->getFunction("main");
-  wasm::Expression *const condition = func->body->cast<wasm::Block>()->list[0]->cast<wasm::If>()->condition;
-
-  wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
-  runner.runOnFunction(func);
-
-  ASSERT_TRUE(func->body->is<wasm::Block>());
-  wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, BlockName);
-  ASSERT_EQ(block->list.size(), 2U);
-  ASSERT_TRUE(block->list[0]->is<wasm::Break>());
-  wasm::Break *const break_ = block->list[0]->cast<wasm::Break>();
-  EXPECT_EQ(break_->name, BlockName);
-  EXPECT_EQ(break_->condition, condition);
-}
-
-TEST(ConditionalReturnTest, FunctionBodyIsTarget) {
+TEST(ConditionalReturnTest, SingleVoidGuardIsExtracted) {
   auto m = loadWat(R"(
     (module
       (func $main (param i32)
@@ -214,23 +221,37 @@ TEST(ConditionalReturnTest, FunctionBodyIsTarget) {
   )");
   wasm::Function *const func = m->getFunction("main");
 
-  wasm::Expression *const condition = func->body->cast<wasm::If>()->condition;
+  optimizeConditionalReturns(m.get(), func);
 
-  wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
-  runner.runOnFunction(func);
-
-  ASSERT_TRUE(func->body->is<wasm::Block>());
-  wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, getBlockName(func->name.view()));
-  ASSERT_EQ(block->list.size(), 1U);
-  ASSERT_TRUE(block->list[0]->is<wasm::Break>());
-  wasm::Break *const break_ = block->list[0]->cast<wasm::Break>();
-  EXPECT_EQ(break_->name, getBlockName(func->name.view()));
-  EXPECT_EQ(break_->condition, condition);
+  EXPECT_EQ(countResults(func).branches_, 1U);
+  EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
-TEST(ConditionalReturnTest, IfIsInside) {
+TEST(ConditionalReturnTest, MultipleVoidGuardsAreExtracted) {
+  auto m = loadWat(R"(
+    (module
+      (func $main (param i32 i32)
+        local.get 0
+        if
+          return
+        end
+        local.get 1
+        if
+          return
+        end
+      )
+    )
+  )");
+  wasm::Function *const func = m->getFunction("main");
+
+  optimizeConditionalReturns(m.get(), func);
+
+  ResultCounter const result = countResults(func);
+  EXPECT_EQ(result.branches_, 2U);
+  EXPECT_EQ(result.valuedBranches_, 0U);
+}
+
+TEST(ConditionalReturnTest, NestedGuardsAreExtracted) {
   auto m = loadWat(R"(
     (module
       (func $main (param i32 i32 i32)
@@ -251,109 +272,141 @@ TEST(ConditionalReturnTest, IfIsInside) {
   )");
   wasm::Function *const func = m->getFunction("main");
 
-  wasm::Expression *const conditionInTrue = func->body->cast<wasm::If>()->ifTrue->cast<wasm::If>()->condition;
-  wasm::Expression *const conditionInFalse = func->body->cast<wasm::If>()->ifFalse->cast<wasm::If>()->condition;
+  optimizeConditionalReturns(m.get(), func);
 
-  wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
-  runner.runOnFunction(func);
-
-  wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, getBlockName(func->name.view()));
-
-  wasm::Expression *ifTrue = block->list[0]->cast<wasm::If>()->ifTrue;
-  ASSERT_TRUE(ifTrue->is<wasm::Break>());
-  EXPECT_EQ(ifTrue->cast<wasm::Break>()->name, getBlockName(func->name.view()));
-  EXPECT_EQ(ifTrue->cast<wasm::Break>()->condition, conditionInTrue);
-
-  wasm::Expression *ifFalse = block->list[0]->cast<wasm::If>()->ifFalse;
-  ASSERT_TRUE(ifFalse->is<wasm::Break>());
-  EXPECT_EQ(ifFalse->cast<wasm::Break>()->name, getBlockName(func->name.view()));
-  EXPECT_EQ(ifFalse->cast<wasm::Break>()->condition, conditionInFalse);
+  ResultCounter const result = countResults(func);
+  EXPECT_EQ(result.branches_, 2U);
+  EXPECT_EQ(result.valuedBranches_, 0U);
 }
 
-TEST(ConditionalReturnTest, MultipleReturnsTargetSameBlock) {
+TEST(ConditionalReturnTest, NonVoidGuardsAreExtracted) {
   auto m = loadWat(R"(
     (module
-      (func $main (param i32 i32 i32)
+      (func $main (param i32 i32) (result i32)
         local.get 0
         if
+          i32.const 42
           return
         end
         local.get 1
         if
+          i32.const 24
           return
         end
-        local.get 2
-        if
-          return
-        end
-        i32.const 42
-        drop
+        i32.const 10
       )
     )
   )");
   wasm::Function *const func = m->getFunction("main");
 
-  wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
-  runner.runOnFunction(func);
+  wasm::Expression *const body = func->body;
+  std::unique_ptr<wasm::Pass> const latePass{createConditionalReturnPass()};
+  latePass->run(m.get());
+  EXPECT_EQ(func->body, body);
 
-  ASSERT_TRUE(func->body->is<wasm::Block>());
-  wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, getBlockName(func->name.view()));
-  ASSERT_EQ(block->list.size(), 4U);
+  optimizeConditionalReturns(m.get(), func);
 
-  for (size_t i = 0; i < 3; ++i) {
-    ASSERT_TRUE(block->list[i]->is<wasm::Break>());
-    wasm::Break *const break_ = block->list[i]->cast<wasm::Break>();
-    EXPECT_EQ(break_->name, getBlockName(func->name.view()));
-    ASSERT_TRUE(break_->condition != nullptr);
-  }
-  ASSERT_TRUE(block->list[3]->is<wasm::Drop>());
+  ResultCounter const result = countResults(func);
+  EXPECT_EQ(func->body->type, wasm::Type::i32);
+  EXPECT_EQ(result.branches_, 2U);
+  EXPECT_EQ(result.valuedBranches_, 2U);
 }
 
-TEST(ConditionalReturnTest, MultipleReturnsInNestedBlocksTargetSameBlock) {
+TEST(ConditionalReturnTest, NestedNonVoidGuardsAreSkipped) {
   auto m = loadWat(R"(
     (module
-      (func $main (param i32 i32)
-        block
-          local.get 0
-          if
-            return
-          end
-        end
-        block
+      (func $main (param i32 i32 i32) (result i32)
+        local.get 0
+        if
           local.get 1
           if
+            i32.const 42
+            return
+          end
+          local.get 2
+          if
+            i32.const 24
             return
           end
         end
+        i32.const 0
       )
     )
   )");
   wasm::Function *const func = m->getFunction("main");
 
-  wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
-  runner.runOnFunction(func);
+  optimizeConditionalReturns(m.get(), func);
 
-  ASSERT_TRUE(func->body->is<wasm::Block>());
-  wasm::Block *const outerBlock = func->body->cast<wasm::Block>();
-  EXPECT_EQ(outerBlock->name, getBlockName(func->name.view()));
-  ASSERT_EQ(outerBlock->list.size(), 2U);
+  EXPECT_EQ(countResults(func).branches_, 0U);
+}
 
-  ASSERT_TRUE(outerBlock->list[0]->is<wasm::Block>());
-  wasm::Block *const firstInner = outerBlock->list[0]->cast<wasm::Block>();
-  ASSERT_EQ(firstInner->list.size(), 1U);
-  ASSERT_TRUE(firstInner->list[0]->is<wasm::Break>());
-  EXPECT_EQ(firstInner->list[0]->cast<wasm::Break>()->name, getBlockName(func->name.view()));
+TEST(ConditionalReturnTest, NonVoidGuardsWithLoadsAreSkipped) {
+  auto m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $main (param i32 i32) (result i32)
+        local.get 0
+        i32.load
+        if
+          i32.const 42
+          return
+        end
+        local.get 1
+        i32.load
+        if
+          i32.const 24
+          return
+        end
+        i32.const 10
+      )
+    )
+  )");
+  wasm::Function *const func = m->getFunction("main");
 
-  ASSERT_TRUE(outerBlock->list[1]->is<wasm::Block>());
-  wasm::Block *const secondInner = outerBlock->list[1]->cast<wasm::Block>();
-  ASSERT_EQ(secondInner->list.size(), 1U);
-  ASSERT_TRUE(secondInner->list[0]->is<wasm::Break>());
-  EXPECT_EQ(secondInner->list[0]->cast<wasm::Break>()->name, getBlockName(func->name.view()));
+  optimizeConditionalReturns(m.get(), func);
+
+  EXPECT_EQ(countResults(func).branches_, 0U);
+}
+
+TEST(ConditionalReturnTest, SharesNonVoidEpilogueOnlyWithShadowStack) {
+  auto m = loadWat(R"(
+    (module
+      (func $~lib/rt/__decrease_sp (param i32))
+      (func $~lib/rt/__increase_sp (param i32))
+      (func $main (param i32 i32) (result i32)
+        local.get 0
+        if
+          i32.const 42
+          return
+        end
+        local.get 1
+        if
+          i32.const 24
+          return
+        end
+        i32.const 10
+      )
+    )
+  )");
+  wasm::Function *const func = m->getFunction("main");
+  auto const offsets = std::make_shared<gc::MaxShadowStackOffsets>();
+  gc::PrologEpilogInserter inserter{nullptr, offsets};
+
+  (*offsets)[func] = 0;
+  wasm::Expression *const originalBody = func->body;
+  inserter.runOnFunction(m.get(), func);
+  EXPECT_EQ(func->body, originalBody);
+
+  (*offsets)[func] = gc::ShadowStackElementSize;
+  inserter.runOnFunction(m.get(), func);
+
+  ResultCounter const result = countResults(func);
+  RestoreCounter restores;
+  restores.walk(func->body);
+  EXPECT_EQ(result.branches_, 2U);
+  EXPECT_EQ(result.valuedBranches_, 2U);
+  EXPECT_EQ(restores.calls_, 1U);
+  EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
 } // namespace warpo::passes::ut
