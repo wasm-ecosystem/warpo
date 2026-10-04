@@ -2220,6 +2220,13 @@ export class Program extends DiagnosticEmitter {
 
   /** Checks whether a particular type is supported. */
   checkTypeSupported(type: Type, reportNode: Node): bool {
+    return this.checkTypeSupportedInternal(type, reportNode, new Set<Type>());
+  }
+
+  private checkTypeSupportedInternal(type: Type, reportNode: Node, seen: Set<Type>): bool {
+    if (seen.has(type)) return true;
+    seen.add(type);
+
     switch (type.kind) {
       case TypeKind.V128:
         return this.checkFeatureEnabled(Feature.Simd, reportNode);
@@ -2245,7 +2252,7 @@ export class Program extends DiagnosticEmitter {
         let typeArguments = classReference.typeArguments;
         if (typeArguments) {
           for (let i = 0, k = typeArguments.length; i < k; ++i) {
-            if (!this.checkTypeSupported(typeArguments[i], reportNode)) {
+            if (!this.checkTypeSupportedInternal(typeArguments[i], reportNode, seen)) {
               return false;
             }
           }
@@ -2257,18 +2264,18 @@ export class Program extends DiagnosticEmitter {
       if (signatureReference) {
         let thisType = signatureReference.thisType;
         if (thisType) {
-          if (!this.checkTypeSupported(thisType, reportNode)) {
+          if (!this.checkTypeSupportedInternal(thisType, reportNode, seen)) {
             return false;
           }
         }
         let parameterTypes = signatureReference.parameterTypes;
         for (let i = 0, k = parameterTypes.length; i < k; ++i) {
-          if (!this.checkTypeSupported(parameterTypes[i], reportNode)) {
+          if (!this.checkTypeSupportedInternal(parameterTypes[i], reportNode, seen)) {
             return false;
           }
         }
         let returnType = signatureReference.returnType;
-        if (!this.checkTypeSupported(returnType, reportNode)) {
+        if (!this.checkTypeSupportedInternal(returnType, reportNode, seen)) {
           return false;
         }
       }
