@@ -909,6 +909,13 @@ export class Compiler extends DiagnosticEmitter {
         if (!functionInstance.hasDecorator(DecoratorFlags.Builtin)) {
           let signature = functionInstance.signature;
           if (signature.requiredParameters < signature.parameterTypes.length) {
+            if (functionInstance.is(CommonFlags.Ambient)) {
+              this.error(
+                DiagnosticCode.Cannot_export_an_imported_function_with_optional_or_rest_parameters,
+                functionInstance.nameRange
+              );
+              return;
+            }
             // utilize varargs stub to fill in omitted arguments
             functionInstance = this.ensureVarargsStub(functionInstance);
             this.runtimeFeatures |= RuntimeFeatures.setArgumentsLength;

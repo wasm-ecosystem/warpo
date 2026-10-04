@@ -1,0 +1,6 @@
+{
+  "stderr": [
+    "AS113: Cannot export an imported function with optional or rest parameters",
+    "AS113: Cannot export an imported function with optional or rest parameters"
+  ]
+}
