@@ -1533,7 +1533,7 @@ export class Program extends DiagnosticEmitter {
               }
               basePrototype = basePrototype.basePrototype;
             }
-            if (!hasOverride) {
+            if (!hasOverride && prototype.basePrototype) {
               let basePrototype = assert(prototype.basePrototype);
               this.error(
                 DiagnosticCode.This_member_cannot_have_an_override_modifier_because_it_is_not_declared_in_the_base_class_0,
