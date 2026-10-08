@@ -7909,6 +7909,7 @@ export class Compiler extends DiagnosticEmitter {
     let originalParameterDeclarations = original.prototype.functionTypeNode.parameters;
     let returnType = originalSignature.returnType;
     let isInstance = original.is(CommonFlags.Instance);
+    let isModuleImport = original.is(CommonFlags.ModuleImport);
 
     // arguments excl. `this`, operands incl. `this`
     let minArguments = originalSignature.requiredParameters;
@@ -7985,6 +7986,8 @@ export class Compiler extends DiagnosticEmitter {
       } else if (initializer) {
         initExpr = this.compileExpression(initializer, type, Constraints.ConvImplicit);
         initExpr = module.local_set(operandIndex, initExpr, type.isManaged);
+      } else if (isModuleImport) {
+        initExpr = module.nop();
       } else {
         this.error(DiagnosticCode.Optional_parameter_must_have_an_initializer, declaration.range);
         initExpr = module.unreachable();
@@ -8005,7 +8008,7 @@ export class Compiler extends DiagnosticEmitter {
       stub.internalName,
       stub.signature.paramRefs,
       stub.signature.resultRefs,
-      typesToRefs(stub.getNonParameterLocalTypes()),
+      isModuleImport ? null : typesToRefs(stub.getNonParameterLocalTypes()),
       module.flatten(stmts, returnType.toRef())
     );
     stub.set(CommonFlags.Compiled);
