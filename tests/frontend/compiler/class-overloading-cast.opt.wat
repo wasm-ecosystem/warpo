@@ -1639,9 +1639,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 11
-   call $~lib/rt/itcms/__new
-   drop
    i32.const 608
    i32.const 608
    call $~lib/string/String.__eq

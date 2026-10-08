@@ -1561,10 +1561,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  i32.const 5
-  call $~lib/rt/itcms/__new
-  drop
   i32.const 4
   i32.const 6
   call $~lib/rt/itcms/__new

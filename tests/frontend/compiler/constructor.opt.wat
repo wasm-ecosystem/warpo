@@ -1686,14 +1686,6 @@
    unreachable
   end
   i32.const 0
-  i32.const 11
-  call $~lib/rt/itcms/__new
-  drop
-  i32.const 0
-  i32.const 12
-  call $~lib/rt/itcms/__new
-  drop
-  i32.const 0
   i32.const 13
   call $~lib/rt/itcms/__new
   global.set $constructor/ctorConditionallyReturnsThis

@@ -1373,9 +1373,6 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 4
-  call $~lib/rt/itcms/__new
-  drop
   i32.const 5
   call $~lib/rt/itcms/__new
   i32.load

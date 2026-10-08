@@ -1418,15 +1418,6 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  drop
-  i32.const 7
-  call $~lib/rt/itcms/__new
-  drop
-  i32.const 7
-  call $~lib/rt/itcms/__new
-  drop
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
