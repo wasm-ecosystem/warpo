@@ -126,7 +126,7 @@ export function map_iterator_delete_and_reinsert(): void {
 map_iterator_delete_and_reinsert();
 
 class MapIteratorBox {
-  constructor(readonly value: i32) { }
+  constructor(readonly value: i32) {}
 }
 
 export function map_iterator_managed_entries(): void {
