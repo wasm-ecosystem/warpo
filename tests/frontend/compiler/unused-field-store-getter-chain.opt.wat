@@ -18,6 +18,7 @@
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
+ (global $unused-field-store-getter-chain/settings (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00<")
@@ -29,7 +30,7 @@
  (data $7 (i32.const 348) "<")
  (data $7.1 (i32.const 360) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $8 (i32.const 412) "\\")
- (data $8.1 (i32.const 424) "\02\00\00\00@\00\00\00u\00n\00u\00s\00e\00d\00-\00f\00i\00e\00l\00d\00-\00s\00t\00o\00r\00e\00-\00n\00e\00w\00-\00o\00b\00j\00e\00c\00t\00.\00t\00s")
+ (data $8.1 (i32.const 424) "\02\00\00\00D\00\00\00u\00n\00u\00s\00e\00d\00-\00f\00i\00e\00l\00d\00-\00s\00t\00o\00r\00e\00-\00g\00e\00t\00t\00e\00r\00-\00c\00h\00a\00i\00n\00.\00t\00s")
  (data $9 (i32.const 512) "\07\00\00\00 \00\00\00 \00\00\00 ")
  (data $9.1 (i32.const 540) " ")
  (export "memory" (memory $0))
@@ -37,6 +38,12 @@
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
+  global.get $unused-field-store-getter-chain/settings
+  local.tee $0
+  if
+   local.get $0
+   call $~lib/rt/itcms/__visit
+  end
   global.get $~lib/rt/itcms/pinSpace
   local.tee $1
   i32.load offset=4
@@ -134,7 +141,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$76
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$77
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -158,7 +165,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$76
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$77
      end
      local.get $0
      i32.load offset=8
@@ -972,12 +979,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$66
+   block $__inlined_func$~lib/rt/itcms/interrupt$67
     i32.const 2048
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$81 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$82 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -993,7 +1000,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$81
+         br $__inlined_func$~lib/rt/itcms/step$82
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1032,7 +1039,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$81
+           br $__inlined_func$~lib/rt/itcms/step$82
           end
           local.get $2
           i32.load offset=4
@@ -1124,7 +1131,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$81
+        br $__inlined_func$~lib/rt/itcms/step$82
        end
        global.get $~lib/rt/itcms/iter
        local.tee $2
@@ -1223,7 +1230,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$81
+        br $__inlined_func$~lib/rt/itcms/step$82
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1247,7 +1254,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$66
+      br $__inlined_func$~lib/rt/itcms/interrupt$67
      end
      local.get $2
      i32.const 0
@@ -1501,12 +1508,12 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
    block $invalid
-    block $unused-field-store-new-object/Details
+    block $unused-field-store-getter-chain/Details
      local.get $0
      i32.const 8
      i32.sub
      i32.load
-     br_table $unused-field-store-new-object/Details $unused-field-store-new-object/Details $unused-field-store-new-object/Details $folding-inner0 $folding-inner0 $folding-inner0 $unused-field-store-new-object/Details $invalid
+     br_table $unused-field-store-getter-chain/Details $unused-field-store-getter-chain/Details $unused-field-store-getter-chain/Details $folding-inner0 $folding-inner0 $folding-inner0 $unused-field-store-getter-chain/Details $invalid
     end
     return
    end
@@ -1518,7 +1525,7 @@
  )
  (func $~start
   (local $0 i32)
-  (local $1 i32)
+  call $~lib/rt/__decrease_sp
   memory.size
   i32.const 16
   i32.shl
@@ -1552,30 +1559,52 @@
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
   i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 4
   i32.const 4
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  i32.const 8
   call $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store offset=4 align=1
+  i32.store align=1
+  call $unused-field-store-getter-chain/UnusedValue#constructor@new
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
+  global.set $unused-field-store-getter-chain/settings
+  call $unused-field-store-getter-chain/UnusedValue#constructor@new
+  global.get $unused-field-store-getter-chain/settings
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 432
+   i32.const 22
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+ )
+ (func $unused-field-store-getter-chain/UnusedValue#constructor@new
+  (local $0 i32)
+  call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.set $1
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
   i32.store align=1
-  i32.const 4
   call $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
   i32.store align=1
   i32.const 1
   i32.const 6
@@ -1586,33 +1615,18 @@
   i32.add
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 21
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
  )
- (func $~lib/rt/__decrease_sp (param $0 i32)
+ (func $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 544
   i32.lt_s
