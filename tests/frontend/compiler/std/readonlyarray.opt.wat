@@ -2865,28 +2865,28 @@
   global.get $std/readonlyarray/values
   i32.store align=1
   global.get $std/readonlyarray/values
-  local.set $1
+  local.set $0
   i32.const 12
   call $~lib/rt/__decrease_sp
   i32.const 20
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $2
   i32.const 12
   i32.add
   i64.const 1
   i64.store
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $2
   i32.store offset=8 align=1
-  local.get $0
+  local.get $2
   i32.const 0
   i32.store
-  local.get $0
+  local.get $2
   i32.const 0
   i32.const 0
   call $~lib/rt/itcms/__link
-  local.get $1
+  local.get $0
   call $~lib/readonlyarray/ReadonlyArray<i32>#get:length@override
   i32.const 4
   i32.ne
@@ -2898,7 +2898,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
+  local.get $0
   i32.const 1
   call $~lib/readonlyarray/ReadonlyArray<i32>#__get@override
   i32.const 2
@@ -2912,20 +2912,20 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#at@override$89 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
    i32.const 4
    i32.eq
    if
-    local.get $1
+    local.get $0
     i32.load offset=12
-    local.tee $2
+    local.tee $1
     i32.const 1
     i32.sub
     local.tee $3
-    local.get $2
+    local.get $1
     i32.ge_u
     if
      i32.const 320
@@ -2935,7 +2935,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    local.get $1
+    local.get $0
     i32.load offset=4
     local.get $3
     i32.const 2
@@ -2957,7 +2957,7 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#findIndex@override$90 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -2966,14 +2966,14 @@
    if
     block $__inlined_func$~lib/array/Array<i32>#findIndex$181 (result i32)
      i32.const 0
-     local.set $2
-     local.get $1
+     local.set $1
+     local.get $0
      i32.load offset=12
      local.set $3
      loop $for-loop|0
-      local.get $2
-      local.get $3
       local.get $1
+      local.get $3
+      local.get $0
       i32.load offset=12
       local.tee $4
       local.get $3
@@ -2982,26 +2982,26 @@
       select
       i32.lt_s
       if
-       local.get $2
        local.get $1
+       local.get $0
        i32.load offset=4
-       local.get $2
+       local.get $1
        i32.const 2
        i32.shl
        i32.add
        i32.load
-       local.get $2
        local.get $1
+       local.get $0
        i32.const 0
        global.set $~lib/rt/closure/env
        i32.const 1
        call_indirect (type $1)
        br_if $__inlined_func$~lib/array/Array<i32>#findIndex$181
        drop
-       local.get $2
+       local.get $1
        i32.const 1
        i32.add
-       local.set $2
+       local.set $1
        br $for-loop|0
       end
      end
@@ -3022,7 +3022,7 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#findLastIndex@override$91 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3030,36 +3030,36 @@
    i32.eq
    if
     block $__inlined_func$~lib/array/Array<i32>#findLastIndex$182 (result i32)
-     local.get $1
+     local.get $0
      i32.load offset=12
      i32.const 1
      i32.sub
-     local.set $2
+     local.set $1
      loop $for-loop|00
-      local.get $2
+      local.get $1
       i32.const 0
       i32.ge_s
       if
-       local.get $2
        local.get $1
+       local.get $0
        i32.load offset=4
-       local.get $2
+       local.get $1
        i32.const 2
        i32.shl
        i32.add
        i32.load
-       local.get $2
        local.get $1
+       local.get $0
        i32.const 0
        global.set $~lib/rt/closure/env
        i32.const 2
        call_indirect (type $1)
        br_if $__inlined_func$~lib/array/Array<i32>#findLastIndex$182
        drop
-       local.get $2
+       local.get $1
        i32.const 1
        i32.sub
-       local.set $2
+       local.set $1
        br $for-loop|00
       end
      end
@@ -3080,14 +3080,14 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#includes@override$92 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
    i32.const 4
    i32.eq
    if
-    local.get $1
+    local.get $0
     i32.const 3
     call $~lib/array/Array<i32>#indexOf
     i32.const 0
@@ -3106,14 +3106,14 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#indexOf@override$93 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
    i32.const 4
    i32.eq
    if
-    local.get $1
+    local.get $0
     i32.const 2
     call $~lib/array/Array<i32>#indexOf
     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#indexOf@override$93
@@ -3131,7 +3131,7 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#lastIndexOf@override$94 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3140,27 +3140,27 @@
    if
     block $__inlined_func$~lib/array/Array<i32>#lastIndexOf$184 (result i32)
      i32.const -1
-     local.get $1
+     local.get $0
      i32.load offset=12
-     local.tee $2
+     local.tee $1
      i32.eqz
      br_if $__inlined_func$~lib/array/Array<i32>#lastIndexOf$184
      drop
-     local.get $2
+     local.get $1
      i32.const 1
      i32.sub
-     local.set $2
-     local.get $1
+     local.set $1
+     local.get $0
      i32.load offset=4
      local.set $3
      loop $while-continue|0
-      local.get $2
+      local.get $1
       i32.const 0
       i32.ge_s
       if
-       local.get $2
+       local.get $1
        local.get $3
-       local.get $2
+       local.get $1
        i32.const 2
        i32.shl
        i32.add
@@ -3169,10 +3169,10 @@
        i32.eq
        br_if $__inlined_func$~lib/array/Array<i32>#lastIndexOf$184
        drop
-       local.get $2
+       local.get $1
        i32.const 1
        i32.sub
-       local.set $2
+       local.set $1
        br $while-continue|0
       end
      end
@@ -3192,12 +3192,12 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $2
   i32.const 4
   i32.add
   i32.const 0
   i32.store
-  local.get $0
+  local.get $2
   i32.const 8
   i32.add
   i32.const 0
@@ -3211,13 +3211,13 @@
   local.get $3
   i32.const 4
   i32.add
-  local.get $0
+  local.get $2
   i32.store
   global.get $~lib/memory/__stack_pointer
   local.get $3
   i32.store offset=4 align=1
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#forEach@override$96
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3225,14 +3225,14 @@
    i32.eq
    if
     i32.const 0
-    local.set $2
-    local.get $1
+    local.set $1
+    local.get $0
     i32.load offset=12
     local.set $4
     loop $for-loop|01
-     local.get $2
-     local.get $4
      local.get $1
+     local.get $4
+     local.get $0
      i32.load offset=12
      local.tee $5
      local.get $4
@@ -3241,25 +3241,25 @@
      select
      i32.lt_s
      if
-      local.get $1
+      local.get $0
       i32.load offset=4
-      local.get $2
+      local.get $1
       i32.const 2
       i32.shl
       i32.add
       i32.load
-      local.get $2
       local.get $1
+      local.get $0
       local.get $3
       i32.load offset=4
       global.set $~lib/rt/closure/env
       local.get $3
       i32.load
       call_indirect (type $2)
-      local.get $2
+      local.get $1
       i32.const 1
       i32.add
-      local.set $2
+      local.set $1
       br $for-loop|01
      end
     end
@@ -3267,7 +3267,7 @@
    end
    unreachable
   end
-  local.get $0
+  local.get $2
   i32.const 4
   i32.add
   i32.load
@@ -3281,11 +3281,11 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $2
   i32.const 8
   i32.add
   i32.load
-  local.get $1
+  local.get $0
   call $~lib/readonlyarray/ReadonlyArray<i32>#get:length@override
   i32.ne
   if
@@ -3297,7 +3297,7 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#every@override$97 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3306,32 +3306,32 @@
    if
     block $__inlined_func$~lib/array/Array<i32>#every$186 (result i32)
      i32.const 0
-     local.set $2
-     local.get $1
+     local.set $1
+     local.get $0
      i32.load offset=12
-     local.set $0
+     local.set $2
      loop $for-loop|02
+      local.get $1
       local.get $2
       local.get $0
-      local.get $1
       i32.load offset=12
       local.tee $3
-      local.get $0
+      local.get $2
       local.get $3
       i32.lt_s
       select
       i32.lt_s
       if
        i32.const 0
-       local.get $1
+       local.get $0
        i32.load offset=4
-       local.get $2
+       local.get $1
        i32.const 2
        i32.shl
        i32.add
        i32.load
-       local.get $2
        local.get $1
+       local.get $0
        i32.const 0
        global.set $~lib/rt/closure/env
        i32.const 4
@@ -3339,10 +3339,10 @@
        i32.eqz
        br_if $__inlined_func$~lib/array/Array<i32>#every$186
        drop
-       local.get $2
+       local.get $1
        i32.const 1
        i32.add
-       local.set $2
+       local.set $1
        br $for-loop|02
       end
      end
@@ -3362,7 +3362,7 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#some@override$98 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3371,42 +3371,42 @@
    if
     block $__inlined_func$~lib/array/Array<i32>#some$187 (result i32)
      i32.const 0
-     local.set $2
-     local.get $1
+     local.set $1
+     local.get $0
      i32.load offset=12
-     local.set $0
+     local.set $2
      loop $for-loop|03
+      local.get $1
       local.get $2
       local.get $0
-      local.get $1
       i32.load offset=12
       local.tee $3
-      local.get $0
+      local.get $2
       local.get $3
       i32.lt_s
       select
       i32.lt_s
       if
        i32.const 1
-       local.get $1
+       local.get $0
        i32.load offset=4
-       local.get $2
+       local.get $1
        i32.const 2
        i32.shl
        i32.add
        i32.load
-       local.get $2
        local.get $1
+       local.get $0
        i32.const 0
        global.set $~lib/rt/closure/env
        i32.const 5
        call_indirect (type $1)
        br_if $__inlined_func$~lib/array/Array<i32>#some$187
        drop
-       local.get $2
+       local.get $1
        i32.const 1
        i32.add
-       local.set $2
+       local.set $1
        br $for-loop|03
       end
      end
@@ -3429,7 +3429,7 @@
   i32.const 720
   i32.store offset=4 align=1
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#filter@override$99 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3437,23 +3437,23 @@
    i32.eq
    if
     i32.const 0
-    local.set $2
+    local.set $1
     i32.const 4
     call $~lib/rt/__decrease_sp
     i32.const 0
     i32.const 0
     call $~lib/rt/__newArray
-    local.set $0
+    local.set $2
     global.get $~lib/memory/__stack_pointer
-    local.get $0
+    local.get $2
     i32.store align=1
-    local.get $1
+    local.get $0
     i32.load offset=12
     local.set $3
     loop $for-loop|04
-     local.get $2
-     local.get $3
      local.get $1
+     local.get $3
+     local.get $0
      i32.load offset=12
      local.tee $4
      local.get $3
@@ -3462,26 +3462,26 @@
      select
      i32.lt_s
      if
-      local.get $1
+      local.get $0
       i32.load offset=4
-      local.get $2
+      local.get $1
       i32.const 2
       i32.shl
       i32.add
       i32.load
       local.tee $4
-      local.get $2
       local.get $1
+      local.get $0
       call $std/readonlyarray/checkReadonlyArray~anonymous|5
       if
-       local.get $0
+       local.get $2
        local.get $4
        call $~lib/array/Array<i32>#push
       end
-      local.get $2
+      local.get $1
       i32.const 1
       i32.add
-      local.set $2
+      local.set $1
       br $for-loop|04
      end
     end
@@ -3489,12 +3489,12 @@
     i32.const 4
     i32.add
     global.set $~lib/memory/__stack_pointer
-    local.get $0
+    local.get $2
     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#filter@override$99
    end
    unreachable
   end
-  local.tee $0
+  local.tee $1
   i32.load offset=12
   i32.const 3
   i32.ne
@@ -3506,7 +3506,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 0
   call $~lib/array/Array<i32>#__get
   i32.const 2
@@ -3519,7 +3519,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 1
   call $~lib/array/Array<i32>#__get
   i32.const 4
@@ -3532,7 +3532,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 2
   call $~lib/array/Array<i32>#__get
   i32.const 2
@@ -3546,7 +3546,7 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#slice@override$100 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3554,40 +3554,40 @@
    i32.eq
    if
     i32.const 1
-    local.get $1
-    i32.load offset=12
-    local.tee $0
     local.get $0
+    i32.load offset=12
+    local.tee $1
+    local.get $1
     i32.const 1
     i32.gt_s
     select
     local.set $2
     i32.const 3
-    local.get $0
-    local.get $0
+    local.get $1
+    local.get $1
     i32.const 3
     i32.gt_s
     select
     local.get $2
     i32.sub
-    local.tee $0
+    local.tee $1
     i32.const 0
-    local.get $0
+    local.get $1
     i32.const 0
     i32.gt_s
     select
-    local.tee $0
+    local.tee $1
     i32.const 0
     call $~lib/rt/__newArray
     local.tee $3
     i32.load offset=4
-    local.get $1
+    local.get $0
     i32.load offset=4
     local.get $2
     i32.const 2
     i32.shl
     i32.add
-    local.get $0
+    local.get $1
     i32.const 2
     i32.shl
     memory.copy
@@ -3596,7 +3596,7 @@
    end
    unreachable
   end
-  local.tee $0
+  local.tee $1
   i32.load offset=12
   i32.const 2
   i32.ne
@@ -3608,7 +3608,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 0
   call $~lib/array/Array<i32>#__get
   i32.const 2
@@ -3621,7 +3621,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 1
   call $~lib/array/Array<i32>#__get
   i32.const 3
@@ -3634,7 +3634,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
+  local.get $0
   i32.const 8
   i32.sub
   i32.load
@@ -3649,20 +3649,20 @@
    unreachable
   end
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
   i32.store offset=4 align=1
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#concat@override$102 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
    i32.const 4
    i32.eq
    if
-    local.get $1
+    local.get $0
     i32.load offset=12
-    local.tee $0
-    local.get $1
+    local.tee $1
+    local.get $0
     i32.load offset=12
     local.tee $2
     i32.add
@@ -3683,17 +3683,17 @@
     local.tee $3
     i32.load offset=4
     local.tee $4
-    local.get $1
-    i32.load offset=4
     local.get $0
+    i32.load offset=4
+    local.get $1
     i32.const 2
     i32.shl
-    local.tee $0
+    local.tee $1
     memory.copy
-    local.get $0
+    local.get $1
     local.get $4
     i32.add
-    local.get $1
+    local.get $0
     i32.load offset=4
     local.get $2
     i32.const 2
@@ -3704,7 +3704,7 @@
    end
    unreachable
   end
-  local.tee $0
+  local.tee $1
   i32.load offset=12
   i32.const 8
   i32.ne
@@ -3716,7 +3716,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
+  local.get $1
   i32.const 4
   call $~lib/array/Array<i32>#__get
   i32.const 1
@@ -3730,14 +3730,14 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#join@override$103 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
    i32.const 4
    i32.eq
    if
-    local.get $1
+    local.get $0
     i32.const 816
     call $~lib/array/Array<i32>#join
     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#join@override$103
@@ -3756,14 +3756,14 @@
    unreachable
   end
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#toString@override$104 (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
    i32.const 4
    i32.eq
    if
-    local.get $1
+    local.get $0
     i32.const 2816
     call $~lib/array/Array<i32>#join
     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#toString@override$104
@@ -3782,12 +3782,12 @@
    unreachable
   end
   i32.const 0
-  local.set $2
+  local.set $1
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
   i32.store offset=4 align=1
   block $"__inlined_func$~lib/iterator/Iterable<i32>#[~lib/symbol/Symbol.iterator]@override$105" (result i32)
-   local.get $1
+   local.get $0
    i32.const 8
    i32.sub
    i32.load
@@ -3797,14 +3797,14 @@
     i32.const 8
     i32.const 11
     call $~lib/rt/itcms/__new
-    local.tee $0
-    local.get $1
-    i32.store offset=4
+    local.tee $2
     local.get $0
-    local.get $1
+    i32.store offset=4
+    local.get $2
+    local.get $0
     i32.const 0
     call $~lib/rt/itcms/__link
-    local.get $0
+    local.get $2
     br $"__inlined_func$~lib/iterator/Iterable<i32>#[~lib/symbol/Symbol.iterator]@override$105"
    end
    unreachable
@@ -3815,20 +3815,20 @@
   i32.store offset=8 align=1
   local.get $3
   call $~lib/iterator/Iterator<i32>#next@override
-  local.set $0
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $2
   i32.store offset=4 align=1
   loop $for-of-loop|0
-   local.get $0
+   local.get $2
    if
-    local.get $0
-    i32.load
-    local.set $0
-    local.get $1
     local.get $2
-    call $~lib/readonlyarray/ReadonlyArray<i32>#__get@override
+    i32.load
+    local.set $2
     local.get $0
+    local.get $1
+    call $~lib/readonlyarray/ReadonlyArray<i32>#__get@override
+    local.get $2
     i32.ne
     if
      i32.const 0
@@ -3838,19 +3838,19 @@
      call $~lib/builtins/abort
      unreachable
     end
-    local.get $2
+    local.get $1
     i32.const 1
     i32.add
-    local.set $2
+    local.set $1
     local.get $3
     call $~lib/iterator/Iterator<i32>#next@override
-    local.set $0
+    local.set $2
     br $for-of-loop|0
    end
   end
-  local.get $1
+  local.get $0
   call $~lib/readonlyarray/ReadonlyArray<i32>#get:length@override
-  local.get $2
+  local.get $1
   i32.ne
   if
    i32.const 0
@@ -3925,7 +3925,7 @@
   i32.store align=1
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/array/Array<i32>>#flat@override$111 (result i32)
    global.get $std/readonlyarray/nested
-   local.tee $1
+   local.tee $0
    i32.const 8
    i32.sub
    i32.load
@@ -3933,16 +3933,79 @@
    i32.eq
    if
     i32.const 0
-    local.set $0
-    local.get $1
+    local.set $2
+    local.get $0
     i32.load offset=4
     local.set $4
-    local.get $1
+    local.get $0
     i32.load offset=12
     local.set $5
     i32.const 0
-    local.set $2
+    local.set $1
     loop $for-loop|05
+     local.get $1
+     local.get $5
+     i32.lt_s
+     if
+      local.get $4
+      local.get $1
+      i32.const 2
+      i32.shl
+      i32.add
+      i32.load
+      local.tee $0
+      if (result i32)
+       local.get $0
+       i32.load offset=12
+      else
+       i32.const 0
+      end
+      local.get $2
+      i32.add
+      local.set $2
+      local.get $1
+      i32.const 1
+      i32.add
+      local.set $1
+      br $for-loop|05
+     end
+    end
+    i32.const 4
+    call $~lib/rt/__decrease_sp
+    local.get $2
+    i32.const 2
+    i32.shl
+    local.tee $3
+    i32.const 1
+    call $~lib/rt/itcms/__new
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
+    i32.const 16
+    i32.const 4
+    call $~lib/rt/itcms/__new
+    local.tee $1
+    local.get $2
+    i32.store offset=12
+    local.get $1
+    local.get $3
+    i32.store offset=8
+    local.get $1
+    local.get $0
+    i32.store offset=4
+    local.get $1
+    local.get $0
+    i32.store
+    local.get $1
+    local.get $0
+    i32.const 0
+    call $~lib/rt/itcms/__link
+    i32.const 0
+    local.set $3
+    i32.const 0
+    local.set $2
+    loop $for-loop|1
      local.get $2
      local.get $5
      i32.lt_s
@@ -3953,72 +4016,9 @@
       i32.shl
       i32.add
       i32.load
-      local.tee $1
-      if (result i32)
-       local.get $1
-       i32.load offset=12
-      else
-       i32.const 0
-      end
-      local.get $0
-      i32.add
-      local.set $0
-      local.get $2
-      i32.const 1
-      i32.add
-      local.set $2
-      br $for-loop|05
-     end
-    end
-    i32.const 4
-    call $~lib/rt/__decrease_sp
-    local.get $0
-    i32.const 2
-    i32.shl
-    local.tee $3
-    i32.const 1
-    call $~lib/rt/itcms/__new
-    local.set $1
-    global.get $~lib/memory/__stack_pointer
-    local.get $1
-    i32.store align=1
-    i32.const 16
-    i32.const 4
-    call $~lib/rt/itcms/__new
-    local.tee $2
-    local.get $0
-    i32.store offset=12
-    local.get $2
-    local.get $3
-    i32.store offset=8
-    local.get $2
-    local.get $1
-    i32.store offset=4
-    local.get $2
-    local.get $1
-    i32.store
-    local.get $2
-    local.get $1
-    i32.const 0
-    call $~lib/rt/itcms/__link
-    i32.const 0
-    local.set $3
-    i32.const 0
-    local.set $0
-    loop $for-loop|1
-     local.get $0
-     local.get $5
-     i32.lt_s
-     if
-      local.get $4
-      local.get $0
-      i32.const 2
-      i32.shl
-      i32.add
-      i32.load
       local.tee $6
       if
-       local.get $1
+       local.get $0
        local.get $3
        i32.add
        local.get $6
@@ -4034,10 +4034,10 @@
        i32.add
        local.set $3
       end
-      local.get $0
+      local.get $2
       i32.const 1
       i32.add
-      local.set $0
+      local.set $2
       br $for-loop|1
      end
     end
@@ -4045,7 +4045,7 @@
     i32.const 4
     i32.add
     global.set $~lib/memory/__stack_pointer
-    local.get $2
+    local.get $1
     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/array/Array<i32>>#flat@override$111
    end
    unreachable

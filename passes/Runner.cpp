@@ -222,11 +222,13 @@ static void optimize(AsModule const &m, Config const &config) {
     if (config.tailCall) {
       passRunner->add("tail-call");
     }
+
     // some new of unused objects can be eliminated again because above passes may provide new opportunities
+    passRunner->addDefaultOptimizationPasses();
     passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedNewEliminatingPass()});
+
     // Run the default Binaryen passes again at the end
     passRunner->addDefaultOptimizationPasses();
-
     passRunner->run();
   }
   ensureValidate(*m.get());

@@ -6,7 +6,6 @@
  (type $4 (func (param i32 i32 i32) (result i32)))
  (type $5 (func))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $function-types/i32Adder (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\04\00\00\00\08\00\00\00\01")
@@ -41,8 +40,6 @@
   return_call_indirect (type $0)
  )
  (func $~start
-  i32.const 32
-  global.set $function-types/i32Adder
   i32.const 2
   i32.const 3
   i32.const 32

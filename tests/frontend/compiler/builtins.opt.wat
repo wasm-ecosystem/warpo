@@ -354,9 +354,7 @@
   global.set $builtins/f
   f64.const 2
   global.set $builtins/F
-  f32.const 2
-  global.get $builtins/f
-  f32.div
+  f32.const 1
   global.set $builtins/f
   i32.const 8
   i32.load

@@ -1799,8 +1799,7 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  (local $4 i32)
-  (local $5 f64)
+  (local $4 f64)
   memory.size
   i32.const 16
   i32.shl
@@ -1850,14 +1849,14 @@
   end
   i32.const 8
   call $~lib/rt/__newTuple
-  local.set $0
+  local.set $1
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $1
   i32.store offset=4 align=1
-  local.get $0
+  local.get $1
   i32.const 0
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
   i32.const 1
@@ -1870,29 +1869,28 @@
    local.get $2
    i32.store align=1
    local.get $2
-   local.get $0
+   local.get $1
    call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
    local.get $2
    i32.const 4
    i32.add
    local.tee $3
-   local.tee $1
-   local.get $4
+   local.get $0
    i32.store
-   local.get $1
+   local.get $3
    i32.load
-   local.tee $1
+   local.tee $0
    i32.const 2
    i32.lt_s
    if
     local.get $2
     i32.const 8
     i32.add
-    local.get $0
+    local.get $1
     i32.const 4
     i32.add
     i32.load
-    local.get $1
+    local.get $0
     i32.const 10
     i32.mul
     i32.add
@@ -1900,18 +1898,18 @@
     i32.const 8
     i32.const 5
     call $~lib/rt/itcms/__new
-    local.tee $1
+    local.tee $0
     i32.const 2
     i32.store
-    local.get $1
+    local.get $0
     i32.const 4
     i32.add
     local.get $2
     i32.store
-    local.get $1
+    local.get $0
     i32.load offset=4
     global.set $~lib/rt/closure/env
-    local.get $1
+    local.get $0
     i32.load
     call_indirect (type $0)
     drop
@@ -1919,21 +1917,21 @@
     i32.load
     i32.const 1
     i32.add
-    local.set $4
+    local.set $0
     br $for-loop|0
    end
   end
-  local.get $0
+  local.get $1
   i32.const 4
   i32.add
   i32.load
   f64.convert_i32_s
-  local.set $5
+  local.set $4
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $5
+  local.get $4
   f64.const 1
   f64.ne
   if
