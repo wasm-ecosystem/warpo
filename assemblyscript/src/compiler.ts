@@ -14,7 +14,7 @@ import {
   compileRTTI,
 } from "./builtins";
 import * as mir from "./mir";
-import { Range, DiagnosticCode, DiagnosticEmitter } from "./diagnostics";
+import { Range, DiagnosticCode, DiagnosticCategory, DiagnosticEmitter } from "./diagnostics";
 
 import {
   Module,
@@ -574,6 +574,7 @@ export class Compiler extends DiagnosticEmitter {
     let functionTable = this.functionTable;
     let overrideStubs = this.overrideStubs;
     for (let i = 0, k = functionTable.length; i < k; ++i) {
+      if (this.diagnostics.some((diagnostic) => diagnostic.category == DiagnosticCategory.Error)) break;
       let instance = functionTable[i];
       if (instance.is(CommonFlags.Overridden)) {
         assert(instance.is(CommonFlags.Instance));
