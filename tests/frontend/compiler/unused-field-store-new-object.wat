@@ -6,9 +6,9 @@
  (type $4 (func (param i32 i32) (result i32)))
  (type $5 (func))
  (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (param i32 i32 i32) (result i32)))
- (type $8 (func (param i32 i32 i64) (result i32)))
- (type $9 (func (result i32)))
+ (type $7 (func (result i32)))
+ (type $8 (func (param i32 i32 i32) (result i32)))
+ (type $9 (func (param i32 i32 i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -25,11 +25,10 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $unused-field-store-new-object/bbb (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 512))
- (global $~lib/memory/__data_end i32 (i32.const 540))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33308))
- (global $~lib/memory/__heap_base i32 (i32.const 33308))
+ (global $~lib/memory/__data_end i32 (i32.const 544))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33312))
+ (global $~lib/memory/__heap_base i32 (i32.const 33312))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -40,7 +39,7 @@
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00@\00\00\00u\00n\00u\00s\00e\00d\00-\00f\00i\00e\00l\00d\00-\00s\00t\00o\00r\00e\00-\00n\00e\00w\00-\00o\00b\00j\00e\00c\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 512) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00 \00\00\00")
+ (data $9 (i32.const 512) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -48,13 +47,7 @@
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
   (local.get $this)
  )
- (func $unused-field-store-new-object/A#set:data (param $this i32) (param $data i32)
-  (i32.store
-   (local.get $this)
-   (local.get $data)
-  )
- )
- (func $unused-field-store-new-object/A#constructor (param $this i32) (result i32)
+ (func $unused-field-store-new-object/Details#constructor (param $this i32) (result i32)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -63,12 +56,6 @@
      )
     )
    )
-  )
-  (call $unused-field-store-new-object/A#set:data
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (i32.const 1)
   )
   (local.get $this)
  )
@@ -3040,24 +3027,18 @@
    )
   )
  )
- (func $unused-field-store-new-object/B#set:a (param $this i32) (param $a i32)
+ (func $unused-field-store-new-object/UnusedValue#set:details (param $this i32) (param $details i32)
   (i32.store
    (local.get $this)
-   (local.get $a)
+   (local.get $details)
   )
   (call $~lib/rt/itcms/__link
    (local.get $this)
-   (local.get $a)
+   (local.get $details)
    (i32.const 0)
   )
  )
- (func $unused-field-store-new-object/B#set:v (param $this i32) (param $v i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $v)
-  )
- )
- (func $unused-field-store-new-object/B#constructor (param $this i32) (result i32)
+ (func $unused-field-store-new-object/UnusedValue#constructor (param $this i32) (result i32)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3067,12 +3048,50 @@
     )
    )
   )
-  (call $unused-field-store-new-object/B#set:a
+  (call $unused-field-store-new-object/UnusedValue#set:details
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
    (call $~lib/rt/__tmptostack
-    (call $unused-field-store-new-object/A#constructor
+    (call $unused-field-store-new-object/Details#constructor
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 1)
+       (i32.const 6)
+      )
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
+ (func $unused-field-store-new-object/Settings#set:unused (param $this i32) (param $unused i32)
+  (i32.store
+   (local.get $this)
+   (local.get $unused)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $unused)
+   (i32.const 0)
+  )
+ )
+ (func $unused-field-store-new-object/Settings#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (call $unused-field-store-new-object/Settings#set:unused
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $unused-field-store-new-object/UnusedValue#constructor
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 4)
@@ -3082,17 +3101,66 @@
     )
    )
   )
-  (call $unused-field-store-new-object/B#set:v
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (i32.const 2)
-  )
   (local.get $this)
  )
- (func $unused-field-store-new-object/B#get:v (param $this i32) (result i32)
-  (i32.load offset=4
+ (func $unused-field-store-new-object/Settings#get:unused (param $this i32) (result i32)
+  (i32.load
    (local.get $this)
+  )
+ )
+ (func $unused-field-store-new-object/UnusedValue#get:details (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $unused-field-store-new-object/Details#set:value (param $this i32) (param $value i32)
+  (i32.store8
+   (local.get $this)
+   (local.get $value)
+  )
+ )
+ (func $unused-field-store-new-object/createSettings (result i32)
+  (local $settings i32)
+  (local $unused i32)
+  (local $details i32)
+  (local.set $settings
+   (call $~lib/rt/__localtostack
+    (call $unused-field-store-new-object/Settings#constructor
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 4)
+      )
+     )
+    )
+   )
+  )
+  (local.set $unused
+   (call $~lib/rt/__localtostack
+    (call $unused-field-store-new-object/Settings#get:unused
+     (call $~lib/rt/__tmptostack
+      (local.get $settings)
+     )
+    )
+   )
+  )
+  (local.set $details
+   (call $~lib/rt/__localtostack
+    (call $unused-field-store-new-object/UnusedValue#get:details
+     (call $~lib/rt/__tmptostack
+      (local.get $unused)
+     )
+    )
+   )
+  )
+  (call $unused-field-store-new-object/Details#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $details)
+   )
+   (i32.const 1)
+  )
+  (return
+   (local.get $settings)
   )
  )
  (func $start:unused-field-store-new-object
@@ -3123,32 +3191,18 @@
     (i32.const 320)
    )
   )
-  (global.set $unused-field-store-new-object/bbb
-   (call $unused-field-store-new-object/B#constructor
-    (call $~lib/rt/__tmptostack
-     (call $~lib/rt/itcms/__new
-      (i32.const 8)
-      (i32.const 4)
-     )
-    )
-   )
-  )
   (if
    (i32.eqz
-    (i32.eq
-     (call $unused-field-store-new-object/B#get:v
-      (call $~lib/rt/__tmptostack
-       (global.get $unused-field-store-new-object/bbb)
-      )
-     )
-     (i32.const 2)
+    (i32.ne
+     (call $unused-field-store-new-object/createSettings)
+     (i32.const 0)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 11)
+     (i32.const 21)
      (i32.const 1)
     )
     (unreachable)
@@ -3157,17 +3211,7 @@
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
-  (if
-   (local.tee $1
-    (global.get $unused-field-store-new-object/bbb)
-   )
-   (then
-    (call $~lib/rt/itcms/__visit
-     (local.get $1)
-     (local.get $0)
-    )
-   )
-  )
+  (nop)
  )
  (func $~lib/arraybuffer/ArrayBufferView~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -3185,7 +3229,20 @@
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
   (nop)
  )
- (func $unused-field-store-new-object/B~visit (param $0 i32) (param $1 i32)
+ (func $unused-field-store-new-object/Settings~visit (param $0 i32) (param $1 i32)
+  (local $2 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/rt/itcms/__visit
+   (i32.load
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+ )
+ (func $unused-field-store-new-object/UnusedValue~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
   (call $~lib/object/Object~visit
    (local.get $0)
@@ -3200,29 +3257,38 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $unused-field-store-new-object/A
-    (block $unused-field-store-new-object/B
-     (block $~lib/arraybuffer/ArrayBufferView
-      (block $~lib/string/String
-       (block $~lib/arraybuffer/ArrayBuffer
-        (block $~lib/object/Object
-         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $unused-field-store-new-object/B $unused-field-store-new-object/A $invalid
-          (i32.load
-           (i32.sub
-            (local.get $0)
-            (i32.const 8)
+   (block $unused-field-store-new-object/Details
+    (block $unused-field-store-new-object/UnusedValue
+     (block $unused-field-store-new-object/Settings
+      (block $~lib/arraybuffer/ArrayBufferView
+       (block $~lib/string/String
+        (block $~lib/arraybuffer/ArrayBuffer
+         (block $~lib/object/Object
+          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $unused-field-store-new-object/Settings $unused-field-store-new-object/UnusedValue $unused-field-store-new-object/Details $invalid
+           (i32.load
+            (i32.sub
+             (local.get $0)
+             (i32.const 8)
+            )
            )
           )
          )
+         (return)
         )
         (return)
        )
        (return)
       )
-      (return)
+      (block
+       (call $~lib/arraybuffer/ArrayBufferView~visit
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
+      )
      )
      (block
-      (call $~lib/arraybuffer/ArrayBufferView~visit
+      (call $unused-field-store-new-object/Settings~visit
        (local.get $0)
        (local.get $1)
       )
@@ -3230,7 +3296,7 @@
      )
     )
     (block
-     (call $unused-field-store-new-object/B~visit
+     (call $unused-field-store-new-object/UnusedValue~visit
       (local.get $0)
       (local.get $1)
      )
