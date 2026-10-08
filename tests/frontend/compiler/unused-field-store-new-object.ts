@@ -1,11 +1,21 @@
-class A {
-  data: i32 = 1;
+class UnusedValue {
+  details: Details = new Details();
 }
 
-class B {
-  a: A = new A();
-  v: i32 = 2;
+class Details {
+  value: bool;
 }
 
-let bbb = new B();
-assert(bbb.v == 2);
+class Settings {
+  unused: UnusedValue = new UnusedValue();
+}
+
+function createSettings(): Settings {
+  const settings = new Settings();
+  const unused = settings.unused;
+  const details = unused.details;
+  details.value = true;
+  return settings;
+}
+
+assert(createSettings() != null);
