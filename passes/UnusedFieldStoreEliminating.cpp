@@ -326,8 +326,6 @@ public:
     std::shared_ptr<RemovalCounter> const counter = std::make_shared<RemovalCounter>();
     while (true) {
       std::unordered_set<wasm::Name> removableSetterNames = analyzeRemovableSetters(m, variableInfo_);
-      if (removableSetterNames.empty())
-        return;
 
       // Removing a setter must still evaluate both operands. For example,
       //   local.set $tmp (call $A#get:b (local.get $obj))
@@ -338,14 +336,15 @@ public:
       // next loop iteration re-runs the analysis because this may expose more
       // unused setters.
       size_t const removedCallCountBefore = counter->get();
-      wasm::PassRunner runner{getPassRunner()};
-      runner.add(std::make_unique<SetterCallRemover>(std::move(removableSetterNames), counter));
-      runner.add("vacuum");
-      runner.run();
-      if (counter->get() == removedCallCountBefore)
+      if (!removableSetterNames.empty()) {
+        wasm::PassRunner runner{getPassRunner()};
+        runner.add(std::make_unique<SetterCallRemover>(std::move(removableSetterNames), counter));
+        runner.add("vacuum");
+        runner.run();
+      }
+      size_t const removedGetterCallCount = removeUnusedGetterCalls(m);
+      if (counter->get() == removedCallCountBefore && removedGetterCallCount == 0)
         return;
-
-      removeUnusedGetterCalls(m);
     }
   }
 
@@ -515,6 +514,39 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesGetterCallAfterSetterOperandRemoval
 
   EXPECT_FALSE(hasCallTo(m->getFunction("write"), m.get(), "A#get:b"));
   EXPECT_FALSE(hasLocalAccess(m->getFunction("write"), m.get(), 1));
+}
+
+TEST(UnusedFieldStoreEliminatingTest, RemovesMultiLevelGetterChainAfterSetterOperandRemoval) {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (memory 1)
+      (func $A#set:b (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $A#get:b (param i32) (result i32)
+        (i32.load offset=4 (local.get 0))
+      )
+      (func $B#get:c (param i32) (result i32)
+        (i32.load offset=4 (local.get 0))
+      )
+      (func $C#set:y (param i32 i32)
+        (i32.store offset=4 (local.get 0) (local.get 1))
+      )
+      (func $test (param i32 i32) (local i32 i32)
+        (call $A#set:b (local.get 0) (local.get 1))
+        (local.set 2 (call $A#get:b (local.get 0)))
+        (local.set 3 (call $B#get:c (local.get 2)))
+        (call $C#set:y (local.get 3) (i32.const 42))
+      )
+    )
+  )");
+
+  runUnusedFieldStoreEliminating(*m);
+
+  EXPECT_FALSE(hasCallTo(m->getFunction("test"), m.get(), "A#set:b"));
+  EXPECT_FALSE(hasCallTo(m->getFunction("test"), m.get(), "A#get:b"));
+  EXPECT_FALSE(hasCallTo(m->getFunction("test"), m.get(), "B#get:c"));
+  EXPECT_FALSE(hasCallTo(m->getFunction("test"), m.get(), "C#set:y"));
 }
 
 TEST(UnusedFieldStoreEliminatingTest, KeepsStoreFollowedByUnrelatedCall) {
