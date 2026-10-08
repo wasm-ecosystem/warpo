@@ -49,10 +49,10 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 736))
- (global $~lib/memory/__data_end i32 (i32.const 876))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33644))
- (global $~lib/memory/__heap_base i32 (i32.const 33644))
+ (global $~lib/rt/__rtti_base i32 (i32.const 800))
+ (global $~lib/memory/__data_end i32 (i32.const 948))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33716))
+ (global $~lib/memory/__heap_base i32 (i32.const 33716))
  (memory $0 1)
  (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
  (data $1 (i32.const 60) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00b\00u\00f\00f\00e\00r\00.\00t\00s\00\00\00\00\00\00\00")
@@ -65,10 +65,11 @@
  (data $8 (i32.const 432) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 460) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $10 (i32.const 524) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00s\00t\00d\00/\00m\00a\00p\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $11 (i32.const 572) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00K\00e\00y\00 \00d\00o\00e\00s\00 \00n\00o\00t\00 \00e\00x\00i\00s\00t\00\00\00\00\00\00\00\00\00")
- (data $12 (i32.const 636) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00~\00l\00i\00b\00/\00m\00a\00p\00.\00t\00s\00\00\00\00\00\00\00")
- (data $13 (i32.const 684) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
- (data $14 (i32.const 736) "\"\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\89\10\00\00\00\00\00B\08\00\00\02\t\00\00P\88\10\00\10\t\12\00\10\89\00\00B\00\00\00P\80\00\00\10\t\11\00\82\08\00\00\90\08\11\00\10\t\01\00\82\00\00\00\90\00\01\00\10\t\02\00\02\01\00\00\10\01\02\00\10\t\14\00\02\n\00\00\10\n\14\00\10\t\04\00\02\02\00\00\10\02\04\00\10\t2\00\02\19\00\00\10\192\00\10\t4\00\02\1a\00\00\10\1a4\00")
+ (data $11 (i32.const 572) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00s\00t\00a\00t\00i\00c\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00\00\00\00\00")
+ (data $12 (i32.const 636) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00K\00e\00y\00 \00d\00o\00e\00s\00 \00n\00o\00t\00 \00e\00x\00i\00s\00t\00\00\00\00\00\00\00\00\00")
+ (data $13 (i32.const 700) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00~\00l\00i\00b\00/\00m\00a\00p\00.\00t\00s\00\00\00\00\00\00\00")
+ (data $14 (i32.const 748) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
+ (data $15 (i32.const 800) "$\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\89\10\00\00\00\00\00\00\00\00\00$\t\00\00B\08\00\00\02\t\00\00P\88\10\00\10\t\12\00\10\89\00\00B\00\00\00P\80\00\00\10\t\11\00\82\08\00\00\90\08\11\00\10\t\01\00\82\00\00\00\90\00\01\00\10\t\02\00\02\01\00\00\10\01\02\00\10\t\14\00\02\n\00\00\10\n\14\00\10\t\04\00\02\02\00\00\10\02\04\00\10\t2\00\02\19\00\00\10\192\00\10\t4\00\02\1a\00\00\10\1a4\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3437,6 +3438,50 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<i8,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
+ (func $~lib/staticarray/StaticArray<i32>#constructor (param $this i32) (param $length i32) (result i32)
+  (local $outSize i32)
+  (local $out i32)
+  (if
+   (i32.gt_u
+    (local.get $length)
+    (i32.shr_u
+     (i32.const 1073741820)
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 32)
+     (i32.const 592)
+     (i32.const 52)
+     (i32.const 62)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $outSize
+   (i32.shl
+    (local.get $length)
+    (i32.const 2)
+   )
+  )
+  (local.set $out
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/itcms/__new
+     (local.get $outSize)
+     (i32.const 7)
+    )
+   )
+  )
+  (return
+   (local.get $out)
+  )
+ )
  (func $"~lib/map/MapEntry<i8,i32>#set:key" (param $this i32) (param $key i32)
   (i32.store8
    (local.get $this)
@@ -3454,6 +3499,104 @@
    (local.get $taggedNext)
   )
  )
+ (func $~lib/staticarray/StaticArray<i32>#__uset (param $this i32) (param $index i32) (param $value i32)
+  (i32.store
+   (i32.add
+    (local.get $this)
+    (i32.shl
+     (local.get $index)
+     (i32.const 2)
+    )
+   )
+   (local.get $value)
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
+ (func $~lib/map/MapIteratorVersion#set:removedIndices (param $this i32) (param $removedIndices i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $removedIndices)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $removedIndices)
+   (i32.const 0)
+  )
+ )
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
+ )
+ (func $~lib/map/MapIteratorVersion#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
+ (func $~lib/map/MapIteratorVersion#set:nextVersion (param $this i32) (param $nextVersion i32)
+  (i32.store
+   (local.get $this)
+   (local.get $nextVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $nextVersion)
+   (i32.const 0)
+  )
+ )
+ (func $~lib/map/MapIteratorVersion#transition (param $this i32) (param $removedIndices i32) (result i32)
+  (local $2 i32)
+  (call $~lib/map/MapIteratorVersion#set:removedIndices
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (local.get $removedIndices)
+   )
+  )
+  (return
+   (block (result i32)
+    (call $~lib/map/MapIteratorVersion#set:nextVersion
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (local.tee $2
+       (call $~lib/rt/__localtostack
+        (call $~lib/map/MapIteratorVersion#constructor
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 6)
+          )
+         )
+        )
+       )
+      )
+     )
+    )
+    (local.get $2)
+   )
+  )
+ )
+ (func $"~lib/map/Map<i8,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<i8,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -3465,14 +3608,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -3520,12 +3668,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<i8,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -3542,6 +3693,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i8,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<i8,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i8,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<i8,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i8,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -3616,6 +3830,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<i8,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -3648,6 +3892,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i8,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<i8,i32>#set:entriesCapacity"
@@ -3883,9 +4155,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -3952,7 +4224,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -4137,7 +4409,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 32)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 31)
        (i32.const 48)
       )
@@ -4259,7 +4531,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -4346,7 +4618,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 6)
+       (i32.const 8)
       )
      )
      (local.get $size)
@@ -4472,7 +4744,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -4561,7 +4833,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -4648,7 +4920,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -4989,7 +5261,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -5032,7 +5304,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -5190,6 +5462,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<i8,i8>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<i8,i8>#set:key" (param $this i32) (param $key i32)
   (i32.store8
    (local.get $this)
@@ -5207,6 +5484,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<i8,i8>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<i8,i8>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -5218,14 +5506,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -5273,12 +5566,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<i8,i8>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -5295,6 +5591,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i8,i8>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<i8,i8>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i8,i8>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<i8,i8>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i8,i8>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -5369,6 +5728,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<i8,i8>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -5401,6 +5790,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i8,i8>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<i8,i8>#set:entriesCapacity"
@@ -5771,6 +6188,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<i32,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<i32,i32>#set:key" (param $this i32) (param $key i32)
   (i32.store
    (local.get $this)
@@ -5788,6 +6210,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<i32,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<i32,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -5799,14 +6232,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -5854,12 +6292,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<i32,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -5876,6 +6317,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<i32,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<i32,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -5950,6 +6454,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -5982,6 +6516,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i32,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<i32,i32>#set:entriesCapacity"
@@ -6336,6 +6898,7 @@
   )
  )
  (func $"~lib/map/Map<i8,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<i8,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -6383,6 +6946,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i8,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<i8,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<i8,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -6420,7 +7010,7 @@
     (call $"~lib/map/Map<i8,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
+       (i32.const 28)
        (i32.const 4)
       )
      )
@@ -6709,8 +7299,8 @@
     (call $"~lib/map/Map<i8,i8>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 8)
+       (i32.const 28)
+       (i32.const 10)
       )
      )
     )
@@ -6721,8 +7311,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -7436,6 +8026,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u8,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u8,i32>#set:key" (param $this i32) (param $key i32)
   (i32.store8
    (local.get $this)
@@ -7453,6 +8048,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u8,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u8,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -7464,14 +8070,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -7519,12 +8130,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u8,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -7541,6 +8155,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u8,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u8,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u8,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u8,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u8,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -7615,6 +8292,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u8,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -7647,6 +8354,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u8,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u8,i32>#set:entriesCapacity"
@@ -7882,9 +8617,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -7951,7 +8686,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -8040,7 +8775,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -8127,7 +8862,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 11)
+       (i32.const 13)
       )
      )
      (local.get $size)
@@ -8235,7 +8970,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -8457,7 +9192,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -8617,6 +9352,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u8,u8>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u8,u8>#set:key" (param $this i32) (param $key i32)
   (i32.store8
    (local.get $this)
@@ -8634,6 +9374,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u8,u8>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u8,u8>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -8645,14 +9396,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -8700,12 +9456,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u8,u8>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -8722,6 +9481,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u8,u8>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u8,u8>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u8,u8>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u8,u8>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u8,u8>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -8796,6 +9618,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u8,u8>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -8828,6 +9680,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u8,u8>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u8,u8>#set:entriesCapacity"
@@ -9173,6 +10053,7 @@
   )
  )
  (func $"~lib/map/Map<u8,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<u8,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -9220,6 +10101,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u8,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<u8,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<u8,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -9257,8 +10165,8 @@
     (call $"~lib/map/Map<u8,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 10)
+       (i32.const 28)
+       (i32.const 12)
       )
      )
     )
@@ -9546,8 +10454,8 @@
     (call $"~lib/map/Map<u8,u8>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 12)
+       (i32.const 28)
+       (i32.const 14)
       )
      )
     )
@@ -9558,8 +10466,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -10270,6 +11178,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<i16,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<i16,i32>#set:key" (param $this i32) (param $key i32)
   (i32.store16
    (local.get $this)
@@ -10287,6 +11200,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<i16,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<i16,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -10298,14 +11222,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -10353,12 +11282,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<i16,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -10375,6 +11307,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i16,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<i16,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i16,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<i16,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i16,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -10449,6 +11444,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<i16,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -10481,6 +11506,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i16,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<i16,i32>#set:entriesCapacity"
@@ -10716,9 +11769,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -10785,7 +11838,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -10874,7 +11927,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -10961,7 +12014,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 14)
+       (i32.const 16)
       )
      )
      (local.get $size)
@@ -11069,7 +12122,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -11291,7 +12344,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -11449,6 +12502,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<i16,i16>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<i16,i16>#set:key" (param $this i32) (param $key i32)
   (i32.store16
    (local.get $this)
@@ -11466,6 +12524,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<i16,i16>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<i16,i16>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -11477,14 +12546,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -11532,12 +12606,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<i16,i16>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -11554,6 +12631,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i16,i16>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<i16,i16>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i16,i16>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<i16,i16>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i16,i16>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -11628,6 +12768,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<i16,i16>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -11660,6 +12830,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i16,i16>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<i16,i16>#set:entriesCapacity"
@@ -12005,6 +13203,7 @@
   )
  )
  (func $"~lib/map/Map<i16,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<i16,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -12052,6 +13251,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i16,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<i16,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<i16,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -12089,8 +13315,8 @@
     (call $"~lib/map/Map<i16,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 13)
+       (i32.const 28)
+       (i32.const 15)
       )
      )
     )
@@ -12378,8 +13604,8 @@
     (call $"~lib/map/Map<i16,i16>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 15)
+       (i32.const 28)
+       (i32.const 17)
       )
      )
     )
@@ -12390,8 +13616,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -13105,6 +14331,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u16,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u16,i32>#set:key" (param $this i32) (param $key i32)
   (i32.store16
    (local.get $this)
@@ -13122,6 +14353,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u16,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u16,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -13133,14 +14375,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -13188,12 +14435,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u16,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -13210,6 +14460,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u16,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u16,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u16,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u16,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u16,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -13284,6 +14597,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u16,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -13316,6 +14659,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u16,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u16,i32>#set:entriesCapacity"
@@ -13551,9 +14922,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -13620,7 +14991,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -13709,7 +15080,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -13796,7 +15167,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 17)
+       (i32.const 19)
       )
      )
      (local.get $size)
@@ -13904,7 +15275,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -14126,7 +15497,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -14286,6 +15657,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u16,u16>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u16,u16>#set:key" (param $this i32) (param $key i32)
   (i32.store16
    (local.get $this)
@@ -14303,6 +15679,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u16,u16>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u16,u16>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -14314,14 +15701,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -14369,12 +15761,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u16,u16>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -14391,6 +15786,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u16,u16>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u16,u16>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u16,u16>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u16,u16>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u16,u16>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -14465,6 +15923,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u16,u16>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -14497,6 +15985,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u16,u16>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u16,u16>#set:entriesCapacity"
@@ -14842,6 +16358,7 @@
   )
  )
  (func $"~lib/map/Map<u16,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<u16,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -14889,6 +16406,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u16,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<u16,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<u16,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -14926,8 +16470,8 @@
     (call $"~lib/map/Map<u16,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 16)
+       (i32.const 28)
+       (i32.const 18)
       )
      )
     )
@@ -15215,8 +16759,8 @@
     (call $"~lib/map/Map<u16,u16>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 18)
+       (i32.const 28)
+       (i32.const 20)
       )
      )
     )
@@ -15227,8 +16771,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -15679,9 +17223,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -15721,7 +17265,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -15829,7 +17373,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -16038,6 +17582,7 @@
   )
  )
  (func $"~lib/map/Map<i32,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<i32,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -16085,6 +17630,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<i32,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<i32,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -16122,8 +17694,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -16411,8 +17983,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -16423,8 +17995,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -17129,6 +18701,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u32,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u32,i32>#set:key" (param $this i32) (param $key i32)
   (i32.store
    (local.get $this)
@@ -17146,6 +18723,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u32,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u32,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -17157,14 +18745,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -17212,12 +18805,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u32,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -17234,6 +18830,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u32,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u32,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u32,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u32,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -17308,6 +18967,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u32,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -17340,6 +19029,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u32,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u32,i32>#set:entriesCapacity"
@@ -17575,9 +19292,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -17644,7 +19361,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -17733,7 +19450,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -17820,7 +19537,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 20)
+       (i32.const 22)
       )
      )
      (local.get $size)
@@ -17928,7 +19645,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -18150,7 +19867,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -18304,6 +20021,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u32,u32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u32,u32>#set:key" (param $this i32) (param $key i32)
   (i32.store
    (local.get $this)
@@ -18321,6 +20043,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u32,u32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u32,u32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -18332,14 +20065,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -18387,12 +20125,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u32,u32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -18409,6 +20150,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u32,u32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u32,u32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u32,u32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u32,u32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u32,u32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -18483,6 +20287,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u32,u32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -18515,6 +20349,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u32,u32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u32,u32>#set:entriesCapacity"
@@ -18860,6 +20722,7 @@
   )
  )
  (func $"~lib/map/Map<u32,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<u32,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -18907,6 +20770,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<u32,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<u32,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -18944,8 +20834,8 @@
     (call $"~lib/map/Map<u32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 19)
+       (i32.const 28)
+       (i32.const 21)
       )
      )
     )
@@ -19233,8 +21123,8 @@
     (call $"~lib/map/Map<u32,u32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 21)
+       (i32.const 28)
+       (i32.const 23)
       )
      )
     )
@@ -19245,8 +21135,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -20053,6 +21943,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<i64,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<i64,i32>#set:key" (param $this i32) (param $key i64)
   (i64.store
    (local.get $this)
@@ -20070,6 +21965,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<i64,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<i64,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -20081,14 +21987,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i64)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -20136,12 +22047,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<i64,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -20158,6 +22072,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<i64,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i64,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<i64,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i64,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -20232,6 +22209,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<i64,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -20264,6 +22271,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i64,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<i64,i32>#set:entriesCapacity"
@@ -20499,9 +22534,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -20568,7 +22603,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -20657,7 +22692,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -20744,7 +22779,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 23)
+       (i32.const 25)
       )
      )
      (local.get $size)
@@ -20852,7 +22887,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -21074,7 +23109,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -21228,6 +23263,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<i64,i64>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<i64,i64>#set:key" (param $this i32) (param $key i64)
   (i64.store
    (local.get $this)
@@ -21245,6 +23285,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<i64,i64>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<i64,i64>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -21256,14 +23307,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i64)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -21311,12 +23367,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<i64,i64>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -21333,6 +23392,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i64,i64>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<i64,i64>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i64,i64>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<i64,i64>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<i64,i64>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -21407,6 +23529,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<i64,i64>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -21439,6 +23591,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i64,i64>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<i64,i64>#set:entriesCapacity"
@@ -21784,6 +23964,7 @@
   )
  )
  (func $"~lib/map/Map<i64,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<i64,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -21831,6 +24012,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<i64,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<i64,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -21868,8 +24076,8 @@
     (call $"~lib/map/Map<i64,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
+       (i32.const 28)
        (i32.const 24)
-       (i32.const 22)
       )
      )
     )
@@ -22167,8 +24375,8 @@
     (call $"~lib/map/Map<i64,i64>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 24)
+       (i32.const 28)
+       (i32.const 26)
       )
      )
     )
@@ -22179,8 +24387,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -22896,6 +25104,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u64,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u64,i32>#set:key" (param $this i32) (param $key i64)
   (i64.store
    (local.get $this)
@@ -22913,6 +25126,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u64,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u64,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -22924,14 +25148,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i64)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -22979,12 +25208,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u64,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -23001,6 +25233,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u64,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u64,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u64,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u64,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -23075,6 +25370,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u64,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -23107,6 +25432,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u64,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u64,i32>#set:entriesCapacity"
@@ -23342,9 +25695,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -23411,7 +25764,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -23500,7 +25853,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -23587,7 +25940,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 26)
+       (i32.const 28)
       )
      )
      (local.get $size)
@@ -23695,7 +26048,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -23917,7 +26270,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -24071,6 +26424,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<u64,u64>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<u64,u64>#set:key" (param $this i32) (param $key i64)
   (i64.store
    (local.get $this)
@@ -24088,6 +26446,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<u64,u64>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<u64,u64>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -24099,14 +26468,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey i64)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -24154,12 +26528,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<u64,u64>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -24176,6 +26553,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u64,u64>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<u64,u64>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u64,u64>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<u64,u64>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<u64,u64>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -24250,6 +26690,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<u64,u64>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -24282,6 +26752,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<u64,u64>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<u64,u64>#set:entriesCapacity"
@@ -24627,6 +27125,7 @@
   )
  )
  (func $"~lib/map/Map<u64,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<u64,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -24674,6 +27173,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<u64,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<u64,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -24711,8 +27237,8 @@
     (call $"~lib/map/Map<u64,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 25)
+       (i32.const 28)
+       (i32.const 27)
       )
      )
     )
@@ -25010,8 +27536,8 @@
     (call $"~lib/map/Map<u64,u64>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 27)
+       (i32.const 28)
+       (i32.const 29)
       )
      )
     )
@@ -25022,8 +27548,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -25736,6 +28262,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<f32,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<f32,i32>#set:key" (param $this i32) (param $key f32)
   (f32.store
    (local.get $this)
@@ -25753,6 +28284,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<f32,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<f32,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -25764,14 +28306,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey f32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -25819,12 +28366,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<f32,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -25841,6 +28391,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<f32,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f32,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<f32,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f32,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -25915,6 +28528,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<f32,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -25947,6 +28590,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<f32,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<f32,i32>#set:entriesCapacity"
@@ -26182,9 +28853,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -26251,7 +28922,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -26340,7 +29011,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -26427,7 +29098,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 29)
+       (i32.const 31)
       )
      )
      (local.get $size)
@@ -26535,7 +29206,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -26757,7 +29428,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -26911,6 +29582,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<f32,f32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<f32,f32>#set:key" (param $this i32) (param $key f32)
   (f32.store
    (local.get $this)
@@ -26928,6 +29604,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<f32,f32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<f32,f32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -26939,14 +29626,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey f32)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -26994,12 +29686,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<f32,f32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -27016,6 +29711,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f32,f32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<f32,f32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f32,f32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<f32,f32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f32,f32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -27090,6 +29848,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<f32,f32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -27122,6 +29910,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<f32,f32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<f32,f32>#set:entriesCapacity"
@@ -27467,6 +30283,7 @@
   )
  )
  (func $"~lib/map/Map<f32,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<f32,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -27514,6 +30331,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<f32,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<f32,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -27551,8 +30395,8 @@
     (call $"~lib/map/Map<f32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
        (i32.const 28)
+       (i32.const 30)
       )
      )
     )
@@ -27850,8 +30694,8 @@
     (call $"~lib/map/Map<f32,f32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 30)
+       (i32.const 28)
+       (i32.const 32)
       )
      )
     )
@@ -27862,8 +30706,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -28581,6 +31425,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<f64,i32>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<f64,i32>#set:key" (param $this i32) (param $key f64)
   (f64.store
    (local.get $this)
@@ -28598,6 +31447,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<f64,i32>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<f64,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -28609,14 +31469,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey f64)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -28664,12 +31529,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<f64,i32>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -28686,6 +31554,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<f64,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f64,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<f64,i32>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f64,i32>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -28760,6 +31691,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<f64,i32>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -28792,6 +31753,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<f64,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<f64,i32>#set:entriesCapacity"
@@ -29027,9 +32016,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 592)
      (i32.const 656)
-     (i32.const 143)
+     (i32.const 720)
+     (i32.const 215)
      (i32.const 17)
     )
     (unreachable)
@@ -29096,7 +32085,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 32)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 82)
      (i32.const 62)
     )
@@ -29185,7 +32174,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 336)
-       (i32.const 704)
+       (i32.const 768)
        (i32.const 142)
        (i32.const 22)
       )
@@ -29272,7 +32261,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 32)
+       (i32.const 34)
       )
      )
      (local.get $size)
@@ -29380,7 +32369,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 16)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
      (local.get $size)
@@ -29602,7 +32591,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 336)
-     (i32.const 704)
+     (i32.const 768)
      (i32.const 124)
      (i32.const 42)
     )
@@ -29756,6 +32745,11 @@
    (local.get $this)
   )
  )
+ (func $"~lib/map/Map<f64,f64>#get:iteratorVersion" (param $this i32) (result i32)
+  (i32.load offset=24
+   (local.get $this)
+  )
+ )
  (func $"~lib/map/MapEntry<f64,f64>#set:key" (param $this i32) (param $key f64)
   (f64.store
    (local.get $this)
@@ -29773,6 +32767,17 @@
    (local.get $taggedNext)
   )
  )
+ (func $"~lib/map/Map<f64,f64>#set:iteratorVersion" (param $this i32) (param $iteratorVersion i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $iteratorVersion)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $iteratorVersion)
+   (i32.const 0)
+  )
+ )
  (func $"~lib/map/Map<f64,f64>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
   (i32.store offset=16
    (local.get $this)
@@ -29784,14 +32789,19 @@
   (local $newBuckets i32)
   (local $newEntriesCapacity i32)
   (local $newEntries i32)
+  (local $oldStart i32)
   (local $oldPtr i32)
   (local $oldEnd i32)
   (local $newPtr i32)
+  (local $iteratorVersion i32)
+  (local $removedIndices i32)
+  (local $removedCount i32)
   (local $oldEntry i32)
   (local $newEntry i32)
   (local $oldEntryKey f64)
   (local $newBucketIndex i32)
   (local $newBucketPtrBase i32)
+  (local $18 i32)
   (local.set $newBucketsCapacity
    (i32.add
     (local.get $newBucketsMask)
@@ -29839,12 +32849,15 @@
     )
    )
   )
-  (local.set $oldPtr
+  (local.set $oldStart
    (call $"~lib/map/Map<f64,f64>#get:entries"
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
+  )
+  (local.set $oldPtr
+   (local.get $oldStart)
   )
   (local.set $oldEnd
    (i32.add
@@ -29861,6 +32874,69 @@
   )
   (local.set $newPtr
    (local.get $newEntries)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f64,f64>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.set $removedIndices
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (if (result i32)
+      (local.get $iteratorVersion)
+      (then
+       (i32.ne
+        (call $"~lib/map/Map<f64,f64>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f64,f64>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+     (then
+      (call $~lib/staticarray/StaticArray<i32>#constructor
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 7)
+        )
+       )
+       (i32.sub
+        (call $"~lib/map/Map<f64,f64>#get:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (call $"~lib/map/Map<f64,f64>#get:entriesCount"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+  (local.set $removedCount
+   (i32.const 0)
   )
   (block $while-break|0
    (loop $while-continue|0
@@ -29935,6 +33011,36 @@
          )
         )
        )
+       (else
+        (if
+         (local.get $removedIndices)
+         (then
+          (call $~lib/staticarray/StaticArray<i32>#__uset
+           (call $~lib/rt/__tmptostack
+            (local.get $removedIndices)
+           )
+           (block (result i32)
+            (local.set $removedCount
+             (i32.add
+              (local.tee $18
+               (local.get $removedCount)
+              )
+              (i32.const 1)
+             )
+            )
+            (local.get $18)
+           )
+           (i32.div_u
+            (i32.sub
+             (local.get $oldPtr)
+             (local.get $oldStart)
+            )
+            (call $"~lib/map/ENTRY_SIZE<f64,f64>")
+           )
+          )
+         )
+        )
+       )
       )
       (local.set $oldPtr
        (i32.add
@@ -29967,6 +33073,34 @@
    )
    (call $~lib/rt/__tmptostack
     (local.get $newEntries)
+   )
+  )
+  (if
+   (if (result i32)
+    (local.get $iteratorVersion)
+    (then
+     (local.get $removedIndices)
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<f64,f64>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (call $~lib/rt/__tmptostack
+        (local.get $removedIndices)
+       )
+      )
+     )
+    )
    )
   )
   (call $"~lib/map/Map<f64,f64>#set:entriesCapacity"
@@ -30312,6 +33446,7 @@
   )
  )
  (func $"~lib/map/Map<f64,i32>#clear" (param $this i32)
+  (local $iteratorVersion i32)
   (call $"~lib/map/Map<f64,i32>#set:buckets"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -30359,6 +33494,33 @@
     )
    )
   )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $"~lib/map/Map<f64,i32>#set:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/map/MapIteratorVersion#transition
+       (call $~lib/rt/__tmptostack
+        (local.get $iteratorVersion)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
   (call $"~lib/map/Map<f64,i32>#set:entriesCapacity"
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -30396,8 +33558,8 @@
     (call $"~lib/map/Map<f64,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 31)
+       (i32.const 28)
+       (i32.const 33)
       )
      )
     )
@@ -30695,8 +33857,8 @@
     (call $"~lib/map/Map<f64,f64>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 33)
+       (i32.const 28)
+       (i32.const 35)
       )
      )
     )
@@ -30707,8 +33869,8 @@
     (call $"~lib/map/Map<i32,i32>#constructor"
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
-       (i32.const 24)
-       (i32.const 9)
+       (i32.const 28)
+       (i32.const 11)
       )
      )
     )
@@ -31260,6 +34422,7 @@
   (nop)
  )
  (func $"~lib/map/Map<i8,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<i8,i32>#get:buckets"
@@ -31268,6 +34431,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i8,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<i8,i32>#get:entries"
@@ -31378,6 +34559,25 @@
    (local.get $1)
   )
  )
+ (func $~lib/map/MapIteratorVersion~visit (param $0 i32) (param $1 i32)
+  (local $2 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/rt/itcms/__visit
+   (i32.load
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/itcms/__visit
+   (i32.load offset=4
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+ )
  (func $~lib/array/Array<i8>#get:buffer (param $this i32) (result i32)
   (i32.load
    (local.get $this)
@@ -31435,6 +34635,7 @@
   )
  )
  (func $"~lib/map/Map<i8,i8>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<i8,i8>#get:buckets"
@@ -31443,6 +34644,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i8,i8>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<i8,i8>#get:entries"
@@ -31470,6 +34689,7 @@
   )
  )
  (func $"~lib/map/Map<i32,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<i32,i32>#get:buckets"
@@ -31478,6 +34698,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<i32,i32>#get:entries"
@@ -31505,6 +34743,7 @@
   )
  )
  (func $"~lib/map/Map<u8,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u8,i32>#get:buckets"
@@ -31513,6 +34752,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u8,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u8,i32>#get:entries"
@@ -31568,6 +34825,7 @@
   )
  )
  (func $"~lib/map/Map<u8,u8>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u8,u8>#get:buckets"
@@ -31576,6 +34834,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u8,u8>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u8,u8>#get:entries"
@@ -31603,6 +34879,7 @@
   )
  )
  (func $"~lib/map/Map<i16,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<i16,i32>#get:buckets"
@@ -31611,6 +34888,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i16,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<i16,i32>#get:entries"
@@ -31666,6 +34961,7 @@
   )
  )
  (func $"~lib/map/Map<i16,i16>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<i16,i16>#get:buckets"
@@ -31674,6 +34970,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i16,i16>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<i16,i16>#get:entries"
@@ -31701,6 +35015,7 @@
   )
  )
  (func $"~lib/map/Map<u16,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u16,i32>#get:buckets"
@@ -31709,6 +35024,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u16,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u16,i32>#get:entries"
@@ -31764,6 +35097,7 @@
   )
  )
  (func $"~lib/map/Map<u16,u16>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u16,u16>#get:buckets"
@@ -31772,6 +35106,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u16,u16>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u16,u16>#get:entries"
@@ -31799,6 +35151,7 @@
   )
  )
  (func $"~lib/map/Map<u32,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u32,i32>#get:buckets"
@@ -31807,6 +35160,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u32,i32>#get:entries"
@@ -31862,6 +35233,7 @@
   )
  )
  (func $"~lib/map/Map<u32,u32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u32,u32>#get:buckets"
@@ -31870,6 +35242,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u32,u32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u32,u32>#get:entries"
@@ -31897,6 +35287,7 @@
   )
  )
  (func $"~lib/map/Map<i64,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<i64,i32>#get:buckets"
@@ -31905,6 +35296,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<i64,i32>#get:entries"
@@ -31960,6 +35369,7 @@
   )
  )
  (func $"~lib/map/Map<i64,i64>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<i64,i64>#get:buckets"
@@ -31968,6 +35378,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i64,i64>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<i64,i64>#get:entries"
@@ -31995,6 +35423,7 @@
   )
  )
  (func $"~lib/map/Map<u64,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u64,i32>#get:buckets"
@@ -32003,6 +35432,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u64,i32>#get:entries"
@@ -32058,6 +35505,7 @@
   )
  )
  (func $"~lib/map/Map<u64,u64>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<u64,u64>#get:buckets"
@@ -32066,6 +35514,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<u64,u64>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<u64,u64>#get:entries"
@@ -32093,6 +35559,7 @@
   )
  )
  (func $"~lib/map/Map<f32,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<f32,i32>#get:buckets"
@@ -32101,6 +35568,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f32,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<f32,i32>#get:entries"
@@ -32156,6 +35641,7 @@
   )
  )
  (func $"~lib/map/Map<f32,f32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<f32,f32>#get:buckets"
@@ -32164,6 +35650,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f32,f32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<f32,f32>#get:entries"
@@ -32191,6 +35695,7 @@
   )
  )
  (func $"~lib/map/Map<f64,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<f64,i32>#get:buckets"
@@ -32199,6 +35704,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f64,i32>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<f64,i32>#get:entries"
@@ -32254,6 +35777,7 @@
   )
  )
  (func $"~lib/map/Map<f64,f64>#__visit" (param $this i32) (param $cookie i32)
+  (local $iteratorVersion i32)
   (local $entries i32)
   (call $~lib/rt/itcms/__visit
    (call $"~lib/map/Map<f64,f64>#get:buckets"
@@ -32262,6 +35786,24 @@
     )
    )
    (local.get $cookie)
+  )
+  (local.set $iteratorVersion
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<f64,f64>#get:iteratorVersion"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (local.get $iteratorVersion)
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $iteratorVersion)
+     (local.get $cookie)
+    )
+   )
   )
   (local.set $entries
    (call $"~lib/map/Map<f64,f64>#get:entries"
@@ -32318,29 +35860,47 @@
                             (block $"~lib/map/Map<i8,i8>"
                              (block $~lib/array/Array<i32>
                               (block $~lib/array/Array<i8>
-                               (block $~lib/tuple/SmallTuple
-                                (block $"~lib/map/Map<i8,i32>"
-                                 (block $~lib/arraybuffer/ArrayBufferView
-                                  (block $~lib/string/String
-                                   (block $~lib/arraybuffer/ArrayBuffer
-                                    (block $~lib/object/Object
-                                     (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<i8,i32>" $~lib/tuple/SmallTuple $~lib/array/Array<i8> $~lib/array/Array<i32> $"~lib/map/Map<i8,i8>" $"~lib/map/Map<i32,i32>" $"~lib/map/Map<u8,i32>" $~lib/array/Array<u8> $"~lib/map/Map<u8,u8>" $"~lib/map/Map<i16,i32>" $~lib/array/Array<i16> $"~lib/map/Map<i16,i16>" $"~lib/map/Map<u16,i32>" $~lib/array/Array<u16> $"~lib/map/Map<u16,u16>" $"~lib/map/Map<u32,i32>" $~lib/array/Array<u32> $"~lib/map/Map<u32,u32>" $"~lib/map/Map<i64,i32>" $~lib/array/Array<i64> $"~lib/map/Map<i64,i64>" $"~lib/map/Map<u64,i32>" $~lib/array/Array<u64> $"~lib/map/Map<u64,u64>" $"~lib/map/Map<f32,i32>" $~lib/array/Array<f32> $"~lib/map/Map<f32,f32>" $"~lib/map/Map<f64,i32>" $~lib/array/Array<f64> $"~lib/map/Map<f64,f64>" $invalid
-                                      (i32.load
-                                       (i32.sub
-                                        (local.get $0)
-                                        (i32.const 8)
+                               (block $~lib/staticarray/StaticArray<i32>
+                                (block $~lib/map/MapIteratorVersion
+                                 (block $~lib/tuple/SmallTuple
+                                  (block $"~lib/map/Map<i8,i32>"
+                                   (block $~lib/arraybuffer/ArrayBufferView
+                                    (block $~lib/string/String
+                                     (block $~lib/arraybuffer/ArrayBuffer
+                                      (block $~lib/object/Object
+                                       (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<i8,i32>" $~lib/tuple/SmallTuple $~lib/map/MapIteratorVersion $~lib/staticarray/StaticArray<i32> $~lib/array/Array<i8> $~lib/array/Array<i32> $"~lib/map/Map<i8,i8>" $"~lib/map/Map<i32,i32>" $"~lib/map/Map<u8,i32>" $~lib/array/Array<u8> $"~lib/map/Map<u8,u8>" $"~lib/map/Map<i16,i32>" $~lib/array/Array<i16> $"~lib/map/Map<i16,i16>" $"~lib/map/Map<u16,i32>" $~lib/array/Array<u16> $"~lib/map/Map<u16,u16>" $"~lib/map/Map<u32,i32>" $~lib/array/Array<u32> $"~lib/map/Map<u32,u32>" $"~lib/map/Map<i64,i32>" $~lib/array/Array<i64> $"~lib/map/Map<i64,i64>" $"~lib/map/Map<u64,i32>" $~lib/array/Array<u64> $"~lib/map/Map<u64,u64>" $"~lib/map/Map<f32,i32>" $~lib/array/Array<f32> $"~lib/map/Map<f32,f32>" $"~lib/map/Map<f64,i32>" $~lib/array/Array<f64> $"~lib/map/Map<f64,f64>" $invalid
+                                        (i32.load
+                                         (i32.sub
+                                          (local.get $0)
+                                          (i32.const 8)
+                                         )
+                                        )
                                        )
                                       )
+                                      (return)
                                      )
+                                     (return)
                                     )
                                     (return)
                                    )
+                                   (block
+                                    (call $~lib/arraybuffer/ArrayBufferView~visit
+                                     (local.get $0)
+                                     (local.get $1)
+                                    )
+                                    (return)
+                                   )
+                                  )
+                                  (block
+                                   (call $"~lib/map/Map<i8,i32>~visit"
+                                    (local.get $0)
+                                    (local.get $1)
+                                   )
                                    (return)
                                   )
-                                  (return)
                                  )
                                  (block
-                                  (call $~lib/arraybuffer/ArrayBufferView~visit
+                                  (call $~lib/tuple/SmallTuple~visit
                                    (local.get $0)
                                    (local.get $1)
                                   )
@@ -32348,20 +35908,14 @@
                                  )
                                 )
                                 (block
-                                 (call $"~lib/map/Map<i8,i32>~visit"
+                                 (call $~lib/map/MapIteratorVersion~visit
                                   (local.get $0)
                                   (local.get $1)
                                  )
                                  (return)
                                 )
                                )
-                               (block
-                                (call $~lib/tuple/SmallTuple~visit
-                                 (local.get $0)
-                                 (local.get $1)
-                                )
-                                (return)
-                               )
+                               (return)
                               )
                               (block
                                (call $~lib/array/Array<i8>~visit

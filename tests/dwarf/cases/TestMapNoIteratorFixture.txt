@@ -153,6 +153,11 @@ DW_TAG_compile_unit
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000014)
 
+    DW_TAG_member
+                  DW_AT_name	("iteratorVersion")
+                  DW_AT_type	("~lib/map/MapIteratorVersion")
+                  DW_AT_data_member_location	(0x00000018)
+
     DW_TAG_template_type_parameter
                   DW_AT_type	("i32")
 
@@ -185,6 +190,25 @@ DW_TAG_compile_unit
 
     DW_TAG_template_type_parameter
                   DW_AT_type	("~lib/string/String")
+
+    NULL
+
+  DW_TAG_class_type
+                DW_AT_name	("~lib/map/MapIteratorVersion")
+                DW_AT_signature	(0x00000006)
+
+    DW_TAG_inheritance
+                  DW_AT_type	("~lib/object/Object")
+
+    DW_TAG_member
+                  DW_AT_name	("nextVersion")
+                  DW_AT_type	("~lib/map/MapIteratorVersion")
+                  DW_AT_data_member_location	(0x00000000)
+
+    DW_TAG_member
+                  DW_AT_name	("removedIndices")
+                  DW_AT_type	("~lib/staticarray/StaticArray<i32>")
+                  DW_AT_data_member_location	(0x00000004)
 
     NULL
 
@@ -301,6 +325,18 @@ DW_TAG_compile_unit
                   DW_AT_name	("flags")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
+
+    NULL
+
+  DW_TAG_class_type
+                DW_AT_name	("~lib/staticarray/StaticArray<i32>")
+                DW_AT_signature	(0x00000007)
+
+    DW_TAG_inheritance
+                  DW_AT_type	("~lib/object/Object")
+
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("i32")
 
     NULL
 
