@@ -7985,6 +7985,8 @@ export class Compiler extends DiagnosticEmitter {
       } else if (initializer) {
         initExpr = this.compileExpression(initializer, type, Constraints.ConvImplicit);
         initExpr = module.local_set(operandIndex, initExpr, type.isManaged);
+      } else if (original.is(CommonFlags.ModuleImport)) {
+        initExpr = module.nop();
       } else {
         this.error(DiagnosticCode.Optional_parameter_must_have_an_initializer, declaration.range);
         initExpr = module.unreachable();
@@ -8005,7 +8007,7 @@ export class Compiler extends DiagnosticEmitter {
       stub.internalName,
       stub.signature.paramRefs,
       stub.signature.resultRefs,
-      typesToRefs(stub.getNonParameterLocalTypes()),
+      original.is(CommonFlags.ModuleImport) ? null : typesToRefs(stub.getNonParameterLocalTypes()),
       module.flatten(stmts, returnType.toRef())
     );
     stub.set(CommonFlags.Compiled);
