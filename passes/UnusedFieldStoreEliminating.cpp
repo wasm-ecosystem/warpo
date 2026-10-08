@@ -591,21 +591,32 @@ TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingLocalTeeOperand
       (func $Packet#set:unused (param i32 i32)
         (i32.store offset=4 (local.get 0) (local.get 1))
       )
-      (func $write (param i32) (local i32)
+      (func $write (param i32) (result i32) (local i32)
         (call $Packet#set:unused
           (i32.const 8)
           (local.tee 1 (local.get 0))
         )
+        (local.get 1)
       )
     )
   )");
 
   runUnusedFieldStoreEliminating(*m);
 
-  wasm::LocalSet const *const localSet = m->getFunction("write")->body->dynCast<wasm::LocalSet>();
-  ASSERT_NE(localSet, nullptr);
-  EXPECT_FALSE(localSet->isTee());
-  EXPECT_EQ(localSet->index, 1);
+  struct LocalSetFinder : wasm::PostWalker<LocalSetFinder> {
+    void visitLocalSet(wasm::LocalSet *localSet) {
+      if (localSet->index != 1)
+        return;
+      found = true;
+      isTee = localSet->isTee();
+    }
+
+    bool found = false;
+    bool isTee = false;
+  } finder;
+  finder.walkFunctionInModule(m->getFunction("write"), m.get());
+  EXPECT_TRUE(finder.found);
+  EXPECT_FALSE(finder.isTee);
 }
 
 TEST(UnusedFieldStoreEliminatingTest, RemovesSetterCallPreservingControlFlowOperand) {
