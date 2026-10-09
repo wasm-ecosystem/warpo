@@ -418,6 +418,13 @@ class LoopClosureTupleInfo {
   ) {}
 }
 
+class DeferredObjectLiteralSetter {
+  constructor(
+    public setterInstance: Function,
+    public valueLocal: Local
+  ) {}
+}
+
 /** Compiler interface. */
 export class Compiler extends DiagnosticEmitter {
   /** Program reference. */
@@ -10022,7 +10029,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     // Iterate through the members defined in our expression
-    let deferredProperties = new Array<Property>();
+    let deferredSetters = new Array<DeferredObjectLiteralSetter>();
     for (let i = 0; i < numNames; ++i) {
       let memberName = names[i].text;
       let member = classReference.getMember(memberName);
@@ -10073,9 +10080,20 @@ export class Compiler extends DiagnosticEmitter {
       // This member is no longer omitted, so delete from our omitted fields
       omittedFields.delete(propertyInstance);
 
-      // Defer real properties to be set after fields are initialized
+      // Setters may read fields initialized later, so defer the call, not the value.
+      // Emit the value evaluation here to preserve source-order side effects.
       if (!propertyInstance.isField) {
-        deferredProperties.push(propertyInstance);
+        let propertyType = propertyInstance.type;
+        let valueLocal = flow.getTempLocal(propertyType);
+        exprs.push(
+          module.local_set(
+            valueLocal.index,
+            this.compileExpression(values[i], propertyType, Constraints.ConvImplicit),
+            propertyType.isManaged
+          )
+        );
+        // Pair each setter with its own value; queue indices are not member indices.
+        deferredSetters.push(new DeferredObjectLiteralSetter(setterInstance, valueLocal));
         continue;
       }
 
@@ -10094,22 +10112,6 @@ export class Compiler extends DiagnosticEmitter {
         expr = module.drop(expr);
       }
       exprs.push(expr);
-    }
-
-    // Call deferred real property setters after
-    for (let i = 0, k = deferredProperties.length; i < k; ++i) {
-      let propertyInstance = deferredProperties[i];
-      let setterInstance = assert(propertyInstance.setterInstance);
-      exprs.push(
-        this.makeCallDirect(
-          setterInstance,
-          [
-            module.local_get(tempLocal.index, classTypeRef),
-            this.compileExpression(values[i], propertyInstance.type, Constraints.ConvImplicit),
-          ],
-          setterInstance.identifierNode
-        )
-      );
     }
 
     this.currentType = classType.nonNullableType;
@@ -10179,6 +10181,25 @@ export class Compiler extends DiagnosticEmitter {
       hasErrors = true;
     }
     if (hasErrors) return module.unreachable();
+
+    // All fields are now initialized. Call setters in source order
+    // using the saved values, without re-evaluating their initializer expressions.
+    for (let i = 0, k = deferredSetters.length; i < k; ++i) {
+      let deferredSetter = deferredSetters[i];
+      let setterInstance = deferredSetter.setterInstance;
+      let valueLocal = deferredSetter.valueLocal;
+      exprs.push(
+        this.makeCallDirect(
+          setterInstance,
+          [
+            module.local_get(tempLocal.index, classTypeRef),
+            module.local_get(valueLocal.index, valueLocal.type.toRef()),
+          ],
+          setterInstance.identifierNode
+        )
+      );
+    }
+    this.currentType = classType.nonNullableType;
 
     // generate the default constructor
     let ctor = this.ensureConstructor(classReference, expression);
