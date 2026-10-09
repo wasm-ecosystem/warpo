@@ -57,6 +57,41 @@ function ENTRY_SIZE<K, V>(): usize {
   return size;
 }
 
+/**
+ * Forward-only history of entries layouts: the map keeps the latest version,
+ * while each iterator keeps the version matching its cursor. Old versions retain
+ * removed slot indices, not obsolete entries buffers or references to their contents.
+ */
+class MapIteratorVersion {
+  private nextVersion: MapIteratorVersion | null = null;
+  // For versions with a successor, null marks clear(); otherwise indices are sorted in the old layout.
+  private removedIndices: StaticArray<i32> | null = null;
+
+  transition(removedIndices: StaticArray<i32> | null): MapIteratorVersion {
+    this.removedIndices = removedIndices;
+    return (this.nextVersion = new MapIteratorVersion());
+  }
+
+  translateIndex(index: i32): i32 {
+    const removedIndices = this.removedIndices;
+    if (!removedIndices) return 0;
+    // New cursor = old cursor - number of removed slots strictly before it.
+    // A removed slot at index is unvisited and must not move the boundary backward.
+    let lower = 0;
+    let upper = removedIndices.length;
+    while (lower < upper) {
+      const middle = lower + ((upper - lower) >> 1);
+      if (unchecked(removedIndices[middle]) < index) lower = middle + 1;
+      else upper = middle;
+    }
+    return index - lower;
+  }
+
+  getNext(): MapIteratorVersion {
+    return assert(this.nextVersion);
+  }
+}
+
 // @ts-ignore: decorator
 @lazy
 const GET_START = Symbol();
@@ -65,11 +100,33 @@ const GET_START = Symbol();
 @lazy
 const GET_ENTRIES_OFFSET = Symbol();
 
+// @ts-ignore: decorator
+@lazy
+const GET_ITERATOR_VERSION = Symbol();
+
 class MapIterator<K, V> implements Iterator<[K, V]> {
+  // Next physical slot in this.version's layout, not the number of values returned.
   private i: i32 = 0;
-  constructor(private map: Map<K, V>) {}
+  private map: Map<K, V> | null;
+  private version: MapIteratorVersion | null;
+
+  constructor(map: Map<K, V>) {
+    this.map = map;
+    this.version = map[GET_ITERATOR_VERSION]();
+  }
+
   next(): IteratorResult<[K, V]> {
     const map = this.map;
+    if (!map) return IteratorResult.done<[K, V]>();
+    // Apply every missed compaction or clear before accessing the current entries buffer.
+    const currentVersion = map[GET_ITERATOR_VERSION]();
+    let version = assert(this.version);
+    while (version != currentVersion) {
+      this.i = version.translateIndex(this.i);
+      version = version.getNext();
+    }
+    this.version = version;
+
     const start = map[GET_START]();
     const size = map[GET_ENTRIES_OFFSET]();
     for (let i = this.i; i < size; ++i) {
@@ -79,6 +136,10 @@ class MapIterator<K, V> implements Iterator<[K, V]> {
         return IteratorResult.fromValue<[K, V]>([entry.key, entry.value]);
       }
     }
+    // Once done, later insertions must not revive this iterator.
+    // Release the map and any layout history still retained by this iterator.
+    this.map = null;
+    this.version = null;
     return IteratorResult.done<[K, V]>();
   }
 }
@@ -93,6 +154,8 @@ export class Map<K, V> implements Iterable<[K, V]> {
   private entriesCapacity: i32 = INITIAL_CAPACITY;
   private entriesOffset: i32 = 0;
   private entriesCount: i32 = 0;
+  // Lazy state: maps that never create iterators need no layout-change history.
+  private iteratorVersion: MapIteratorVersion | null = null;
 
   constructor() {
     /* nop */
@@ -107,6 +170,12 @@ export class Map<K, V> implements Iterable<[K, V]> {
   [GET_ENTRIES_OFFSET](): i32 {
     return this.entriesOffset;
   }
+  @inline
+  [GET_ITERATOR_VERSION](): MapIteratorVersion {
+    let iteratorVersion = this.iteratorVersion;
+    if (!iteratorVersion) this.iteratorVersion = iteratorVersion = new MapIteratorVersion();
+    return iteratorVersion;
+  }
 
   get size(): i32 {
     return this.entriesCount;
@@ -116,6 +185,9 @@ export class Map<K, V> implements Iterable<[K, V]> {
     this.buckets = new ArrayBuffer(INITIAL_CAPACITY * <i32>BUCKET_SIZE);
     this.bucketsMask = INITIAL_CAPACITY - 1;
     this.entries = new ArrayBuffer(INITIAL_CAPACITY * <i32>ENTRY_SIZE<K, V>());
+    // Live iterators must restart at entries inserted after clear(), rather than keep their old indices.
+    let iteratorVersion = this.iteratorVersion;
+    if (iteratorVersion) this.iteratorVersion = iteratorVersion.transition(null);
     this.entriesCapacity = INITIAL_CAPACITY;
     this.entriesOffset = 0;
     this.entriesCount = 0;
@@ -206,9 +278,17 @@ export class Map<K, V> implements Iterable<[K, V]> {
     let newEntries = new ArrayBuffer(newEntriesCapacity * <i32>ENTRY_SIZE<K, V>());
 
     // copy old entries to new entries
-    let oldPtr = changetype<usize>(this.entries);
+    let oldStart = changetype<usize>(this.entries);
+    let oldPtr = oldStart;
     let oldEnd = oldPtr + <usize>this.entriesOffset * ENTRY_SIZE<K, V>();
     let newPtr = changetype<usize>(newEntries);
+    let iteratorVersion = this.iteratorVersion;
+    // Record deleted slots only if iterator state exists; growth without holes leaves indices unchanged.
+    let removedIndices: StaticArray<i32> | null =
+      iteratorVersion && this.entriesOffset != this.entriesCount
+        ? new StaticArray<i32>(this.entriesOffset - this.entriesCount)
+        : null;
+    let removedCount = 0;
     while (oldPtr != oldEnd) {
       let oldEntry = changetype<MapEntry<K, V>>(oldPtr);
       if (!(oldEntry.taggedNext & EMPTY)) {
@@ -221,6 +301,9 @@ export class Map<K, V> implements Iterable<[K, V]> {
         newEntry.taggedNext = load<usize>(newBucketPtrBase);
         store<usize>(newBucketPtrBase, newPtr);
         newPtr += ENTRY_SIZE<K, V>();
+      } else if (removedIndices) {
+        // Old slots are scanned in order, keeping the indices sorted for the lower-bound search.
+        unchecked((removedIndices[removedCount++] = <i32>((oldPtr - oldStart) / ENTRY_SIZE<K, V>())));
       }
       oldPtr += ENTRY_SIZE<K, V>();
     }
@@ -228,6 +311,7 @@ export class Map<K, V> implements Iterable<[K, V]> {
     this.buckets = newBuckets;
     this.bucketsMask = newBucketsMask;
     this.entries = newEntries;
+    if (iteratorVersion && removedIndices) this.iteratorVersion = iteratorVersion.transition(removedIndices);
     this.entriesCapacity = newEntriesCapacity;
     this.entriesOffset = this.entriesCount;
   }
@@ -276,6 +360,9 @@ export class Map<K, V> implements Iterable<[K, V]> {
 
   @unsafe private __visit(cookie: u32): void {
     __visit(changetype<usize>(this.buckets), cookie);
+    // Map uses a custom visitor, so its managed iterator-version field must be traced explicitly.
+    let iteratorVersion = this.iteratorVersion;
+    if (iteratorVersion) __visit(changetype<usize>(iteratorVersion), cookie);
     let entries = changetype<usize>(this.entries);
     if (isManaged<K>() || isManaged<V>()) {
       let cur = entries;
