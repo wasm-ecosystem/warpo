@@ -5464,44 +5464,44 @@
   i32.const 20
   call $~lib/rt/__decrease_sp
   block $folding-inner2
-   block $folding-inner1
-    local.get $0
-    i32.const 20
-    i32.sub
-    i32.load offset=16
-    i32.const 1
-    i32.shr_u
-    local.tee $7
-    local.get $1
-    i32.const 20
-    i32.sub
-    i32.load offset=16
-    i32.const 1
-    i32.shr_u
-    local.tee $9
-    i32.le_u
+   local.get $0
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $7
+   local.get $1
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.tee $9
+   i32.le_u
+   if
+    local.get $7
+    local.get $9
+    i32.ge_u
     if
-     local.get $7
-     local.get $9
-     i32.ge_u
-     if
-      local.get $2
-      local.get $0
-      local.get $1
-      local.get $0
-      call $~lib/string/String.__eq
-      select
-      local.set $0
-     end
-     br $folding-inner2
+     local.get $2
+     local.get $0
+     local.get $1
+     local.get $0
+     call $~lib/string/String.__eq
+     select
+     local.set $0
     end
-    local.get $2
-    i32.const 20
-    i32.sub
-    i32.load offset=16
-    i32.const 1
-    i32.shr_u
-    local.set $5
+    br $folding-inner2
+   end
+   local.get $2
+   i32.const 20
+   i32.sub
+   i32.load offset=16
+   i32.const 1
+   i32.shr_u
+   local.set $5
+   block $folding-inner1
     local.get $9
     i32.eqz
     if
@@ -6424,7 +6424,6 @@
     i32.const 0
     call $~lib/rt/__newArray
     local.set $0
-    br $folding-inner2
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 12
@@ -8998,9 +8997,9 @@
   i32.load
   i32.const 1
   i32.shr_u
-  local.tee $2
-  global.get $std/string/str
   local.tee $0
+  global.get $std/string/str
+  local.tee $2
   i32.const 20
   i32.sub
   i32.load offset=16
@@ -9010,10 +9009,10 @@
   if (result i32)
    i32.const 1
   else
-   local.get $0
+   local.get $2
    i32.const 0
    i32.const 1152
-   local.get $2
+   local.get $0
    call $~lib/util/string/compareImpl
   end
   if

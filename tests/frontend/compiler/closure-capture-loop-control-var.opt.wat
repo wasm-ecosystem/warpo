@@ -1597,7 +1597,6 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  (local $4 i32)
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.sub
@@ -1644,10 +1643,9 @@
    i32.const 4
    i32.add
    local.tee $3
-   local.tee $1
-   local.get $4
-   i32.store
    local.get $1
+   i32.store
+   local.get $3
    i32.load
    i32.const 2
    i32.lt_s
@@ -1678,7 +1676,7 @@
     i32.load
     i32.const 1
     i32.add
-    local.set $4
+    local.set $1
     br $for-loop|0
    end
   end

@@ -40950,12 +40950,13 @@
   i32.store16
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int16Array#set<~lib/typedarray/Int16Array> (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32)
+  (local $5 i32)
   local.get $4
   local.get $1
   i32.load offset=8
   local.get $2
   i32.shr_u
-  local.tee $4
+  local.tee $5
   i32.add
   local.get $0
   i32.load offset=8
@@ -40976,7 +40977,7 @@
   i32.add
   local.get $1
   i32.load offset=4
-  local.get $4
+  local.get $5
   local.get $2
   i32.shl
   memory.copy

@@ -30,6 +30,7 @@
 #include "MergeDataSection.hpp"
 #include "Runner.hpp"
 #include "UnusedFieldStoreEliminating.hpp"
+#include "UnusedNewEliminating.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
 #include "parser/wat-parser.h"
@@ -100,8 +101,10 @@ static void lowering(AsModule const &m, Config const &config) {
       passRunner->add("generate-global-effects");
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
-    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
       passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedFieldStoreEliminatingPass(&m.variableInfo_)});
+      passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedNewEliminatingPass()});
+    }
     passRunner->add(std::unique_ptr<wasm::Pass>{createConstructorNewOutliningPass()});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
       passRunner->add(std::make_unique<closure::OptLower>(&m.variableInfo_));
@@ -218,6 +221,11 @@ static void optimize(AsModule const &m, Config const &config) {
     if (config.tailCall) {
       passRunner->add("tail-call");
     }
+
+    // some new of unused objects can be eliminated again because above passes may provide new opportunities
+    passRunner->addDefaultOptimizationPasses();
+    passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedNewEliminatingPass()});
+
     // Run the default Binaryen passes again at the end
     passRunner->addDefaultOptimizationPasses();
     passRunner->run();

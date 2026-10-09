@@ -5,7 +5,7 @@
  (type $3 (func (param i32 i32 i32 i32)))
  (type $4 (func (param i32 i32 i32)))
  (type $5 (func (param i32 i32 i64)))
- (type $6 (func (param i32 i32) (result i32)))
+ (type $6 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -836,86 +836,18 @@
   i32.const 35200
   global.set $~lib/rt/tlsf/ROOT
  )
- (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
+ (func $~lib/rt/tlsf/searchBlock (param $0 i32) (result i32)
+  (local $1 i32)
   (local $2 i32)
-  local.get $1
-  i32.const 256
-  i32.lt_u
-  if (result i32)
-   local.get $1
-   i32.const 4
-   i32.shr_u
-   local.set $1
-   i32.const 0
-  else
-   i32.const 31
-   local.get $1
-   i32.const 1
-   i32.const 27
-   local.get $1
-   i32.clz
-   i32.sub
-   i32.shl
-   i32.add
-   i32.const 1
-   i32.sub
-   local.get $1
-   local.get $1
-   i32.const 536870910
-   i32.lt_u
-   select
-   local.tee $1
-   i32.clz
-   i32.sub
-   local.set $2
-   local.get $1
-   local.get $2
-   i32.const 4
-   i32.sub
-   i32.shr_u
-   i32.const 16
-   i32.xor
-   local.set $1
-   local.get $2
-   i32.const 7
-   i32.sub
-  end
-  local.set $2
-  local.get $1
-  i32.const 16
-  i32.lt_u
-  local.get $2
-  i32.const 23
-  i32.lt_u
-  i32.and
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 768
-   i32.const 309
-   i32.const 14
-   call $~lib/builtins/abort
-   unreachable
-  end
   local.get $0
-  local.get $2
-  i32.const 2
-  i32.shl
-  i32.add
   i32.load offset=4
-  i32.const -1
-  local.get $1
-  i32.shl
+  i32.const -2
   i32.and
   local.tee $1
   if (result i32)
    local.get $0
    local.get $1
    i32.ctz
-   local.get $2
-   i32.const 4
-   i32.shl
-   i32.add
    i32.const 2
    i32.shl
    i32.add
@@ -923,11 +855,7 @@
   else
    local.get $0
    i32.load
-   i32.const -1
-   local.get $2
-   i32.const 1
-   i32.add
-   i32.shl
+   i32.const -2
    i32.and
    local.tee $1
    if (result i32)
@@ -994,7 +922,6 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  (local $5 i32)
   memory.size
   i32.const 16
   i32.shl
@@ -1028,10 +955,6 @@
   i32.const 720
   global.set $~lib/rt/itcms/fromSpace
   block $__inlined_func$~lib/string/String.__eq$86 (result i32)
-   i32.const 42
-   local.set $2
-   i32.const 2
-   local.set $3
    global.get $~lib/rt/itcms/total
    global.get $~lib/rt/itcms/threshold
    i32.ge_u
@@ -1227,7 +1150,7 @@
             call $~lib/rt/tlsf/initialize
            end
            global.get $~lib/rt/tlsf/ROOT
-           local.set $4
+           local.set $2
            local.get $1
            i32.const 4
            i32.sub
@@ -1260,7 +1183,7 @@
            i32.const 1
            i32.or
            i32.store
-           local.get $4
+           local.get $2
            local.get $0
            call $~lib/rt/tlsf/insertBlock
           end
@@ -1316,7 +1239,6 @@
    end
    global.get $~lib/rt/tlsf/ROOT
    local.tee $1
-   i32.const 28
    call $~lib/rt/tlsf/searchBlock
    local.tee $0
    i32.eqz
@@ -1338,18 +1260,18 @@
     i32.and
     i32.const 16
     i32.shr_u
-    local.set $4
+    local.set $2
     local.get $0
-    local.get $4
+    local.get $2
     local.get $0
-    local.get $4
+    local.get $2
     i32.gt_s
     select
     memory.grow
     i32.const 0
     i32.lt_s
     if
-     local.get $4
+     local.get $2
      memory.grow
      i32.const 0
      i32.lt_s
@@ -1367,7 +1289,6 @@
     i64.shl
     call $~lib/rt/tlsf/addMemory
     local.get $1
-    i32.const 28
     call $~lib/rt/tlsf/searchBlock
     local.tee $0
     i32.eqz
@@ -1399,17 +1320,17 @@
    call $~lib/rt/tlsf/removeBlock
    local.get $0
    i32.load
-   local.tee $4
+   local.tee $2
    i32.const -4
    i32.and
    i32.const 28
    i32.sub
-   local.tee $5
+   local.tee $3
    i32.const 16
    i32.ge_u
    if
     local.get $0
-    local.get $4
+    local.get $2
     i32.const 2
     i32.and
     i32.const 28
@@ -1418,19 +1339,19 @@
     local.get $0
     i32.const 32
     i32.add
-    local.tee $4
-    local.get $5
+    local.tee $2
+    local.get $3
     i32.const 4
     i32.sub
     i32.const 1
     i32.or
     i32.store
     local.get $1
-    local.get $4
+    local.get $2
     call $~lib/rt/tlsf/insertBlock
    else
     local.get $0
-    local.get $4
+    local.get $2
     i32.const -2
     i32.and
     i32.store
@@ -1474,40 +1395,12 @@
    local.tee $0
    i32.const 0
    i32.store align=1
-   local.get $2
-   i32.const 10
-   i32.ge_u
-   if
-    local.get $0
-    local.get $3
-    i32.const 2
-    i32.sub
-    i32.const 1
-    i32.shl
-    i32.add
-    local.get $2
-    i32.const 2
-    i32.shl
-    i32.const 812
-    i32.add
-    i32.load
-    i32.store
-   else
-    local.get $0
-    local.get $3
-    i32.const 1
-    i32.sub
-    i32.const 1
-    i32.shl
-    i32.add
-    local.get $2
-    i32.const 48
-    i32.add
-    i32.store16
-   end
+   local.get $0
+   i32.const 980
+   i32.load
+   i32.store
    i32.const 1
    local.get $0
-   local.tee $3
    i32.const 2384
    i32.eq
    br_if $__inlined_func$~lib/string/String.__eq$86
@@ -1524,7 +1417,7 @@
    i32.load offset=16
    i32.const 1
    i32.shr_u
-   local.tee $2
+   local.tee $1
    i32.const 2380
    i32.load
    i32.const 1
@@ -1534,35 +1427,35 @@
    drop
    block $__inlined_func$~lib/util/string/compareImpl$73 (result i32)
     i32.const 2384
-    local.set $1
+    local.set $3
     local.get $0
     i32.const 7
     i32.and
     i32.eqz
-    local.get $2
+    local.get $1
     i32.const 4
     i32.ge_u
     i32.and
     if
      loop $do-loop|01
-      local.get $3
+      local.get $0
       i64.load
-      local.get $1
+      local.get $3
       i64.load
       i64.eq
       if
+       local.get $0
+       i32.const 8
+       i32.add
+       local.set $0
        local.get $3
        i32.const 8
        i32.add
        local.set $3
        local.get $1
-       i32.const 8
-       i32.add
-       local.set $1
-       local.get $2
        i32.const 4
        i32.sub
-       local.tee $2
+       local.tee $1
        i32.const 4
        i32.ge_u
        br_if $do-loop|01
@@ -1570,34 +1463,34 @@
      end
     end
     loop $while-continue|12
-     local.get $2
-     local.tee $0
+     local.get $1
+     local.tee $2
      i32.const 1
      i32.sub
-     local.set $2
-     local.get $0
+     local.set $1
+     local.get $2
      if
-      local.get $3
+      local.get $0
       i32.load16_u
-      local.tee $0
-      local.get $1
+      local.tee $2
+      local.get $3
       i32.load16_u
       local.tee $4
       i32.ne
       if
-       local.get $0
+       local.get $2
        local.get $4
        i32.sub
        br $__inlined_func$~lib/util/string/compareImpl$73
       end
+      local.get $0
+      i32.const 2
+      i32.add
+      local.set $0
       local.get $3
       i32.const 2
       i32.add
       local.set $3
-      local.get $1
-      i32.const 2
-      i32.add
-      local.set $1
       br $while-continue|12
      end
     end
