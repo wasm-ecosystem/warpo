@@ -104,7 +104,6 @@ static void lowering(AsModule const &m, Config const &config) {
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
       passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedFieldStoreEliminatingPass(&m.variableInfo_)});
       passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedNewEliminatingPass()});
-      passRunner->add("vacuum");
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createConstructorNewOutliningPass()});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
