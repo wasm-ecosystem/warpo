@@ -6,7 +6,7 @@ echo "first build"
 ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 0 --shrinkLevel 0 \
-  --enable-feature tail-call \
+  --enable-feature tail-call return-to-br \
   --disable-feature nontrapping-f2i \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
@@ -17,7 +17,7 @@ echo "second build"
 ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 0 --shrinkLevel 0 \
-  --enable-feature tail-call \
+  --enable-feature tail-call return-to-br \
   --disable-feature nontrapping-f2i \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
@@ -29,7 +29,7 @@ echo "third build"
 ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 0 --shrinkLevel 0 \
-  --enable-feature tail-call \
+  --enable-feature tail-call return-to-br \
   --disable-feature nontrapping-f2i \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \

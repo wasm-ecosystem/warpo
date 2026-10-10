@@ -23,10 +23,16 @@ private:
   wasm::Expression *expr_;
 };
 
-inline wasm::Expression **findExprPointer(wasm::Expression *expr, wasm::Function *func) {
+// Find expr by pointer identity and return its AST pointer slot, or nullptr if absent.
+// Assigning through the returned pointer replaces that expression in the tree.
+inline wasm::Expression **findExprPointer(wasm::Expression *expr, wasm::Expression *&root) {
   FindExpr finder{expr};
-  finder.walk(func->body);
+  finder.walk(root);
   return finder.ptr_;
+}
+
+inline wasm::Expression **findExprPointer(wasm::Expression *expr, wasm::Function *func) {
+  return findExprPointer(expr, func->body);
 }
 
 } // namespace warpo::passes

@@ -47,6 +47,7 @@ public:
 class PrologEpilogInserter : public wasm::Pass {
   std::shared_ptr<InsertPositionHints const> insertPositionHints_;
   std::shared_ptr<IMaxShadowStackOffsets const> maxShadowStackOffsets_;
+  bool const enableReturnToBr_;
 
   void replaceReturnExprWithEpilogue(wasm::Module *m, wasm::Function *func, uint32_t maxShadowStackOffset,
                                      std::optional<wasm::Index> const &scratchReturnValueLocalIndex);
@@ -62,14 +63,17 @@ class PrologEpilogInserter : public wasm::Pass {
 
 public:
   explicit PrologEpilogInserter(std::shared_ptr<gc::InsertPositionHints const> insertPositionHints,
-                                std::shared_ptr<IMaxShadowStackOffsets const> maxShadowStackOffsets)
-      : insertPositionHints_(insertPositionHints), maxShadowStackOffsets_(maxShadowStackOffsets) {
+                                std::shared_ptr<IMaxShadowStackOffsets const> maxShadowStackOffsets,
+                                bool const enableReturnToBr = false)
+      : insertPositionHints_(insertPositionHints), maxShadowStackOffsets_(maxShadowStackOffsets),
+        enableReturnToBr_(enableReturnToBr) {
     assert(maxShadowStackOffsets_ != nullptr);
     name = "PrologEpilogInserter";
   }
   bool isFunctionParallel() override { return true; }
   std::unique_ptr<Pass> create() override {
-    return std::unique_ptr<Pass>{new PrologEpilogInserter(insertPositionHints_, maxShadowStackOffsets_)};
+    return std::unique_ptr<Pass>{
+        new PrologEpilogInserter(insertPositionHints_, maxShadowStackOffsets_, enableReturnToBr_)};
   }
 
   void runOnFunction(wasm::Module *m, wasm::Function *func) override;
