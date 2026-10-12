@@ -49,10 +49,11 @@ It supports two forms:
 }
 ```
 
-### WebAssembly Features
+### WebAssembly and Optimization Features
 
-WARPO manages WebAssembly features through a single feature set. `tail-call` is disabled by default and must be enabled
-when it is needed.
+WARPO manages WebAssembly capabilities and optional compiler optimizations through a single feature set.
+The default set explicitly enables `mutable-globals`, `sign-extension`, `nontrapping-f2i`, `bulk-memory`, and `multi-value`.
+`tail-call` and `return-to-br` are disabled by default and must be enabled explicitly.
 
 In `asconfig.json`, use `enable` and `disable` to control features:
 
@@ -73,6 +74,7 @@ Supported feature names are:
 - `bulk-memory`
 - `multi-value`
 - `tail-call`
+- [`return-to-br`](#return-to-br)
 
 Equivalent CLI usage:
 
@@ -81,6 +83,17 @@ warpo assembly/index.ts -o build/app.wasm --enable-feature tail-call --disable-f
 ```
 
 When the same feature appears in both options, `disable` takes precedence.
+
+### `return-to-br`
+
+Enabling `return-to-br` allows multiple return paths to share shadow-stack restoration code, but may also introduce
+new `block` expressions. Backends without variable liveness analysis (eg: [wasm-compiler](https://github.com/wasm-ecosystem/wasm-compiler)) may conservatively save and restore execution
+context around this control flow, increasing the cost of spilling local variables and potentially reducing performance.
+In other words, if the backend recognizes that a `br` target ultimately leads to a function return, it can avoid this
+overhead.
+
+The actual benefit therefore depends on the backend's analysis and code generation capabilities. Benchmark on the
+target backend to evaluate the optimization.
 
 ### `host`
 

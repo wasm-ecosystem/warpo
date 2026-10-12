@@ -49,9 +49,11 @@ Options 用于控制构建过程与输出。它们可以全局设置（`options`
 }
 ```
 
-### WebAssembly Features
+### WebAssembly 与优化特性
 
-WARPO 通过统一的 feature 集合管理 WebAssembly 特性。`tail-call` 默认关闭，需要使用时显式开启。
+WARPO 通过统一的 feature 集合管理 WebAssembly 能力和可选编译器优化。
+默认集合显式启用 `mutable-globals`、`sign-extension`、`nontrapping-f2i`、`bulk-memory` 和 `multi-value`。
+`tail-call` 和 `return-to-br` 默认关闭，需要使用时显式开启。
 
 在 `asconfig.json` 中，可以通过 `enable` 和 `disable` 控制特性：
 
@@ -72,6 +74,7 @@ WARPO 通过统一的 feature 集合管理 WebAssembly 特性。`tail-call` 默�
 - `bulk-memory`
 - `multi-value`
 - `tail-call`
+- [`return-to-br`](#return-to-br)
 
 等价 CLI 写法：
 
@@ -80,6 +83,13 @@ warpo assembly/index.ts -o build/app.wasm --enable-feature tail-call --disable-f
 ```
 
 同一特性同时出现在两个选项中时，以 `disable` 为准。
+
+### `return-to-br`
+
+启用 `return-to-br` 可以让多个返回路径共享 shadow-stack 恢复操作，但也可能引入新的 `block`。
+对于缺少变量活跃性分析的后端编译器 (eg: [wasm-compiler](https://github.com/wasm-ecosystem/wasm-compiler))，这类控制流可能触发保守的执行上下文保存与恢复，增加局部变量的暂存开销，从而导致性能下降。换句话说，如果后端能够识别出 `br` 的target最终是函数返回，就能避免overhead。
+
+因此，该优化的实际收益取决于后端的分析与代码生成能力，建议在目标后端上通过基准测试评估。
 
 ### `host`
 

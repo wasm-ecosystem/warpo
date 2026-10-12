@@ -25,6 +25,7 @@ async function buildWithWARPO({
     "--debug",
     "--enable-feature",
     "tail-call",
+    "return-to-br",
     // instrumentation flags
     "--instrument",
   ];

@@ -22,6 +22,7 @@
 
 <img src="/version/nightly.svg" alt="nightly" />
 
+- [共享 GC 返回 epilogue（`return-to-br`）](/zh-CN/using_compiler/config#return-to-br)
 - [使用 WARPO CLI 进行构建与测试](/zh-CN/using_compiler/build_and_test)
 - [闭包函数](/en/using_language/details/closure)
 - [Heap Analyzer](/zh-CN/executing_webassembly/heap-analyzer)

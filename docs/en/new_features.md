@@ -22,6 +22,7 @@ Comparison with AS, we support some new features and breaks.
 
 <img src="/version/nightly.svg" alt="nightly" />
 
+- [shared GC return epilogue (`return-to-br`)](/en/using_compiler/config#return-to-br)
 - [build and test with WARPO CLI](/en/using_compiler/build_and_test)
 - [closure](/en/using_language/details/closure)
 - [heap analyzer](/en/executing_webassembly/heap-analyzer)
