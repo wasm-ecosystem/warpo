@@ -151,6 +151,13 @@ namespace warpo::passes::ut {
 
 namespace {
 
+void removeRedundantBlocks(wasm::Module *m, wasm::Function *func) {
+  wasm::PassRunner runner{m};
+  runner.add("remove-unused-names");
+  runner.add("vacuum");
+  runner.runOnFunction(func);
+}
+
 struct ReturnScanner : wasm::PostWalker<ReturnScanner> {
   std::vector<wasm::Return *> returns_;
 
@@ -221,10 +228,9 @@ TEST(ReturnToBrTest, RootReturnWithNestedReturnGetsAnExit) {
   auto *const value = originalBody->cast<wasm::Return>()->value;
 
   convertReturnsToBranches(m.get(), func);
+  removeRedundantBlocks(m.get(), func);
 
-  auto *const body = func->body->cast<wasm::Block>();
-  ASSERT_EQ(body->list.size(), 1U);
-  auto *const exit = body->list.front()->cast<wasm::Block>();
+  auto *const exit = func->body->cast<wasm::Block>();
   ASSERT_EQ(exit->list.size(), 1U);
   auto *const branch = exit->list[0]->cast<wasm::Break>();
   EXPECT_EQ(branch->name, exit->name);
@@ -237,7 +243,7 @@ TEST(ReturnToBrTest, RootReturnWithNestedReturnGetsAnExit) {
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
-TEST(ReturnToBrTest, UnnamedBodyGetsANewExitBlock) {
+TEST(ReturnToBrTest, CompatibleUnnamedBodyIsMerged) {
   auto m = loadWat(R"(
     (module
       (func $main (param i32 i32) (result i32)
@@ -248,7 +254,7 @@ TEST(ReturnToBrTest, UnnamedBodyGetsANewExitBlock) {
     )
   )");
   auto *const func = m->getFunction("main");
-  auto *const body = func->body->cast<wasm::Block>();
+  auto *body = func->body->cast<wasm::Block>();
   auto *const firstGuard = body->list[0]->cast<wasm::If>();
   auto *const secondGuard = body->list[1]->cast<wasm::If>();
   auto *const firstValue = firstGuard->ifTrue->cast<wasm::Return>()->value;
@@ -256,17 +262,12 @@ TEST(ReturnToBrTest, UnnamedBodyGetsANewExitBlock) {
   ASSERT_TRUE(body->name.isNull());
 
   convertReturnsToBranches(m.get(), func);
+  removeRedundantBlocks(m.get(), func);
+  body = func->body->cast<wasm::Block>();
 
-  EXPECT_EQ(func->body, body);
-  EXPECT_TRUE(body->name.isNull());
-  ASSERT_EQ(body->list.size(), 1U);
-  auto *const exit = body->list.front()->cast<wasm::Block>();
-  EXPECT_EQ(exit->name, "~RETURN_TO_BR/main");
-  ASSERT_EQ(exit->list.size(), 3U);
-  EXPECT_EQ(exit->list[0], firstGuard);
-  EXPECT_EQ(exit->list[1], secondGuard);
-  EXPECT_EQ(firstGuard->ifTrue->cast<wasm::Break>()->name, exit->name);
-  EXPECT_EQ(secondGuard->ifTrue->cast<wasm::Break>()->name, exit->name);
+  EXPECT_FALSE(body->name.isNull());
+  EXPECT_EQ(body->list[0], firstGuard);
+  EXPECT_EQ(body->list[1], secondGuard);
   EXPECT_EQ(firstGuard->ifTrue->cast<wasm::Break>()->value, firstValue);
   EXPECT_EQ(secondGuard->ifTrue->cast<wasm::Break>()->value, secondValue);
   EXPECT_EQ(firstGuard->ifTrue->cast<wasm::Break>()->condition, nullptr);
@@ -274,7 +275,7 @@ TEST(ReturnToBrTest, UnnamedBodyGetsANewExitBlock) {
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
-TEST(ReturnToBrTest, NamedBodyAndExistingBranchArePreserved) {
+TEST(ReturnToBrTest, CompatibleNamedBodyAndExistingBranchAreMerged) {
   auto m = loadWat(R"(
     (module
       (func $main (param i32 i32 i32) (result i32)
@@ -288,22 +289,19 @@ TEST(ReturnToBrTest, NamedBodyAndExistingBranchArePreserved) {
     )
   )");
   auto *const func = m->getFunction("main");
-  auto *const body = func->body->cast<wasm::Block>();
+  auto *body = func->body->cast<wasm::Block>();
   auto *const existingBranch = body->list[0]->cast<wasm::Drop>()->value->cast<wasm::Break>();
 
   convertReturnsToBranches(m.get(), func);
+  removeRedundantBlocks(m.get(), func);
+  body = func->body->cast<wasm::Block>();
 
-  EXPECT_EQ(func->body, body);
-  EXPECT_EQ(body->name, "existing");
-  ASSERT_EQ(body->list.size(), 1U);
-  auto *const exit = body->list.front()->cast<wasm::Block>();
-  EXPECT_EQ(exit->name, "~RETURN_TO_BR/main");
-  ASSERT_EQ(exit->list.size(), 4U);
-  EXPECT_EQ(exit->list[0]->cast<wasm::Drop>()->value, existingBranch);
-  EXPECT_EQ(existingBranch->name, "existing");
+  EXPECT_FALSE(body->name.isNull());
+  EXPECT_EQ(body->list[0]->cast<wasm::Drop>()->value, existingBranch);
+  EXPECT_EQ(existingBranch->name, body->name);
   EXPECT_NE(existingBranch->condition, nullptr);
-  EXPECT_EQ(exit->list[1]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, exit->name);
-  EXPECT_EQ(exit->list[2]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, exit->name);
+  EXPECT_EQ(body->list[1]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, body->name);
+  EXPECT_EQ(body->list[2]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, body->name);
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
@@ -379,6 +377,8 @@ TEST(ReturnToBrTest, BranchBlocksAndTailCallsPreserveAllOperands) {
   CallCounter values{"value"};
   values.walk(func->body);
   EXPECT_EQ(values.calls_, 3U);
+  removeRedundantBlocks(m.get(), func);
+  EXPECT_EQ(func->body, exit);
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
@@ -449,6 +449,7 @@ TEST(ReturnToBrTest, NestedReturnAndImplicitExitAreCountedSeparately) {
   ReturnScanner scanner;
   scanner.walk(func->body);
   EXPECT_TRUE(scanner.returns_.empty());
+  removeRedundantBlocks(m.get(), func);
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
@@ -578,7 +579,7 @@ TEST(ReturnToBrTest, ActualTailCallsStayTailCalls) {
   auto *const tailFunc = m->getFunction("tail");
   auto *const originalTail = tailFunc->body;
   auto *const func = m->getFunction("main");
-  auto *const body = func->body->cast<wasm::Block>();
+  auto *body = func->body->cast<wasm::Block>();
   auto *const tailCall = body->list[2]->cast<wasm::Call>();
   originalTail->cast<wasm::Call>()->isReturn = true;
   originalTail->cast<wasm::Call>()->finalize();
@@ -590,15 +591,13 @@ TEST(ReturnToBrTest, ActualTailCallsStayTailCalls) {
   EXPECT_EQ(tailFunc->body, originalTail);
 
   convertReturnsToBranches(m.get(), func);
+  removeRedundantBlocks(m.get(), func);
+  body = func->body->cast<wasm::Block>();
 
-  EXPECT_EQ(func->body, body);
-  ASSERT_EQ(body->list.size(), 1U);
-  auto *const exit = body->list.front()->cast<wasm::Block>();
-  ASSERT_EQ(exit->list.size(), 3U);
-  EXPECT_EQ(exit->list[2], tailCall);
+  EXPECT_EQ(body->list[2], tailCall);
   EXPECT_TRUE(tailCall->isReturn);
-  EXPECT_TRUE(exit->list[0]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
-  EXPECT_TRUE(exit->list[1]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
+  EXPECT_TRUE(body->list[0]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
+  EXPECT_TRUE(body->list[1]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 

@@ -74,7 +74,7 @@ Supported feature names are:
 - `bulk-memory`
 - `multi-value`
 - `tail-call`
-- [`return-to-br`](#return-to-br) (compiler optimization, not a WebAssembly proposal)
+- [`return-to-br`](#return-to-br)
 
 Equivalent CLI usage:
 
@@ -86,43 +86,14 @@ When the same feature appears in both options, `disable` takes precedence.
 
 ### `return-to-br`
 
-<p style="display: flex; gap: 10px;">
-  <img src="/version/nightly.svg" alt="nightly" />
-  <img src="/stability/experimental.svg" alt="experimental" />
-</p>
+Enabling `return-to-br` allows multiple return paths to share shadow-stack restoration code, but may also introduce
+new `block` expressions. Backends without variable liveness analysis may conservatively save and restore execution
+context around this control flow, increasing the cost of spilling local variables and potentially reducing performance.
+In other words, if the backend recognizes that a `br` target ultimately leads to a function return, it can avoid this
+overhead.
 
-Enables the `ReturnToBr` pass during optimized GC lowering. It replaces explicit `return` expressions with branches
-to a shared exit block so that multiple return paths can share one shadow-stack restoration epilogue instead of
-duplicating it at each return. This uses existing WebAssembly `block` and `br` instructions and requires no new
-WebAssembly runtime capability.
-
-Enable it in `asconfig.json`:
-
-```json
-{
-  "options": {
-    "enable": ["return-to-br"]
-  }
-}
-```
-
-Equivalent CLI usage:
-
-```bash
-warpo assembly/index.ts -o build/app.wasm --enable-feature return-to-br
-```
-
-The pass counts reachable exits, including implicit fallthrough, and only transforms functions with more than one
-exit and at least one explicit return. Statements preceding the first control-flow split remain outside the exit
-block. The remaining suffix is wrapped in a new block; returns branch to that block's exit, carrying their original
-values. Reachable fallthrough also branches to the exit, carrying the tail value for non-void functions. Return-value
-evaluation and side effects are preserved; later passes can remove redundant blocks.
-
-In the GC pipeline, this transformation only runs when a function needs a nonzero shadow-stack frame and uses the
-default whole-function prologue/epilogue placement. It does not run on paths using shrink-wrapped placement or the
-fast GC lowering path. Actual tail-call instructions are not rewritten.
-
-Use `"disable": ["return-to-br"]` or `--disable-feature return-to-br` to turn it off.
+The actual benefit therefore depends on the backend's analysis and code generation capabilities. Benchmark on the
+target backend to evaluate the optimization.
 
 ### `host`
 

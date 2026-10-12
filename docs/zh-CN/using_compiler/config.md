@@ -74,7 +74,7 @@ WARPO 通过统一的 feature 集合管理 WebAssembly 能力和可选编译器�
 - `bulk-memory`
 - `multi-value`
 - `tail-call`
-- [`return-to-br`](#return-to-br)（编译器优化，不是 WebAssembly 提案）
+- [`return-to-br`](#return-to-br)
 
 等价 CLI 写法：
 
@@ -86,40 +86,10 @@ warpo assembly/index.ts -o build/app.wasm --enable-feature tail-call --disable-f
 
 ### `return-to-br`
 
-<p style="display: flex; gap: 10px;">
-  <img src="/version/nightly.svg" alt="nightly" />
-  <img src="/stability/experimental.svg" alt="experimental" />
-</p>
+启用 `return-to-br` 可以让多个返回路径共享 shadow-stack 恢复操作，但也可能引入新的 `block`。
+对于缺少变量活跃性分析的后端编译器，这类控制流可能触发保守的执行上下文保存与恢复，增加局部变量的暂存开销，从而导致性能下降。换句话说，如果后端能够识别出 `br` 的target最终是函数返回，就能避免overhead。
 
-在优化 GC lowering 路径中启用 `ReturnToBr` pass，将显式 `return` 改写为跳转到共享出口 block 的 `br`，
-让多个返回路径共享一份恢复 shadow stack 的 epilogue，避免在每个返回点重复插入恢复操作。
-该优化使用现有的 WebAssembly `block` 和 `br` 指令，不要求运行时支持新的 WebAssembly 能力。
-
-在 `asconfig.json` 中启用：
-
-```json
-{
-  "options": {
-    "enable": ["return-to-br"]
-  }
-}
-```
-
-等价 CLI 写法：
-
-```bash
-warpo assembly/index.ts -o build/app.wasm --enable-feature return-to-br
-```
-
-pass 会统计可达出口，包括隐式 fallthrough，仅转换存在多个出口且包含显式 `return` 的函数。
-首次控制流分叉之前的语句保留在出口 block 外，其余后缀放入新建的 block；
-各个 `return` 改为携带原返回值的出口分支。可达的 fallthrough 也跳转到该出口，非 void 函数携带末尾表达式的值。
-返回值求值和副作用保持不变，冗余 block 可由后续 pass 消除。
-
-在 GC 流水线中，该转换仅用于需要非零 shadow-stack 栈帧、且采用默认整函数 prologue/epilogue 插入方式的函数。
-采用 shrink-wrap 插入方式的路径和快速 GC lowering 路径不会应用此优化；真正的 tail-call 指令不会被改写。
-
-可通过 `"disable": ["return-to-br"]` 或 `--disable-feature return-to-br` 关闭。
+因此，该优化的实际收益取决于后端的分析与代码生成能力，建议在目标后端上通过基准测试评估。
 
 ### `host`
 
