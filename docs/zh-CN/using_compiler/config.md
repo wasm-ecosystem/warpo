@@ -87,7 +87,7 @@ warpo assembly/index.ts -o build/app.wasm --enable-feature tail-call --disable-f
 ### `return-to-br`
 
 启用 `return-to-br` 可以让多个返回路径共享 shadow-stack 恢复操作，但也可能引入新的 `block`。
-对于缺少变量活跃性分析的后端编译器，这类控制流可能触发保守的执行上下文保存与恢复，增加局部变量的暂存开销，从而导致性能下降。换句话说，如果后端能够识别出 `br` 的target最终是函数返回，就能避免overhead。
+对于缺少变量活跃性分析的后端编译器 (eg: [wasm-compiler](https://github.com/wasm-ecosystem/wasm-compiler))，这类控制流可能触发保守的执行上下文保存与恢复，增加局部变量的暂存开销，从而导致性能下降。换句话说，如果后端能够识别出 `br` 的target最终是函数返回，就能避免overhead。
 
 因此，该优化的实际收益取决于后端的分析与代码生成能力，建议在目标后端上通过基准测试评估。
 

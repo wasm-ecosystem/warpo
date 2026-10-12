@@ -87,7 +87,7 @@ When the same feature appears in both options, `disable` takes precedence.
 ### `return-to-br`
 
 Enabling `return-to-br` allows multiple return paths to share shadow-stack restoration code, but may also introduce
-new `block` expressions. Backends without variable liveness analysis may conservatively save and restore execution
+new `block` expressions. Backends without variable liveness analysis (eg: [wasm-compiler](https://github.com/wasm-ecosystem/wasm-compiler)) may conservatively save and restore execution
 context around this control flow, increasing the cost of spilling local variables and potentially reducing performance.
 In other words, if the backend recognizes that a `br` target ultimately leads to a function return, it can avoid this
 overhead.
