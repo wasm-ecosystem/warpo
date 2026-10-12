@@ -4,7 +4,7 @@
 // Design:
 // 1. Count reachable exits, including fallthrough.
 // 2. Find the first CFG split; leave preceding statements outside the exit block.
-// 3. Reuse a compatible body block or wrap the remaining suffix in an exit block.
+// 3. Wrap the remaining suffix in an exit block.
 // 4. Replace each return with a br to the exit, carrying its original value.
 // 5. Add a fallthrough br, carrying the tail value for non-void functions.
 // 6. ReFinalize the IR to update expression types.
@@ -16,10 +16,10 @@
 #include <memory>
 #include <vector>
 
+#include "../helper/CFG.hpp"
+#include "../helper/FindExpr.hpp"
+#include "../helper/ReturnPoints.hpp"
 #include "ReturnToBr.hpp"
-#include "helper/CFG.hpp"
-#include "helper/FindExpr.hpp"
-#include "helper/ReturnPoints.hpp"
 #include "ir/utils.h"
 #include "warpo/support/Debug.hpp"
 #include "wasm-builder.h"
@@ -60,17 +60,20 @@ void appendFallthroughBranch(wasm::Builder &builder, wasm::Block *exit, wasm::Ty
     exit->list.back() = builder.makeBreak(exit->name, exit->list.back());
 }
 
-struct ReturnRewriter : wasm::PostWalker<ReturnRewriter> {
-  wasm::Builder &builder_;
-  wasm::Name const exitName_;
-  bool changed_ = false;
-
+class ReturnRewriter final : public wasm::PostWalker<ReturnRewriter> {
+public:
   ReturnRewriter(wasm::Builder &builder, wasm::Name exitName) : builder_(builder), exitName_(exitName) {}
 
   void visitReturn(wasm::Return *expr) {
     replaceCurrent(builder_.makeBreak(exitName_, expr->value));
     changed_ = true;
   }
+  bool changed() const { return changed_; }
+
+private:
+  wasm::Builder &builder_;
+  wasm::Name const exitName_;
+  bool changed_ = false;
 };
 
 struct ReturnToBr final : wasm::Pass {
@@ -105,21 +108,16 @@ void convertReturnsToBranches(wasm::Module *m, wasm::Function *func) {
   if (body == nullptr)
     body = builder.makeBlock(wasm::Name{}, {func->body}, resultType);
   std::size_t const start = findExitStart(*body, firstSplit);
-  bool const reuseBody = start == 0 && body->type == resultType;
-  wasm::Name const exitName =
-      reuseBody && !body->name.isNull() ? body->name : wasm::Name{fmt::format("~RETURN_TO_BR/{}", func->name.view())};
-
-  auto *const exit =
-      reuseBody ? body
-                : builder.makeBlock(exitName,
-                                    std::vector<wasm::Expression *>{
-                                        body->list.begin() + static_cast<std::ptrdiff_t>(start), body->list.end()},
-                                    resultType);
+  wasm::Name const exitName{fmt::format("~RETURN_TO_BR/{}", func->name.view())};
+  auto *const exit = builder.makeBlock(
+      exitName,
+      std::vector<wasm::Expression *>{body->list.begin() + static_cast<std::ptrdiff_t>(start), body->list.end()},
+      resultType);
 
   ReturnRewriter rewriter{builder, exitName};
   wasm::Expression *exitBody = exit;
   rewriter.walk(exitBody);
-  if (!rewriter.changed_)
+  if (!rewriter.changed())
     return;
 
   if (support::isDebug(PASS_NAME, func->name.view())) {
@@ -127,11 +125,8 @@ void convertReturnsToBranches(wasm::Module *m, wasm::Function *func) {
                  returnPoints.size(), exitName.view(), threshold);
   }
 
-  exit->name = exitName;
-  if (!reuseBody) {
-    body->list.resize(start);
-    body->list.push_back(exit);
-  }
+  body->list.resize(start);
+  body->list.push_back(exit);
   func->body = body;
   appendFallthroughBranch(builder, exit, resultType);
 
@@ -147,9 +142,9 @@ wasm::Pass *createReturnToBrPass() { return new ReturnToBr{}; }
 
 #include <gtest/gtest.h>
 
-#include "GC/GCInfo.hpp"
-#include "GC/PrologEpilogInserter.hpp"
-#include "Runner.hpp"
+#include "../Runner.hpp"
+#include "GCInfo.hpp"
+#include "PrologEpilogInserter.hpp"
 #include "wasm-validator.h"
 
 namespace warpo::passes::ut {
@@ -227,7 +222,9 @@ TEST(ReturnToBrTest, RootReturnWithNestedReturnGetsAnExit) {
 
   convertReturnsToBranches(m.get(), func);
 
-  auto *const exit = func->body->cast<wasm::Block>();
+  auto *const body = func->body->cast<wasm::Block>();
+  ASSERT_EQ(body->list.size(), 1U);
+  auto *const exit = body->list.front()->cast<wasm::Block>();
   ASSERT_EQ(exit->list.size(), 1U);
   auto *const branch = exit->list[0]->cast<wasm::Break>();
   EXPECT_EQ(branch->name, exit->name);
@@ -240,7 +237,7 @@ TEST(ReturnToBrTest, RootReturnWithNestedReturnGetsAnExit) {
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
-TEST(ReturnToBrTest, CompatibleUnnamedBodyIsReused) {
+TEST(ReturnToBrTest, UnnamedBodyGetsANewExitBlock) {
   auto m = loadWat(R"(
     (module
       (func $main (param i32 i32) (result i32)
@@ -261,9 +258,15 @@ TEST(ReturnToBrTest, CompatibleUnnamedBodyIsReused) {
   convertReturnsToBranches(m.get(), func);
 
   EXPECT_EQ(func->body, body);
-  EXPECT_FALSE(body->name.isNull());
-  EXPECT_EQ(body->list[0], firstGuard);
-  EXPECT_EQ(body->list[1], secondGuard);
+  EXPECT_TRUE(body->name.isNull());
+  ASSERT_EQ(body->list.size(), 1U);
+  auto *const exit = body->list.front()->cast<wasm::Block>();
+  EXPECT_EQ(exit->name, "~RETURN_TO_BR/main");
+  ASSERT_EQ(exit->list.size(), 3U);
+  EXPECT_EQ(exit->list[0], firstGuard);
+  EXPECT_EQ(exit->list[1], secondGuard);
+  EXPECT_EQ(firstGuard->ifTrue->cast<wasm::Break>()->name, exit->name);
+  EXPECT_EQ(secondGuard->ifTrue->cast<wasm::Break>()->name, exit->name);
   EXPECT_EQ(firstGuard->ifTrue->cast<wasm::Break>()->value, firstValue);
   EXPECT_EQ(secondGuard->ifTrue->cast<wasm::Break>()->value, secondValue);
   EXPECT_EQ(firstGuard->ifTrue->cast<wasm::Break>()->condition, nullptr);
@@ -271,7 +274,7 @@ TEST(ReturnToBrTest, CompatibleUnnamedBodyIsReused) {
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
-TEST(ReturnToBrTest, CompatibleNamedBodyAndExistingBranchAreReused) {
+TEST(ReturnToBrTest, NamedBodyAndExistingBranchArePreserved) {
   auto m = loadWat(R"(
     (module
       (func $main (param i32 i32 i32) (result i32)
@@ -292,11 +295,15 @@ TEST(ReturnToBrTest, CompatibleNamedBodyAndExistingBranchAreReused) {
 
   EXPECT_EQ(func->body, body);
   EXPECT_EQ(body->name, "existing");
-  EXPECT_EQ(body->list[0]->cast<wasm::Drop>()->value, existingBranch);
+  ASSERT_EQ(body->list.size(), 1U);
+  auto *const exit = body->list.front()->cast<wasm::Block>();
+  EXPECT_EQ(exit->name, "~RETURN_TO_BR/main");
+  ASSERT_EQ(exit->list.size(), 4U);
+  EXPECT_EQ(exit->list[0]->cast<wasm::Drop>()->value, existingBranch);
   EXPECT_EQ(existingBranch->name, "existing");
   EXPECT_NE(existingBranch->condition, nullptr);
-  EXPECT_EQ(body->list[1]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, "existing");
-  EXPECT_EQ(body->list[2]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, "existing");
+  EXPECT_EQ(exit->list[1]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, exit->name);
+  EXPECT_EQ(exit->list[2]->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, exit->name);
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
@@ -346,8 +353,9 @@ TEST(ReturnToBrTest, BranchBlocksAndTailCallsPreserveAllOperands) {
 
   convertReturnsToBranches(m.get(), func);
 
-  auto *const exit = func->body->cast<wasm::Block>();
-  EXPECT_EQ(exit, body);
+  EXPECT_EQ(func->body, body);
+  ASSERT_EQ(body->list.size(), 1U);
+  auto *const exit = body->list.front()->cast<wasm::Block>();
   ASSERT_EQ(exit->list.size(), 3U);
   EXPECT_EQ(firstGuard->condition, firstCondition);
   EXPECT_EQ(secondGuard->condition, secondCondition);
@@ -361,10 +369,10 @@ TEST(ReturnToBrTest, BranchBlocksAndTailCallsPreserveAllOperands) {
   EXPECT_EQ(wrapped->name, "wrapped");
   EXPECT_EQ(firstBlock->list[1]->cast<wasm::Break>()->value, firstValue);
   EXPECT_EQ(wrapped->list[0]->cast<wasm::Break>()->value, secondValue);
-  EXPECT_EQ(body->list[2]->cast<wasm::Break>()->value, tailValue);
+  EXPECT_EQ(exit->list[2]->cast<wasm::Break>()->value, tailValue);
   EXPECT_EQ(firstBlock->list[1]->cast<wasm::Break>()->name, exit->name);
   EXPECT_EQ(wrapped->list[0]->cast<wasm::Break>()->name, exit->name);
-  EXPECT_EQ(body->list[2]->cast<wasm::Break>()->name, exit->name);
+  EXPECT_EQ(exit->list[2]->cast<wasm::Break>()->name, exit->name);
   CallCounter conditions{"condition"};
   conditions.walk(func->body);
   EXPECT_EQ(conditions.calls_, 2U);
@@ -431,7 +439,9 @@ TEST(ReturnToBrTest, NestedReturnAndImplicitExitAreCountedSeparately) {
 
   convertReturnsToBranches(m.get(), func);
 
-  auto *const exit = func->body->cast<wasm::Block>();
+  auto *const wrapper = func->body->cast<wasm::Block>();
+  ASSERT_EQ(wrapper->list.size(), 1U);
+  auto *const exit = wrapper->list.front()->cast<wasm::Block>();
   ASSERT_EQ(exit->list.size(), 2U);
   EXPECT_EQ(exit->list[0], body);
   EXPECT_EQ(body->cast<wasm::If>()->ifTrue->cast<wasm::If>()->ifTrue->cast<wasm::Break>()->name, exit->name);
@@ -581,10 +591,14 @@ TEST(ReturnToBrTest, ActualTailCallsStayTailCalls) {
 
   convertReturnsToBranches(m.get(), func);
 
-  EXPECT_EQ(body->list[2], tailCall);
+  EXPECT_EQ(func->body, body);
+  ASSERT_EQ(body->list.size(), 1U);
+  auto *const exit = body->list.front()->cast<wasm::Block>();
+  ASSERT_EQ(exit->list.size(), 3U);
+  EXPECT_EQ(exit->list[2], tailCall);
   EXPECT_TRUE(tailCall->isReturn);
-  EXPECT_TRUE(body->list[0]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
-  EXPECT_TRUE(body->list[1]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
+  EXPECT_TRUE(exit->list[0]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
+  EXPECT_TRUE(exit->list[1]->cast<wasm::If>()->ifTrue->is<wasm::Break>());
   EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 

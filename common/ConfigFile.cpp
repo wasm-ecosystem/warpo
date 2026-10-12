@@ -361,22 +361,35 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
 }
 
 TEST(TestConfigFile, TestParseFeatureOptions) {
-  EXPECT_FALSE(Features::defaultFeatures().has(Features::tailCall()));
+  Features const defaults = Features::defaultFeatures();
+  Features const optional = Features::tailCall() | Features::returnToBr();
+  EXPECT_EQ(defaults, Features::mutableGlobals() | Features::signExtension() | Features::nontrappingF2I() |
+                          Features::bulkMemory() | Features::multiValue());
+  EXPECT_EQ(Features::all(), defaults | optional);
+  EXPECT_FALSE(defaults.has(Features::tailCall()));
+  EXPECT_FALSE(defaults.has(Features::returnToBr()));
 
-  nlohmann::json const enableTailCall = nlohmann::json::parse(R"({
-    "enable": ["tail-call"]
+  nlohmann::json const enableOptionalFeatures = nlohmann::json::parse(R"({
+    "enable": ["tail-call", "return-to-br"]
   })");
-  FileConfigOptions const enabledConfig = parseFileConfigOptions(enableTailCall);
+  FileConfigOptions const enabledConfig = parseFileConfigOptions(enableOptionalFeatures);
   ASSERT_TRUE(enabledConfig.features.has_value());
-  EXPECT_TRUE(enabledConfig.features->has(Features::tailCall()));
+  EXPECT_EQ(*enabledConfig.features, defaults | optional);
 
-  nlohmann::json const enableAndDisableTailCall = nlohmann::json::parse(R"({
-    "enable": ["tail-call"],
-    "disable": ["tail-call"]
+  nlohmann::json const enableAndDisableOptionalFeatures = nlohmann::json::parse(R"({
+    "enable": ["tail-call", "return-to-br"],
+    "disable": ["tail-call", "return-to-br"]
   })");
-  FileConfigOptions const disabledConfig = parseFileConfigOptions(enableAndDisableTailCall);
+  FileConfigOptions const disabledConfig = parseFileConfigOptions(enableAndDisableOptionalFeatures);
   ASSERT_TRUE(disabledConfig.features.has_value());
-  EXPECT_FALSE(disabledConfig.features->has(Features::tailCall()));
+  EXPECT_EQ(*disabledConfig.features, defaults);
+
+  nlohmann::json const disableDefaultFeature = nlohmann::json::parse(R"({
+    "disable": ["sign-extension"]
+  })");
+  FileConfigOptions const restrictedConfig = parseFileConfigOptions(disableDefaultFeature);
+  ASSERT_TRUE(restrictedConfig.features.has_value());
+  EXPECT_EQ(*restrictedConfig.features, defaults & ~Features::signExtension());
 }
 
 TEST(TestConfigFile, TestMergeFileConfigOptions) {

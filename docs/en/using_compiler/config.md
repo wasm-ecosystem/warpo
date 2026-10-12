@@ -49,10 +49,11 @@ It supports two forms:
 }
 ```
 
-### WebAssembly Features
+### WebAssembly and Optimization Features
 
-WARPO manages WebAssembly features through a single feature set. `tail-call` is disabled by default and must be enabled
-when it is needed.
+WARPO manages WebAssembly capabilities and optional compiler optimizations through a single feature set.
+The default set explicitly enables `mutable-globals`, `sign-extension`, `nontrapping-f2i`, `bulk-memory`, and `multi-value`.
+`tail-call` and `return-to-br` are disabled by default and must be enabled explicitly.
 
 In `asconfig.json`, use `enable` and `disable` to control features:
 
@@ -73,6 +74,7 @@ Supported feature names are:
 - `bulk-memory`
 - `multi-value`
 - `tail-call`
+- [`return-to-br`](#return-to-br) (compiler optimization, not a WebAssembly proposal)
 
 Equivalent CLI usage:
 
@@ -81,6 +83,46 @@ warpo assembly/index.ts -o build/app.wasm --enable-feature tail-call --disable-f
 ```
 
 When the same feature appears in both options, `disable` takes precedence.
+
+### `return-to-br`
+
+<p style="display: flex; gap: 10px;">
+  <img src="/version/nightly.svg" alt="nightly" />
+  <img src="/stability/experimental.svg" alt="experimental" />
+</p>
+
+Enables the `ReturnToBr` pass during optimized GC lowering. It replaces explicit `return` expressions with branches
+to a shared exit block so that multiple return paths can share one shadow-stack restoration epilogue instead of
+duplicating it at each return. This uses existing WebAssembly `block` and `br` instructions and requires no new
+WebAssembly runtime capability.
+
+Enable it in `asconfig.json`:
+
+```json
+{
+  "options": {
+    "enable": ["return-to-br"]
+  }
+}
+```
+
+Equivalent CLI usage:
+
+```bash
+warpo assembly/index.ts -o build/app.wasm --enable-feature return-to-br
+```
+
+The pass counts reachable exits, including implicit fallthrough, and only transforms functions with more than one
+exit and at least one explicit return. Statements preceding the first control-flow split remain outside the exit
+block. The remaining suffix is wrapped in a new block; returns branch to that block's exit, carrying their original
+values. Reachable fallthrough also branches to the exit, carrying the tail value for non-void functions. Return-value
+evaluation and side effects are preserved; later passes can remove redundant blocks.
+
+In the GC pipeline, this transformation only runs when a function needs a nonzero shadow-stack frame and uses the
+default whole-function prologue/epilogue placement. It does not run on paths using shrink-wrapped placement or the
+fast GC lowering path. Actual tail-call instructions are not rewritten.
+
+Use `"disable": ["return-to-br"]` or `--disable-feature return-to-br` to turn it off.
 
 ### `host`
 

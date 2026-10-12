@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "pass.h"
+#include <wasm.h>
 
 namespace warpo::passes {
 

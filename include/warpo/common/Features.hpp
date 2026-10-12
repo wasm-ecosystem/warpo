@@ -20,7 +20,8 @@ class Features {
     MultiValue = 1U << 4U,
     TailCall = 1U << 5U,
     ReturnToBr = 1U << 6U,
-    All = static_cast<uint32_t>(-1),
+    Default = MutableGlobals | SignExtension | NontrappingF2I | BulkMemory | MultiValue,
+    All = (1U << 7U) - 1U,
   };
 
   FeaturesEnum features;
@@ -32,7 +33,7 @@ public:
   static Features fromCLI();
   constexpr static Features none() { return Features{FeaturesEnum::None}; }
   constexpr static Features all() { return Features{FeaturesEnum::All}; }
-  static Features defaultFeatures() { return all() & ~tailCall() & ~returnToBr(); }
+  constexpr static Features defaultFeatures() { return Features{FeaturesEnum::Default}; }
   constexpr static Features mutableGlobals() { return Features{FeaturesEnum::MutableGlobals}; }
   constexpr static Features signExtension() { return Features{FeaturesEnum::SignExtension}; }
   constexpr static Features nontrappingF2I() { return Features{FeaturesEnum::NontrappingF2I}; }
