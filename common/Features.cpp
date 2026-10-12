@@ -23,6 +23,8 @@ Features Features::fromString(std::vector<std::string> const &featureStrs) {
       res = res | Features::multiValue();
     } else if (featureStr == "tail-call") {
       res = res | Features::tailCall();
+    } else if (featureStr == "return-to-br") {
+      res = res | Features::returnToBr();
     } else {
       throw std::runtime_error("unknown feature: " + featureStr);
     }

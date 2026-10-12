@@ -9268,7 +9268,7 @@
     local.get $7
     i32.gt_s
     if
-     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$58 (result i32)
+     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$59 (result i32)
       local.get $0
       local.get $2
       i32.const 1
@@ -9291,7 +9291,7 @@
        i32.or
        i32.store16
        i32.const 1
-       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$58
+       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$59
       end
       local.get $8
       local.get $4
@@ -9328,7 +9328,7 @@
      br $for-loop|0
     end
    end
-   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$59 (result i32)
+   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$60 (result i32)
     local.get $0
     local.get $2
     i32.const 1
@@ -9351,7 +9351,7 @@
      i32.or
      i32.store16
      i32.const 1
-     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$59
+     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$60
     end
     local.get $3
     local.get $1
@@ -22018,7 +22018,7 @@
  )
  (func $byn$mgfn-shared$~lib/util/number/itoa_buffered<u16> (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$73 (result i32)
+  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$74 (result i32)
    local.get $1
    local.get $2
    i32.and
@@ -22032,7 +22032,7 @@
     i32.or
     i32.store16
     i32.const 1
-    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$73
+    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$74
    end
    local.get $1
    local.get $2
