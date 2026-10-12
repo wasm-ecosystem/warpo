@@ -1755,6 +1755,26 @@ interface ArrayLike<T> {
   length: i32;
 }
 
+interface ReadonlyArray<T> extends Iterable<T> {
+  [key: number]: T;
+  readonly length: i32;
+  at(index: i32): T;
+  findIndex(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): i32;
+  findLastIndex(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): i32;
+  includes(searchElement: T, fromIndex?: i32): bool;
+  indexOf(searchElement: T, fromIndex?: i32): i32;
+  lastIndexOf(searchElement: T, fromIndex?: i32): i32;
+  forEach(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => void): void;
+  filter(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): Array<T>;
+  every(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): bool;
+  some(callbackfn: (value: T, index: i32, array: ReadonlyArray<T>) => bool): bool;
+  concat(other: Array<T>): Array<T>;
+  slice(from?: i32, to?: i32): Array<T>;
+  join(separator?: string): string;
+  flat(): T;
+  toString(): string;
+}
+
 /** Interface for a typed view on an array buffer. */
 interface ArrayBufferView {
   /** The {@link ArrayBuffer} referenced by this view. */
@@ -1890,7 +1910,7 @@ declare class Float64Array extends TypedArray<f64> {
 }
 
 /** Class representing a sequence of values of type `T`. */
-declare class Array<T> {
+declare class Array<T> implements ReadonlyArray<T> {
   /** Tests if a value is an array. */
   static isArray<U>(value: any): value is Array<any>;
 
@@ -2057,8 +2077,26 @@ declare namespace String {
   }
 }
 
-declare class TemplateStringsArray extends Array<string> {
-  readonly raw: string[];
+declare class TemplateStringsArray implements ReadonlyArray<string> {
+  [key: number]: string;
+  readonly raw: ReadonlyArray<string>;
+  readonly length: i32;
+  [Symbol.iterator](): Iterator<string>;
+  at(index: i32): string;
+  findIndex(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): i32;
+  findLastIndex(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): i32;
+  includes(searchElement: string, fromIndex?: i32): bool;
+  indexOf(searchElement: string, fromIndex?: i32): i32;
+  lastIndexOf(searchElement: string, fromIndex?: i32): i32;
+  forEach(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => void): void;
+  filter(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): Array<string>;
+  every(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): bool;
+  some(callbackfn: (value: string, index: i32, array: ReadonlyArray<string>) => bool): bool;
+  concat(other: Array<string>): Array<string>;
+  slice(from?: i32, to?: i32): Array<string>;
+  join(separator?: string): string;
+  flat(): string;
+  toString(): string;
 }
 
 declare class Object {

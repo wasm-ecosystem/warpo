@@ -69,76 +69,58 @@ struct Scanner : public wasm::PostWalker<Scanner> {
   }
 };
 
-wasm::Name getBlockName(size_t id) { return fmt::format("CONDITION_RETURN#{}", id); }
+wasm::Name getBlockName(std::string_view funcName) { return fmt::format("~CONDITION_RETURN/{}", funcName); }
 
 wasm::Name getValidBlockName(wasm::Function *func) {
-  struct Visitor final : public wasm::PostWalker<Visitor> {
-    wasm::Name name;
-    bool found = false;
-    explicit Visitor(wasm::Name const &name) : name(name) {}
-    void visitBlock(wasm::Block *expr) {
-      if (expr->name == name) {
-        found = true;
-      }
-    }
-    void visitLoop(wasm::Loop *expr) {
-      if (expr->name == name) {
-        found = true;
-      }
-    }
-  };
   if (auto *const block = func->body->dynCast<wasm::Block>()) {
     if (!block->name.isNull())
       return block->name;
   }
+  return getBlockName(func->name.view());
+}
 
-  size_t id = 0;
-  while (true) {
-    wasm::Name name = getBlockName(id);
-    Visitor visitor(name);
-    visitor.visit(func->body);
-    if (!visitor.found)
-      return name;
-    id++;
+} // namespace
+
+void optimizeConditionalReturns(wasm::Module *m, wasm::Function *func) {
+  // to simplify the implement, we only handle functions return void
+  if (func->getResults() != wasm::Type::none)
+    return;
+  Scanner scanner{};
+  scanner.walk(func->body);
+
+  if (!scanner.targetIfs_.empty()) {
+    if (support::isDebug(PASS_NAME, func->name.view())) {
+      fmt::println("[" PASS_NAME
+                   "] fn '{}' has {} (if (cond) (return)) patterns which can be converted to (br_if (cond))",
+                   func->name.view(), scanner.targetIfs_.size());
+    }
+    wasm::Builder b{*m};
+    wasm::Name const targetName = getValidBlockName(func);
+    for (wasm::Expression **const expr : scanner.targetIfs_) {
+      assert((*expr)->is<wasm::If>());
+      *expr = b.makeBreak(targetName, nullptr, (*expr)->cast<wasm::If>()->condition);
+    }
+    // func->body could be IfExpr, we should update it at the end.
+    wasm::Block *targetBlock;
+    if (auto *const block = func->body->dynCast<wasm::Block>()) {
+      targetBlock = block;
+    } else {
+      targetBlock = b.makeBlock(func->body);
+    }
+    targetBlock->name = targetName;
+
+    func->body = targetBlock;
   }
 }
+
+namespace {
 
 struct ConditionalReturnOptimizer : public wasm::Pass {
   std::unique_ptr<Pass> create() override { return std::make_unique<ConditionalReturnOptimizer>(); }
   bool isFunctionParallel() override { return true; }
   bool modifiesBinaryenIR() override { return true; }
 
-  void runOnFunction(wasm::Module *m, wasm::Function *func) override {
-    // to simplify the implement, we only handle functions return void
-    if (func->getResults() != wasm::Type::none)
-      return;
-    Scanner scanner{};
-    scanner.walk(func->body);
-
-    if (!scanner.targetIfs_.empty()) {
-      if (support::isDebug(PASS_NAME, func->name.view())) {
-        fmt::println("[" PASS_NAME
-                     "] fn '{}' has {} (if (cond) (return)) patterns which can be converted to (br_if (cond))",
-                     func->name.view(), scanner.targetIfs_.size());
-      }
-      wasm::Builder b{*m};
-      wasm::Name const targetName = getValidBlockName(func);
-      for (wasm::Expression **const expr : scanner.targetIfs_) {
-        assert((*expr)->is<wasm::If>());
-        *expr = b.makeBreak(targetName, nullptr, (*expr)->cast<wasm::If>()->condition);
-      }
-      // func->body could be IfExpr, we should update it at the end.
-      wasm::Block *targetBlock;
-      if (auto *const block = func->body->dynCast<wasm::Block>()) {
-        targetBlock = block;
-      } else {
-        targetBlock = b.makeBlock(func->body);
-      }
-      targetBlock->name = targetName;
-
-      func->body = targetBlock;
-    }
-  }
+  void runOnFunction(wasm::Module *m, wasm::Function *func) override { optimizeConditionalReturns(m, func); }
 };
 
 } // namespace
@@ -177,11 +159,11 @@ TEST(ConditionalReturnTest, FunctionBodyIsBlock) {
 
   ASSERT_TRUE(func->body->is<wasm::Block>());
   wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, getBlockName(0U));
+  EXPECT_EQ(block->name, getBlockName(func->name.view()));
   ASSERT_EQ(block->list.size(), 2U);
   ASSERT_TRUE(block->list[0]->is<wasm::Break>());
   wasm::Break *const break_ = block->list[0]->cast<wasm::Break>();
-  EXPECT_EQ(break_->name, getBlockName(0U));
+  EXPECT_EQ(break_->name, getBlockName(func->name.view()));
   EXPECT_EQ(break_->condition, condition);
 }
 
@@ -240,11 +222,11 @@ TEST(ConditionalReturnTest, FunctionBodyIsTarget) {
 
   ASSERT_TRUE(func->body->is<wasm::Block>());
   wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, getBlockName(0U));
+  EXPECT_EQ(block->name, getBlockName(func->name.view()));
   ASSERT_EQ(block->list.size(), 1U);
   ASSERT_TRUE(block->list[0]->is<wasm::Break>());
   wasm::Break *const break_ = block->list[0]->cast<wasm::Break>();
-  EXPECT_EQ(break_->name, getBlockName(0U));
+  EXPECT_EQ(break_->name, getBlockName(func->name.view()));
   EXPECT_EQ(break_->condition, condition);
 }
 
@@ -277,17 +259,101 @@ TEST(ConditionalReturnTest, IfIsInside) {
   runner.runOnFunction(func);
 
   wasm::Block *const block = func->body->cast<wasm::Block>();
-  EXPECT_EQ(block->name, getBlockName(0U));
+  EXPECT_EQ(block->name, getBlockName(func->name.view()));
 
   wasm::Expression *ifTrue = block->list[0]->cast<wasm::If>()->ifTrue;
   ASSERT_TRUE(ifTrue->is<wasm::Break>());
-  EXPECT_EQ(ifTrue->cast<wasm::Break>()->name, getBlockName(0U));
+  EXPECT_EQ(ifTrue->cast<wasm::Break>()->name, getBlockName(func->name.view()));
   EXPECT_EQ(ifTrue->cast<wasm::Break>()->condition, conditionInTrue);
 
   wasm::Expression *ifFalse = block->list[0]->cast<wasm::If>()->ifFalse;
   ASSERT_TRUE(ifFalse->is<wasm::Break>());
-  EXPECT_EQ(ifFalse->cast<wasm::Break>()->name, getBlockName(0U));
+  EXPECT_EQ(ifFalse->cast<wasm::Break>()->name, getBlockName(func->name.view()));
   EXPECT_EQ(ifFalse->cast<wasm::Break>()->condition, conditionInFalse);
+}
+
+TEST(ConditionalReturnTest, MultipleReturnsTargetSameBlock) {
+  auto m = loadWat(R"(
+    (module
+      (func $main (param i32 i32 i32)
+        local.get 0
+        if
+          return
+        end
+        local.get 1
+        if
+          return
+        end
+        local.get 2
+        if
+          return
+        end
+        i32.const 42
+        drop
+      )
+    )
+  )");
+  wasm::Function *const func = m->getFunction("main");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
+  runner.runOnFunction(func);
+
+  ASSERT_TRUE(func->body->is<wasm::Block>());
+  wasm::Block *const block = func->body->cast<wasm::Block>();
+  EXPECT_EQ(block->name, getBlockName(func->name.view()));
+  ASSERT_EQ(block->list.size(), 4U);
+
+  for (size_t i = 0; i < 3; ++i) {
+    ASSERT_TRUE(block->list[i]->is<wasm::Break>());
+    wasm::Break *const break_ = block->list[i]->cast<wasm::Break>();
+    EXPECT_EQ(break_->name, getBlockName(func->name.view()));
+    ASSERT_TRUE(break_->condition != nullptr);
+  }
+  ASSERT_TRUE(block->list[3]->is<wasm::Drop>());
+}
+
+TEST(ConditionalReturnTest, MultipleReturnsInNestedBlocksTargetSameBlock) {
+  auto m = loadWat(R"(
+    (module
+      (func $main (param i32 i32)
+        block
+          local.get 0
+          if
+            return
+          end
+        end
+        block
+          local.get 1
+          if
+            return
+          end
+        end
+      )
+    )
+  )");
+  wasm::Function *const func = m->getFunction("main");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>(createConditionalReturnPass()));
+  runner.runOnFunction(func);
+
+  ASSERT_TRUE(func->body->is<wasm::Block>());
+  wasm::Block *const outerBlock = func->body->cast<wasm::Block>();
+  EXPECT_EQ(outerBlock->name, getBlockName(func->name.view()));
+  ASSERT_EQ(outerBlock->list.size(), 2U);
+
+  ASSERT_TRUE(outerBlock->list[0]->is<wasm::Block>());
+  wasm::Block *const firstInner = outerBlock->list[0]->cast<wasm::Block>();
+  ASSERT_EQ(firstInner->list.size(), 1U);
+  ASSERT_TRUE(firstInner->list[0]->is<wasm::Break>());
+  EXPECT_EQ(firstInner->list[0]->cast<wasm::Break>()->name, getBlockName(func->name.view()));
+
+  ASSERT_TRUE(outerBlock->list[1]->is<wasm::Block>());
+  wasm::Block *const secondInner = outerBlock->list[1]->cast<wasm::Block>();
+  ASSERT_EQ(secondInner->list.size(), 1U);
+  ASSERT_TRUE(secondInner->list[0]->is<wasm::Break>());
+  EXPECT_EQ(secondInner->list[0]->cast<wasm::Break>()->name, getBlockName(func->name.view()));
 }
 
 } // namespace warpo::passes::ut

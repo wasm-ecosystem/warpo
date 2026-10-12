@@ -1,0 +1,5 @@
+{
+  "stderr": [
+    "TS2322: Type '~lib/templatestringsarray/TemplateStringsArray' is not assignable to type '~lib/string/String'."
+  ]
+}

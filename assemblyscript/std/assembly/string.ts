@@ -207,10 +207,10 @@ class StringIterator implements Iterator<string> {
 
   indexOf(search: String, start: i32 = 0): i32 {
     let searchLen = <isize>search.length;
-    if (!searchLen) return 0;
     let len = <isize>this.length;
-    if (!len) return -1;
     let searchStart = min(max(<isize>start, 0), len);
+    if (!searchLen) return <i32>searchStart;
+    if (!len) return -1;
     for (len -= searchLen; searchStart <= len; ++searchStart) {
       // @ts-ignore: string <-> String
       if (!compareImpl(this, searchStart, search, 0, searchLen)) return <i32>searchStart;
@@ -456,8 +456,9 @@ class StringIterator implements Iterator<string> {
     while (~(next = <isize>this.indexOf(search, <i32>prev))) {
       if (!out) out = changetype<String>(__new(thisLen << 1, idof<String>()));
       let chunk = next - prev;
-      if (offset + chunk + replaceLen > outSize) {
-        outSize <<= 1;
+      let requiredSize = offset + chunk + replaceLen;
+      if (requiredSize > outSize) {
+        outSize = max(outSize << 1, requiredSize);
         out = changetype<String>(__renew(changetype<usize>(out), outSize << 1));
       }
       memory.copy(changetype<usize>(out) + (offset << 1), changetype<usize>(this) + (prev << 1), chunk << 1);
@@ -468,8 +469,9 @@ class StringIterator implements Iterator<string> {
     }
     if (out) {
       let rest = thisLen - prev;
-      if (offset + rest > outSize) {
-        outSize <<= 1;
+      let requiredSize = offset + rest;
+      if (requiredSize > outSize) {
+        outSize = max(outSize << 1, requiredSize);
         out = changetype<String>(__renew(changetype<usize>(out), outSize << 1));
       }
       if (rest) {
@@ -885,8 +887,4 @@ export namespace String {
       return str;
     }
   }
-}
-
-export class TemplateStringsArray extends Array<string> {
-  readonly raw: string[];
 }

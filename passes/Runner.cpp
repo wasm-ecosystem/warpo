@@ -29,7 +29,8 @@
 #include "InstrSimplifier.hpp"
 #include "MergeDataSection.hpp"
 #include "Runner.hpp"
-#include "TailCall.hpp"
+#include "UnusedFieldStoreEliminating.hpp"
+#include "UnusedNewEliminating.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
 #include "parser/wat-parser.h"
@@ -39,6 +40,7 @@
 #include "warpo/common/DebugLevel.hpp"
 #include "warpo/common/Features.hpp"
 #include "warpo/common/OptLevel.hpp"
+#include "warpo/passes/KnownImportSemantics.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Statistics.hpp"
@@ -84,7 +86,25 @@ static void lowering(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Lowering};
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
+      // A known-removable import can be eliminated when its result is unused, but
+      // the same fact is not inferred for a defined helper automatically. For
+      // example, without generate-global-effects, Binaryen conservatively keeps
+      // this direct call even when $foo has no side effects:
+      //
+      //   (drop (call $foo))
+      //
+      // KnownImportSemantics annotates known imports, while
+      // generate-global-effects derives and propagates the corresponding fact for
+      // defined functions. Both are needed to remove an unused call chain.
+      passRunner->add(std::unique_ptr<wasm::Pass>{createKnownImportSemanticsPass()});
+      passRunner->add("generate-global-effects");
+    }
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
+      passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedFieldStoreEliminatingPass(&m.variableInfo_)});
+      passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedNewEliminatingPass()});
+    }
     passRunner->add(std::unique_ptr<wasm::Pass>{createConstructorNewOutliningPass()});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
       passRunner->add(std::make_unique<closure::OptLower>(&m.variableInfo_));
@@ -199,9 +219,15 @@ static void optimize(AsModule const &m, Config const &config) {
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createMergeDataSectionPass()});
     if (config.tailCall) {
-      passRunner->add("vacuum");
-      passRunner->add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
+      passRunner->add("tail-call");
     }
+
+    // some new of unused objects can be eliminated again because above passes may provide new opportunities
+    passRunner->addDefaultOptimizationPasses();
+    passRunner->add(std::unique_ptr<wasm::Pass>{createUnusedNewEliminatingPass()});
+
+    // Run the default Binaryen passes again at the end
+    passRunner->addDefaultOptimizationPasses();
     passRunner->run();
   }
   ensureValidate(*m.get());

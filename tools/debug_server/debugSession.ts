@@ -58,6 +58,7 @@ interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArgumen
   entryFunctionName?: string;
   cwd?: string;
   warpoPath?: string;
+  testNamePattern?: string;
   debugSessionLogging?: boolean;
   debugSessionLogFile?: string;
   args?: number[];
@@ -424,6 +425,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
                 wasmFilePath,
                 cwd,
                 warpoPath: args.warpoPath,
+                testNamePattern: args.testNamePattern,
               }
             : {
                 wasmFilePath,

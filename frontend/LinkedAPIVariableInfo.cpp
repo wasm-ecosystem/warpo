@@ -26,6 +26,11 @@ void createClass(uint32_t const classNamePtr, uint32_t const rtid, vb::WasmModul
   pCompiler->asModule_.variableInfo_.createClass(className, rtid);
 }
 
+void createInterface(uint32_t const interfaceNamePtr, vb::WasmModule const *const ctx) {
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.createInterface(WarpRunner::getString(ctx, interfaceNamePtr));
+}
+
 void addBaseClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, vb::WasmModule const *const ctx) {
   std::string const className = WarpRunner::getString(ctx, classNamePtr);
   std::string parentClassName;
@@ -36,6 +41,25 @@ void addBaseClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, vb:
   }
 }
 
+void addBaseInterface(uint32_t const interfaceNamePtr, uint32_t const parentNamePtr, vb::WasmModule const *const ctx) {
+  std::string const interfaceName = WarpRunner::getString(ctx, interfaceNamePtr);
+  std::string const parentInterfaceName = WarpRunner::getString(ctx, parentNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addBaseInterface(interfaceName, parentInterfaceName);
+}
+
+void addInterface(uint32_t const classNamePtr, uint32_t const interfaceNamePtr, vb::WasmModule const *const ctx) {
+  std::string const className = WarpRunner::getString(ctx, classNamePtr);
+  std::string const interfaceName = WarpRunner::getString(ctx, interfaceNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addInterface(className, interfaceName);
+}
+
+void addMemoryExposureType(uint32_t const typeNamePtr, vb::WasmModule const *const ctx) {
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addMemoryExposureType(WarpRunner::getString(ctx, typeNamePtr));
+}
+
 void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
               uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx) {
   std::string const className = WarpRunner::getString(ctx, classNamePtr);
@@ -43,6 +67,17 @@ void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t
   std::string typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addField(className, std::move(fieldName), std::move(typeName), offset, nullable);
+}
+
+void addFieldDeclaration(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
+                         uint32_t const offset, uint32_t const nullable, uint32_t const redeclared,
+                         vb::WasmModule const *const ctx) {
+  std::string const className = WarpRunner::getString(ctx, classNamePtr);
+  std::string fieldName = WarpRunner::getString(ctx, fieldNamePtr);
+  std::string typeName = WarpRunner::getString(ctx, typeNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addFieldDeclaration(className, std::move(fieldName), std::move(typeName), offset,
+                                                         nullable, redeclared != 0);
 }
 
 void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNamePtr, vb::WasmModule const *const ctx) {
@@ -140,8 +175,13 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
   return std::vector<vb::NativeSymbol>{
       STATIC_LINK("warpo", "_WarpoCreateBaseType", createBaseType),
       STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
+      STATIC_LINK("warpo", "_WarpoCreateInterface", createInterface),
       STATIC_LINK("warpo", "_WarpoAddBaseClass", addBaseClass),
+      STATIC_LINK("warpo", "_WarpoAddBaseInterface", addBaseInterface),
+      STATIC_LINK("warpo", "_WarpoAddInterface", addInterface),
+      STATIC_LINK("warpo", "_WarpoAddMemoryExposureType", addMemoryExposureType),
       STATIC_LINK("warpo", "_WarpoAddField", addField),
+      STATIC_LINK("warpo", "_WarpoAddFieldDeclaration", addFieldDeclaration),
       STATIC_LINK("warpo", "_WarpoAddTemplateType", addTemplateType),
       STATIC_LINK("warpo", "_WarpoAddGlobal", addGlobal),
       STATIC_LINK("warpo", "_WarpoAddSubProgram", addSubProgram),

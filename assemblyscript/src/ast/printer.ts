@@ -580,10 +580,6 @@ export class ASTPrinter extends BaseVisitor {
     this.visitNode(node.operand);
   }
 
-  visitCompiledExpression(node: Expression): void {
-    assert(false);
-  }
-
   // statements
 
   visitNodeAndTerminate(node: Node): void {
@@ -1320,9 +1316,20 @@ export class ASTPrinter extends BaseVisitor {
   }
 
   visitVariableDeclaration(node: VariableDeclaration): void {
-    this.visitIdentifierExpression(node.name);
     let type = node.type;
     let sb = this.sb;
+    let name = node.name;
+    if (name) {
+      this.visitIdentifierExpression(name);
+    } else {
+      let pattern = assert(node.arrayBindingPattern);
+      sb.push("[");
+      for (let i = 0, k = pattern.length; i < k; ++i) {
+        if (i) sb.push(", ");
+        this.visitIdentifierExpression(pattern[i]);
+      }
+      sb.push("]");
+    }
     if (node.flags & CommonFlags.DefinitelyAssigned) {
       sb.push("!");
     }

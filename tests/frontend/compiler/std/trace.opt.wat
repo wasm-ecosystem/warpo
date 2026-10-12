@@ -89,7 +89,7 @@
    f64.const 3.3
    f64.const 4.4
    f64.const 5.5
-   call $~lib/builtins/trace
+   return_call $~lib/builtins/trace
   end
  )
 )

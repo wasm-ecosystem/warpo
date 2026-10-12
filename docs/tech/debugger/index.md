@@ -31,11 +31,14 @@ The debugger starts the existing Warpo test runner in a Node process with the in
   "type": "warpo",
   "request": "launch",
   "name": "Warpo Debug Unittest",
-  "sessionMode": "unittest"
+  "sessionMode": "unittest",
+  "testNamePattern": "runs main"
 }
 ```
 
 The debugger starts the Warpo CLI with `node dist/warpo.js test` under Node inspection. It uses the workspace folder as the test runner's working directory and loads debug metadata from `build_coverage/test.instrumented.wasm`.
+
+Set `testNamePattern` to a regular expression to debug only matching test cases.
 
 Set `warpoPath` to use a Warpo CLI entry script outside `node_modules`; relative paths are resolved from the workspace folder.
 

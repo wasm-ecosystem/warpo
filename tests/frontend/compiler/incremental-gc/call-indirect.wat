@@ -3011,6 +3011,11 @@
    (local.get $this)
   )
  )
+ (func $incremental-gc/call-indirect/B#get:v (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
  (func $incremental-gc/call-indirect/foo (param $a i32) (result i32)
   (local $b i32)
   (call $~lib/rt/itcms/__collect)
@@ -3027,9 +3032,16 @@
    )
   )
   (return
-   (call $incremental-gc/call-indirect/A#get:v
-    (call $~lib/rt/__tmptostack
-     (local.get $a)
+   (i32.add
+    (call $incremental-gc/call-indirect/A#get:v
+     (call $~lib/rt/__tmptostack
+      (local.get $a)
+     )
+    )
+    (call $incremental-gc/call-indirect/B#get:v
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
     )
    )
   )
@@ -3118,7 +3130,7 @@
    (i32.eqz
     (i32.eq
      (call $incremental-gc/call-indirect/issue_2923)
-     (i32.const 10)
+     (i32.const 30)
     )
    )
    (then

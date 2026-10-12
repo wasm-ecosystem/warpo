@@ -9,3 +9,7 @@ class AClass {
 }
 
 var aClass = new AClass(3);
+
+assert(AClass.aStaticField == 0);
+assert(aClass.aField == 2);
+assert(aClass.anotherField == 3.0);

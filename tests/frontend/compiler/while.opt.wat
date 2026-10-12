@@ -8,7 +8,6 @@
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $while/ran (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -135,7 +134,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$91
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$90
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -159,7 +158,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$91
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$90
      end
      local.get $0
      i32.load offset=8
@@ -631,7 +630,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -706,7 +705,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -1151,7 +1150,7 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$67
     i32.const 2048
     local.set $0
     loop $do-loop|0
@@ -1168,7 +1167,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$67
      end
      local.get $0
      i32.const 0
@@ -1375,8 +1374,6 @@
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  i32.const 0
-  global.set $while/ran
   i32.const 10
   local.set $0
   loop $while-continue|0
@@ -1413,10 +1410,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
   i32.const 0
   local.set $1
   i32.const 10
@@ -1500,10 +1493,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
   i32.const 0
   local.set $2
   i32.const 1
@@ -1547,10 +1536,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
   i32.const 0
   local.set $0
   loop $while-continue|02
@@ -1562,19 +1547,6 @@
    i32.ne
    br_if $while-continue|02
   end
-  local.get $0
-  i32.const 10
-  i32.ne
-  if
-   i32.const 0
-   i32.const 32
-   i32.const 58
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 1
-  global.set $while/ran
   i32.const 0
   local.set $0
   loop $while-continue|03 (result i32)
@@ -1597,20 +1569,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  global.set $while/ran
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
   i32.const 10
   local.set $0
   loop $while-continue|04
@@ -1632,10 +1590,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
   i32.const 10
   local.set $0
   i32.const 10
@@ -1678,10 +1632,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
   memory.size
   i32.const 16
   i32.shl
@@ -1775,14 +1725,10 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  i32.const 0
-  global.set $while/ran
   i32.const 0
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -1842,44 +1788,10 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  i32.const 0
-  global.set $while/ran
-  i32.const 0
-  local.set $0
-  loop $while-continue|07
-   local.get $0
-   i32.const 1
-   i32.add
-   local.tee $0
-   i32.const 0
-   i32.le_s
-   br_if $while-continue|07
-  end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
-  i32.const 0
-  local.set $0
-  loop $while-continue|08
-   local.get $0
-   i32.const 1
-   i32.add
-   local.tee $0
-   i32.const 0
-   i32.le_s
-   br_if $while-continue|08
-  end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
   i32.const 0
   local.set $0
   loop $do-loop|0
@@ -1902,8 +1814,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  global.set $while/ran
   global.get $~lib/rt/itcms/state
   i32.const 0
   i32.gt_s

@@ -1,0 +1,8 @@
+{
+  "stderr": [
+    "TS2469: The '++' operator cannot be applied to type",
+    "trace++;",
+    "TS2469: The '++' operator cannot be applied to type",
+    "abort++;"
+  ]
+}

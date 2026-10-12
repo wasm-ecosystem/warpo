@@ -668,7 +668,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -743,7 +743,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -999,35 +999,14 @@
         i32.const 0
         global.set $~lib/rt/itcms/visitCount
         call $~lib/rt/itcms/visitRoots
-        global.get $~lib/rt/itcms/toSpace
         global.get $~lib/rt/itcms/iter
         i32.load offset=4
         i32.const -4
         i32.and
+        local.tee $1
+        global.get $~lib/rt/itcms/toSpace
         i32.eq
         if
-         i32.const 33220
-         local.set $1
-         loop $while-continue|0
-          local.get $1
-          i32.const 33220
-          i32.lt_u
-          if
-           local.get $1
-           i32.load
-           call $~lib/rt/itcms/__visit
-           local.get $1
-           i32.const 4
-           i32.add
-           local.set $1
-           br $while-continue|0
-          end
-         end
-         global.get $~lib/rt/itcms/iter
-         i32.load offset=4
-         i32.const -4
-         i32.and
-         local.set $1
          loop $while-continue|2
           local.get $1
           global.get $~lib/rt/itcms/toSpace

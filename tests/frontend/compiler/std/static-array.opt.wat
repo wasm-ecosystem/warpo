@@ -29,15 +29,15 @@
  (data $2 (i32.const 92) ",")
  (data $2.1 (i32.const 104) "\01\00\00\00\10\00\00\00\03\00\00\00\00\00\00\00\04")
  (data $3 (i32.const 140) ",")
- (data $3.1 (i32.const 152) "\06\00\00\00\10\00\00\00p\00\00\00p\00\00\00\10\00\00\00\02")
+ (data $3.1 (i32.const 152) "\05\00\00\00\10\00\00\00p\00\00\00p\00\00\00\10\00\00\00\02")
  (data $4 (i32.const 188) "\1c")
  (data $4.1 (i32.const 200) "\01\00\00\00\08\00\00\00\00\00\c0?\00\00 @\00\00\00\00,")
- (data $5.1 (i32.const 232) "\08\00\00\00\10\00\00\00\d0\00\00\00\d0\00\00\00\08\00\00\00\02")
+ (data $5.1 (i32.const 232) "\06\00\00\00\10\00\00\00\d0\00\00\00\d0\00\00\00\08\00\00\00\02")
  (data $6 (i32.const 268) ",")
  (data $6.1 (i32.const 280) "\01\00\00\00\10")
  (data $6.2 (i32.const 294) "\f4?\00\00\00\00\00\00\02@")
  (data $7 (i32.const 316) ",")
- (data $7.1 (i32.const 328) "\n\00\00\00\10\00\00\00 \01\00\00 \01\00\00\10\00\00\00\02")
+ (data $7.1 (i32.const 328) "\07\00\00\00\10\00\00\00 \01\00\00 \01\00\00\10\00\00\00\02")
  (data $8 (i32.const 364) "<")
  (data $8.1 (i32.const 376) "\02\00\00\00&\00\00\00s\00t\00d\00/\00s\00t\00a\00t\00i\00c\00-\00a\00r\00r\00a\00y\00.\00t\00s")
  (data $9 (i32.const 428) "<")
@@ -51,7 +51,7 @@
  (data $16.1 (i32.const 792) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
  (data $18 (i32.const 860) "<")
  (data $18.1 (i32.const 872) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
- (data $19 (i32.const 928) "\0c\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\02\n\00\00 \00\00\00\02\19\00\00 \00\00\00\02\1a\00\00 ")
+ (data $19 (i32.const 928) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\02\n\00\00\02\19\00\00\02\1a")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/array/Array<i32>#__get (param $0 i32) (result i32)
@@ -62,7 +62,7 @@
   if
    i32.const 448
    i32.const 512
-   i32.const 123
+   i32.const 124
    i32.const 42
    call $~lib/builtins/abort
    unreachable
@@ -183,7 +183,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33748
+    i32.const 33732
     i32.lt_u
     i32.and
     i32.eqz
@@ -683,7 +683,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -758,7 +758,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -813,10 +813,10 @@
   if
    unreachable
   end
-  i32.const 33760
+  i32.const 33744
   i32.const 0
   i32.store
-  i32.const 35328
+  i32.const 35312
   i32.const 0
   i32.store
   i32.const 0
@@ -829,7 +829,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33760
+    i32.const 33744
     i32.add
     i32.const 0
     i32.store offset=4
@@ -847,7 +847,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33760
+      i32.const 33744
       i32.add
       i32.const 0
       i32.store offset=96
@@ -865,14 +865,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33760
-  i32.const 35332
+  i32.const 33744
+  i32.const 35316
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33760
+  i32.const 33744
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1027,7 +1027,7 @@
    if
     i32.const 560
     i32.const 512
-    i32.const 30
+    i32.const 31
     i32.const 48
     call $~lib/builtins/abort
     unreachable
@@ -1163,35 +1163,14 @@
           i32.const 0
           global.set $~lib/rt/itcms/visitCount
           call $~lib/rt/itcms/visitRoots
-          global.get $~lib/rt/itcms/toSpace
           global.get $~lib/rt/itcms/iter
           i32.load offset=4
           i32.const -4
           i32.and
+          local.tee $1
+          global.get $~lib/rt/itcms/toSpace
           i32.eq
           if
-           i32.const 33748
-           local.set $1
-           loop $while-continue|0
-            local.get $1
-            i32.const 33748
-            i32.lt_u
-            if
-             local.get $1
-             i32.load
-             call $~lib/rt/itcms/__visit
-             local.get $1
-             i32.const 4
-             i32.add
-             local.set $1
-             br $while-continue|0
-            end
-           end
-           global.get $~lib/rt/itcms/iter
-           i32.load offset=4
-           i32.const -4
-           i32.and
-           local.set $1
            loop $while-continue|2
             local.get $1
             global.get $~lib/rt/itcms/toSpace
@@ -1270,7 +1249,7 @@
            unreachable
           end
           local.get $1
-          i32.const 33748
+          i32.const 33732
           i32.lt_u
           if
            local.get $1
@@ -1293,7 +1272,7 @@
            i32.const 4
            i32.add
            local.tee $2
-           i32.const 33748
+           i32.const 33732
            i32.ge_u
            if
             global.get $~lib/rt/tlsf/ROOT
@@ -1423,40 +1402,37 @@
     local.tee $1
     i32.eqz
     if
-     local.get $2
-     local.tee $1
-     i32.const 256
-     i32.ge_u
-     if (result i32)
-      local.get $1
-      i32.const 1
-      i32.const 27
-      local.get $1
-      i32.clz
-      i32.sub
-      i32.shl
-      i32.add
-      i32.const 1
-      i32.sub
-      local.get $1
-      local.get $1
-      i32.const 536870910
-      i32.lt_u
-      select
-     else
-      local.get $1
-     end
      i32.const 4
      local.get $4
      i32.load offset=1568
      memory.size
-     local.tee $5
+     local.tee $1
      i32.const 16
      i32.shl
      i32.const 4
      i32.sub
      i32.ne
      i32.shl
+     local.get $2
+     i32.const 1
+     i32.const 27
+     local.get $2
+     i32.clz
+     i32.sub
+     i32.shl
+     i32.add
+     i32.const 1
+     i32.sub
+     local.get $2
+     local.get $2
+     i32.const 536870910
+     i32.lt_u
+     select
+     local.get $2
+     local.get $2
+     i32.const 256
+     i32.ge_u
+     select
      i32.add
      i32.const 65535
      i32.add
@@ -1464,18 +1440,18 @@
      i32.and
      i32.const 16
      i32.shr_u
-     local.set $1
-     local.get $5
-     local.get $1
+     local.set $5
      local.get $1
      local.get $5
-     i32.lt_s
+     local.get $1
+     local.get $5
+     i32.gt_s
      select
      memory.grow
      i32.const 0
      i32.lt_s
      if
-      local.get $1
+      local.get $5
       memory.grow
       i32.const 0
       i32.lt_s
@@ -1484,7 +1460,7 @@
       end
      end
      local.get $4
-     local.get $5
+     local.get $1
      i32.const 16
      i32.shl
      memory.size
@@ -1703,7 +1679,7 @@
   if
    i32.const 448
    i32.const 512
-   i32.const 123
+   i32.const 124
    i32.const 42
    call $~lib/builtins/abort
    unreachable
@@ -1724,7 +1700,7 @@
   if
    i32.const 448
    i32.const 512
-   i32.const 123
+   i32.const 124
    i32.const 42
    call $~lib/builtins/abort
    unreachable
@@ -1745,7 +1721,7 @@
   if
    i32.const 448
    i32.const 512
-   i32.const 123
+   i32.const 124
    i32.const 42
    call $~lib/builtins/abort
    unreachable
@@ -1761,19 +1737,19 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
    block $invalid
-    block $~lib/iterator/Iterable<f64>
-     block $~lib/arraybuffer/ArrayBufferView
+    block $~lib/arraybuffer/ArrayBufferView
+     block $~lib/string/String
       local.get $0
       i32.const 8
       i32.sub
       i32.load
-      br_table $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $invalid
+      br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $invalid
      end
-     local.get $0
-     i32.load
-     return_call $~lib/rt/itcms/__visit
+     return
     end
-    return
+    local.get $0
+    i32.load
+    return_call $~lib/rt/itcms/__visit
    end
    unreachable
   end
@@ -1821,7 +1797,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33748
+  i32.const 33732
   i32.sub
   i32.const 1
   i32.shr_u

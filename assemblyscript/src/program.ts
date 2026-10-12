@@ -64,6 +64,7 @@ import {
   TypeDeclaration,
   VariableDeclaration,
   VariableLikeDeclarationStatement,
+  VariableLikeDeclaration,
   VariableStatement,
   ParameterKind,
   ParameterNode,
@@ -441,7 +442,7 @@ export class Program extends DiagnosticEmitter {
   diagnosticsOffset: i32 = 0;
   /** Special native code file. */
   nativeFile!: File;
-  /** Next class id. */
+  /** Next concrete managed class id. */
   nextClassId: u32 = 0;
   /** Next signature id. */
   nextSignatureId: i32 = 0;
@@ -458,7 +459,7 @@ export class Program extends DiagnosticEmitter {
   instancesByName: Map<string, Element> = new Map();
   /** Classes wrapping basic types like `i32`. */
   wrapperClasses: Map<Type, Class> = new Map();
-  /** Managed classes contained in the program, by id. */
+  /** Concrete managed classes contained in the program, by id. */
   managedClasses: Map<i32, Class> = new Map();
   /** A set of unique function signatures contained in the program, by id. */
   uniqueSignatures: Map<string, Signature> = new Map<string, Signature>();
@@ -1532,7 +1533,7 @@ export class Program extends DiagnosticEmitter {
               }
               basePrototype = basePrototype.basePrototype;
             }
-            if (!hasOverride) {
+            if (!hasOverride && prototype.basePrototype) {
               let basePrototype = assert(prototype.basePrototype);
               this.error(
                 DiagnosticCode.This_member_cannot_have_an_override_modifier_because_it_is_not_declared_in_the_base_class_0,
@@ -2219,6 +2220,13 @@ export class Program extends DiagnosticEmitter {
 
   /** Checks whether a particular type is supported. */
   checkTypeSupported(type: Type, reportNode: Node): bool {
+    return this.checkTypeSupportedInternal(type, reportNode, new Set<Type>());
+  }
+
+  private checkTypeSupportedInternal(type: Type, reportNode: Node, seen: Set<Type>): bool {
+    if (seen.has(type)) return true;
+    seen.add(type);
+
     switch (type.kind) {
       case TypeKind.V128:
         return this.checkFeatureEnabled(Feature.Simd, reportNode);
@@ -2244,7 +2252,7 @@ export class Program extends DiagnosticEmitter {
         let typeArguments = classReference.typeArguments;
         if (typeArguments) {
           for (let i = 0, k = typeArguments.length; i < k; ++i) {
-            if (!this.checkTypeSupported(typeArguments[i], reportNode)) {
+            if (!this.checkTypeSupportedInternal(typeArguments[i], reportNode, seen)) {
               return false;
             }
           }
@@ -2256,18 +2264,18 @@ export class Program extends DiagnosticEmitter {
       if (signatureReference) {
         let thisType = signatureReference.thisType;
         if (thisType) {
-          if (!this.checkTypeSupported(thisType, reportNode)) {
+          if (!this.checkTypeSupportedInternal(thisType, reportNode, seen)) {
             return false;
           }
         }
         let parameterTypes = signatureReference.parameterTypes;
         for (let i = 0, k = parameterTypes.length; i < k; ++i) {
-          if (!this.checkTypeSupported(parameterTypes[i], reportNode)) {
+          if (!this.checkTypeSupportedInternal(parameterTypes[i], reportNode, seen)) {
             return false;
           }
         }
         let returnType = signatureReference.returnType;
-        if (!this.checkTypeSupported(returnType, reportNode)) {
+        if (!this.checkTypeSupportedInternal(returnType, reportNode, seen)) {
           return false;
         }
       }
@@ -3032,6 +3040,37 @@ export class Program extends DiagnosticEmitter {
           assert(false); // interface member expected
       }
     }
+    const indexSignature = declaration.indexSignature;
+    if (indexSignature) {
+      const methodDeclaration = Node.createMethodDeclaration(
+        Node.createIdentifierExpression("__get", indexSignature.range),
+        null,
+        CommonFlags.Instance | CommonFlags.Private | CommonFlags.Overridden,
+        null,
+        Node.createFunctionType(
+          [
+            Node.createParameter(
+              ParameterKind.Default,
+              Node.createIdentifierExpression("index", indexSignature.keyType.range),
+              Node.createNamedType(indexSignature.keyType.name, null, false, indexSignature.keyType.range),
+              null,
+              indexSignature.keyType.range
+            ),
+          ],
+          indexSignature.valueType,
+          null,
+          false,
+          indexSignature.range
+        ),
+        null,
+        indexSignature.range
+      );
+      const method = this.defineMethod(methodDeclaration, element);
+      if (method) {
+        method.operatorKind = OperatorKind.IndexedGet;
+        element.operatorOverloadPrototypes.set(OperatorKind.IndexedGet, method);
+      }
+    }
   }
 
   /** Initializes a field of an interface, as a property. */
@@ -3200,7 +3239,12 @@ export class Program extends DiagnosticEmitter {
     let declarations = statement.declarations;
     for (let i = 0, k = declarations.length; i < k; ++i) {
       let declaration = declarations[i];
-      let name = declaration.name.text;
+      let nameNode = declaration.name;
+      if (!nameNode) {
+        this.error(DiagnosticCode.Not_implemented_0, declaration.range, "array binding pattern in global scope");
+        continue;
+      }
+      let name = nameNode.text;
       let acceptedFlags = DecoratorFlags.Global | DecoratorFlags.Lazy;
       if (declaration.is(CommonFlags.Ambient)) {
         acceptedFlags |= DecoratorFlags.External;
@@ -4119,7 +4163,7 @@ export class Global extends VariableLikeElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags,
     /** Declaration reference. Creates a native declaration if omitted. */
-    declaration: VariableLikeDeclarationStatement
+    declaration: VariableLikeDeclaration
   ) {
     super(ElementKind.Global, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.decoratorFlags = decoratorFlags;
@@ -4326,7 +4370,7 @@ export class FunctionPrototype extends DeclaredElement {
     this.decoratorFlags = decoratorFlags;
   }
 
-  get closureVariables(): Set<Node> {
+  get closureVariables(): Set<IdentifierExpression> {
     return assert(this.closureInfo).closureVariables;
   }
 
@@ -4579,7 +4623,7 @@ export class Function extends TypedElement {
         if (isClosureFunction) {
           let closureVariables = prototype.closureVariables;
           const paramNode = paramsNodeList[i];
-          if (closureVariables.has(paramNode)) {
+          if (closureVariables.has(paramNode.name)) {
             tupleIndex = this.heapLocalsTypeBuilder.size;
             this.heapLocalsTypeBuilder.push(parameterType, paramNode.range, ReportMode.Report);
           }
@@ -4684,46 +4728,47 @@ export class Function extends TypedElement {
     return stub;
   }
 
-  /** Adds a local of the specified type, with an optional name. */
-  addLocal(type: Type, name: string | null = null, declaration: VariableDeclaration | null = null): Local {
-    // if it has a name, check previously as this method will throw otherwise
+  /** Adds one local of the specified type. */
+  addLocal(
+    type: Type,
+    identifier: IdentifierExpression | null = null,
+    variableLikeBase: VariableLikeBase | null = null,
+    declarationBase: DeclarationBase | null = null,
+    registerName: bool = true
+  ): Local {
     let localsByIndex = this.localsByIndex;
     let localIndex = localsByIndex.length;
-    let localName = name != null ? name : localIndex.toString();
-    let variableLikeBase: VariableLikeBase;
-    let declarationBase: DeclarationBase;
+    let localName = identifier ? identifier.text : localIndex.toString();
+    let name = registerName && identifier ? identifier.text : null;
     let tupleIndex = -1;
     let tupleElementInfo: TupleElementInfo | null = null;
     let isForInitClosureVar = false;
-    if (declaration) {
-      variableLikeBase = declaration.toVariableLikeBase();
-      declarationBase = declaration.toDeclarationBase();
-      const sourceFunction = this.flow.targetFunction;
-      if (sourceFunction.isClosureFunction()) {
-        let closureInfo = assert(sourceFunction.currentClosureInfo);
-        if (closureInfo.closureVariables.has(declaration)) {
-          const heapLocalsTypeBuilder = sourceFunction.heapLocalsTypeBuilder;
-          tupleIndex = heapLocalsTypeBuilder.size;
-          heapLocalsTypeBuilder.push(type, declarationBase.nameRange, ReportMode.Report);
-          tupleElementInfo = heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
-          if (closureInfo.forInitClosureVariables.has(declaration)) isForInitClosureVar = true;
-        }
+    let localVariableLikeBase = variableLikeBase
+      ? variableLikeBase
+      : new VariableLikeBase(
+          identifier ? identifier : Node.createIdentifierExpression(localName, Source.native.range),
+          null,
+          null
+        );
+    let localDeclarationBase = declarationBase
+      ? declarationBase
+      : new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
+    if (identifier && this.isClosureFunction()) {
+      let closureInfo = assert(this.currentClosureInfo);
+      if (closureInfo.closureVariables.has(identifier)) {
+        tupleIndex = this.heapLocalsTypeBuilder.size;
+        this.heapLocalsTypeBuilder.push(type, localDeclarationBase.nameRange, ReportMode.Report);
+        tupleElementInfo = this.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
+        if (closureInfo.forInitClosureVariables.has(identifier)) isForInitClosureVar = true;
       }
-    } else {
-      variableLikeBase = new VariableLikeBase(
-        Node.createIdentifierExpression(localName, Source.native.range),
-        null,
-        null
-      );
-      declarationBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
     }
     let local = new Local(
       localName,
       localIndex,
       type,
       this,
-      variableLikeBase,
-      declarationBase,
+      localVariableLikeBase,
+      localDeclarationBase,
       tupleIndex,
       tupleElementInfo,
       isForInitClosureVar
@@ -5110,10 +5155,10 @@ export class ClassPrototype extends DeclaredElement {
     declaration: ClassDeclaration,
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None,
-    _isInterface: bool = false // FIXME
+    isInterface: bool = false
   ) {
     super(
-      _isInterface ? ElementKind.InterfacePrototype : ElementKind.ClassPrototype,
+      isInterface ? ElementKind.InterfacePrototype : ElementKind.ClassPrototype,
       name,
       mangleInternalName(name, parent, declaration.is(CommonFlags.Instance)),
       parent.program,
@@ -5259,9 +5304,9 @@ export class Class extends TypedElement {
   /** Runtime visitor function reference. */
   visitRef: FunctionRef = 0;
 
-  /** Gets the unique runtime id of this class. */
+  /** Gets the unique runtime id of this concrete managed class. */
   get id(): u32 {
-    return this._id; // unmanaged remains 0 (=ArrayBuffer)
+    return this._id; // unmanaged classes and interfaces remain 0
   }
 
   /** Tests if this class is of a builtin array type (Array/TypedArray). */
@@ -5296,10 +5341,10 @@ export class Class extends TypedElement {
     prototype: ClassPrototype,
     /** Concrete type arguments, if any. */
     typeArguments: Type[] | null = null,
-    _isInterface: bool = false // FIXME
+    isInterface: bool = false
   ) {
     super(
-      _isInterface ? ElementKind.Interface : ElementKind.Class,
+      isInterface ? ElementKind.Interface : ElementKind.Class,
       nameInclTypeParameters,
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
@@ -5316,13 +5361,14 @@ export class Class extends TypedElement {
     type.classReference = this;
     this.setType(type);
 
-    if (!this.hasDecorator(DecoratorFlags.Unmanaged)) {
+    if (!isInterface && !this.hasDecorator(DecoratorFlags.Unmanaged)) {
       let id = program.nextClassId++;
       this._id = id;
       program.managedClasses.set(id, this);
     }
 
-    mir.createClass(this);
+    if (isInterface) mir.createInterface(this);
+    else mir.createClass(this);
 
     // apply pre-checked instance-specific contextual type arguments
     let typeParameters = prototype.typeParameterNodes;
@@ -5369,7 +5415,8 @@ export class Class extends TypedElement {
   setBase(base: Class): void {
     assert(!this.base);
     this.base = base;
-    mir.addBaseClass(this, base);
+    if (this.isInterface) mir.addBaseInterface(this, base);
+    else mir.addBaseClass(this, base);
 
     // Inherit contextual type arguments from base class
     let inheritedTypeArguments = base.contextualTypeArguments;
@@ -5789,8 +5836,6 @@ export class InterfacePrototype extends ClassPrototype {
 
 /** A resolved interface. */
 export class Interface extends Class {
-  // FIXME
-
   /** Constructs a new interface. */
   constructor(
     /** Name incl. type parameters, i.e. `Foo<i32>`. */

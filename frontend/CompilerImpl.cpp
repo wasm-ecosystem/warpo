@@ -308,6 +308,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     static_cast<void>(compiled);
     if (checkDiag(program, config_.useColorfulDiagMessage))
       return {.m = {}, .errorMessage = errorMessage_};
+    asModule_.variableInfo_.finalizeMemoryExposure();
 
     compileStat.release();
     return {.m = std::move(asModule_), .errorMessage = errorMessage_};

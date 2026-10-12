@@ -4,10 +4,9 @@
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32) (result i32)))
  (type $4 (func (param i32 i32 i32 i32)))
- (type $5 (func (param i32 f32 i32 i32) (result i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
- (type $8 (func (param f32) (result f32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param f32) (result f32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -26,7 +25,7 @@
  (data $1.1 (i32.const 88) "\01\00\00\00\0c\00\00\00\00\00\80?\00\00\00@\00\00@@,")
  (data $2.1 (i32.const 120) "\04\00\00\00\10\00\00\00`\00\00\00`\00\00\00\0c\00\00\00\03")
  (data $3 (i32.const 156) "\1c")
- (data $3.1 (i32.const 168) "\06\00\00\00\08\00\00\00\01")
+ (data $3.1 (i32.const 168) "\05\00\00\00\08\00\00\00\01")
  (data $4 (i32.const 188) "<")
  (data $4.1 (i32.const 200) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00<")
  (data $5.1 (i32.const 264) "\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s")
@@ -36,9 +35,7 @@
  (data $9.1 (i32.const 456) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
  (data $11 (i32.const 524) "<")
  (data $11.1 (i32.const 536) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
- (data $12 (i32.const 592) "\0b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00 \00\00\00\00\00\00\00 ")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $start:infer-generic~anonymous|0)
+ (data $12 (i32.const 592) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00\00\00\00\00 ")
  (export "test1" (func $infer-generic/test1))
  (export "test2" (func $infer-generic/test2))
  (export "test3" (func $infer-generic/test2))
@@ -47,14 +44,6 @@
  (export "inferAssert" (func $infer-generic/inferAssert))
  (export "memory" (memory $0))
  (start $~start)
- (func $start:infer-generic~anonymous|0 (param $0 i32) (param $1 f32) (param $2 i32) (param $3 i32) (result i32)
-  local.get $1
-  f32.const 0
-  f32.ne
-  i32.const 0
-  local.get $0
-  select
- )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
@@ -157,7 +146,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$89
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$88
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -169,7 +158,7 @@
       i32.load offset=8
       i32.eqz
       local.get $0
-      i32.const 33408
+      i32.const 33404
       i32.lt_u
       i32.and
       i32.eqz
@@ -181,7 +170,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$89
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$88
      end
      local.get $0
      i32.load offset=8
@@ -653,7 +642,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -728,7 +717,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -929,7 +918,7 @@
       i32.const 8
       i32.sub
       i32.load
-      br_table $infer-generic/Ref $infer-generic/Ref $infer-generic/Ref $~lib/array/Array<f32> $~lib/array/Array<f32> $infer-generic/Ref $folding-inner0 $infer-generic/Ref $folding-inner0 $folding-inner0 $folding-inner0 $invalid
+      br_table $infer-generic/Ref $infer-generic/Ref $infer-generic/Ref $~lib/array/Array<f32> $~lib/array/Array<f32> $folding-inner0 $infer-generic/Ref $folding-inner0 $folding-inner0 $folding-inner0 $invalid
      end
      local.get $0
      i32.load
@@ -963,7 +952,6 @@
    select
    i32.lt_s
    if
-    local.get $3
     i32.const 132
     i32.load
     local.get $0
@@ -971,9 +959,11 @@
     i32.shl
     i32.add
     f32.load
-    local.get $0
-    i32.const 128
-    call $start:infer-generic~anonymous|0
+    f32.const 0
+    f32.ne
+    i32.const 0
+    local.get $3
+    select
     local.set $3
     local.get $0
     i32.const 1
@@ -985,7 +975,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33408
+  i32.const 33404
   i32.sub
   i32.const 1
   i32.shr_u
@@ -1023,7 +1013,7 @@
     local.set $0
     loop $do-loop|0
      local.get $0
-     block $__inlined_func$~lib/rt/itcms/step$94 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$93 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1039,7 +1029,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$94
+         br $__inlined_func$~lib/rt/itcms/step$93
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1078,7 +1068,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$94
+           br $__inlined_func$~lib/rt/itcms/step$93
           end
           local.get $0
           i32.load offset=4
@@ -1091,35 +1081,14 @@
         i32.const 0
         global.set $~lib/rt/itcms/visitCount
         call $~lib/rt/itcms/visitRoots
-        global.get $~lib/rt/itcms/toSpace
         global.get $~lib/rt/itcms/iter
         i32.load offset=4
         i32.const -4
         i32.and
+        local.tee $0
+        global.get $~lib/rt/itcms/toSpace
         i32.eq
         if
-         i32.const 33408
-         local.set $0
-         loop $while-continue|0
-          local.get $0
-          i32.const 33408
-          i32.lt_u
-          if
-           local.get $0
-           i32.load
-           call $~lib/rt/itcms/__visit
-           local.get $0
-           i32.const 4
-           i32.add
-           local.set $0
-           br $while-continue|0
-          end
-         end
-         global.get $~lib/rt/itcms/iter
-         i32.load offset=4
-         i32.const -4
-         i32.and
-         local.set $0
          loop $while-continue|2
           local.get $0
           global.get $~lib/rt/itcms/toSpace
@@ -1170,7 +1139,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$94
+        br $__inlined_func$~lib/rt/itcms/step$93
        end
        global.get $~lib/rt/itcms/iter
        local.tee $0
@@ -1198,7 +1167,7 @@
          unreachable
         end
         local.get $0
-        i32.const 33408
+        i32.const 33404
         i32.lt_u
         if
          local.get $0
@@ -1221,7 +1190,7 @@
          i32.const 4
          i32.add
          local.tee $1
-         i32.const 33408
+         i32.const 33404
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1269,7 +1238,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$94
+        br $__inlined_func$~lib/rt/itcms/step$93
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1451,7 +1420,7 @@
    i32.store
   end
   local.get $0
-  i32.const 7
+  i32.const 6
   i32.store offset=12
   local.get $0
   i32.const 4

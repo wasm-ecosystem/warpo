@@ -2,11 +2,11 @@
  (type $0 (func))
  (type $1 (func (param i32)))
  (type $2 (func (param i32 i32)))
- (type $3 (func (result i32)))
- (type $4 (func (param i32 i32 i32 i32)))
- (type $5 (func (param i32 i32 i32)))
- (type $6 (func (param i32 i32 i64)))
- (type $7 (func (param i32) (result i32)))
+ (type $3 (func (param i32 i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i64)))
+ (type $6 (func (param i32) (result i32)))
+ (type $7 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -31,8 +31,6 @@
  (data $8 (i32.const 412) "\1c")
  (data $8.1 (i32.const 424) "\05\00\00\00\08\00\00\00\01")
  (data $9 (i32.const 448) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 ")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $getter-call/C#get:x~anonymous|0)
  (export "test" (func $getter-call/test))
  (export "memory" (memory $0))
  (start $~start)
@@ -136,7 +134,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$77
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$76
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -160,7 +158,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$77
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$76
      end
      local.get $0
      i32.load offset=8
@@ -632,7 +630,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -707,7 +705,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -881,9 +879,6 @@
    end
   end
  )
- (func $getter-call/C#get:x~anonymous|0 (result i32)
-  i32.const 42
- )
  (func $getter-call/test (result i32)
   (local $0 i32)
   (local $1 i32)
@@ -893,12 +888,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$67
     i32.const 2048
     local.set $0
     loop $do-loop|0
      local.get $0
-     block $__inlined_func$~lib/rt/itcms/step$82 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$81 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -914,7 +909,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$82
+         br $__inlined_func$~lib/rt/itcms/step$81
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -953,7 +948,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$82
+           br $__inlined_func$~lib/rt/itcms/step$81
           end
           local.get $0
           i32.load offset=4
@@ -966,35 +961,14 @@
         i32.const 0
         global.set $~lib/rt/itcms/visitCount
         call $~lib/rt/itcms/visitRoots
-        global.get $~lib/rt/itcms/toSpace
         global.get $~lib/rt/itcms/iter
         i32.load offset=4
         i32.const -4
         i32.and
+        local.tee $0
+        global.get $~lib/rt/itcms/toSpace
         i32.eq
         if
-         i32.const 33244
-         local.set $0
-         loop $while-continue|0
-          local.get $0
-          i32.const 33244
-          i32.lt_u
-          if
-           local.get $0
-           i32.load
-           call $~lib/rt/itcms/__visit
-           local.get $0
-           i32.const 4
-           i32.add
-           local.set $0
-           br $while-continue|0
-          end
-         end
-         global.get $~lib/rt/itcms/iter
-         i32.load offset=4
-         i32.const -4
-         i32.and
-         local.set $0
          loop $while-continue|2
           local.get $0
           global.get $~lib/rt/itcms/toSpace
@@ -1045,7 +1019,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$82
+        br $__inlined_func$~lib/rt/itcms/step$81
        end
        global.get $~lib/rt/itcms/iter
        local.tee $0
@@ -1144,7 +1118,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$82
+        br $__inlined_func$~lib/rt/itcms/step$81
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1168,7 +1142,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$67
      end
      local.get $0
      i32.const 0
@@ -1350,7 +1324,7 @@
   i32.const 0
   i32.const 0
   memory.fill
-  return_call $getter-call/C#get:x~anonymous|0
+  i32.const 42
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid

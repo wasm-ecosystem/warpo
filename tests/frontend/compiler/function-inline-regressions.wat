@@ -1,6 +1,6 @@
 (module
- (type $0 (func (param i32 i32)))
- (type $1 (func (param i32) (result i32)))
+ (type $0 (func (param i32) (result i32)))
+ (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
  (type $4 (func (result i32)))
@@ -63,6 +63,21 @@
    (local.get $v2)
   )
  )
+ (func $function-inline-regressions/Struct#get:v0 (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $function-inline-regressions/Struct#get:v1 (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $function-inline-regressions/Struct#get:v2 (param $this i32) (result i32)
+  (i32.load offset=8
+   (local.get $this)
+  )
+ )
  (func $function-inline-regressions/foo (param $v0 i32) (param $v1 i32) (param $v2 i32) (result i32)
   (local $x i32)
   (local $y i32)
@@ -102,6 +117,21 @@
   (call $function-inline-regressions/Struct#set:v2
    (global.get $function-inline-regressions/struct)
    (local.get $v2)
+  )
+  (call $function-inline-regressions/baz
+   (i32.or
+    (i32.or
+     (call $function-inline-regressions/Struct#get:v0
+      (global.get $function-inline-regressions/struct)
+     )
+     (call $function-inline-regressions/Struct#get:v1
+      (global.get $function-inline-regressions/struct)
+     )
+    )
+    (call $function-inline-regressions/Struct#get:v2
+     (global.get $function-inline-regressions/struct)
+    )
+   )
   )
   (return
    (local.get $z)

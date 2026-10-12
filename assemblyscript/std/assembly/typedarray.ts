@@ -1679,7 +1679,7 @@ function COPY_WITHIN<TArray extends ArrayBufferView, T extends number>(
   let to    = target < 0 ? max(len + target, 0) : min(target, len);
   let from  = start < 0 ? max(len + start, 0) : min(start, len);
   let last  = end < 0 ? max(len + end, 0) : min(end, len);
-  let count = min(last - from, len - to);
+  let count = max(min(last - from, len - to), 0);
 
   memory.copy(
     ptr + (<usize>to << alignof<T>()),
@@ -1908,7 +1908,7 @@ function WRAP<TArray extends ArrayBufferView, T>(
   byteOffset: i32 = 0,
   len: i32 = -1
 ): TArray {
-  let byteLength: i32;
+  let byteLength: usize;
   let bufferByteLength = buffer.byteLength;
   const mask: u32 = sizeof<T>() - 1;
   if (i32(<u32>byteOffset > <u32>bufferByteLength) | (byteOffset & mask)) {
@@ -1924,8 +1924,8 @@ function WRAP<TArray extends ArrayBufferView, T>(
       throw new RangeError(E_INVALIDLENGTH);
     }
   } else {
-    byteLength = len << alignof<T>();
-    if (byteOffset + byteLength > bufferByteLength) {
+    byteLength = <usize>len << alignof<T>();
+    if (<usize>byteOffset + byteLength > <usize>bufferByteLength) {
       throw new RangeError(E_INVALIDLENGTH);
     }
   }
@@ -1952,7 +1952,7 @@ function SET<
     ERROR(E_NOTIMPLEMENTED);
   }
   let sourceLen = source.length;
-  if (offset < 0 || sourceLen + offset > target.length) {
+  if (offset < 0 || <usize>offset + <usize>sourceLen > <usize>target.length) {
     // offset is out of bounds
     throw new RangeError(E_INDEXOUTOFRANGE);
   }

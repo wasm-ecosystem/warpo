@@ -172,9 +172,7 @@
    i32.const 224
    i32.const 0
    call $~lib/string/String.__eq
-   if
-    br $folding-inner0
-   end
+   br_if $folding-inner0
    i32.const 224
    i32.const 0
    call $~lib/string/String.__eq
@@ -183,9 +181,7 @@
     i32.const 224
     i32.const 0
     call $~lib/string/String.__eq
-    if
-     br $folding-inner0
-    end
+    br_if $folding-inner0
    end
    return
   end

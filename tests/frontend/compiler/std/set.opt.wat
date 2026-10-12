@@ -22,7 +22,7 @@
  (type $20 (func (param i32 f64) (result i32)))
  (type $21 (func (param i32 i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33532))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33492))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -50,7 +50,7 @@
  (data $10.1 (i32.const 536) "\02\00\00\00\14\00\00\00s\00t\00d\00/\00s\00e\00t\00.\00t\00s")
  (data $11 (i32.const 572) ",")
  (data $11.1 (i32.const 584) "\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $12 (i32.const 624) "\"\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00H\08\00\00 \00\00\00B\08\00\00H\00\00\00 \00\00\00B\00\00\00\88\08\00\00 \00\00\00\82\08\00\00\88\00\00\00 \00\00\00\82\00\00\00\08\t\00\00 \00\00\00\02\t\00\00\08\01\00\00 \00\00\00\02\01\00\00\08\n\00\00 \00\00\00\02\n\00\00\08\02\00\00 \00\00\00\02\02\00\00\08\19\00\00 \00\00\00\02\19\00\00\08\1a\00\00 \00\00\00\02\1a")
+ (data $12 (i32.const 624) "\18\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00H\08\00\00B\08\00\00H\00\00\00B\00\00\00\88\08\00\00\82\08\00\00\88\00\00\00\82\00\00\00\08\t\00\00\02\t\00\00\08\01\00\00\02\01\00\00\08\n\00\00\02\n\00\00\08\02\00\00\02\02\00\00\08\19\00\00\02\19\00\00\08\1a\00\00\02\1a")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -141,7 +141,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$574
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$573
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -153,7 +153,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33532
+    i32.const 33492
     i32.lt_u
     i32.and
     i32.eqz
@@ -165,7 +165,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$574
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$573
    end
    local.get $0
    i32.load offset=8
@@ -653,7 +653,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -728,7 +728,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -783,10 +783,10 @@
   if
    unreachable
   end
-  i32.const 33536
+  i32.const 33504
   i32.const 0
   i32.store
-  i32.const 35104
+  i32.const 35072
   i32.const 0
   i32.store
   i32.const 0
@@ -799,7 +799,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33536
+    i32.const 33504
     i32.add
     i32.const 0
     i32.store offset=4
@@ -817,7 +817,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33536
+      i32.const 33504
       i32.add
       i32.const 0
       i32.store offset=96
@@ -835,14 +835,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33536
-  i32.const 35108
+  i32.const 33504
+  i32.const 35076
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33536
+  i32.const 33504
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/itcms/step (result i32)
@@ -927,7 +927,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 33532
+      i32.const 33492
       i32.lt_u
       if
        local.get $0
@@ -1023,7 +1023,7 @@
      unreachable
     end
     local.get $0
-    i32.const 33532
+    i32.const 33492
     i32.lt_u
     if
      local.get $0
@@ -1046,7 +1046,7 @@
      i32.const 4
      i32.add
      local.tee $1
-     i32.const 33532
+     i32.const 33492
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -1257,14 +1257,14 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$67
+   block $__inlined_func$~lib/rt/itcms/interrupt$66
     i32.const 2048
-    local.set $3
+    local.set $2
     loop $do-loop|0
-     local.get $3
+     local.get $2
      call $~lib/rt/itcms/step
      i32.sub
-     local.set $3
+     local.set $2
      global.get $~lib/rt/itcms/state
      i32.eqz
      if
@@ -1274,9 +1274,9 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$67
+      br $__inlined_func$~lib/rt/itcms/interrupt$66
      end
-     local.get $3
+     local.get $2
      i32.const 0
      i32.gt_s
      br_if $do-loop|0
@@ -1299,11 +1299,11 @@
    call $~lib/rt/tlsf/initialize
   end
   global.get $~lib/rt/tlsf/ROOT
-  local.set $4
+  local.set $5
   local.get $0
   i32.const 16
   i32.add
-  local.tee $3
+  local.tee $2
   i32.const 1073741820
   i32.gt_u
   if
@@ -1314,16 +1314,16 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $4
+  local.get $5
   i32.const 12
-  local.get $3
+  local.get $2
   i32.const 19
   i32.add
   i32.const -16
   i32.and
   i32.const 4
   i32.sub
-  local.get $3
+  local.get $2
   i32.const 12
   i32.le_u
   select
@@ -1332,40 +1332,37 @@
   local.tee $2
   i32.eqz
   if
-   local.get $3
-   local.tee $2
-   i32.const 256
-   i32.ge_u
-   if (result i32)
-    local.get $2
-    i32.const 1
-    i32.const 27
-    local.get $2
-    i32.clz
-    i32.sub
-    i32.shl
-    i32.add
-    i32.const 1
-    i32.sub
-    local.get $2
-    local.get $2
-    i32.const 536870910
-    i32.lt_u
-    select
-   else
-    local.get $2
-   end
    i32.const 4
-   local.get $4
+   local.get $5
    i32.load offset=1568
    memory.size
-   local.tee $5
+   local.tee $2
    i32.const 16
    i32.shl
    i32.const 4
    i32.sub
    i32.ne
    i32.shl
+   local.get $3
+   i32.const 1
+   i32.const 27
+   local.get $3
+   i32.clz
+   i32.sub
+   i32.shl
+   i32.add
+   i32.const 1
+   i32.sub
+   local.get $3
+   local.get $3
+   i32.const 536870910
+   i32.lt_u
+   select
+   local.get $3
+   local.get $3
+   i32.const 256
+   i32.ge_u
+   select
    i32.add
    i32.const 65535
    i32.add
@@ -1373,18 +1370,18 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.set $2
-   local.get $5
+   local.set $4
    local.get $2
+   local.get $4
    local.get $2
-   local.get $5
-   i32.lt_s
+   local.get $4
+   i32.gt_s
    select
    memory.grow
    i32.const 0
    i32.lt_s
    if
-    local.get $2
+    local.get $4
     memory.grow
     i32.const 0
     i32.lt_s
@@ -1392,8 +1389,8 @@
      unreachable
     end
    end
-   local.get $4
    local.get $5
+   local.get $2
    i32.const 16
    i32.shl
    memory.size
@@ -1401,7 +1398,7 @@
    i64.const 16
    i64.shl
    call $~lib/rt/tlsf/addMemory
-   local.get $4
+   local.get $5
    local.get $3
    call $~lib/rt/tlsf/searchBlock
    local.tee $2
@@ -1429,12 +1426,12 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $4
+  local.get $5
   local.get $2
   call $~lib/rt/tlsf/removeBlock
   local.get $2
   i32.load
-  local.set $6
+  local.set $4
   local.get $3
   i32.const 4
   i32.add
@@ -1448,18 +1445,18 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $6
+  local.get $4
   i32.const -4
   i32.and
   local.get $3
   i32.sub
-  local.tee $5
+  local.tee $6
   i32.const 16
   i32.ge_u
   if
    local.get $2
    local.get $3
-   local.get $6
+   local.get $4
    i32.const 2
    i32.and
    i32.or
@@ -1470,18 +1467,18 @@
    local.get $3
    i32.add
    local.tee $3
-   local.get $5
+   local.get $6
    i32.const 4
    i32.sub
    i32.const 1
    i32.or
    i32.store
-   local.get $4
+   local.get $5
    local.get $3
    call $~lib/rt/tlsf/insertBlock
   else
    local.get $2
-   local.get $6
+   local.get $4
    i32.const -2
    i32.and
    i32.store
@@ -1563,7 +1560,7 @@
     i32.eq
     if
      local.get $1
-     call $~lib/rt/itcms/Object#makeGray
+     return_call $~lib/rt/itcms/Object#makeGray
     else
      global.get $~lib/rt/itcms/state
      i32.const 1
@@ -1574,7 +1571,7 @@
      i32.and
      if
       local.get $1
-      call $~lib/rt/itcms/Object#makeGray
+      return_call $~lib/rt/itcms/Object#makeGray
      end
     end
    end
@@ -1737,7 +1734,6 @@
      local.get $5
      local.get $1
      local.get $2
-     i32.extend8_s
      i32.const -1028477379
      i32.mul
      i32.const 374761394
@@ -1924,7 +1920,7 @@
   if
    i32.const 32
    i32.const 592
-   i32.const 81
+   i32.const 82
    i32.const 62
    call $~lib/builtins/abort
    unreachable
@@ -1970,7 +1966,7 @@
    if
     i32.const 32
     i32.const 592
-    i32.const 30
+    i32.const 31
     i32.const 48
     call $~lib/builtins/abort
     unreachable
@@ -1987,7 +1983,7 @@
    local.get $0
    i32.load
    local.tee $2
-   block $__inlined_func$~lib/rt/itcms/__renew$579 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$578 (result i32)
     local.get $3
     if
      i32.const 1073741820
@@ -2023,7 +2019,7 @@
      local.get $1
      i32.store offset=16
      local.get $2
-     br $__inlined_func$~lib/rt/itcms/__renew$579
+     br $__inlined_func$~lib/rt/itcms/__renew$578
     end
     local.get $1
     local.get $3
@@ -2073,7 +2069,7 @@
    if
     i32.const 336
     i32.const 592
-    i32.const 141
+    i32.const 142
     i32.const 22
     call $~lib/builtins/abort
     unreachable
@@ -2177,7 +2173,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<i8>#rehash
+    return_call $~lib/set/Set<i8>#rehash
    end
   end
  )
@@ -2435,7 +2431,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<u8>#rehash
+    return_call $~lib/set/Set<u8>#rehash
    end
   end
  )
@@ -2580,7 +2576,6 @@
      local.get $5
      local.get $1
      local.get $2
-     i32.extend16_s
      i32.const -1028477379
      i32.mul
      i32.const 374761395
@@ -2771,7 +2766,7 @@
    if
     i32.const 336
     i32.const 592
-    i32.const 141
+    i32.const 142
     i32.const 22
     call $~lib/builtins/abort
     unreachable
@@ -2877,7 +2872,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<i16>#rehash
+    return_call $~lib/set/Set<i16>#rehash
    end
   end
  )
@@ -3135,7 +3130,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<u16>#rehash
+    return_call $~lib/set/Set<u16>#rehash
    end
   end
  )
@@ -3418,7 +3413,7 @@
    if
     i32.const 336
     i32.const 592
-    i32.const 141
+    i32.const 142
     i32.const 22
     call $~lib/builtins/abort
     unreachable
@@ -3497,7 +3492,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<i32>#rehash
+    return_call $~lib/set/Set<i32>#rehash
    end
   end
  )
@@ -3790,7 +3785,7 @@
    if
     local.get $0
     local.get $1
-    call $~lib/set/Set<u32>#rehash
+    return_call $~lib/set/Set<u32>#rehash
    end
   end
  )
@@ -4087,7 +4082,7 @@
    if
     i32.const 336
     i32.const 592
-    i32.const 141
+    i32.const 142
     i32.const 22
     call $~lib/builtins/abort
     unreachable
@@ -4167,7 +4162,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<i64>#rehash
+    return_call $~lib/set/Set<i64>#rehash
    end
   end
  )
@@ -4462,7 +4457,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<u64>#rehash
+    return_call $~lib/set/Set<u64>#rehash
    end
   end
  )
@@ -4865,7 +4860,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<f32>#rehash
+    return_call $~lib/set/Set<f32>#rehash
    end
   end
  )
@@ -5206,7 +5201,7 @@
    if
     local.get $0
     local.get $2
-    call $~lib/set/Set<f64>#rehash
+    return_call $~lib/set/Set<f64>#rehash
    end
   end
  )
@@ -5214,19 +5209,19 @@
   block $folding-inner1
    block $folding-inner0
     block $invalid
-     block $~lib/iterator/Iterable<f64>
-      block $~lib/arraybuffer/ArrayBufferView
+     block $~lib/arraybuffer/ArrayBufferView
+      block $~lib/string/String
        local.get $0
        i32.const 8
        i32.sub
        i32.load
-       br_table $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner1 $invalid
+       br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $folding-inner0 $folding-inner1 $invalid
       end
-      local.get $0
-      i32.load
-      return_call $~lib/rt/itcms/__visit
+      return
      end
-     return
+     local.get $0
+     i32.load
+     return_call $~lib/rt/itcms/__visit
     end
     unreachable
    end
@@ -5256,7 +5251,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33532
+  i32.const 33492
   i32.sub
   i32.const 1
   i32.shr_u
@@ -5294,7 +5289,7 @@
   local.get $1
   i32.store offset=8 align=1
   block $folding-inner17
-   block $__inlined_func$start:std/set$680
+   block $__inlined_func$start:std/set$676
     block $folding-inner16
      block $folding-inner15
       block $folding-inner14
@@ -5382,7 +5377,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 6
+                     i32.const 5
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -5464,9 +5459,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $0
                        local.get $2
@@ -5480,9 +5473,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $0
                        local.get $2
@@ -5586,7 +5577,7 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 7
+                     i32.const 6
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
@@ -5664,7 +5655,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 9
+                     i32.const 7
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -5728,7 +5719,7 @@
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
                      i32.store offset=4 align=1
-                     i32.const 7
+                     i32.const 6
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -5746,9 +5737,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $0
                        local.get $2
@@ -5762,9 +5751,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $0
                        local.get $2
@@ -5868,7 +5855,7 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 10
+                     i32.const 8
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
@@ -5946,7 +5933,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 12
+                     i32.const 9
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -6012,7 +5999,7 @@
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
                      i32.store offset=4 align=1
-                     i32.const 10
+                     i32.const 8
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -6030,9 +6017,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $2
                        i32.load offset=4
@@ -6048,9 +6033,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $2
                        i32.load offset=4
@@ -6156,7 +6139,7 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 13
+                     i32.const 10
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
@@ -6234,7 +6217,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 15
+                     i32.const 11
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -6300,7 +6283,7 @@
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
                      i32.store offset=4 align=1
-                     i32.const 13
+                     i32.const 10
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -6318,9 +6301,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $2
                        i32.load offset=4
@@ -6336,9 +6317,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $2
                        i32.load offset=4
@@ -6444,7 +6423,7 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 16
+                     i32.const 12
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
@@ -6522,7 +6501,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 18
+                     i32.const 13
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -6588,7 +6567,7 @@
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
                      i32.store offset=4 align=1
-                     i32.const 16
+                     i32.const 12
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -6606,9 +6585,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $2
                        i32.load offset=4
@@ -6624,9 +6601,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $2
                        i32.load offset=4
@@ -6732,7 +6707,7 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 19
+                     i32.const 14
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
@@ -6810,7 +6785,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 21
+                     i32.const 15
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -6876,7 +6851,7 @@
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
                      i32.store offset=4 align=1
-                     i32.const 19
+                     i32.const 14
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -6894,9 +6869,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $2
                        i32.load offset=4
@@ -6912,9 +6885,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $2
                        i32.load offset=4
@@ -7018,7 +6989,7 @@
                      global.set $~lib/memory/__stack_pointer
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 22
+                     i32.const 16
                      call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
@@ -7096,7 +7067,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 24
+                     i32.const 17
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -7162,7 +7133,7 @@
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
                      i32.store offset=4 align=1
-                     i32.const 22
+                     i32.const 16
                      call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -7180,9 +7151,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $2
                        i32.load offset=4
@@ -7198,9 +7167,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $2
                        i32.load offset=4
@@ -7306,7 +7273,7 @@
                      local.set $5
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 25
+                     i32.const 18
                      call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
@@ -7384,7 +7351,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 27
+                     i32.const 19
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -7450,7 +7417,7 @@
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
                      i32.store offset=4 align=1
-                     i32.const 25
+                     i32.const 18
                      call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -7468,9 +7435,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $1
                        local.get $2
                        i32.load offset=4
@@ -7486,9 +7451,7 @@
                        local.get $2
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
                        local.get $2
                        i32.load offset=4
@@ -7592,7 +7555,7 @@
                      global.set $~lib/memory/__stack_pointer
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 28
+                     i32.const 20
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $3
                      global.get $~lib/memory/__stack_pointer
@@ -7660,7 +7623,7 @@
                      i32.ne
                      br_if $folding-inner5
                      i32.const 0
-                     local.set $1
+                     local.set $2
                      i32.const 4
                      call $~lib/rt/__decrease_sp
                      local.get $3
@@ -7670,7 +7633,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 30
+                     i32.const 21
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -7681,19 +7644,19 @@
                      i32.const 2
                      i32.const 268435455
                      call $byn$mgfn-shared$~lib/array/Array<i16>#constructor
-                     local.set $2
+                     local.set $1
                      global.get $~lib/memory/__stack_pointer
-                     local.get $2
+                     local.get $1
                      i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|01
-                      local.get $1
+                      local.get $2
                       local.get $8
                       i32.lt_s
                       if
                        local.get $10
-                       local.get $1
+                       local.get $2
                        i32.const 3
                        i32.shl
                        i32.add
@@ -7712,7 +7675,7 @@
                         f32.load
                         local.set $6
                         local.get $4
-                        local.get $2
+                        local.get $1
                         i32.load offset=12
                         i32.ge_u
                         if
@@ -7720,7 +7683,7 @@
                          i32.const 0
                          i32.lt_s
                          br_if $folding-inner16
-                         local.get $2
+                         local.get $1
                          local.get $4
                          i32.const 1
                          i32.add
@@ -7728,11 +7691,11 @@
                          i32.const 2
                          i32.const 1
                          call $~lib/array/ensureCapacity
-                         local.get $2
+                         local.get $1
                          local.get $9
                          i32.store offset=12
                         end
-                        local.get $2
+                        local.get $1
                         i32.load offset=4
                         local.get $4
                         i32.const 2
@@ -7741,19 +7704,19 @@
                         local.get $6
                         f32.store
                        end
-                       local.get $1
+                       local.get $2
                        i32.const 1
                        i32.add
-                       local.set $1
+                       local.set $2
                        br $for-loop|01
                       end
                      end
-                     local.get $2
+                     local.get $1
                      local.get $0
                      i32.const 2
                      i32.const 0
                      call $~lib/array/ensureCapacity
-                     local.get $2
+                     local.get $1
                      local.get $0
                      i32.store offset=12
                      global.get $~lib/memory/__stack_pointer
@@ -7761,9 +7724,9 @@
                      i32.add
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
-                     local.get $2
+                     local.get $1
                      i32.store offset=4 align=1
-                     i32.const 28
+                     i32.const 20
                      call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -7773,19 +7736,17 @@
                      local.set $0
                      loop $for-loop|237
                       local.get $0
-                      local.get $2
+                      local.get $1
                       i32.load offset=12
                       i32.lt_s
                       if
                        local.get $0
-                       local.get $2
+                       local.get $1
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $3
-                       local.get $2
+                       local.get $1
                        i32.load offset=4
                        local.get $0
                        i32.const 2
@@ -7796,14 +7757,12 @@
                        i32.eqz
                        br_if $folding-inner6
                        local.get $0
-                       local.get $2
+                       local.get $1
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
-                       local.get $2
+                       local.get $1
                        i32.load offset=4
                        local.get $0
                        i32.const 2
@@ -7905,7 +7864,7 @@
                      global.set $~lib/memory/__stack_pointer
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 31
+                     i32.const 22
                      call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $3
                      global.get $~lib/memory/__stack_pointer
@@ -7973,7 +7932,7 @@
                      i32.ne
                      br_if $folding-inner5
                      i32.const 0
-                     local.set $1
+                     local.set $2
                      i32.const 4
                      call $~lib/rt/__decrease_sp
                      local.get $3
@@ -7983,7 +7942,7 @@
                      i32.load offset=16
                      local.set $8
                      i32.const 16
-                     i32.const 33
+                     i32.const 23
                      call $~lib/rt/itcms/__new
                      local.set $0
                      global.get $~lib/memory/__stack_pointer
@@ -7994,19 +7953,19 @@
                      i32.const 3
                      i32.const 134217727
                      call $byn$mgfn-shared$~lib/array/Array<i16>#constructor
-                     local.set $2
+                     local.set $1
                      global.get $~lib/memory/__stack_pointer
-                     local.get $2
+                     local.get $1
                      i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|011
-                      local.get $1
+                      local.get $2
                       local.get $8
                       i32.lt_s
                       if
                        local.get $10
-                       local.get $1
+                       local.get $2
                        i32.const 4
                        i32.shl
                        i32.add
@@ -8025,7 +7984,7 @@
                         f64.load
                         local.set $7
                         local.get $4
-                        local.get $2
+                        local.get $1
                         i32.load offset=12
                         i32.ge_u
                         if
@@ -8033,7 +7992,7 @@
                          i32.const 0
                          i32.lt_s
                          br_if $folding-inner16
-                         local.get $2
+                         local.get $1
                          local.get $4
                          i32.const 1
                          i32.add
@@ -8041,11 +8000,11 @@
                          i32.const 3
                          i32.const 1
                          call $~lib/array/ensureCapacity
-                         local.get $2
+                         local.get $1
                          local.get $9
                          i32.store offset=12
                         end
-                        local.get $2
+                        local.get $1
                         i32.load offset=4
                         local.get $4
                         i32.const 3
@@ -8054,19 +8013,19 @@
                         local.get $7
                         f64.store
                        end
-                       local.get $1
+                       local.get $2
                        i32.const 1
                        i32.add
-                       local.set $1
+                       local.set $2
                        br $for-loop|011
                       end
                      end
-                     local.get $2
+                     local.get $1
                      local.get $0
                      i32.const 3
                      i32.const 0
                      call $~lib/array/ensureCapacity
-                     local.get $2
+                     local.get $1
                      local.get $0
                      i32.store offset=12
                      global.get $~lib/memory/__stack_pointer
@@ -8074,9 +8033,9 @@
                      i32.add
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
-                     local.get $2
+                     local.get $1
                      i32.store offset=4 align=1
-                     i32.const 31
+                     i32.const 22
                      call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
@@ -8086,19 +8045,17 @@
                      local.set $0
                      loop $for-loop|242
                       local.get $0
-                      local.get $2
+                      local.get $1
                       i32.load offset=12
                       i32.lt_s
                       if
                        local.get $0
-                       local.get $2
+                       local.get $1
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $3
-                       local.get $2
+                       local.get $1
                        i32.load offset=4
                        local.get $0
                        i32.const 3
@@ -8109,14 +8066,12 @@
                        i32.eqz
                        br_if $folding-inner6
                        local.get $0
-                       local.get $2
+                       local.get $1
                        i32.load offset=12
                        i32.ge_u
-                       if
-                        br $folding-inner17
-                       end
+                       br_if $folding-inner17
                        local.get $4
-                       local.get $2
+                       local.get $1
                        i32.load offset=4
                        local.get $0
                        i32.const 3
@@ -8249,7 +8204,7 @@
                      i32.const 1024
                      i32.add
                      global.set $~lib/rt/itcms/threshold
-                     br $__inlined_func$start:std/set$680
+                     br $__inlined_func$start:std/set$676
                     end
                     i32.const 0
                     i32.const 544
@@ -8365,7 +8320,7 @@
     end
     i32.const 336
     i32.const 592
-    i32.const 141
+    i32.const 142
     i32.const 22
     call $~lib/builtins/abort
     unreachable
@@ -8374,7 +8329,7 @@
   end
   i32.const 336
   i32.const 592
-  i32.const 123
+  i32.const 124
   i32.const 42
   call $~lib/builtins/abort
   unreachable
@@ -8421,7 +8376,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 764
+  i32.const 724
   i32.lt_s
   if
    unreachable
@@ -8434,7 +8389,7 @@
   if
    i32.const 32
    i32.const 592
-   i32.const 81
+   i32.const 82
    i32.const 62
    call $~lib/builtins/abort
    unreachable

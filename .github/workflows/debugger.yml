@@ -23,6 +23,8 @@ jobs:
       debugger: ${{ steps.filter.outputs.debugger }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -47,6 +49,8 @@ jobs:
       WARPO_DEBUG_SERVER_TRACE_FILE: ${{ github.workspace }}/.warpo-debug-server-trace.log
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

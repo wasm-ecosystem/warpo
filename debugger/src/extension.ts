@@ -20,6 +20,7 @@ interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
   entryFunctionName?: string;
   cwd?: string;
   warpoPath?: string;
+  testNamePattern?: string;
   debugSessionLogging?: boolean;
   debugSessionLogFile?: string;
   args?: number[];

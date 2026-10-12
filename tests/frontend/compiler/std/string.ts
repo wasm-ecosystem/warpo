@@ -62,6 +62,8 @@ assert("".indexOf("hi") == -1);
 assert("a".indexOf("a") == 0);
 assert(str.indexOf(str) == 0);
 assert(str.indexOf("") == 0);
+assert(str.indexOf("", 2) == 2);
+assert(str.indexOf("", i32.MAX_VALUE) == str.length);
 assert(str.indexOf(",") == 2);
 assert(str.indexOf("x") == -1);
 assert(str.indexOf(",", 2) == 2);
@@ -494,6 +496,7 @@ assert("abcde".replaceAll("a", "---") == "---bcde");
 assert("ab".replaceAll("ab", "-----") == "-----");
 assert("aaa".replaceAll("a", "----") == "------------");
 assert("aaa".replaceAll("aa", "---") == "---a");
+assert("ab".replaceAll("a", "0123456789") == "0123456789b");
 
 // test cases for slice method
 str = "abcdefghijklmn";

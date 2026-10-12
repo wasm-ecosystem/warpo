@@ -606,7 +606,8 @@ export class Resolver extends DiagnosticEmitter {
     node: CallExpression,
     prototype: FunctionPrototype,
     ctxFlow: Flow,
-    reportMode: ReportMode = ReportMode.Report
+    reportMode: ReportMode = ReportMode.Report,
+    existingArgumentTypes: Type[] = []
   ): Function | null {
     let typeArguments = node.typeArguments;
 
@@ -635,7 +636,8 @@ export class Resolver extends DiagnosticEmitter {
         prototype,
         prototype.typeParameterNodes,
         ctxFlow,
-        reportMode
+        reportMode,
+        existingArgumentTypes
       );
       if (!resolvedTypeArguments) {
         return null;
@@ -657,7 +659,8 @@ export class Resolver extends DiagnosticEmitter {
     prototype: FunctionPrototype,
     typeParameterNodes: TypeParameterNode[] | null,
     ctxFlow: Flow,
-    reportMode: ReportMode = ReportMode.Report
+    reportMode: ReportMode = ReportMode.Report,
+    existingArgumentTypes: Type[] = []
   ): Type[] | null {
     if (!typeParameterNodes) {
       return null;
@@ -698,11 +701,31 @@ export class Resolver extends DiagnosticEmitter {
       }
     }
 
-    let numArguments = argumentNodes.length;
+    let numExistingArguments = existingArgumentTypes.length;
+    let numArguments = numExistingArguments + argumentNodes.length;
 
-    // infer types with generic components while updating contextual types
-    for (let i = 0; i < numParameters; ++i) {
-      let argumentExpression = i < numArguments ? argumentNodes[i] : parameterNodes[i].initializer;
+    // Infer types from precompiled arguments, such as the template array of a tagged template.
+    for (let i = 0; i < numExistingArguments; ++i) {
+      let typeNode = parameterNodes[i].type;
+      if (parameterNodes[i].parameterKind == ParameterKind.Rest) {
+        typeNode = (<NamedTypeNode>typeNode).typeArguments![0];
+      }
+      if (typeNode.hasGenericComponent(typeParameterNodes)) {
+        this.propagateInferredGenericTypes(
+          typeNode,
+          existingArgumentTypes[i],
+          prototype,
+          contextualTypeArguments,
+          typeParameterNames
+        );
+      }
+    }
+
+    // Infer types from regular AST arguments while updating contextual types.
+    for (let i = numExistingArguments; i < numParameters; ++i) {
+      let argumentIndex = i - numExistingArguments;
+      let argumentExpression =
+        argumentIndex < argumentNodes.length ? argumentNodes[argumentIndex] : parameterNodes[i].initializer;
       if (!argumentExpression) {
         // optional but not have initializer should be handled in the other place
         if (parameterNodes[i].parameterKind == ParameterKind.Optional) {
@@ -3256,6 +3279,7 @@ export class Resolver extends DiagnosticEmitter {
         if (!iface) return null;
         assert(iface.kind == ElementKind.Interface);
         instance.addInterface(<Interface>iface);
+        mir.addInterface(instance, <Interface>iface);
 
         // Like above, if any implemented interface is still pending, yield
         if (pendingClasses.has(iface)) anyPending = true;
@@ -3521,6 +3545,7 @@ export class Resolver extends DiagnosticEmitter {
                   mir.addField(instance, memberName, fieldType, boundInstance.memoryOffset);
                   memoryOffset += byteSize;
                 }
+                mir.addFieldDeclaration(instance, memberName, fieldType, boundInstance.memoryOffset, !needsLayout);
                 boundPrototype.instance = boundInstance;
                 instance.add(boundPrototype.name, boundPrototype); // reports
                 // field materializes here, so check for supported type early

@@ -157,7 +157,8 @@ TmpUses TmpUses::create(wasm::Function *func, SSAMap const &ssaMap) {
         return;
       }
       if (expr->target == FnLocalToStack) {
-        if (!getParent()->is<wasm::LocalSet>()) {
+        auto const *const parent = getParent();
+        if (parent == nullptr || !parent->is<wasm::LocalSet>()) {
           assert(false && "LocalToStack should not be used in other place");
           std::abort();
         }

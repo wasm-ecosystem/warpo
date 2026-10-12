@@ -40,6 +40,17 @@
   i32.const 8
   local.get $2
   i32.store
+  i32.const 8
+  i32.load
+  i32.const 0
+  i32.load
+  i32.const 4
+  i32.load
+  i32.or
+  i32.or
+  if
+   unreachable
+  end
   local.get $4
  )
 )

@@ -34,9 +34,9 @@
  (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 704))
- (global $~lib/memory/__data_end i32 (i32.const 752))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33520))
- (global $~lib/memory/__heap_base i32 (i32.const 33520))
+ (global $~lib/memory/__data_end i32 (i32.const 744))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33512))
+ (global $~lib/memory/__heap_base i32 (i32.const 33512))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00\00\00\00\00\01\00\00\00\00\00\00\00")
  (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
@@ -49,7 +49,7 @@
  (data $8 (i32.const 380) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 444) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00b\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00c\00a\00p\00t\00u\00r\00e\00-\00v\00a\00r\00i\00a\00b\00l\00e\00-\00i\00n\00-\00f\00o\00r\00-\00o\00f\00-\00u\00p\00p\00e\00r\00-\00l\00e\00v\00e\00l\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00")
  (data $10 (i32.const 572) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00^\00\00\00U\00n\00e\00x\00p\00e\00c\00t\00e\00d\00 \00\'\00n\00u\00l\00l\00\'\00 \00(\00n\00o\00t\00 \00a\00s\00s\00i\00g\00n\00e\00d\00 \00o\00r\00 \00f\00a\00i\00l\00e\00d\00 \00c\00a\00s\00t\00)\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $11 (i32.const 704) "\0b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\02\t\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00\00\00\00\00")
+ (data $11 (i32.const 704) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\02\t\00\00\00\00\00\00 \00\00\00\00\00\00\00")
  (table $0 2 2 funcref)
  (elem $0 (i32.const 1) $closure-capture-variable-in-for-of-upper-level/outer~inner)
  (export "outer" (func $closure-capture-variable-in-for-of-upper-level/outer))
@@ -3139,7 +3139,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 8)
-      (i32.const 7)
+      (i32.const 6)
      )
     )
     (call $~lib/rt/__tmptostack
@@ -3226,7 +3226,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 4)
-      (i32.const 9)
+      (i32.const 7)
      )
     )
     (local.get $value)
@@ -3551,7 +3551,7 @@
         (call $~lib/rt/__newFunction
          (i32.const 1)
          (local.get $4)
-         (i32.const 10)
+         (i32.const 8)
         )
        )
       )
@@ -3975,65 +3975,59 @@
   (block $invalid
    (block $~lib/function/Function<%28%29=>i32>
     (block $~lib/iterator/IteratorResult<i32>
-     (block $~lib/iterator/Iterator<i32>
-      (block $~lib/array/ArrayIterator<i32>
-       (block $~lib/iterator/Iterable<i32>
-        (block $~lib/array/Array<i32>
-         (block $~lib/tuple/SmallTuple
-          (block $~lib/arraybuffer/ArrayBufferView
-           (block $~lib/string/String
-            (block $~lib/arraybuffer/ArrayBuffer
-             (block $~lib/object/Object
-              (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/array/ArrayIterator<i32> $~lib/iterator/Iterator<i32> $~lib/iterator/IteratorResult<i32> $~lib/function/Function<%28%29=>i32> $invalid
-               (i32.load
-                (i32.sub
-                 (local.get $0)
-                 (i32.const 8)
-                )
-               )
+     (block $~lib/array/ArrayIterator<i32>
+      (block $~lib/array/Array<i32>
+       (block $~lib/tuple/SmallTuple
+        (block $~lib/arraybuffer/ArrayBufferView
+         (block $~lib/string/String
+          (block $~lib/arraybuffer/ArrayBuffer
+           (block $~lib/object/Object
+            (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/array/Array<i32> $~lib/array/ArrayIterator<i32> $~lib/iterator/IteratorResult<i32> $~lib/function/Function<%28%29=>i32> $invalid
+             (i32.load
+              (i32.sub
+               (local.get $0)
+               (i32.const 8)
               )
              )
-             (return)
             )
-            (return)
            )
            (return)
-          )
-          (block
-           (call $~lib/arraybuffer/ArrayBufferView~visit
-            (local.get $0)
-            (local.get $1)
-           )
-           (return)
-          )
-         )
-         (block
-          (call $~lib/tuple/SmallTuple~visit
-           (local.get $0)
-           (local.get $1)
           )
           (return)
          )
+         (return)
         )
         (block
-         (call $~lib/array/Array<i32>~visit
+         (call $~lib/arraybuffer/ArrayBufferView~visit
           (local.get $0)
           (local.get $1)
          )
          (return)
         )
        )
-       (return)
+       (block
+        (call $~lib/tuple/SmallTuple~visit
+         (local.get $0)
+         (local.get $1)
+        )
+        (return)
+       )
       )
       (block
-       (call $~lib/array/ArrayIterator<i32>~visit
+       (call $~lib/array/Array<i32>~visit
         (local.get $0)
         (local.get $1)
        )
        (return)
       )
      )
-     (return)
+     (block
+      (call $~lib/array/ArrayIterator<i32>~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
+     )
     )
     (return)
    )

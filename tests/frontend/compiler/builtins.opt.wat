@@ -1,7 +1,7 @@
 (module
- (type $0 (func (param i32 i32 i32 i32)))
- (type $1 (func (param i32 i32) (result i32)))
- (type $2 (func))
+ (type $0 (func))
+ (type $1 (func (param i32 i32 i32 i32)))
+ (type $2 (func (param i32 i32) (result i32)))
  (type $3 (func (param i32 i32 f64 f64 f64 f64 f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
@@ -17,7 +17,7 @@
  (data $2 (i32.const 76) ",")
  (data $2.1 (i32.const 88) "\02\00\00\00\16\00\00\00b\00u\00i\00l\00t\00i\00n\00s\00.\00t\00s")
  (data $3 (i32.const 124) "\1c")
- (data $3.1 (i32.const 136) "\t\00\00\00\08\00\00\00\01")
+ (data $3.1 (i32.const 136) "\07\00\00\00\08\00\00\00\01")
  (data $4 (i32.const 156) "L")
  (data $4.1 (i32.const 168) "\02\00\00\008\00\00\00f\00u\00n\00c\00t\00i\00o\00n\00(\00)\00 \00{\00 \00[\00n\00a\00t\00i\00v\00e\00 \00c\00o\00d\00e\00]\00 \00}\00\00\00\00\00,")
  (data $5.1 (i32.const 248) "\02\00\00\00\14\00\00\00s\00i\00g\00n\00a\00t\00u\00r\00e\00s")
@@ -55,19 +55,12 @@
  (data $23.1 (i32.const 872) "\02\00\00\00\08\00\00\00v\00o\00i\00d\00\00\00\00\00,")
  (data $24.1 (i32.const 904) "\02\00\00\00\14\00\00\00s\00o\00m\00e\00 \00v\00a\00l\00u\00e")
  (data $25 (i32.const 940) "\1c")
- (data $25.1 (i32.const 952) "\0e\00\00\00\08\00\00\00\02")
+ (data $25.1 (i32.const 952) "\0c\00\00\00\08\00\00\00\02")
  (data $26 (i32.const 972) "\1c")
- (data $26.1 (i32.const 984) "\0f\00\00\00\08\00\00\00\03")
- (table $0 4 4 funcref)
- (elem $0 (i32.const 1) $start:builtins~anonymous|0 $start:builtins~anonymous|1 $start:builtins~anonymous|2)
+ (data $26.1 (i32.const 984) "\r\00\00\00\08\00\00\00\03")
  (export "test" (func $start:builtins~anonymous|1))
  (export "memory" (memory $0))
  (start $~start)
- (func $start:builtins~anonymous|0 (param $0 i32) (param $1 i32) (result i32)
-  local.get $0
-  local.get $1
-  i32.add
- )
  (func $~lib/string/String.__eq (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (local $3 i32)
@@ -185,9 +178,6 @@
  )
  (func $start:builtins~anonymous|1
   nop
- )
- (func $start:builtins~anonymous|2 (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)
-  unreachable
  )
  (func $~start
   i32.const 1
@@ -360,15 +350,11 @@
   global.set $builtins/f
   f64.const 2
   global.set $builtins/F
-  global.get $builtins/f
-  global.get $builtins/f
-  f32.add
+  f32.const 2
   global.set $builtins/f
   f64.const 2
   global.set $builtins/F
-  f32.const 2
-  global.get $builtins/f
-  f32.div
+  f32.const 1
   global.set $builtins/f
   i32.const 8
   i32.load
@@ -526,32 +512,6 @@
   global.set $builtins/f
   f64.const 25
   global.set $builtins/F
-  i32.const 1
-  i32.const 2
-  call $start:builtins~anonymous|0
-  i32.const 3
-  i32.ne
-  if
-   i32.const 0
-   i32.const 96
-   i32.const 465
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 2
-  i32.const 3
-  call $start:builtins~anonymous|0
-  i32.const 5
-  i32.ne
-  if
-   i32.const 0
-   i32.const 96
-   i32.const 466
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
   i32.const 32
   i32.const 32
   call $~lib/string/String.__eq
@@ -607,9 +567,9 @@
   i32.const 5
   f64.const 0
   f64.const 0
-  f64.const 50
-  f64.const 51
-  f64.const 51
+  f64.const 52
+  f64.const 53
+  f64.const 53
   call $~lib/builtins/trace
   i32.const 352
   i32.const 352

@@ -35,7 +35,7 @@
   if
    local.get $1
    i32.load
-   call_indirect (type $0)
+   return_call_indirect (type $0)
   end
  )
 )

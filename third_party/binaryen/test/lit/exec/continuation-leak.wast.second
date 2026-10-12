@@ -1,7 +1,0 @@
-(module
-  (tag $tag)
-
-  (func $test2 (export "test2")
-    (suspend $tag)
-  )
-)

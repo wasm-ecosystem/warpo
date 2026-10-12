@@ -3,8 +3,8 @@
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param i32 i32 i32)))
- (type $5 (func))
+ (type $4 (func))
+ (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (result i32)))
  (type $8 (func (result i32 i32)))
@@ -2968,10 +2968,104 @@
    )
   )
  )
+ (func $multi-return/testMultiReturnUnpack
+  (local $0 (tuple i32 i32))
+  (local $1 i32)
+  (local $2 i32)
+  (local $firstValue i32)
+  (local $secondValue i32)
+  (local.set $2
+   (call $~lib/rt/__localtostack
+    (block (result i32)
+     (local.set $0
+      (call $multi-return/multi_return_api)
+     )
+     (local.set $1
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/__newTuple
+        (i32.const 8)
+        (i64.const 0)
+       )
+      )
+     )
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $1)
+      )
+      (i32.const 0)
+      (tuple.extract 2 0
+       (local.get $0)
+      )
+     )
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $1)
+      )
+      (i32.const 4)
+      (tuple.extract 2 1
+       (local.get $0)
+      )
+     )
+     (local.get $1)
+    )
+   )
+  )
+  (local.set $firstValue
+   (call $~lib/tuple/SmallTuple#__get<i32>
+    (call $~lib/rt/__tmptostack
+     (local.get $2)
+    )
+    (i32.const 0)
+   )
+  )
+  (local.set $secondValue
+   (call $~lib/tuple/SmallTuple#__get<i32>
+    (call $~lib/rt/__tmptostack
+     (local.get $2)
+    )
+    (i32.const 4)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (local.get $firstValue)
+     (i32.const 10)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 8)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (local.get $secondValue)
+     (i32.const 20)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 9)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
  (func $multi-return/_start (result i32)
   (local $0 (tuple i32 i32))
   (local $1 i32)
   (local $result i32)
+  (call $multi-return/testMultiReturnUnpack)
   (local.set $result
    (call $~lib/rt/__localtostack
     (block (result i32)
@@ -3064,7 +3158,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 11)
+     (i32.const 18)
      (i32.const 1)
     )
     (unreachable)

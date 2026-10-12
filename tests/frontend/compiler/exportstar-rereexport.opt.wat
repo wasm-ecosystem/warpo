@@ -164,7 +164,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$84
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$86
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -188,7 +188,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$84
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$86
      end
      local.get $0
      i32.load offset=8
@@ -660,7 +660,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -735,7 +735,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -923,7 +923,7 @@
     local.set $0
     loop $do-loop|0
      local.get $0
-     block $__inlined_func$~lib/rt/itcms/step$89 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$91 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -939,7 +939,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$89
+         br $__inlined_func$~lib/rt/itcms/step$91
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -978,7 +978,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$89
+           br $__inlined_func$~lib/rt/itcms/step$91
           end
           local.get $0
           i32.load offset=4
@@ -991,35 +991,14 @@
         i32.const 0
         global.set $~lib/rt/itcms/visitCount
         call $~lib/rt/itcms/visitRoots
-        global.get $~lib/rt/itcms/toSpace
         global.get $~lib/rt/itcms/iter
         i32.load offset=4
         i32.const -4
         i32.and
+        local.tee $0
+        global.get $~lib/rt/itcms/toSpace
         i32.eq
         if
-         i32.const 33304
-         local.set $0
-         loop $while-continue|0
-          local.get $0
-          i32.const 33304
-          i32.lt_u
-          if
-           local.get $0
-           i32.load
-           call $~lib/rt/itcms/__visit
-           local.get $0
-           i32.const 4
-           i32.add
-           local.set $0
-           br $while-continue|0
-          end
-         end
-         global.get $~lib/rt/itcms/iter
-         i32.load offset=4
-         i32.const -4
-         i32.and
-         local.set $0
          loop $while-continue|2
           local.get $0
           global.get $~lib/rt/itcms/toSpace
@@ -1070,7 +1049,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$89
+        br $__inlined_func$~lib/rt/itcms/step$91
        end
        global.get $~lib/rt/itcms/iter
        local.tee $0
@@ -1169,7 +1148,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$89
+        br $__inlined_func$~lib/rt/itcms/step$91
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace

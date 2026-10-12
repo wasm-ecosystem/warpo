@@ -49,9 +49,9 @@
  (global $instanceof/y (mut i32) (i32.const 0))
  (global $instanceof/z (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 464))
- (global $~lib/memory/__data_end i32 (i32.const 564))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33332))
- (global $~lib/memory/__heap_base i32 (i32.const 33332))
+ (global $~lib/memory/__data_end i32 (i32.const 544))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33312))
+ (global $~lib/memory/__heap_base i32 (i32.const 33312))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -62,7 +62,7 @@
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00i\00n\00s\00t\00a\00n\00c\00e\00o\00f\00.\00t\00s\00\00\00")
- (data $9 (i32.const 464) "\18\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
+ (data $9 (i32.const 464) "\13\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -6374,7 +6374,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 19)
+      (i32.const 17)
      )
     )
    )
@@ -6384,7 +6384,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 22)
+      (i32.const 18)
      )
     )
    )
@@ -7274,13 +7274,13 @@
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 19)
+     (i32.const 17)
     )
    )
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 22)
+     (i32.const 18)
     )
    )
    (return
@@ -7303,13 +7303,13 @@
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 19)
+     (i32.const 17)
     )
    )
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 22)
+     (i32.const 18)
     )
    )
    (return
@@ -7332,7 +7332,7 @@
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 22)
+     (i32.const 18)
     )
    )
    (return
@@ -7361,13 +7361,13 @@
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 19)
+     (i32.const 17)
     )
    )
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 22)
+     (i32.const 18)
     )
    )
    (return
@@ -7396,13 +7396,13 @@
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 19)
+     (i32.const 17)
     )
    )
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 22)
+     (i32.const 18)
     )
    )
    (return
@@ -7425,13 +7425,13 @@
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 19)
+     (i32.const 17)
     )
    )
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 22)
+     (i32.const 18)
     )
    )
    (return
@@ -7454,13 +7454,13 @@
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 19)
+     (i32.const 17)
     )
    )
    (br_if $is_instance
     (i32.eq
      (local.get $1)
-     (i32.const 22)
+     (i32.const 18)
     )
    )
    (return
@@ -7711,54 +7711,33 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $instanceof/IE
-    (block $instanceof/Z
-     (block $instanceof/IC
-      (block $instanceof/ID
-       (block $instanceof/Y
-        (block $instanceof/IA
-         (block $instanceof/IB
-          (block $instanceof/X
-           (block $instanceof/W
-            (block $instanceof/BlackCat
-             (block $instanceof/Cat
-              (block $instanceof/Animal
-               (block $instanceof/SomethingElse<i32>
-                (block $instanceof/Parent<f32>
-                 (block $instanceof/Child<f32>
-                  (block $instanceof/Parent<i32>
-                   (block $instanceof/Child<i32>
-                    (block $instanceof/C
-                     (block $instanceof/B
-                      (block $instanceof/A
-                       (block $~lib/arraybuffer/ArrayBufferView
-                        (block $~lib/string/String
-                         (block $~lib/arraybuffer/ArrayBuffer
-                          (block $~lib/object/Object
-                           (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $instanceof/A $instanceof/B $instanceof/C $instanceof/Child<i32> $instanceof/Parent<i32> $instanceof/Child<f32> $instanceof/Parent<f32> $instanceof/SomethingElse<i32> $instanceof/Animal $instanceof/Cat $instanceof/BlackCat $instanceof/W $instanceof/X $instanceof/IB $instanceof/IA $instanceof/Y $instanceof/ID $instanceof/IC $instanceof/Z $instanceof/IE $invalid
-                            (i32.load
-                             (i32.sub
-                              (local.get $0)
-                              (i32.const 8)
-                             )
-                            )
-                           )
-                          )
-                          (return)
-                         )
-                         (return)
-                        )
-                        (return)
-                       )
-                       (block
-                        (call $~lib/arraybuffer/ArrayBufferView~visit
+   (block $instanceof/Z
+    (block $instanceof/Y
+     (block $instanceof/X
+      (block $instanceof/W
+       (block $instanceof/BlackCat
+        (block $instanceof/Cat
+         (block $instanceof/Animal
+          (block $instanceof/SomethingElse<i32>
+           (block $instanceof/Parent<f32>
+            (block $instanceof/Child<f32>
+             (block $instanceof/Parent<i32>
+              (block $instanceof/Child<i32>
+               (block $instanceof/C
+                (block $instanceof/B
+                 (block $instanceof/A
+                  (block $~lib/arraybuffer/ArrayBufferView
+                   (block $~lib/string/String
+                    (block $~lib/arraybuffer/ArrayBuffer
+                     (block $~lib/object/Object
+                      (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $instanceof/A $instanceof/B $instanceof/C $instanceof/Child<i32> $instanceof/Parent<i32> $instanceof/Child<f32> $instanceof/Parent<f32> $instanceof/SomethingElse<i32> $instanceof/Animal $instanceof/Cat $instanceof/BlackCat $instanceof/W $instanceof/X $instanceof/Y $instanceof/Z $invalid
+                       (i32.load
+                        (i32.sub
                          (local.get $0)
-                         (local.get $1)
+                         (i32.const 8)
                         )
-                        (return)
                        )
                       )
-                      (return)
                      )
                      (return)
                     )
@@ -7766,7 +7745,13 @@
                    )
                    (return)
                   )
-                  (return)
+                  (block
+                   (call $~lib/arraybuffer/ArrayBufferView~visit
+                    (local.get $0)
+                    (local.get $1)
+                   )
+                   (return)
+                  )
                  )
                  (return)
                 )

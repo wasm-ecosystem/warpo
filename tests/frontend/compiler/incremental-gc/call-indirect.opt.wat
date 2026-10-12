@@ -1,9 +1,9 @@
 (module
  (type $0 (func))
- (type $1 (func (param i32) (result i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32)))
- (type $4 (func (result i32)))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (result i32)))
+ (type $4 (func (param i32) (result i32)))
  (type $5 (func (param i32 i32 i32 i32)))
  (type $6 (func (param i32 i32 i32)))
  (type $7 (func (param i32 i32 i64)))
@@ -34,8 +34,6 @@
  (data $9 (i32.const 444) "\\")
  (data $9.1 (i32.const 456) "\02\00\00\00>\00\00\00i\00n\00c\00r\00e\00m\00e\00n\00t\00a\00l\00-\00g\00c\00/\00c\00a\00l\00l\00-\00i\00n\00d\00i\00r\00e\00c\00t\00.\00t\00s")
  (data $10 (i32.const 544) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00 ")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $incremental-gc/call-indirect/foo)
  (export "issue_2923" (func $incremental-gc/call-indirect/issue_2923))
  (export "memory" (memory $0))
  (start $~start)
@@ -635,7 +633,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  block $CONDITION_RETURN#0
+  block $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $2
    local.get $1
    i64.extend_i32_u
@@ -710,7 +708,7 @@
    local.tee $3
    i32.const 20
    i32.lt_u
-   br_if $CONDITION_RETURN#0
+   br_if $~CONDITION_RETURN/~lib/rt/tlsf/addMemory
    local.get $1
    local.get $5
    i32.const 2
@@ -1155,7 +1153,7 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$69
+   block $__inlined_func$~lib/rt/itcms/interrupt$68
     i32.const 2048
     local.set $1
     loop $do-loop|0
@@ -1172,7 +1170,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$69
+      br $__inlined_func$~lib/rt/itcms/interrupt$68
      end
      local.get $1
      i32.const 0
@@ -1356,7 +1354,30 @@
   i32.store align=1
   local.get $0
  )
- (func $incremental-gc/call-indirect/foo (param $0 i32) (result i32)
+ (func $incremental-gc/call-indirect/issue_2923 (result i32)
+  (local $0 i32)
+  (local $1 i32)
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 576
+  i32.lt_s
+  if
+   unreachable
+  end
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.const 10
+  i32.store
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   global.get $~lib/rt/itcms/state
   i32.const 0
   i32.gt_s
@@ -1392,36 +1413,14 @@
   global.set $~lib/rt/itcms/threshold
   i32.const 6
   call $~lib/rt/itcms/__new
+  local.tee $1
   i32.const 20
   i32.store
   local.get $0
   i32.load
- )
- (func $incremental-gc/call-indirect/issue_2923 (result i32)
-  (local $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 576
-  i32.lt_s
-  if
-   unreachable
-  end
-  i32.const 4
-  call $~lib/rt/itcms/__new
-  local.tee $0
-  i32.const 10
-  i32.store
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  call $incremental-gc/call-indirect/foo
+  local.get $1
+  i32.load
+  i32.add
   local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
@@ -1486,7 +1485,7 @@
   i32.shr_u
   global.set $~lib/rt/itcms/threshold
   call $incremental-gc/call-indirect/issue_2923
-  i32.const 10
+  i32.const 30
   i32.ne
   if
    i32.const 0

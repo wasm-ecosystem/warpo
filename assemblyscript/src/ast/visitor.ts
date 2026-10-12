@@ -118,7 +118,6 @@ export interface IVisitor {
   visitFalseExpression(node: FalseExpression): void;
   visitUnaryPostfixExpression(node: UnaryPostfixExpression): void;
   visitUnaryPrefixExpression(node: UnaryPrefixExpression): void;
-  visitCompiledExpression(node: Expression): void;
   visitSource(node: Source): void;
   visitJsonSource(node: JsonSource): void;
   visitIndexSignatureNode(node: IndexSignatureNode): void;
@@ -316,8 +315,6 @@ export class BaseVisitor implements IVisitor {
     this.visitNode(node.operand);
   }
 
-  visitCompiledExpression(node: Expression): void {}
-
   visitSource(node: Source): void {
     this.visitNodes(node.statements);
   }
@@ -493,6 +490,8 @@ export class BaseVisitor implements IVisitor {
 
   visitVariableDeclaration(node: VariableDeclaration): void {
     this.visitNode(node.name);
+    let pattern = node.arrayBindingPattern;
+    if (pattern) this.visitNodes(pattern);
     this.visitNodes(node.decorators);
     this.visitNode(node.type);
     this.visitNode(node.initializer);

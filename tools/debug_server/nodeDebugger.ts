@@ -176,7 +176,12 @@ export class NodeDebugger implements Debugger {
     this.log(`launch wasmFilePath=${config.wasmFilePath} inspectPort=${port}`);
     const launchArgs =
       "cwd" in config
-        ? [`--inspect-brk=${port}`, config.warpoPath ?? path.join(DIRNAME, "..", "warpo.js"), "test"]
+        ? [
+            `--inspect-brk=${port}`,
+            config.warpoPath ?? path.join(DIRNAME, "..", "warpo.js"),
+            "test",
+            ...(config.testNamePattern === undefined ? [] : ["--testNamePattern", config.testNamePattern]),
+          ]
         : [
             `--inspect-brk=${port}`,
             path.join(DIRNAME, "wasmEntry.js"),

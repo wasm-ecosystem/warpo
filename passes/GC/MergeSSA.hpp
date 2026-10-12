@@ -5,6 +5,7 @@
 #pragma once
 
 #include "ObjLivenessAnalyzer.hpp"
+#include "ReturnParamFunctions.hpp"
 #include "SSAObj.hpp"
 #include "pass.h"
 #include "wasm.h"
@@ -15,19 +16,23 @@ namespace warpo::passes::gc {
 struct MergeSSA : public wasm::Pass {
   ModuleLevelSSAMap const &moduleLevelSSAMap_;
   std::shared_ptr<ObjLivenessInfo> info_;
+  ReturnParamMap const returnParamMap_;
 
-  explicit MergeSSA(ModuleLevelSSAMap const &moduleLevelSSAMap, std::shared_ptr<ObjLivenessInfo> const &info)
-      : moduleLevelSSAMap_(moduleLevelSSAMap), info_(info) {
+  explicit MergeSSA(ModuleLevelSSAMap const &moduleLevelSSAMap, std::shared_ptr<ObjLivenessInfo> const &info,
+                    ReturnParamMap returnParamMap)
+      : moduleLevelSSAMap_(moduleLevelSSAMap), info_(info), returnParamMap_(std::move(returnParamMap)) {
     name = "MergeSSA";
   }
   bool modifiesBinaryenIR() override { return false; }
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<Pass> create() override { return std::make_unique<MergeSSA>(moduleLevelSSAMap_, info_); }
+  std::unique_ptr<Pass> create() override {
+    return std::make_unique<MergeSSA>(moduleLevelSSAMap_, info_, returnParamMap_);
+  }
   void runOnFunction(wasm::Module *m, wasm::Function *func) override;
 
   static void addToPass(wasm::PassRunner &runner, ModuleLevelSSAMap const &moduleLevelSSAMap,
-                        std::shared_ptr<ObjLivenessInfo> const &info) {
-    runner.add(std::unique_ptr<wasm::Pass>(new MergeSSA(moduleLevelSSAMap, info)));
+                        std::shared_ptr<ObjLivenessInfo> const &info, ReturnParamMap const &returnParamMap) {
+    runner.add(std::unique_ptr<wasm::Pass>(new MergeSSA(moduleLevelSSAMap, info, returnParamMap)));
   }
 };
 

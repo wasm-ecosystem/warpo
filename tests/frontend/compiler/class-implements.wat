@@ -33,9 +33,9 @@
  (global $class-implements/g (mut i32) (i32.const 0))
  (global $class-implements/h (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 480))
- (global $~lib/memory/__data_end i32 (i32.const 592))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33360))
- (global $~lib/memory/__heap_base i32 (i32.const 33360))
+ (global $~lib/memory/__data_end i32 (i32.const 568))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33336))
+ (global $~lib/memory/__heap_base i32 (i32.const 33336))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -46,7 +46,7 @@
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00c\00l\00a\00s\00s\00-\00i\00m\00p\00l\00e\00m\00e\00n\00t\00s\00.\00t\00s\00\00\00\00\00\00\00")
- (data $9 (i32.const 480) "\1b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
+ (data $9 (i32.const 480) "\15\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3414,7 +3414,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 6)
+      (i32.const 5)
      )
     )
    )
@@ -3445,7 +3445,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 8)
+      (i32.const 7)
      )
     )
    )
@@ -3476,7 +3476,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 10)
+      (i32.const 8)
      )
     )
    )
@@ -3507,7 +3507,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 11)
+      (i32.const 9)
      )
     )
    )
@@ -3538,7 +3538,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 11)
+      (i32.const 9)
      )
     )
    )
@@ -3569,7 +3569,7 @@
     (call $~lib/rt/__tmptostack
      (call $~lib/rt/itcms/__new
       (i32.const 0)
-      (i32.const 11)
+      (i32.const 9)
      )
     )
    )
@@ -3604,7 +3604,7 @@
         (call $~lib/rt/__tmptostack
          (call $~lib/rt/itcms/__new
           (i32.const 0)
-          (i32.const 12)
+          (i32.const 10)
          )
         )
        )
@@ -3630,7 +3630,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 14)
+        (i32.const 11)
        )
       )
      )
@@ -3734,7 +3734,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 16)
+        (i32.const 12)
        )
       )
      )
@@ -3838,7 +3838,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 17)
+        (i32.const 13)
        )
       )
      )
@@ -3942,7 +3942,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 18)
+        (i32.const 14)
        )
       )
      )
@@ -4046,7 +4046,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 8)
-        (i32.const 19)
+        (i32.const 15)
        )
       )
      )
@@ -4150,7 +4150,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 8)
-        (i32.const 20)
+        (i32.const 16)
        )
       )
      )
@@ -4254,7 +4254,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 22)
+        (i32.const 17)
        )
       )
      )
@@ -4287,7 +4287,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 23)
+        (i32.const 18)
        )
       )
      )
@@ -4322,7 +4322,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 25)
+        (i32.const 19)
        )
       )
      )
@@ -4382,7 +4382,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 26)
+        (i32.const 20)
        )
       )
      )
@@ -4528,7 +4528,7 @@
     (br_if $case0
      (i32.eq
       (local.get $1)
-      (i32.const 11)
+      (i32.const 9)
      )
     )
     (br $default)
@@ -4561,7 +4561,7 @@
        (br_if $case0
         (i32.eq
          (local.get $1)
-         (i32.const 11)
+         (i32.const 9)
         )
        )
        (br_if $case1
@@ -4573,19 +4573,19 @@
        (br_if $case2
         (i32.eq
          (local.get $1)
-         (i32.const 6)
+         (i32.const 5)
+        )
+       )
+       (br_if $case3
+        (i32.eq
+         (local.get $1)
+         (i32.const 7)
         )
        )
        (br_if $case3
         (i32.eq
          (local.get $1)
          (i32.const 8)
-        )
-       )
-       (br_if $case3
-        (i32.eq
-         (local.get $1)
-         (i32.const 10)
         )
        )
        (br $default)
@@ -4633,7 +4633,13 @@
       (br_if $case0
        (i32.eq
         (local.get $1)
-        (i32.const 11)
+        (i32.const 9)
+       )
+      )
+      (br_if $case1
+       (i32.eq
+        (local.get $1)
+        (i32.const 7)
        )
       )
       (br_if $case1
@@ -4642,16 +4648,10 @@
         (i32.const 8)
        )
       )
-      (br_if $case1
-       (i32.eq
-        (local.get $1)
-        (i32.const 10)
-       )
-      )
       (br_if $case2
        (i32.eq
         (local.get $1)
-        (i32.const 12)
+        (i32.const 10)
        )
       )
       (br $default)
@@ -4696,37 +4696,37 @@
          (br_if $case0
           (i32.eq
            (local.get $1)
-           (i32.const 16)
+           (i32.const 12)
           )
          )
          (br_if $case1
           (i32.eq
            (local.get $1)
-           (i32.const 17)
+           (i32.const 13)
           )
          )
          (br_if $case2
           (i32.eq
            (local.get $1)
-           (i32.const 19)
+           (i32.const 15)
           )
          )
          (br_if $case3
           (i32.eq
            (local.get $1)
-           (i32.const 20)
+           (i32.const 16)
           )
          )
          (br_if $case4
           (i32.eq
            (local.get $1)
-           (i32.const 14)
+           (i32.const 11)
           )
          )
          (br_if $case5
           (i32.eq
            (local.get $1)
-           (i32.const 18)
+           (i32.const 14)
           )
          )
          (br $default)
@@ -4789,37 +4789,37 @@
          (br_if $case0
           (i32.eq
            (local.get $2)
-           (i32.const 16)
+           (i32.const 12)
           )
          )
          (br_if $case1
           (i32.eq
            (local.get $2)
-           (i32.const 17)
+           (i32.const 13)
           )
          )
          (br_if $case2
           (i32.eq
            (local.get $2)
-           (i32.const 19)
+           (i32.const 15)
           )
          )
          (br_if $case3
           (i32.eq
            (local.get $2)
-           (i32.const 20)
+           (i32.const 16)
           )
          )
          (br_if $case4
           (i32.eq
            (local.get $2)
-           (i32.const 14)
+           (i32.const 11)
           )
          )
          (br_if $case5
           (i32.eq
            (local.get $2)
-           (i32.const 18)
+           (i32.const 14)
           )
          )
          (br $default)
@@ -4878,13 +4878,13 @@
      (br_if $case0
       (i32.eq
        (local.get $1)
-       (i32.const 19)
+       (i32.const 15)
       )
      )
      (br_if $case1
       (i32.eq
        (local.get $1)
-       (i32.const 20)
+       (i32.const 16)
       )
      )
      (br $default)
@@ -4921,13 +4921,13 @@
      (br_if $case0
       (i32.eq
        (local.get $1)
-       (i32.const 22)
+       (i32.const 17)
       )
      )
      (br_if $case1
       (i32.eq
        (local.get $1)
-       (i32.const 23)
+       (i32.const 18)
       )
      )
      (br $default)
@@ -4962,13 +4962,13 @@
      (br_if $case0
       (i32.eq
        (local.get $1)
-       (i32.const 25)
+       (i32.const 19)
       )
      )
      (br_if $case1
       (i32.eq
        (local.get $1)
-       (i32.const 26)
+       (i32.const 20)
       )
      )
      (br $default)
@@ -5003,13 +5003,13 @@
      (br_if $case0
       (i32.eq
        (local.get $2)
-       (i32.const 25)
+       (i32.const 19)
       )
      )
      (br_if $case1
       (i32.eq
        (local.get $2)
-       (i32.const 26)
+       (i32.const 20)
       )
      )
      (br $default)
@@ -5128,57 +5128,33 @@
   (block $invalid
    (block $class-implements/D2
     (block $class-implements/D1
-     (block $class-implements/I4
-      (block $class-implements/C2
-       (block $class-implements/C1
-        (block $class-implements/I3
-         (block $class-implements/B4
-          (block $class-implements/B3
-           (block $class-implements/B2
-            (block $class-implements/A4
-             (block $class-implements/A3
-              (block $class-implements/I2
-               (block $class-implements/A2
-                (block $class-implements/K
-                 (block $class-implements/G
-                  (block $class-implements/F
-                   (block $class-implements/E
-                    (block $class-implements/J
-                     (block $class-implements/D
-                      (block $class-implements/B
-                       (block $class-implements/C
-                        (block $class-implements/I
-                         (block $class-implements/A
-                          (block $~lib/arraybuffer/ArrayBufferView
-                           (block $~lib/string/String
-                            (block $~lib/arraybuffer/ArrayBuffer
-                             (block $~lib/object/Object
-                              (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-implements/A $class-implements/I $class-implements/C $class-implements/B $class-implements/D $class-implements/J $class-implements/E $class-implements/F $class-implements/G $class-implements/K $class-implements/A2 $class-implements/I2 $class-implements/A3 $class-implements/A4 $class-implements/B2 $class-implements/B3 $class-implements/B4 $class-implements/I3 $class-implements/C1 $class-implements/C2 $class-implements/I4 $class-implements/D1 $class-implements/D2 $invalid
-                               (i32.load
-                                (i32.sub
-                                 (local.get $0)
-                                 (i32.const 8)
-                                )
-                               )
-                              )
-                             )
-                             (return)
-                            )
-                            (return)
-                           )
-                           (return)
-                          )
-                          (block
-                           (call $~lib/arraybuffer/ArrayBufferView~visit
-                            (local.get $0)
-                            (local.get $1)
-                           )
-                           (return)
+     (block $class-implements/C2
+      (block $class-implements/C1
+       (block $class-implements/B4
+        (block $class-implements/B3
+         (block $class-implements/B2
+          (block $class-implements/A4
+           (block $class-implements/A3
+            (block $class-implements/A2
+             (block $class-implements/G
+              (block $class-implements/F
+               (block $class-implements/E
+                (block $class-implements/D
+                 (block $class-implements/B
+                  (block $class-implements/C
+                   (block $class-implements/A
+                    (block $~lib/arraybuffer/ArrayBufferView
+                     (block $~lib/string/String
+                      (block $~lib/arraybuffer/ArrayBuffer
+                       (block $~lib/object/Object
+                        (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-implements/A $class-implements/C $class-implements/B $class-implements/D $class-implements/E $class-implements/F $class-implements/G $class-implements/A2 $class-implements/A3 $class-implements/A4 $class-implements/B2 $class-implements/B3 $class-implements/B4 $class-implements/C1 $class-implements/C2 $class-implements/D1 $class-implements/D2 $invalid
+                         (i32.load
+                          (i32.sub
+                           (local.get $0)
+                           (i32.const 8)
                           )
                          )
-                         (return)
                         )
-                        (return)
                        )
                        (return)
                       )
@@ -5186,7 +5162,13 @@
                      )
                      (return)
                     )
-                    (return)
+                    (block
+                     (call $~lib/arraybuffer/ArrayBufferView~visit
+                      (local.get $0)
+                      (local.get $1)
+                     )
+                     (return)
+                    )
                    )
                    (return)
                   )

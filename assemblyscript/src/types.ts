@@ -1071,14 +1071,13 @@ export class Signature {
 
   /** Tests if a value of this function type is assignable to a target of the specified function type. */
   isAssignableTo(target: Signature, checkCompatibleOverride: bool = false): bool {
+    if (!checkCompatibleOverride) return this.isFunctionTypeCompatibleTo(target);
+
     let thisThisType = this.thisType;
     let targetThisType = target.thisType;
 
     if (thisThisType && targetThisType) {
-      const compatibleThisType = checkCompatibleOverride
-        ? thisThisType.canExtendOrImplement(targetThisType)
-        : targetThisType.isAssignableTo(thisThisType);
-      if (!compatibleThisType) return false;
+      if (!thisThisType.canExtendOrImplement(targetThisType)) return false;
     } else if (thisThisType || targetThisType) {
       return false;
     }
@@ -1092,7 +1091,8 @@ export class Signature {
     if (!(thisReturnType == targetReturnType || thisReturnType.isAssignableTo(targetReturnType))) {
       return false;
     }
-    // check parameter types (invariant)
+    // Interface overrides compare method parameters in the opposite direction
+    // of ordinary function calls.
     let thisParameterTypes = this.parameterTypes;
     let targetParameterTypes = target.parameterTypes;
     let numParameters = thisParameterTypes.length;
@@ -1101,7 +1101,72 @@ export class Signature {
     for (let i = 0; i < numParameters; ++i) {
       let thisParameterType = unchecked(thisParameterTypes[i]);
       let targetParameterType = unchecked(targetParameterTypes[i]);
-      if (thisParameterType != targetParameterType) return false;
+      if (thisParameterType == targetParameterType) continue;
+      if (
+        !thisParameterType.getSignature() ||
+        !targetParameterType.getSignature() ||
+        // Compatible function types must use the same Wasm representation for
+        // indirect calls.
+        thisParameterType.toRef() != targetParameterType.toRef() ||
+        !targetParameterType.getSignature()!.isFunctionTypeCompatibleTo(thisParameterType.getSignature()!)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Checks whether this function type can accept values supplied by another function type.
+   */
+  private isFunctionTypeCompatibleTo(target: Signature): bool {
+    let thisThisType = this.thisType;
+    let targetThisType = target.thisType;
+    if (thisThisType && targetThisType) {
+      if (thisThisType.toRef() != targetThisType.toRef() || !targetThisType.isAssignableTo(thisThisType)) {
+        return false;
+      }
+    } else if (thisThisType || targetThisType) {
+      return false;
+    }
+
+    if (this.hasRest != target.hasRest) return false;
+
+    let thisReturnType = this.returnType;
+    let targetReturnType = target.returnType;
+    if (
+      thisReturnType != targetReturnType &&
+      (thisReturnType.toRef() != targetReturnType.toRef() || !thisReturnType.isAssignableTo(targetReturnType))
+    ) {
+      return false;
+    }
+
+    let thisParameterTypes = this.parameterTypes;
+    let targetParameterTypes = target.parameterTypes;
+    let numParameters = thisParameterTypes.length;
+    if (numParameters != targetParameterTypes.length) return false;
+
+    for (let i = 0; i < numParameters; ++i) {
+      let thisParameterType = unchecked(thisParameterTypes[i]);
+      let targetParameterType = unchecked(targetParameterTypes[i]);
+      if (thisParameterType == targetParameterType) continue;
+      let thisParameterSignature = thisParameterType.getSignature();
+      let targetParameterSignature = targetParameterType.getSignature();
+      if (thisParameterSignature && targetParameterSignature) {
+        if (
+          thisParameterType.toRef() != targetParameterType.toRef() ||
+          !targetParameterSignature.isFunctionTypeCompatibleTo(thisParameterSignature)
+        ) {
+          return false;
+        }
+      } else if (
+        // The interface function type must accept the parameter supplied by the
+        // implementation.
+        thisParameterType.toRef() != targetParameterType.toRef() ||
+        !targetParameterType.isAssignableTo(thisParameterType)
+      ) {
+        return false;
+      }
     }
     return true;
   }

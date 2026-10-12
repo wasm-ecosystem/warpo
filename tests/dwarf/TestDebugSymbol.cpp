@@ -1,3 +1,4 @@
+#include <cctype>
 #include <cstddef>
 #include <filesystem>
 #include <gtest/gtest.h>
@@ -45,6 +46,9 @@ public:
     }
 
     if (skipping_) {
+      if (line.find_first_not_of(" \t") == std::string::npos)
+        return std::string{};
+
       // Count leading spaces (indentation)
       size_t const currentIndent = line.find_first_not_of(' ');
       size_t const indentLevel = (currentIndent == std::string::npos) ? line.size() : currentIndent;
@@ -169,6 +173,47 @@ std::optional<std::string> tryReplacePcWithFileLine(std::string const &line,
   return indent + attrName + "\t" + sourceFileName + ":" + std::to_string(location->line) + "\n";
 }
 
+void removeDwarfEntryOffset(std::string &line) {
+  size_t const colonPos = line.find(':');
+  if (colonPos < 3U || line.compare(0U, 2U, "0x") != 0)
+    return;
+
+  for (size_t i = 2U; i < colonPos; ++i) {
+    if (std::isxdigit(static_cast<unsigned char>(line[i])) == 0)
+      return;
+  }
+
+  size_t const contentPos = line.find_first_not_of(" \t", colonPos + 1U);
+  if (contentPos == std::string::npos || (line.compare(contentPos, sizeof("DW_TAG_") - 1U, "DW_TAG_") != 0 &&
+                                          line.compare(contentPos, sizeof("DW_AT_") - 1U, "DW_AT_") != 0 &&
+                                          line.compare(contentPos, sizeof("NULL") - 1U, "NULL") != 0))
+    return;
+
+  size_t const eraseEnd = colonPos + 1U < line.size() && line[colonPos + 1U] == ' ' ? colonPos + 2U : colonPos + 1U;
+  line.erase(0U, eraseEnd);
+}
+
+void removeTypeReferenceOffset(std::string &line) {
+  size_t const attributePos = line.find("DW_AT_type");
+  if (attributePos == std::string::npos)
+    return;
+
+  size_t const attributeEnd = attributePos + sizeof("DW_AT_type") - 1U;
+  size_t const addressPos = line.find("0x", attributeEnd);
+  if (addressPos == std::string::npos)
+    return;
+
+  size_t addressEnd = addressPos + 2U;
+  while (addressEnd < line.size() && std::isxdigit(static_cast<unsigned char>(line[addressEnd])) != 0)
+    ++addressEnd;
+  if (addressEnd == addressPos + 2U)
+    return;
+
+  while (addressEnd < line.size() && (line[addressEnd] == ' ' || line[addressEnd] == '\t'))
+    ++addressEnd;
+  line.erase(addressPos, addressEnd - addressPos);
+}
+
 std::string filterLibSubprograms(std::string const &dump, warpo::passes::SourceMapResolver const &sourceMapResolver) {
   std::istringstream input(dump);
   LineReader reader(input);
@@ -178,6 +223,7 @@ std::string filterLibSubprograms(std::string const &dump, warpo::passes::SourceM
   LibSubprogramSkipper libSkipper;
 
   while (reader.next(line)) {
+    removeDwarfEntryOffset(line);
     normalizeUnitHeaderLine(line);
 
     if (std::optional<std::string> const handled = libSkipper.processLine(line); handled.has_value()) {
@@ -197,7 +243,15 @@ std::string filterLibSubprograms(std::string const &dump, warpo::passes::SourceM
 
   if (std::optional<std::string> const tail = libSkipper.finalize(); tail.has_value())
     output << *tail;
-  return output.str();
+
+  std::istringstream normalizedInput(output.str());
+  std::ostringstream normalizedOutput;
+  LineReader normalizedReader(normalizedInput);
+  while (normalizedReader.next(line)) {
+    removeTypeReferenceOffset(line);
+    normalizedOutput << line << '\n';
+  }
+  return normalizedOutput.str();
 }
 
 } // namespace
@@ -234,10 +288,10 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
   std::string const rawDump = writer.dumpDwarf();
   std::vector<uint8_t> const wasmBinary = writer.getBinary();
-  uint32_t const codeSectionOffset = warpo::passes::SourceMapResolver::getCodeSectionOffset(wasmBinary);
+  uint32_t const offsetAdjustment = warpo::passes::SourceMapResolver::getCodeSectionOffsetAdjustment(wasmBinary);
   warpo::passes::SourceMapResolver const sourceMapResolver{writer.getSourceMap(),
-                                                           static_cast<uint32_t>(wasmBinary.size()), codeSectionOffset,
-                                                           writer.raw().getBinaryLocations()};
+                                                           static_cast<uint32_t>(wasmBinary.size()), offsetAdjustment,
+                                                           writer.raw().tableOfContents.functionBodies};
   std::string const dumpOutput = filterLibSubprograms(rawDump, sourceMapResolver);
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;

@@ -183,50 +183,28 @@
   unreachable
  )
  (func $enum-to-string/EnumWithInit#__enum_to_string (param $0 i32) (result i32)
-  block $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$2 (result i32)
+  local.get $0
+  i32.const 4
+  i32.eq
+  if
    i32.const 32
-   local.get $0
-   i32.const 4
-   i32.eq
-   br_if $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$2
-   drop
-   i32.const 64
-   local.get $0
-   i32.const 2
-   i32.eq
-   br_if $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$2
-   drop
-   i32.const 96
-   local.get $0
-   i32.const 1
-   i32.eq
-   br_if $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$2
-   drop
-   unreachable
+   return
   end
- )
- (func $enum-to-string/EnumWithDup#__enum_to_string (param $0 i32) (result i32)
-  (local $1 i32)
-  block $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$3 (result i32)
-   i32.const 32
-   local.get $0
-   i32.const 1
-   i32.eq
-   local.tee $1
-   br_if $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$3
-   drop
+  local.get $0
+  i32.const 2
+  i32.eq
+  if
    i32.const 64
-   local.get $0
-   i32.const 2
-   i32.eq
-   br_if $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$3
-   drop
-   i32.const 96
-   local.get $1
-   br_if $__inlined_func$byn$mgfn-shared$enum-to-string/EnumWithInit#__enum_to_string$3
-   drop
-   unreachable
+   return
   end
+  local.get $0
+  i32.const 1
+  i32.eq
+  if
+   i32.const 96
+   return
+  end
+  unreachable
  )
  (func $~start
   i32.const 0
@@ -359,8 +337,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $enum-to-string/EnumWithDup#__enum_to_string
+  i32.const 32
   i32.const 32
   call $~lib/string/String.__eq
   i32.eqz
@@ -372,8 +349,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $enum-to-string/EnumWithDup#__enum_to_string
+  i32.const 64
   i32.const 64
   call $~lib/string/String.__eq
   i32.eqz
@@ -385,8 +361,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $enum-to-string/EnumWithDup#__enum_to_string
+  i32.const 32
   i32.const 32
   call $~lib/string/String.__eq
   i32.eqz

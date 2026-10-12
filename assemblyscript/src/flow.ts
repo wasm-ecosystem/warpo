@@ -62,7 +62,7 @@ import { UncheckedBehavior } from "./compiler";
 
 import { DiagnosticCode } from "./diagnostics";
 
-import { DeclarationBase, Node, Source, VariableDeclaration, VariableLikeBase } from "./ast";
+import { DeclarationBase, IdentifierExpression, Node, Source, VariableDeclaration, VariableLikeBase } from "./ast";
 
 import { cloneMap } from "./util";
 
@@ -379,8 +379,8 @@ export class Flow {
   }
 
   /** Gets a free temporary local of the specified type. */
-  getTempLocal(type: Type, declaration: VariableDeclaration | null = null): Local {
-    let local = this.targetFunction.addLocal(type, null, declaration);
+  getTempLocal(type: Type): Local {
+    let local = this.targetFunction.addLocal(type);
     this.unsetLocalFlag(local.index, ~0);
     return local;
   }
@@ -392,9 +392,12 @@ export class Flow {
     return null;
   }
 
-  /** Adds a new scoped local of the specified name. */
-  addScopedLocal(name: string, type: Type, declaration: VariableDeclaration | null): Local {
-    let scopedLocal = this.getTempLocal(type, declaration);
+  /** Adds a new scoped local of the specified identifier. */
+  addScopedLocal(identifier: IdentifierExpression, type: Type, declaration: VariableDeclaration | null): Local {
+    let variableLikeBase = declaration ? declaration.toVariableLikeBase() : null;
+    let declarationBase = declaration ? declaration.toDeclarationBase() : null;
+    let scopedLocal = this.targetFunction.addLocal(type, identifier, variableLikeBase, declarationBase, false);
+    let name = identifier.text;
     scopedLocal.name = name;
     scopedLocal.internalName = mangleInternalName(name, scopedLocal.parent, false);
     let scopedLocals = this.scopedLocals;

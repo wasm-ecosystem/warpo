@@ -29,6 +29,7 @@ export function foo(v0: i32, v1: i32, v2: i32): u32 {
   struct.v0 = v0;
   struct.v1 = v1;
   struct.v2 = v2;
+  baz(struct.v0 | struct.v1 | struct.v2);
 
   return z;
 }

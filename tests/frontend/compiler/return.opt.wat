@@ -6,12 +6,12 @@
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\04\00\00\00\08\00\00\00\01")
  (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $start:return~anonymous|0)
+ (elem $0 (i32.const 1) $return/nop)
  (export "testVoidReturn" (func $return/testVoidReturn))
  (export "testVoidReturnFunction" (func $return/testVoidReturnFunction))
  (export "memory" (memory $0))
  (start $~start)
- (func $start:return~anonymous|0
+ (func $return/nop
   nop
  )
  (func $return/testVoidReturnFunction (param $0 i32) (param $1 i32)

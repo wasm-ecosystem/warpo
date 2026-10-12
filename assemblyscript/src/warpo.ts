@@ -8,7 +8,11 @@ declare function _WarpoMarkCallInlined(expr: ExpressionRef): void;
 
 export declare function _WarpoCreateBaseType(typeName: string): void;
 export declare function _WarpoCreateClass(className: string, rtid: u32): void;
+export declare function _WarpoCreateInterface(interfaceName: string): void;
 export declare function _WarpoAddBaseClass(className: string, parentClassName: string | null): void;
+export declare function _WarpoAddBaseInterface(interfaceName: string, parentInterfaceName: string): void;
+export declare function _WarpoAddInterface(className: string, interfaceName: string): void;
+export declare function _WarpoAddMemoryExposureType(typeName: string): void;
 export declare function _WarpoAddTemplateType(className: string, templateTypeName: string): void;
 
 export declare function _WarpoAddField(
@@ -17,6 +21,14 @@ export declare function _WarpoAddField(
   typeName: string,
   offset: u32,
   nullable: bool
+): void;
+export declare function _WarpoAddFieldDeclaration(
+  className: string,
+  fieldName: string,
+  typeName: string,
+  offset: u32,
+  nullable: bool,
+  redeclared: bool
 ): void;
 export declare function _WarpoAddGlobal(variableName: string, typeName: string, nullable: bool, isMutable: bool): void;
 
