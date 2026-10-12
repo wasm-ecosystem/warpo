@@ -31,3 +31,4 @@
 - [从数组和 tuple 中解包](/zh-CN/using_language/details/unpack)
 - [Tagged template literals](/zh-CN/using_language/details/template_literal)
 - [ReadonlyArray](/zh-CN/using_language/details/readonlyarray)
+- [类对象字面量的初始化顺序](/zh-CN/using_language/details/object_literal_initialization)

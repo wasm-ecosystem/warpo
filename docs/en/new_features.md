@@ -1,6 +1,6 @@
-# New Features :tada:
+# New Features and Breaks:tada:
 
-Comparison with AS, we support some new features.
+Comparison with AS, we support some new features and breaks.
 
 <img src="/version/2.2.3.svg" alt="2.2.3" />
 
@@ -32,3 +32,4 @@ Comparison with AS, we support some new features.
 - [promise](/en/using_language/details/promise)
 - [tagged template literals](/en/using_language/details/template_literal)
 - [ReadonlyArray](/en/using_language/details/readonlyarray)
+- [class object literal initialization order](/en/using_language/details/object_literal_initialization)

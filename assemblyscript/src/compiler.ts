@@ -9952,6 +9952,19 @@ export class Compiler extends DiagnosticEmitter {
   }
 
   private compileObjectLiteral(expression: ObjectLiteralExpression, contextualType: Type): ExpressionRef {
+    // This method builds IR at compile time; it does not create the runtime object.
+    // Compile-time preparation:
+    // - Validate the target class and the members supplied by the literal.
+    // - Collect all instance fields, then remove fields explicitly supplied by the literal.
+    //   The remaining fields are omitted; check them and emit any required zero stores.
+    // - Compile each literal RHS together with its field write or setter call in source order.
+    //
+    // Generated runtime order (the allocation/constructor call is prepended with unshift):
+    // 1. Allocate the instance and run its generated constructor. The allocator and constructor
+    //    establish field defaults, including declaration initializers.
+    // 2. Apply extra zero stores for omitted fields without declaration initializers.
+    // 3. Evaluate each literal RHS left to right, completing its write/setter before the next RHS.
+    // 4. Return the instance.
     let module = this.module;
 
     // Check that contextual type is a class (TODO: hidden class for interfaces?)
@@ -10000,6 +10013,7 @@ export class Compiler extends DiagnosticEmitter {
     let members = classReference.members;
     let hasErrors = false;
     let exprs = new Array<ExpressionRef>();
+    let memberExprs = new Array<ExpressionRef>();
     let flow = this.currentFlow;
     let tempLocal = flow.getTempLocal(classType);
     let classTypeRef = classType.toRef();
@@ -10021,8 +10035,7 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
-    // Iterate through the members defined in our expression
-    let deferredProperties = new Array<Property>();
+    // Evaluate and write each explicit member in source order, including setters.
     for (let i = 0; i < numNames; ++i) {
       let memberName = names[i].text;
       let member = classReference.getMember(memberName);
@@ -10073,12 +10086,6 @@ export class Compiler extends DiagnosticEmitter {
       // This member is no longer omitted, so delete from our omitted fields
       omittedFields.delete(propertyInstance);
 
-      // Defer real properties to be set after fields are initialized
-      if (!propertyInstance.isField) {
-        deferredProperties.push(propertyInstance);
-        continue;
-      }
-
       let propertyType = propertyInstance.type;
       let expr = this.makeCallDirect(
         setterInstance,
@@ -10093,29 +10100,13 @@ export class Compiler extends DiagnosticEmitter {
         // in case
         expr = module.drop(expr);
       }
-      exprs.push(expr);
-    }
-
-    // Call deferred real property setters after
-    for (let i = 0, k = deferredProperties.length; i < k; ++i) {
-      let propertyInstance = deferredProperties[i];
-      let setterInstance = assert(propertyInstance.setterInstance);
-      exprs.push(
-        this.makeCallDirect(
-          setterInstance,
-          [
-            module.local_get(tempLocal.index, classTypeRef),
-            this.compileExpression(values[i], propertyInstance.type, Constraints.ConvImplicit),
-          ],
-          setterInstance.identifierNode
-        )
-      );
+      memberExprs.push(expr);
     }
 
     this.currentType = classType.nonNullableType;
     if (hasErrors) return module.unreachable();
 
-    // Check remaining omitted fields
+    // Emit omitted-field defaults before explicit writes, so setters cannot be overwritten by zeroing.
     for (let _values = Set_values(omittedFields), j = 0, l = _values.length; j < l; ++j) {
       let propertyInstance = _values[j];
       assert(propertyInstance.isField);
@@ -10179,6 +10170,12 @@ export class Compiler extends DiagnosticEmitter {
       hasErrors = true;
     }
     if (hasErrors) return module.unreachable();
+
+    // Complete each write before the next initializer observes its side effects.
+    for (let i = 0, k = memberExprs.length; i < k; ++i) {
+      exprs.push(memberExprs[i]);
+    }
+    this.currentType = classType.nonNullableType;
 
     // generate the default constructor
     let ctor = this.ensureConstructor(classReference, expression);

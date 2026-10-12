@@ -35,8 +35,6 @@
 // NOTE: The outermost block is the function body block, not a real block opcode.
 //
 
-// TODO: extend this pass to handle functions with non-void return types.
-
 #include <cassert>
 #include <deque>
 #include <fmt/format.h>
