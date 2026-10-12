@@ -2098,6 +2098,9 @@
   i32.const 6
   call $~lib/rt/itcms/__new
   local.tee $0
+  f64.const 0
+  f64.store offset=8
+  local.get $0
   i32.const 0
   i32.store
   local.get $0
@@ -2106,9 +2109,6 @@
   local.get $0
   i32.const 608
   call $~lib/rt/itcms/__link
-  local.get $0
-  f64.const 0
-  f64.store offset=8
   local.get $0
   i32.load
   if

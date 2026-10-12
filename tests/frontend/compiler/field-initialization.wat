@@ -4669,15 +4669,15 @@
         )
        )
       )
+      (i32.store offset=4
+       (local.get $19)
+       (i32.const 0)
+      )
       (call $field-initialization/SomeObject#set:a
        (call $~lib/rt/__tmptostack
         (local.get $19)
        )
        (i32.const 1)
-      )
-      (i32.store offset=4
-       (local.get $19)
-       (i32.const 0)
       )
       (local.get $19)
      )
@@ -4742,15 +4742,15 @@
         )
        )
       )
+      (i32.store
+       (local.get $21)
+       (i32.const 0)
+      )
       (call $field-initialization/SomeObject#set:b
        (call $~lib/rt/__tmptostack
         (local.get $21)
        )
        (i32.const 624)
-      )
-      (i32.store
-       (local.get $21)
-       (i32.const 0)
       )
       (local.get $21)
      )
@@ -4892,12 +4892,6 @@
         )
        )
       )
-      (call $field-initialization/SomeOtherObject#set:c
-       (call $~lib/rt/__tmptostack
-        (local.get $25)
-       )
-       (i32.const 688)
-      )
       (i32.store
        (local.get $25)
        (i32.const 0)
@@ -4905,6 +4899,12 @@
       (i32.store offset=4
        (local.get $25)
        (i32.const 0)
+      )
+      (call $field-initialization/SomeOtherObject#set:c
+       (call $~lib/rt/__tmptostack
+        (local.get $25)
+       )
+       (i32.const 688)
       )
       (local.get $25)
      )
