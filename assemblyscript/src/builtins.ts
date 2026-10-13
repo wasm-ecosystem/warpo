@@ -9685,8 +9685,7 @@ export function compileVisitGlobals(compiler: Compiler): void {
     if (element.kind != ElementKind.Global) continue;
     let global = <Global>element;
     let globalType = global.type;
-    let classReference = globalType.getClass();
-    if (classReference && !classReference.hasDecorator(DecoratorFlags.Unmanaged) && global.is(CommonFlags.Compiled)) {
+    if (globalType.isManaged && global.is(CommonFlags.Compiled)) {
       if (global.is(CommonFlags.Inlined)) {
         let value = global.constantIntegerValue;
         if (i64_low(value) == 0 && i64_high(value) == 0) {

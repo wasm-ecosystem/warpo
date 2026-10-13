@@ -3757,6 +3757,17 @@
   )
   (if
    (local.tee $1
+    (global.get $typeof/fn)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
     (global.get $typeof/c)
    )
    (then

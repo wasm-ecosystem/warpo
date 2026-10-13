@@ -3,9 +3,9 @@
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32 i32)))
- (type $4 (func (param i32 i32) (result i32)))
- (type $5 (func))
- (type $6 (func (result i32)))
+ (type $4 (func (result i32)))
+ (type $5 (func (param i32 i32) (result i32)))
+ (type $6 (func))
  (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i32) (result i32)))
  (type $9 (func (param i32 i32 i64) (result i32)))
@@ -30,6 +30,8 @@
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
+ (global $closure-basic/globallyRootedClosure (mut i32) (i32.const 0))
+ (global $closure-basic/replacementClosure (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 480))
  (global $~lib/memory/__data_end i32 (i32.const 508))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33276))
@@ -45,8 +47,8 @@
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00c\00l\00o\00s\00u\00r\00e\00-\00b\00a\00s\00i\00c\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 480) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $closure-basic/outer~inner)
+ (table $0 3 3 funcref)
+ (elem $0 (i32.const 1) $closure-basic/outer~inner $closure-basic/createReaderCapturing~anonymous|0)
  (export "outer" (func $closure-basic/outer))
  (export "memory" (memory $0))
  (start $~start)
@@ -3192,7 +3194,7 @@
    )
   )
   (return
-   (call_indirect (type $6)
+   (call_indirect (type $4)
     (block (result i32)
      (call $~lib/rt/closure/setClosureEnv
       (i32.load offset=4
@@ -3207,6 +3209,138 @@
      )
     )
    )
+  )
+ )
+ (func $closure-basic/createReaderCapturing~anonymous|0 (result i32)
+  (local $0 i32)
+  (local.set $0
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/__newTuple
+     (i32.const 4)
+     (i64.const 1)
+    )
+   )
+  )
+  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+   (call $~lib/rt/__tmptostack
+    (local.get $0)
+   )
+   (i32.const 0)
+   (call $~lib/rt/__tmptostack
+    (global.get $~lib/rt/closure/env)
+   )
+  )
+  (global.set $~lib/rt/closure/env
+   (i32.const 0)
+  )
+  (call $~lib/tuple/SmallTuple#__get<i32>
+   (call $~lib/rt/__tmptostack
+    (call $~lib/rt/closure/getClosureEnvByLevel
+     (i32.const 1)
+    )
+   )
+   (i32.const 4)
+  )
+ )
+ (func $closure-basic/createReaderCapturing (param $capturedValue i32) (result i32)
+  (local $1 i32)
+  (local.set $1
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/__newTuple
+     (i32.const 8)
+     (i64.const 1)
+    )
+   )
+  )
+  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+   (call $~lib/rt/__tmptostack
+    (local.get $1)
+   )
+   (i32.const 0)
+   (i32.const 0)
+  )
+  (call $~lib/tuple/SmallTuple#__set<i32>
+   (call $~lib/rt/__tmptostack
+    (local.get $1)
+   )
+   (i32.const 4)
+   (local.get $capturedValue)
+  )
+  (return
+   (call $~lib/rt/__newFunction
+    (i32.const 2)
+    (local.get $1)
+    (i32.const 5)
+   )
+  )
+ )
+ (func $~lib/rt/itcms/__collect
+  (drop
+   (i32.const 0)
+  )
+  (if
+   (i32.gt_s
+    (global.get $~lib/rt/itcms/state)
+    (i32.const 0)
+   )
+   (then
+    (block $while-break|0
+     (loop $while-continue|0
+      (if
+       (i32.ne
+        (global.get $~lib/rt/itcms/state)
+        (i32.const 0)
+       )
+       (then
+        (drop
+         (call $~lib/rt/itcms/step)
+        )
+        (br $while-continue|0)
+       )
+      )
+     )
+    )
+   )
+  )
+  (drop
+   (call $~lib/rt/itcms/step)
+  )
+  (block $while-break|1
+   (loop $while-continue|1
+    (if
+     (i32.ne
+      (global.get $~lib/rt/itcms/state)
+      (i32.const 0)
+     )
+     (then
+      (drop
+       (call $~lib/rt/itcms/step)
+      )
+      (br $while-continue|1)
+     )
+    )
+   )
+  )
+  (global.set $~lib/rt/itcms/threshold
+   (i32.add
+    (i32.wrap_i64
+     (i64.div_u
+      (i64.mul
+       (i64.extend_i32_u
+        (global.get $~lib/rt/itcms/total)
+       )
+       (i64.extend_i32_u
+        (i32.const 200)
+       )
+      )
+      (i64.const 100)
+     )
+    )
+    (i32.const 1024)
+   )
+  )
+  (drop
+   (i32.const 0)
   )
  )
  (func $start:closure-basic
@@ -3261,9 +3395,114 @@
     (unreachable)
    )
   )
+  (global.set $closure-basic/globallyRootedClosure
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.const 0)
+    )
+    (call $closure-basic/createReaderCapturing
+     (i32.const 7)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call_indirect (type $4)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $closure-basic/globallyRootedClosure)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 0)
+       )
+       (i32.load
+        (global.get $closure-basic/globallyRootedClosure)
+       )
+      )
+     )
+     (i32.const 7)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 18)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/rt/itcms/__collect)
+  (global.set $closure-basic/replacementClosure
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.const 0)
+    )
+    (call $closure-basic/createReaderCapturing
+     (i32.const 99)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call_indirect (type $4)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $closure-basic/globallyRootedClosure)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 0)
+       )
+       (i32.load
+        (global.get $closure-basic/globallyRootedClosure)
+       )
+      )
+     )
+     (i32.const 7)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 23)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
+  (if
+   (local.tee $1
+    (global.get $closure-basic/globallyRootedClosure)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $closure-basic/replacementClosure)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
   (if
    (local.tee $1
     (global.get $~lib/rt/closure/env)
