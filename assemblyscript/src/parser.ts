@@ -65,6 +65,7 @@ import {
   WhileStatement,
   ModuleDeclaration,
   MethodDeclaration,
+  ModifierInfo,
   JsonSource,
   IPropertyName,
   TupleTypeNode,
@@ -203,40 +204,89 @@ export class Parser extends DiagnosticEmitter {
       else decorators.push(decorator);
     }
 
-    // check modifiers
-    let exportStart = 0;
-    let exportEnd = 0;
-    let defaultStart = 0;
-    let defaultEnd = 0;
-    if (tn.skip(Token.Export)) {
-      if (startPos < 0) startPos = tn.tokenPos;
-      flags |= CommonFlags.Export;
-      exportStart = tn.tokenPos;
-      exportEnd = tn.pos;
-      if (tn.skip(Token.Default)) {
-        defaultStart = tn.tokenPos;
-        defaultEnd = tn.pos;
-      }
+    // Try parsing declaration modifiers together so their order can be validated later.
+    let modifiers = new Array<ModifierInfo>();
+    let modifierState = tn.mark();
+    let contextIsAmbient = namespace != null && namespace.is(CommonFlags.Ambient);
+    while (true) {
+      let token = tn.peek();
+      if (token != Token.Export && token != Token.Default && token != Token.Declare && token != Token.Abstract) break;
+      tn.next();
+      let modifierRange = tn.range(tn.tokenPos, tn.pos);
+      modifiers.push(new ModifierInfo(token, modifierRange));
     }
 
-    let declareStart = 0;
-    let declareEnd = 0;
-    let contextIsAmbient = namespace != null && namespace.is(CommonFlags.Ambient);
-    if (tn.skip(Token.Declare)) {
-      if (contextIsAmbient) {
-        this.error(DiagnosticCode.A_declare_modifier_cannot_be_used_in_an_already_ambient_context, tn.range()); // recoverable
-      } else {
-        if (startPos < 0) startPos = tn.tokenPos;
-        declareStart = startPos;
-        declareEnd = tn.pos;
-        flags |= CommonFlags.Declare | CommonFlags.Ambient;
+    let declarationToken = tn.peek();
+    let isDeclaration =
+      declarationToken == Token.Class ||
+      declarationToken == Token.Interface ||
+      declarationToken == Token.Function ||
+      declarationToken == Token.Const ||
+      declarationToken == Token.Let ||
+      declarationToken == Token.Var ||
+      declarationToken == Token.Enum ||
+      declarationToken == Token.Namespace ||
+      declarationToken == Token.Type ||
+      declarationToken == Token.Import;
+    let canParseModifiers =
+      isDeclaration &&
+      (!hasModifier(modifiers, Token.Abstract) || declarationToken == Token.Class) &&
+      (!hasModifier(modifiers, Token.Default) || hasModifier(modifiers, Token.Export));
+    if (canParseModifiers) {
+      tn.discard(modifierState);
+      for (let i = 0, k = modifiers.length; i < k; ++i) {
+        let modifier = modifiers[i];
+        if (startPos < 0) startPos = modifier.range.start;
+        switch (modifier.token) {
+          case Token.Export:
+            flags |= CommonFlags.Export;
+            break;
+          case Token.Default:
+            break;
+          case Token.Declare:
+            if (contextIsAmbient) {
+              this.error(
+                DiagnosticCode.A_declare_modifier_cannot_be_used_in_an_already_ambient_context,
+                modifier.range
+              ); // recoverable
+            } else {
+              flags |= CommonFlags.Declare | CommonFlags.Ambient;
+            }
+            break;
+          case Token.Abstract:
+            flags |= CommonFlags.Abstract;
+            break;
+        }
       }
-    } else if (contextIsAmbient) {
-      flags |= CommonFlags.Ambient;
+    } else {
+      tn.reset(modifierState);
+      modifiers = new Array<ModifierInfo>();
+
+      if (tn.skip(Token.Export)) {
+        if (startPos < 0) startPos = tn.tokenPos;
+        modifiers.push(new ModifierInfo(Token.Export, tn.range()));
+        flags |= CommonFlags.Export;
+        if (tn.skip(Token.Default)) {
+          modifiers.push(new ModifierInfo(Token.Default, tn.range()));
+        }
+      }
+
+      if (tn.skip(Token.Declare)) {
+        modifiers.push(new ModifierInfo(Token.Declare, tn.range()));
+        if (contextIsAmbient) {
+          this.error(DiagnosticCode.A_declare_modifier_cannot_be_used_in_an_already_ambient_context, tn.range()); // recoverable
+        } else {
+          if (startPos < 0) startPos = tn.tokenPos;
+          flags |= CommonFlags.Declare | CommonFlags.Ambient;
+        }
+      } else if (contextIsAmbient) {
+        flags |= CommonFlags.Ambient;
+      }
     }
 
     // parse the statement
     let statement: Statement | null = null;
+    let isDefaultExportAlias = false;
 
     // handle declarations
     let first = tn.peek();
@@ -360,23 +410,39 @@ export class Parser extends DiagnosticEmitter {
       default: {
         // handle plain exports
         if (flags & CommonFlags.Export) {
-          if (defaultEnd && tn.skipIdentifier(IdentifierHandling.Prefer)) {
-            if (declareEnd) {
-              this.error(DiagnosticCode.An_export_assignment_cannot_have_modifiers, tn.range(declareStart, declareEnd));
+          let defaultModifier = findModifier(modifiers, Token.Default);
+          let declareModifier = findModifier(modifiers, Token.Declare);
+          if (defaultModifier && tn.skipIdentifier(IdentifierHandling.Prefer)) {
+            if (declareModifier) {
+              this.error(
+                DiagnosticCode.An_export_assignment_cannot_have_modifiers,
+                tn.range(startPos, declareModifier.range.end)
+              );
             }
-            statement = this.parseExportDefaultAlias(tn, startPos, defaultStart, defaultEnd);
-            defaultStart = defaultEnd = 0; // consume
+            statement = this.parseExportDefaultAlias(
+              tn,
+              startPos,
+              defaultModifier.range.start,
+              defaultModifier.range.end
+            );
+            isDefaultExportAlias = true;
           } else {
             statement = this.parseExport(tn, startPos, (flags & CommonFlags.Declare) != 0);
           }
 
           // handle non-declaration statements
         } else {
-          if (exportEnd) {
-            this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(exportStart, exportEnd), "export"); // recoverable
+          let exportModifier = findModifier(modifiers, Token.Export);
+          let declareModifier = findModifier(modifiers, Token.Declare);
+          if (exportModifier) {
+            this.error(DiagnosticCode._0_modifier_cannot_be_used_here, exportModifier.range, "export"); // recoverable
           }
-          if (declareEnd) {
-            this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(declareStart, declareEnd), "declare"); // recoverable
+          if (declareModifier) {
+            this.error(
+              DiagnosticCode._0_modifier_cannot_be_used_here,
+              tn.range(startPos, declareModifier.range.end),
+              "declare"
+            ); // recoverable
           }
           if (namespace) {
             this.error(DiagnosticCode.Namespace_can_only_have_declarations, tn.range(startPos));
@@ -395,8 +461,11 @@ export class Parser extends DiagnosticEmitter {
       }
     }
 
+    if (statement) statement.modifiers = modifiers;
+
     // check if this an `export default` declaration
-    if (defaultEnd && statement != null) {
+    let defaultModifier = findModifier(modifiers, Token.Default);
+    if (defaultModifier && !isDefaultExportAlias && statement != null) {
       switch (statement.kind) {
         case NodeKind.EnumDeclaration:
         case NodeKind.FunctionDeclaration:
@@ -406,7 +475,7 @@ export class Parser extends DiagnosticEmitter {
           return Node.createExportDefaultStatement(<DeclarationStatement>statement, tn.range(startPos, tn.pos));
         }
         default: {
-          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(defaultStart, defaultEnd), "default");
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, defaultModifier.range, "default");
         }
       }
     }
@@ -3748,6 +3817,18 @@ export class Parser extends DiagnosticEmitter {
       }
     } while (again);
   }
+}
+
+function findModifier(modifiers: ModifierInfo[], token: Token): ModifierInfo | null {
+  for (let i = 0, k = modifiers.length; i < k; ++i) {
+    let modifier = modifiers[i];
+    if (modifier.token == token) return modifier;
+  }
+  return null;
+}
+
+function hasModifier(modifiers: ModifierInfo[], token: Token): bool {
+  return findModifier(modifiers, token) != null;
 }
 
 /** Operator precedence from least to largest. */
