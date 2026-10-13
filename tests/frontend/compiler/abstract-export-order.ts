@@ -3,7 +3,8 @@ namespace N {
   abstract class C {}
   // prettier-ignore
   abstract export class Invalid {}
-  export export class Duplicate {}
+  // prettier-ignore
+  export class Duplicate {}
 }
 
 ERROR("EOF");
