@@ -3458,6 +3458,28 @@
   (local $1 i32)
   (if
    (local.tee $1
+    (global.get $closure-capture-for-no-incrementor/first)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $closure-capture-for-no-incrementor/second)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
     (global.get $~lib/rt/closure/env)
    )
    (then
