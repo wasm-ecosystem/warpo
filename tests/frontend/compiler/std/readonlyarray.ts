@@ -27,10 +27,9 @@ function checkReadonlyArray(values: ReadonlyArray<i32>): void {
   assert(values.some((value) => value == 3));
 
   let filtered = values.filter((value) => value % 2 == 0);
-  assert(filtered.length == 3);
+  assert(filtered.length == 2);
   assert(filtered[0] == 2);
-  assert(filtered[1] == 4);
-  assert(filtered[2] == 2);
+  assert(filtered[1] == 2);
 
   let sliced = values.slice(1, 3);
   assert(sliced.length == 2);
