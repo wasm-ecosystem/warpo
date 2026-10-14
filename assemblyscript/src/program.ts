@@ -1232,11 +1232,7 @@ export class Program extends DiagnosticEmitter {
       let statements = source.statements;
       for (let j = 0, l = statements.length; j < l; ++j) {
         let statement = statements[j];
-        if (statement.kind == NodeKind.ExportDefault) {
-          this.checkModifierOrder((<ExportDefaultStatement>statement).declaration);
-        } else {
-          this.checkModifierOrder(statement);
-        }
+        this.checkModifierOrder(statement);
         switch (statement.kind) {
           case NodeKind.Export: {
             this.initializeExports(<ExportStatement>statement, file, queuedExports, queuedExportsStar);
@@ -3151,6 +3147,10 @@ export class Program extends DiagnosticEmitter {
       let member = members[i];
       this.checkModifierOrder(member);
       switch (member.kind) {
+        case NodeKind.ExportDefault: {
+          this.error(DiagnosticCode.A_default_export_can_only_be_used_in_a_module, member.range);
+          break;
+        }
         case NodeKind.ClassDeclaration: {
           this.initializeClass(<ClassDeclaration>member, original, queuedExtends, queuedImplements);
           break;
@@ -3188,6 +3188,7 @@ export class Program extends DiagnosticEmitter {
   }
 
   private checkModifierOrder(statement: Statement): void {
+    if (statement.kind == NodeKind.ExportDefault) statement = (<ExportDefaultStatement>statement).declaration;
     let modifiers = statement.modifiers;
     for (let i = 0, k = modifiers.length; i < k; ++i) {
       let earlierModifier = modifiers[i];

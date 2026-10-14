@@ -4,7 +4,7 @@
 
 import { CommonFlags } from "./common-flags";
 import { LIBRARY_PREFIX, PATH_DELIMITER, mangleInternalPath } from "./paths";
-import { Tokenizer, Token, IdentifierHandling, isIllegalVariableIdentifier } from "./tokenizer";
+import { Tokenizer, Token, IdentifierHandling, isIllegalVariableIdentifier, tokenIsAlsoIdentifier } from "./tokenizer";
 
 import { Range, DiagnosticCode, DiagnosticEmitter, DiagnosticMessage } from "./diagnostics";
 
@@ -211,8 +211,14 @@ export class Parser extends DiagnosticEmitter {
     while (true) {
       let token = tn.peek();
       if (token != Token.Export && token != Token.Default && token != Token.Declare && token != Token.Abstract) break;
+      let state = tn.mark();
       tn.next();
       let modifierRange = tn.range(tn.tokenPos, tn.pos);
+      if (tokenIsAlsoIdentifier(token) && tn.peekOnNewLine()) {
+        tn.reset(state);
+        break;
+      }
+      tn.discard(state);
       modifiers.push(new ModifierInfo(token, modifierRange));
     }
 
