@@ -4,7 +4,7 @@ namespace N {
   // prettier-ignore
   abstract export class Invalid {}
   // prettier-ignore
-  export class Duplicate {}
+  export export class Duplicate {}
 }
 
 ERROR("EOF");
