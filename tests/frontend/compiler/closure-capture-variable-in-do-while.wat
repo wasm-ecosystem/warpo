@@ -3330,6 +3330,17 @@
   (local $1 i32)
   (if
    (local.tee $1
+    (global.get $closure-capture-variable-in-do-while/func1)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
     (global.get $~lib/rt/closure/env)
    )
    (then
