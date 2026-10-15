@@ -3151,6 +3151,8 @@ export class Program extends DiagnosticEmitter {
           this.error(DiagnosticCode.A_default_export_can_only_be_used_in_a_module, member.range);
           break;
         }
+        case NodeKind.Expression:
+          break;
         case NodeKind.ClassDeclaration: {
           this.initializeClass(<ClassDeclaration>member, original, queuedExtends, queuedImplements);
           break;

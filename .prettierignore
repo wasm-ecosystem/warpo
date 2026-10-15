@@ -51,6 +51,7 @@
 # tests for parser errors
 /tests/frontend/compiler/tuple-unpack-element-errors.ts
 /tests/frontend/compiler/default-export-namespace.ts
+/tests/frontend/compiler/modifier-declaration-lookahead.ts
 
 # bug of prettier
 # Fixme: https://github.com/wasm-ecosystem/assemblyscript-prettier/issues/21

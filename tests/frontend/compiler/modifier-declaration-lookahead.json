@@ -1,0 +1,18 @@
+{
+  "stderr": [
+    "TS1030: 'export' modifier already seen.",
+    "TS1030: 'export' modifier already seen.",
+    "TS1030: 'declare' modifier already seen.",
+    "TS1030: 'export' modifier already seen.",
+    "TS1030: 'export' modifier already seen.",
+    "TS1030: 'declare' modifier already seen.",
+    "TS2304: Cannot find name 'type'.",
+    "TS2304: Cannot find name 'namespace'.",
+    "TS2304: Cannot find name 'type'.",
+    "TS2304: Cannot find name 'type'.",
+    "TS2304: Cannot find name 'namespace'.",
+    "TS2304: Cannot find name 'type'.",
+    "TS2322:",
+    "AS102: User-defined: \"EOF\""
+  ]
+}
