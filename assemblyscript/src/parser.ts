@@ -450,10 +450,9 @@ export class Parser extends DiagnosticEmitter {
               "declare"
             ); // recoverable
           }
-          if (namespace) {
+          statement = this.parseStatement(tn, true);
+          if (namespace && statement != null && statement.kind != NodeKind.Expression) {
             this.error(DiagnosticCode.Namespace_can_only_have_declarations, tn.range(startPos));
-          } else {
-            statement = this.parseStatement(tn, true);
           }
         }
         break;
