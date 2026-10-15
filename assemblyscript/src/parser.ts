@@ -2267,7 +2267,7 @@ export class Parser extends DiagnosticEmitter {
             }
             members.push(member);
           } else {
-            this.skipStatement(tn);
+            if (tn.peek() != Token.CloseBrace) this.skipStatement(tn);
             if (tn.skip(Token.EndOfFile)) {
               this.error(DiagnosticCode._0_expected, tn.range(), "}");
               return null;

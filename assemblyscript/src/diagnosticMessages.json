@@ -107,6 +107,7 @@
   "String literal expected.": 1141,
   "Line break not permitted here.": 1142,
   "Declaration expected.": 1146,
+  "Import declarations in a namespace cannot reference a module.": 1147,
   "'const' declarations must be initialized.": 1155,
   "Unterminated regular expression literal.": 1161,
   "Declarations with initializers cannot also have definite assignment assertions.": 1263,

@@ -3151,6 +3151,10 @@ export class Program extends DiagnosticEmitter {
           this.error(DiagnosticCode.A_default_export_can_only_be_used_in_a_module, member.range);
           break;
         }
+        case NodeKind.Import: {
+          this.error(DiagnosticCode.Import_declarations_in_a_namespace_cannot_reference_a_module, member.range);
+          break;
+        }
         case NodeKind.Expression:
           break;
         case NodeKind.ClassDeclaration: {
