@@ -1,0 +1,3 @@
+{
+  "stderr": ["TS1029: 'export' modifier must precede 'abstract' modifier.", "TS1030: 'export' modifier already seen."]
+}
