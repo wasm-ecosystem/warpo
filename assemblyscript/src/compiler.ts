@@ -9568,37 +9568,13 @@ export class Compiler extends DiagnosticEmitter {
         return this.makeCallDirect(concatMethod, [lhs, rhs], expression);
       }
 
-      // Compile to a `StaticArray<string>#join("") in the general case
-      let expressionPositions = new Array<i32>(numExpressions);
-      let values = new Array<ExpressionRef>();
-      if (parts[0].length > 0) values.push(this.ensureStaticString(parts[0]));
-      for (let i = 1; i < numParts; ++i) {
-        expressionPositions[i - 1] = values.length;
-        values.push(module.usize(0));
-        if (parts[i].length > 0) values.push(this.ensureStaticString(parts[i]));
-      }
-      let arrayInstance = assert(this.resolver.resolveClass(this.program.staticArrayPrototype, [stringType]));
-      let segment = this.addStaticBuffer(stringType, values, arrayInstance.id);
-      this.program.OBJECTInstance.writeField("gcInfo", 3, segment.buffer, 0); // use transparent gcinfo
-      let arrayOffset = i64_add(segment.offset, i64_new(this.program.totalOverhead));
-      let joinInstance = assert(arrayInstance.getMethod("join"));
-      let indexedSetInstance = assert(arrayInstance.lookupOverload(OperatorKind.IndexedSet, true));
       let flow = this.currentFlow;
-
-      // Store the static array address in a tmp local so the shadow stack
-      // keeps it reachable. GC will visit it and all dynamic children.
-      let arrayLocal = flow.getTempLocal(arrayInstance.type);
       let stmts = new Array<ExpressionRef>();
-      stmts.push(module.local_set(arrayLocal.index, module.usize(arrayOffset), true));
-
-      // Evaluate each expression into a temp local.
-      // One local per expression prevents recursion on the same static array
-      // from overwriting already prepared parts.
       let temps = new Array<Local>(numExpressions);
-      for (let i = 0; i < numExpressions; ++i) {
-        let subExpression = expressions[i];
+      for (let expressionIndex = 0; expressionIndex < numExpressions; ++expressionIndex) {
+        let subExpression = expressions[expressionIndex];
         let temp = flow.getTempLocal(stringType);
-        temps[i] = temp;
+        temps[expressionIndex] = temp;
         stmts.push(
           module.local_set(
             temp.index,
@@ -9607,30 +9583,128 @@ export class Compiler extends DiagnosticEmitter {
           )
         );
       }
-
-      // Populate the static array slots with the temp locals
-      for (let i = 0; i < numExpressions; ++i) {
+      let constantSize = i64_new(0);
+      for (let partIndex = 0; partIndex < numParts; ++partIndex) {
+        constantSize = i64_add(constantSize, i64_new(parts[partIndex].length << 1));
+      }
+      let sizeLocal = flow.getTempLocal(Type.u64);
+      stmts.push(module.local_set(sizeLocal.index, module.i64(i64_low(constantSize), i64_high(constantSize)), false));
+      let sizes = new Array<Local>(numExpressions);
+      let sizeOffset = this.program.totalOverhead - this.program.OBJECTInstance.offsetof("rtSize");
+      for (let expressionIndex = 0; expressionIndex < numExpressions; ++expressionIndex) {
+        let temp = temps[expressionIndex];
+        let size = flow.getTempLocal(Type.usize32);
+        sizes[expressionIndex] = size;
         stmts.push(
-          this.makeCallDirect(
-            indexedSetInstance,
-            [
-              module.local_get(arrayLocal.index, stringType.toRef()),
-              module.i32(expressionPositions[i]),
-              module.local_get(temps[i].index, stringType.toRef()),
-            ],
-            expression
+          module.local_set(
+            size.index,
+            module.if(
+              module.local_get(temp.index, stringType.toRef()),
+              module.load(
+                4,
+                false,
+                module.binary(
+                  BinaryOp.SubI32,
+                  module.local_get(temp.index, stringType.toRef()),
+                  module.usize(sizeOffset)
+                ),
+                TypeRef.I32
+              ),
+              module.usize(0)
+            ),
+            false
+          )
+        );
+        stmts.push(
+          module.local_set(
+            sizeLocal.index,
+            module.binary(
+              BinaryOp.AddI64,
+              module.local_get(sizeLocal.index, TypeRef.I64),
+              module.unary(UnaryOp.ExtendU32ToU64, module.local_get(size.index, TypeRef.I32))
+            ),
+            false
           )
         );
       }
-
-      // Call join("") and return the result
       stmts.push(
-        this.makeCallDirect(
-          joinInstance,
-          [module.local_get(arrayLocal.index, stringType.toRef()), this.ensureStaticString("")],
-          expression
+        module.if(
+          module.binary(BinaryOp.GtU64, module.local_get(sizeLocal.index, TypeRef.I64), module.i64(-1, 0)),
+          module.unreachable()
         )
       );
+      let resultLocal = flow.getTempLocal(stringType);
+      let offsetLocal = flow.getTempLocal(Type.usize32);
+      let copySizeLocal = flow.getTempLocal(Type.usize32);
+      let copies = new Array<ExpressionRef>();
+      copies.push(
+        module.local_set(
+          resultLocal.index,
+          this.makeCallDirect(
+            this.program.newInstance,
+            [
+              module.unary(UnaryOp.WrapI64ToI32, module.local_get(sizeLocal.index, TypeRef.I64)),
+              module.i32(stringInstance.id),
+            ],
+            expression
+          ),
+          true
+        )
+      );
+      copies.push(module.local_set(offsetLocal.index, module.usize(0), false));
+      let copyInstance: Function | null = this.options.hasFeature(Feature.BulkMemory)
+        ? null
+        : this.program.requireFunction(BuiltinNames.memory_copy);
+      if (copyInstance && !this.compileFunction(copyInstance, true)) return module.unreachable();
+      for (let segmentIndex = 0; segmentIndex < numParts + numExpressions; ++segmentIndex) {
+        let partIndex = segmentIndex >> 1;
+        let source: ExpressionRef;
+        let size: ExpressionRef;
+        if (segmentIndex & 1) {
+          source = module.local_get(temps[partIndex].index, stringType.toRef());
+          size = module.local_get(sizes[partIndex].index, TypeRef.I32);
+        } else {
+          let part = parts[partIndex];
+          if (!part.length) continue;
+          source = this.ensureStaticString(part);
+          size = module.usize(part.length << 1);
+        }
+        copies.push(module.local_set(copySizeLocal.index, size, false));
+        let copyOperands = [
+          module.binary(
+            BinaryOp.AddI32,
+            module.local_get(resultLocal.index, stringType.toRef()),
+            module.local_get(offsetLocal.index, TypeRef.I32)
+          ),
+          source,
+          module.local_get(copySizeLocal.index, TypeRef.I32),
+        ];
+        copies.push(
+          copyInstance
+            ? module.call(copyInstance.internalName, copyOperands, TypeRef.None)
+            : module.memory_copy(copyOperands[0], copyOperands[1], copyOperands[2])
+        );
+        copies.push(
+          module.local_set(
+            offsetLocal.index,
+            module.binary(
+              BinaryOp.AddI32,
+              module.local_get(offsetLocal.index, TypeRef.I32),
+              module.local_get(copySizeLocal.index, TypeRef.I32)
+            ),
+            false
+          )
+        );
+      }
+      copies.push(module.local_get(resultLocal.index, stringType.toRef()));
+      stmts.push(
+        module.if(
+          module.unary(UnaryOp.WrapI64ToI32, module.local_get(sizeLocal.index, TypeRef.I64)),
+          module.block(null, copies, stringType.toRef()),
+          this.ensureStaticString("")
+        )
+      );
+      this.currentType = stringType;
       return module.block(null, stmts, stringType.toRef());
     }
 
