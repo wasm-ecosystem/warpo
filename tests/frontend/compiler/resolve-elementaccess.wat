@@ -49,6 +49,7 @@
  (global $~lib/util/number/_exp_pow (mut i32) (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $resolve-elementaccess/buf (mut i32) (i32.const 0))
+ (global $resolve-elementaccess/voidIndex (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 3776))
  (global $~lib/memory/__data_end i32 (i32.const 3808))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 36576))
@@ -6037,6 +6038,7 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
+  (local $4 i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -6391,6 +6393,41 @@
      (i32.const 0)
      (i32.const 2176)
      (i32.const 20)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (drop
+   (call $~lib/typedarray/Uint8Array#__get
+    (call $~lib/rt/__tmptostack
+     (global.get $resolve-elementaccess/buf)
+    )
+    (block (result i32)
+     (global.set $resolve-elementaccess/voidIndex
+      (i32.add
+       (local.tee $4
+        (global.get $resolve-elementaccess/voidIndex)
+       )
+       (i32.const 1)
+      )
+     )
+     (local.get $4)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (global.get $resolve-elementaccess/voidIndex)
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 2176)
+     (i32.const 25)
      (i32.const 1)
     )
     (unreachable)

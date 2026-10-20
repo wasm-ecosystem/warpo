@@ -53,6 +53,9 @@
 /tests/frontend/compiler/default-export-namespace.ts
 /tests/frontend/compiler/modifier-declaration-lookahead.ts
 /tests/frontend/compiler/modifier-import-recovery.ts
+/tests/frontend/compiler/asi.ts
+/tests/frontend/compiler/asi-errors.ts
+/tests/frontend/compiler/resolve-elementaccess.ts
 
 # bug of prettier
 # Fixme: https://github.com/wasm-ecosystem/assemblyscript-prettier/issues/21

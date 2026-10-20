@@ -29,6 +29,7 @@
  (global $~lib/util/number/_frc_pow (mut i64) (i64.const 0))
  (global $~lib/util/number/_exp_pow (mut i32) (i32.const 0))
  (global $resolve-elementaccess/buf (mut i32) (i32.const 0))
+ (global $resolve-elementaccess/voidIndex (mut i32) (i32.const 0))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 36576))
  (memory $0 1)
  (data $0 (i32.const 12) ",")
@@ -3105,6 +3106,26 @@
    i32.const 0
    i32.const 2176
    i32.const 20
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  global.get $resolve-elementaccess/voidIndex
+  local.tee $0
+  i32.const 1
+  i32.add
+  global.set $resolve-elementaccess/voidIndex
+  global.get $resolve-elementaccess/buf
+  local.get $0
+  call $~lib/typedarray/Uint8Array#__get
+  drop
+  global.get $resolve-elementaccess/voidIndex
+  i32.const 1
+  i32.ne
+  if
+   i32.const 0
+   i32.const 2176
+   i32.const 25
    i32.const 1
    call $~lib/builtins/abort
    unreachable
