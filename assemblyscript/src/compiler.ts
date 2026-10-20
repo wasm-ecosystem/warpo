@@ -9597,15 +9597,7 @@ export class Compiler extends DiagnosticEmitter {
         let size = flow.getTempLocal(Type.usize32);
         sizes[expressionIndex] = size;
         stmts.push(
-          module.local_set(
-            size.index,
-            module.if(
-              this.makeLocalGet(temp),
-              this.makeCallDirect(byteLength, [this.makeLocalGet(temp)], expression),
-              module.usize(0)
-            ),
-            false
-          )
+          module.local_set(size.index, this.makeCallDirect(byteLength, [this.makeLocalGet(temp)], expression), false)
         );
         stmts.push(
           module.local_set(

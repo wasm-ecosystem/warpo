@@ -2890,14 +2890,9 @@
   local.get $0
   i32.store align=1
   local.get $0
-  if (result i32)
-   local.get $0
-   i32.const 20
-   i32.sub
-   i32.load offset=16
-  else
-   i32.const 0
-  end
+  i32.const 20
+  i32.sub
+  i32.load offset=16
   local.tee $2
   i64.extend_i32_u
   i64.const 16
