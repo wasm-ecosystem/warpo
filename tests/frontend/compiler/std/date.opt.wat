@@ -2442,7 +2442,6 @@
   (local $12 i32)
   (local $13 i32)
   (local $14 i32)
-  (local $15 i64)
   i32.const 28
   call $~lib/rt/__decrease_sp
   local.get $0
@@ -2591,62 +2590,47 @@
   i32.sub
   i32.load offset=16
   local.tee $9
-  i64.extend_i32_u
   local.get $6
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $10
-  i64.extend_i32_u
   local.get $5
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $11
-  i64.extend_i32_u
   local.get $4
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $12
-  i64.extend_i32_u
   local.get $3
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $13
-  i64.extend_i32_u
   local.get $2
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $14
-  i64.extend_i32_u
   local.get $1
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $8
-  i64.extend_i32_u
-  i64.const 14
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  local.tee $15
-  i64.const 4294967295
-  i64.gt_u
-  if
-   unreachable
-  end
-  local.get $15
-  i32.wrap_i64
+  i32.const 14
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  local.tee $0
   if (result i32)
-   local.get $15
-   i32.wrap_i64
+   local.get $0
    i32.const 2
    call $~lib/rt/itcms/__new
    local.tee $0
@@ -2923,8 +2907,7 @@
   (local $7 i32)
   (local $8 i32)
   (local $9 i32)
-  (local $10 i64)
-  (local $11 i32)
+  (local $10 i32)
   i32.const 20
   call $~lib/rt/__decrease_sp
   i32.const 28
@@ -3017,47 +3000,34 @@
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $11
-  i64.extend_i32_u
+  local.tee $10
   local.get $6
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $7
-  i64.extend_i32_u
   local.get $5
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $8
-  i64.extend_i32_u
   local.get $3
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $9
-  i64.extend_i32_u
   local.get $2
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $1
-  i64.extend_i32_u
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  local.tee $10
-  i64.const 4294967295
-  i64.gt_u
-  if
-   unreachable
-  end
-  local.get $10
-  i32.wrap_i64
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  local.tee $0
   if (result i32)
-   local.get $10
-   i32.wrap_i64
+   local.get $0
    i32.const 2
    call $~lib/rt/itcms/__new
    local.tee $0
@@ -3094,7 +3064,7 @@
    local.get $0
    i32.add
    local.get $4
-   local.get $11
+   local.get $10
    memory.copy
    local.get $0
   else
@@ -3113,8 +3083,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  (local $6 i64)
-  (local $7 i32)
+  (local $6 i32)
   i32.const 12
   call $~lib/rt/__decrease_sp
   local.get $0
@@ -3151,35 +3120,24 @@
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $7
-  i64.extend_i32_u
+  local.tee $6
   local.get $2
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $5
-  i64.extend_i32_u
   local.get $1
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $4
-  i64.extend_i32_u
-  i64.const 4
-  i64.add
-  i64.add
-  i64.add
-  local.tee $6
-  i64.const 4294967295
-  i64.gt_u
-  if
-   unreachable
-  end
-  local.get $6
-  i32.wrap_i64
+  i32.const 4
+  i32.add
+  i32.add
+  i32.add
+  local.tee $0
   if (result i32)
-   local.get $6
-   i32.wrap_i64
+   local.get $0
    i32.const 2
    call $~lib/rt/itcms/__new
    local.tee $0
@@ -3216,7 +3174,7 @@
    local.get $0
    i32.add
    local.get $3
-   local.get $7
+   local.get $6
    memory.copy
    local.get $0
   else
@@ -3246,7 +3204,6 @@
   (local $14 i32)
   (local $15 i32)
   (local $16 i32)
-  (local $17 i64)
   i32.const 32
   call $~lib/rt/__decrease_sp
   i32.const 28
@@ -3373,69 +3330,53 @@
   i32.sub
   i32.load offset=16
   local.tee $10
-  i64.extend_i32_u
   local.get $5
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $11
-  i64.extend_i32_u
   local.get $3
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $12
-  i64.extend_i32_u
   local.get $1
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $13
-  i64.extend_i32_u
   local.get $9
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $14
-  i64.extend_i32_u
   local.get $8
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $15
-  i64.extend_i32_u
   local.get $2
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $16
-  i64.extend_i32_u
   local.get $7
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $4
-  i64.extend_i32_u
-  i64.const 14
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  i64.add
-  local.tee $17
-  i64.const 4294967295
-  i64.gt_u
-  if
-   unreachable
-  end
-  local.get $17
-  i32.wrap_i64
+  i32.const 14
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  local.tee $0
   if (result i32)
-   local.get $17
-   i32.wrap_i64
+   local.get $0
    i32.const 2
    call $~lib/rt/itcms/__new
    local.tee $0

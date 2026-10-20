@@ -5241,7 +5241,7 @@
   (local $16 i32)
   (local $17 i32)
   (local $18 i32)
-  (local $19 i64)
+  (local $19 i32)
   (local $20 i32)
   (local $21 i32)
   (local $22 i32)
@@ -5433,7 +5433,7 @@
      )
     )
     (local.set $19
-     (i64.const 14)
+     (i32.const 14)
     )
     (local.set $20
      (call $~lib/string/String.UTF16.byteLength
@@ -5443,11 +5443,9 @@
      )
     )
     (local.set $19
-     (i64.add
+     (i32.add
       (local.get $19)
-      (i64.extend_i32_u
-       (local.get $20)
-      )
+      (local.get $20)
      )
     )
     (local.set $21
@@ -5458,11 +5456,9 @@
      )
     )
     (local.set $19
-     (i64.add
+     (i32.add
       (local.get $19)
-      (i64.extend_i32_u
-       (local.get $21)
-      )
+      (local.get $21)
      )
     )
     (local.set $22
@@ -5473,11 +5469,9 @@
      )
     )
     (local.set $19
-     (i64.add
+     (i32.add
       (local.get $19)
-      (i64.extend_i32_u
-       (local.get $22)
-      )
+      (local.get $22)
      )
     )
     (local.set $23
@@ -5488,11 +5482,9 @@
      )
     )
     (local.set $19
-     (i64.add
+     (i32.add
       (local.get $19)
-      (i64.extend_i32_u
-       (local.get $23)
-      )
+      (local.get $23)
      )
     )
     (local.set $24
@@ -5503,11 +5495,9 @@
      )
     )
     (local.set $19
-     (i64.add
+     (i32.add
       (local.get $19)
-      (i64.extend_i32_u
-       (local.get $24)
-      )
+      (local.get $24)
      )
     )
     (local.set $25
@@ -5518,11 +5508,9 @@
      )
     )
     (local.set $19
-     (i64.add
+     (i32.add
       (local.get $19)
-      (i64.extend_i32_u
-       (local.get $25)
-      )
+      (local.get $25)
      )
     )
     (local.set $26
@@ -5533,33 +5521,18 @@
      )
     )
     (local.set $19
-     (i64.add
+     (i32.add
       (local.get $19)
-      (i64.extend_i32_u
-       (local.get $26)
-      )
-     )
-    )
-    (if
-     (i64.gt_u
-      (local.get $19)
-      (i64.const 4294967295)
-     )
-     (then
-      (unreachable)
+      (local.get $26)
      )
     )
     (if (result i32)
-     (i32.wrap_i64
-      (local.get $19)
-     )
+     (local.get $19)
      (then
       (local.set $27
        (call $~lib/rt/__localtostack
         (call $~lib/rt/itcms/__new
-         (i32.wrap_i64
-          (local.get $19)
-         )
+         (local.get $19)
          (i32.const 2)
         )
        )
@@ -6100,7 +6073,7 @@
   (local $17 i32)
   (local $18 i32)
   (local $19 i32)
-  (local $20 i64)
+  (local $20 i32)
   (local $21 i32)
   (local $22 i32)
   (local $23 i32)
@@ -6246,7 +6219,7 @@
      )
     )
     (local.set $20
-     (i64.const 0)
+     (i32.const 0)
     )
     (local.set $21
      (call $~lib/string/String.UTF16.byteLength
@@ -6256,11 +6229,9 @@
      )
     )
     (local.set $20
-     (i64.add
+     (i32.add
       (local.get $20)
-      (i64.extend_i32_u
-       (local.get $21)
-      )
+      (local.get $21)
      )
     )
     (local.set $22
@@ -6271,11 +6242,9 @@
      )
     )
     (local.set $20
-     (i64.add
+     (i32.add
       (local.get $20)
-      (i64.extend_i32_u
-       (local.get $22)
-      )
+      (local.get $22)
      )
     )
     (local.set $23
@@ -6286,11 +6255,9 @@
      )
     )
     (local.set $20
-     (i64.add
+     (i32.add
       (local.get $20)
-      (i64.extend_i32_u
-       (local.get $23)
-      )
+      (local.get $23)
      )
     )
     (local.set $24
@@ -6301,11 +6268,9 @@
      )
     )
     (local.set $20
-     (i64.add
+     (i32.add
       (local.get $20)
-      (i64.extend_i32_u
-       (local.get $24)
-      )
+      (local.get $24)
      )
     )
     (local.set $25
@@ -6316,33 +6281,18 @@
      )
     )
     (local.set $20
-     (i64.add
+     (i32.add
       (local.get $20)
-      (i64.extend_i32_u
-       (local.get $25)
-      )
-     )
-    )
-    (if
-     (i64.gt_u
-      (local.get $20)
-      (i64.const 4294967295)
-     )
-     (then
-      (unreachable)
+      (local.get $25)
      )
     )
     (if (result i32)
-     (i32.wrap_i64
-      (local.get $20)
-     )
+     (local.get $20)
      (then
       (local.set $26
        (call $~lib/rt/__localtostack
         (call $~lib/rt/itcms/__new
-         (i32.wrap_i64
-          (local.get $20)
-         )
+         (local.get $20)
          (i32.const 2)
         )
        )
@@ -6451,7 +6401,7 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i64)
+  (local $7 i32)
   (local $8 i32)
   (local $9 i32)
   (local $10 i32)
@@ -6512,7 +6462,7 @@
      )
     )
     (local.set $7
-     (i64.const 4)
+     (i32.const 4)
     )
     (local.set $8
      (call $~lib/string/String.UTF16.byteLength
@@ -6522,11 +6472,9 @@
      )
     )
     (local.set $7
-     (i64.add
+     (i32.add
       (local.get $7)
-      (i64.extend_i32_u
-       (local.get $8)
-      )
+      (local.get $8)
      )
     )
     (local.set $9
@@ -6537,11 +6485,9 @@
      )
     )
     (local.set $7
-     (i64.add
+     (i32.add
       (local.get $7)
-      (i64.extend_i32_u
-       (local.get $9)
-      )
+      (local.get $9)
      )
     )
     (local.set $10
@@ -6552,33 +6498,18 @@
      )
     )
     (local.set $7
-     (i64.add
+     (i32.add
       (local.get $7)
-      (i64.extend_i32_u
-       (local.get $10)
-      )
-     )
-    )
-    (if
-     (i64.gt_u
-      (local.get $7)
-      (i64.const 4294967295)
-     )
-     (then
-      (unreachable)
+      (local.get $10)
      )
     )
     (if (result i32)
-     (i32.wrap_i64
-      (local.get $7)
-     )
+     (local.get $7)
      (then
       (local.set $11
        (call $~lib/rt/__localtostack
         (call $~lib/rt/itcms/__new
-         (i32.wrap_i64
-          (local.get $7)
-         )
+         (local.get $7)
          (i32.const 2)
         )
        )
@@ -6706,7 +6637,7 @@
   (local $23 i32)
   (local $24 i32)
   (local $25 i32)
-  (local $26 i64)
+  (local $26 i32)
   (local $27 i32)
   (local $28 i32)
   (local $29 i32)
@@ -6906,7 +6837,7 @@
      )
     )
     (local.set $26
-     (i64.const 14)
+     (i32.const 14)
     )
     (local.set $27
      (call $~lib/string/String.UTF16.byteLength
@@ -6916,11 +6847,9 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $27)
-      )
+      (local.get $27)
      )
     )
     (local.set $28
@@ -6931,11 +6860,9 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $28)
-      )
+      (local.get $28)
      )
     )
     (local.set $29
@@ -6946,11 +6873,9 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $29)
-      )
+      (local.get $29)
      )
     )
     (local.set $30
@@ -6961,11 +6886,9 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $30)
-      )
+      (local.get $30)
      )
     )
     (local.set $31
@@ -6976,11 +6899,9 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $31)
-      )
+      (local.get $31)
      )
     )
     (local.set $32
@@ -6991,11 +6912,9 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $32)
-      )
+      (local.get $32)
      )
     )
     (local.set $33
@@ -7006,11 +6925,9 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $33)
-      )
+      (local.get $33)
      )
     )
     (local.set $34
@@ -7021,33 +6938,18 @@
      )
     )
     (local.set $26
-     (i64.add
+     (i32.add
       (local.get $26)
-      (i64.extend_i32_u
-       (local.get $34)
-      )
-     )
-    )
-    (if
-     (i64.gt_u
-      (local.get $26)
-      (i64.const 4294967295)
-     )
-     (then
-      (unreachable)
+      (local.get $34)
      )
     )
     (if (result i32)
-     (i32.wrap_i64
-      (local.get $26)
-     )
+     (local.get $26)
      (then
       (local.set $35
        (call $~lib/rt/__localtostack
         (call $~lib/rt/itcms/__new
-         (i32.wrap_i64
-          (local.get $26)
-         )
+         (local.get $26)
          (i32.const 2)
         )
        )

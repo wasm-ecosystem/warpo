@@ -1547,8 +1547,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  (local $8 i64)
-  (local $9 i32)
+  (local $8 i32)
   global.get $~started
   i32.eqz
   if
@@ -1641,42 +1640,30 @@
    i32.const 20
    i32.sub
    i32.load offset=16
-   local.tee $9
-   i64.extend_i32_u
+   local.tee $8
    local.get $3
    i32.const 20
    i32.sub
    i32.load offset=16
    local.tee $5
-   i64.extend_i32_u
    local.get $2
    i32.const 20
    i32.sub
    i32.load offset=16
    local.tee $6
-   i64.extend_i32_u
    local.get $0
    i32.const 20
    i32.sub
    i32.load offset=16
    local.tee $7
-   i64.extend_i32_u
-   i64.const 18
-   i64.add
-   i64.add
-   i64.add
-   i64.add
-   local.tee $8
-   i64.const 4294967295
-   i64.gt_u
-   if
-    unreachable
-   end
-   local.get $8
-   i32.wrap_i64
+   i32.const 18
+   i32.add
+   i32.add
+   i32.add
+   i32.add
+   local.tee $1
    if (result i32)
-    local.get $8
-    i32.wrap_i64
+    local.get $1
     call $~lib/rt/itcms/__new
     local.tee $1
     i32.const 32208
@@ -1739,7 +1726,7 @@
     local.get $1
     i32.add
     local.get $4
-    local.get $9
+    local.get $8
     memory.copy
     local.get $1
    else

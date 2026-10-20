@@ -1585,8 +1585,7 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i64)
-  (local $8 i32)
+  (local $7 i32)
   global.get $~started
   i32.eqz
   if
@@ -1649,56 +1648,45 @@
      local.get $0
      i32.store offset=8 align=1
      call $~lib/util/number/itoa32
-     local.set $1
+     local.set $2
      global.get $~lib/memory/__stack_pointer
-     local.get $1
+     local.get $2
      i32.store offset=4 align=1
      call $~lib/util/number/itoa32
      local.set $3
      global.get $~lib/memory/__stack_pointer
      local.get $3
      i32.store align=1
-     local.get $3
-     i32.const 20
-     i32.sub
-     i32.load offset=16
-     local.tee $8
-     i64.extend_i32_u
-     local.get $1
-     i32.const 20
-     i32.sub
-     i32.load offset=16
-     local.tee $4
-     i64.extend_i32_u
-     local.get $0
-     i32.const 20
-     i32.sub
-     i32.load offset=16
-     local.tee $6
-     i64.extend_i32_u
-     i64.const 70
-     i64.add
-     i64.add
-     i64.add
-     local.tee $7
-     i64.const 4294967295
-     i64.gt_u
-     if
-      unreachable
-     end
      block $__inlined_func$~lib/string/String.__eq$90 (result i32)
       i32.const 1
-      local.get $7
-      i32.wrap_i64
+      local.get $3
+      i32.const 20
+      i32.sub
+      i32.load offset=16
+      local.tee $7
+      local.get $2
+      i32.const 20
+      i32.sub
+      i32.load offset=16
+      local.tee $4
+      local.get $0
+      i32.const 20
+      i32.sub
+      i32.load offset=16
+      local.tee $6
+      i32.const 70
+      i32.add
+      i32.add
+      i32.add
+      local.tee $1
       if (result i32)
-       local.get $7
-       i32.wrap_i64
+       local.get $1
        call $~lib/rt/itcms/__new
-       local.tee $2
+       local.tee $1
        i32.const 752
        i32.const 28
        memory.copy
-       local.get $2
+       local.get $1
        i32.const 28
        i32.add
        local.get $0
@@ -1708,7 +1696,7 @@
        i32.const 28
        i32.add
        local.tee $0
-       local.get $2
+       local.get $1
        i32.add
        i32.const 800
        i32.const 16
@@ -1717,16 +1705,16 @@
        i32.const 16
        i32.add
        local.tee $0
-       local.get $2
-       i32.add
        local.get $1
+       i32.add
+       local.get $2
        local.get $4
        memory.copy
        local.get $0
        local.get $4
        i32.add
        local.tee $0
-       local.get $2
+       local.get $1
        i32.add
        i32.const 848
        i32.const 26
@@ -1734,33 +1722,33 @@
        local.get $0
        i32.const 26
        i32.add
-       local.get $2
+       local.get $1
        i32.add
        local.get $3
-       local.get $8
+       local.get $7
        memory.copy
-       local.get $2
+       local.get $1
       else
        i32.const 896
       end
-      local.tee $1
+      local.tee $2
       i32.const 928
       i32.eq
       br_if $__inlined_func$~lib/string/String.__eq$90
       drop
       i32.const 0
-      local.get $1
+      local.get $2
       i32.eqz
       br_if $__inlined_func$~lib/string/String.__eq$90
       drop
       i32.const 0
-      local.get $1
+      local.get $2
       i32.const 20
       i32.sub
       i32.load offset=16
       i32.const 1
       i32.shr_u
-      local.tee $2
+      local.tee $1
       i32.const 924
       i32.load
       i32.const 1
@@ -1772,14 +1760,14 @@
        i32.const 928
        local.set $3
        loop $while-continue|0
-        local.get $2
+        local.get $1
         local.tee $0
         i32.const 1
         i32.sub
-        local.set $2
+        local.set $1
         local.get $0
         if
-         local.get $1
+         local.get $2
          i32.load16_u
          local.tee $0
          local.get $3
@@ -1792,10 +1780,10 @@
           i32.sub
           br $__inlined_func$~lib/util/string/compareImpl$75
          end
-         local.get $1
+         local.get $2
          i32.const 2
          i32.add
-         local.set $1
+         local.set $2
          local.get $3
          i32.const 2
          i32.add

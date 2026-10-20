@@ -9584,12 +9584,14 @@ export class Compiler extends DiagnosticEmitter {
           )
         );
       }
-      let constantSize = i64_new(0);
+      let constantSize: i32 = 0;
       for (let partIndex = 0; partIndex < numParts; ++partIndex) {
-        constantSize = i64_add(constantSize, i64_new(parts[partIndex].length << 1));
+        constantSize += parts[partIndex].length << 1;
       }
-      let sizeLocal = flow.getTempLocal(Type.u64);
-      stmts.push(module.local_set(sizeLocal.index, module.i64(i64_low(constantSize), i64_high(constantSize)), false));
+      // size cannot overflow i32, because the data being concatenated consists of existing objects
+      // and the upper limit of linear memory is i32_max.
+      let sizeLocal = flow.getTempLocal(Type.i32);
+      stmts.push(module.local_set(sizeLocal.index, module.i32(constantSize), false));
       let sizes = new Array<Local>(numExpressions);
       let byteLength = this.program.requireFunction("~lib/string/String.UTF16.byteLength");
       for (let expressionIndex = 0; expressionIndex < numExpressions; ++expressionIndex) {
@@ -9602,18 +9604,11 @@ export class Compiler extends DiagnosticEmitter {
         stmts.push(
           module.local_set(
             sizeLocal.index,
-            this.makeAdd(
-              this.makeLocalGet(sizeLocal),
-              module.unary(UnaryOp.ExtendU32ToU64, this.makeLocalGet(size)),
-              Type.u64
-            ),
+            this.makeAdd(this.makeLocalGet(sizeLocal), this.makeLocalGet(size), Type.i32),
             false
           )
         );
       }
-      stmts.push(
-        module.if(this.makeGt(this.makeLocalGet(sizeLocal), module.i64(-1, 0), Type.u64), module.unreachable())
-      );
       let resultLocal = flow.getTempLocal(stringType);
       let offsetLocal = flow.getTempLocal(Type.usize32);
       let copySizeLocal = flow.getTempLocal(Type.usize32);
@@ -9623,48 +9618,60 @@ export class Compiler extends DiagnosticEmitter {
           resultLocal.index,
           this.makeCallDirect(
             this.program.newInstance,
-            [module.unary(UnaryOp.WrapI64ToI32, this.makeLocalGet(sizeLocal)), module.i32(stringInstance.id)],
+            [this.makeLocalGet(sizeLocal), module.i32(stringInstance.id)],
             expression
           ),
           true
         )
       );
       copies.push(module.local_set(offsetLocal.index, module.usize(0), false));
-      for (let segmentIndex = 0; segmentIndex < numParts + numExpressions; ++segmentIndex) {
-        let partIndex = segmentIndex >> 1;
-        let source: ExpressionRef;
-        let size: ExpressionRef;
-        if (segmentIndex & 1) {
-          source = this.makeLocalGet(temps[partIndex]);
-          size = this.makeLocalGet(sizes[partIndex]);
-        } else {
-          let part = parts[partIndex];
-          if (!part.length) continue;
-          source = this.ensureStaticString(part);
-          size = module.usize(part.length << 1);
+      // The parser keeps empty text parts: `A${x}${y}C` has parts ["A", "", "C"].
+      // Copy parts[i] followed by temps[i]; only the final part has no interpolation.
+      for (let partIndex = 0; partIndex < numParts; ++partIndex) {
+        let part = parts[partIndex];
+        if (part.length) {
+          copies.push(module.local_set(copySizeLocal.index, module.usize(part.length << 1), false));
+          copies.push(
+            makeMemoryCopy(
+              this,
+              this.makeAdd(this.makeLocalGet(resultLocal), this.makeLocalGet(offsetLocal), Type.usize32),
+              this.ensureStaticString(part),
+              this.makeLocalGet(copySizeLocal),
+              expression
+            )
+          );
+          copies.push(
+            module.local_set(
+              offsetLocal.index,
+              this.makeAdd(this.makeLocalGet(offsetLocal), this.makeLocalGet(copySizeLocal), Type.usize32),
+              false
+            )
+          );
         }
-        copies.push(module.local_set(copySizeLocal.index, size, false));
-        copies.push(
-          makeMemoryCopy(
-            this,
-            this.makeAdd(this.makeLocalGet(resultLocal), this.makeLocalGet(offsetLocal), Type.usize32),
-            source,
-            this.makeLocalGet(copySizeLocal),
-            expression
-          )
-        );
-        copies.push(
-          module.local_set(
-            offsetLocal.index,
-            this.makeAdd(this.makeLocalGet(offsetLocal), this.makeLocalGet(copySizeLocal), Type.usize32),
-            false
-          )
-        );
+        if (partIndex < numExpressions) {
+          copies.push(module.local_set(copySizeLocal.index, this.makeLocalGet(sizes[partIndex]), false));
+          copies.push(
+            makeMemoryCopy(
+              this,
+              this.makeAdd(this.makeLocalGet(resultLocal), this.makeLocalGet(offsetLocal), Type.usize32),
+              this.makeLocalGet(temps[partIndex]),
+              this.makeLocalGet(copySizeLocal),
+              expression
+            )
+          );
+          copies.push(
+            module.local_set(
+              offsetLocal.index,
+              this.makeAdd(this.makeLocalGet(offsetLocal), this.makeLocalGet(copySizeLocal), Type.usize32),
+              false
+            )
+          );
+        }
       }
       copies.push(this.makeLocalGet(resultLocal));
       stmts.push(
         module.if(
-          module.unary(UnaryOp.WrapI64ToI32, this.makeLocalGet(sizeLocal)),
+          this.makeLocalGet(sizeLocal),
           module.block(null, copies, stringType.toRef()),
           this.ensureStaticString("")
         )

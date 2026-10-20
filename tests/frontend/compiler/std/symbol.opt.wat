@@ -2836,7 +2836,6 @@
  (func $~lib/symbol/symbol#toString (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i64)
   global.get $~lib/symbol/idToString
   local.get $0
   local.get $0
@@ -2894,20 +2893,11 @@
   i32.sub
   i32.load offset=16
   local.tee $2
-  i64.extend_i32_u
-  i64.const 16
-  i64.add
-  local.tee $3
-  i64.const 4294967295
-  i64.gt_u
-  if
-   unreachable
-  end
-  local.get $3
-  i32.wrap_i64
+  i32.const 16
+  i32.add
+  local.tee $1
   if (result i32)
-   local.get $3
-   i32.wrap_i64
+   local.get $1
    i32.const 2
    call $~lib/rt/itcms/__new
    local.tee $1
