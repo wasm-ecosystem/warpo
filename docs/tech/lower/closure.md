@@ -3,7 +3,7 @@
 # Closure Lowering
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/nightly.svg" alt="nightly" />
+  <Badge type="tip" text="nightly" />
   <img src="/stability/experimental.svg" alt="experimental" />
 </p>
 

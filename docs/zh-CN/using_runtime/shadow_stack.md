@@ -1,7 +1,7 @@
 # Shadow Stack
 
 <p style="display: flex; gap: 10px;">
-	<img src="/version/2.2.3.svg" alt="2.2.3" />
+	<Badge type="info" text="2.2.3" />
 	<img src="/stability/stable.svg" alt="stable" />
 </p>
 

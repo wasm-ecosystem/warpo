@@ -1,7 +1,7 @@
 # Radical GC runtime
 
 <p style="display: flex; gap: 10px;">
-	<img src="/version/2.3.0.svg" alt="2.3.0" />
+	<Badge type="info" text="2.3.0" />
 	<img src="/stability/experimental.svg" alt="experimental" />
 </p>
 

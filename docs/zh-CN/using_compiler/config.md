@@ -1,7 +1,7 @@
 # WARPO 配置文件（`asconfig.json`）
 
 <p style="display: flex; gap: 10px;">
-	<img src="/version/2.3.0.svg" alt="2.3.0" />
+	<Badge type="info" text="2.3.0" />
 	<img src="/stability/stable.svg" alt="stable" />
 </p>
 
@@ -94,7 +94,7 @@ warpo assembly/index.ts -o build/app.wasm --enable-feature tail-call --disable-f
 ### `host`
 
 <p style="display: flex; gap: 10px;">
-	<img src="/version/2.4.0.svg" alt="2.4.0" />
+	<Badge type="info" text="2.4.0" />
 	<img src="/stability/stable.svg" alt="stable" />
 </p>
 

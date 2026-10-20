@@ -8,7 +8,7 @@ warpo provide 2 kinds of runtime. They can be selected by command line options d
 ## interfaces
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/2.3.0.svg" alt="2.3.0" />
+  <Badge type="info" text="2.3.0" />
   <img src="/stability/stable.svg" alt="stable" />
 </p>
 
