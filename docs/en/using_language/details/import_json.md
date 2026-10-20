@@ -1,7 +1,7 @@
 # import json
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/2.2.3.svg" alt="2.2.3" />
+  <Badge type="info" text="2.2.3" />
   <img src="/stability/rc.svg" alt="rc" />
 </p>
 

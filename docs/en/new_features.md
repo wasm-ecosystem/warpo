@@ -2,34 +2,50 @@
 
 Comparison with AS, we support some new features and breaks.
 
-<img src="/version/2.2.3.svg" alt="2.2.3" />
+<Badge type="info" text="2.2.0" />
+
+- [CPU profiling](/en/executing_webassembly/profiling)
+
+<Badge type="info" text="2.2.3" />
 
 - [utf8 const string](/en/using_language/details/utf8_const_string)
 - [import json](/en/using_language/details/import_json)
 
-<img src="/version/2.3.0.svg" alt="2.3.0" />
+<Badge type="info" text="2.3.0" />
 
 - [radical GC](/en/using_runtime/radical_gc)
 - [iterator](/en/using_language/details/iterator) (without map iterator)
 - [for...of](/en/using_language/details/for_of)
 - [compilation option config](/en/using_compiler/config)
 
-<img src="/version/2.4.0.svg" alt="2.4.0" />
+<Badge type="info" text="2.4.0" />
 
 - [host API](/en/using_compiler/config#host)
   - [wasi_snapshot_preview1 host](/en/using_compiler/hosts/wasi_snapshot_preview1)
 - [tuple](/en/using_language/details/tuple)
 
-<img src="/version/nightly.svg" alt="nightly" />
+<Badge type="info" text="3.0.0" />
 
-- [shared GC return epilogue (`return-to-br`)](/en/using_compiler/config#return-to-br)
 - [build and test with WARPO CLI](/en/using_compiler/build_and_test)
 - [closure](/en/using_language/details/closure)
-- [heap analyzer](/en/executing_webassembly/heap-analyzer)
-- [CPU profiling](/en/executing_webassembly/profiling)
-- [multi return](/en/using_language/details/multi_return)
-- [unpack from arrays and tuples](/en/using_language/details/unpack)
 - [promise](/en/using_language/details/promise)
+
+<Badge type="info" text="3.1.0" />
+
+- [multi return](/en/using_language/details/multi_return)
+
+<Badge type="info" text="3.1.1" />
+
+- [heap analyzer](/en/executing_webassembly/heap-analyzer)
+
+<Badge type="info" text="3.3.0" />
+
+- [unpack from arrays and tuples](/en/using_language/details/unpack)
 - [tagged template literals](/en/using_language/details/template_literal)
 - [ReadonlyArray](/en/using_language/details/readonlyarray)
+
+<Badge type="tip" text="nightly" />
+
+- unused field store elimination
+- [shared GC return epilogue (`return-to-br`)](/en/using_compiler/config#return-to-br)
 - [class object literal initialization order](/en/using_language/details/object_literal_initialization)
