@@ -9589,7 +9589,7 @@ export class Compiler extends DiagnosticEmitter {
       // Literal parts contribute a known number of UTF-16 bytes.
       for (let partIndex = 0; partIndex < numParts; ++partIndex) {
         let part = literalParts[partIndex];
-        constantSize += part.length << 1;
+        constantSize += String.UTF16.byteLength(part);
       }
       // size cannot overflow i32, because the data being concatenated consists of existing objects
       // and the upper limit of linear memory is i32_max.
@@ -9637,9 +9637,9 @@ export class Compiler extends DiagnosticEmitter {
         let copySize: ExpressionRef;
         if (resultSlotIndex % 2 == 0) {
           let part = literalParts[partIndex];
-          if (!part.length) continue;
+          if (part.length == 0) continue;
           // static string
-          copySize = module.usize(part.length << 1);
+          copySize = module.usize(String.UTF16.byteLength(part));
           source = this.ensureStaticString(part);
         } else {
           // resolved expression
