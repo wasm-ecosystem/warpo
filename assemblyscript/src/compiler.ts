@@ -9585,15 +9585,11 @@ export class Compiler extends DiagnosticEmitter {
           )
         );
       }
-      let templateSlots = new Array<string | null>();
       let constantSize: i32 = 0;
-      // Get the template slots and calculate the constant size of the resulting string
+      // Literal parts contribute a known number of UTF-16 bytes.
       for (let partIndex = 0; partIndex < numParts; ++partIndex) {
         let part = literalParts[partIndex];
         constantSize += part.length << 1;
-        templateSlots.push(part);
-        // null marks the slot for the resolved string except the last expression
-        if (partIndex < numExpressions) templateSlots.push(null);
       }
       // size cannot overflow i32, because the data being concatenated consists of existing objects
       // and the upper limit of linear memory is i32_max.
@@ -9635,21 +9631,21 @@ export class Compiler extends DiagnosticEmitter {
         )
       );
       copies.push(module.local_set(cursorLocal.index, this.makeLocalGet(resultLocal), false));
-      let resolvedExpressionIndex = 0;
-      // Copy each template slot into the result string, either from a static string or a resolved expression.
-      for (let slotIndex = 0; slotIndex < templateSlots.length; ++slotIndex) {
-        let slot = templateSlots[slotIndex];
+      // Walk literalParts[0], resolvedExpressions[0], ..., literalParts[numExpressions].
+      for (let resultSlotIndex = 0, partIndex = 0; resultSlotIndex < numParts + numExpressions; resultSlotIndex++) {
         let source: ExpressionRef;
         let copySize: ExpressionRef;
-        if (slot != null) {
-          if (!slot.length) continue;
+        if (resultSlotIndex % 2 == 0) {
+          let part = literalParts[partIndex];
+          if (!part.length) continue;
           // static string
-          copySize = module.usize(slot.length << 1);
-          source = this.ensureStaticString(slot);
+          copySize = module.usize(part.length << 1);
+          source = this.ensureStaticString(part);
         } else {
           // resolved expression
-          copySize = this.makeLocalGet(resolvedExpressionSizes[resolvedExpressionIndex]);
-          source = this.makeLocalGet(resolvedExpressions[resolvedExpressionIndex++]);
+          copySize = this.makeLocalGet(resolvedExpressionSizes[partIndex]);
+          source = this.makeLocalGet(resolvedExpressions[partIndex]);
+          partIndex++;
         }
         copies.push(makeMemoryCopy(this, this.makeLocalGet(cursorLocal), source, copySize, expression));
         copies.push(
