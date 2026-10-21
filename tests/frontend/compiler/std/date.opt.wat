@@ -2563,7 +2563,7 @@
   call $~lib/date/Date#getUTCMilliseconds
   i32.const 3
   call $~lib/date/stringify
-  local.set $7
+  local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store align=1
@@ -2583,43 +2583,43 @@
   local.get $6
   i32.store offset=24 align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $7
+  local.get $0
   i32.store offset=4 align=1
-  local.get $7
+  local.get $0
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $9
+  local.tee $7
   local.get $6
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $10
+  local.tee $8
   local.get $5
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $11
+  local.tee $9
   local.get $4
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $12
+  local.tee $10
   local.get $3
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $13
+  local.tee $11
   local.get $2
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $14
+  local.tee $12
   local.get $1
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $8
+  local.tee $13
   i32.const 14
   i32.add
   i32.add
@@ -2628,138 +2628,107 @@
   i32.add
   i32.add
   i32.add
-  local.tee $0
-  if (result i32)
-   local.get $0
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $0
-   local.get $1
-   local.get $8
-   memory.copy
-   local.get $0
-   local.get $8
-   i32.add
-   i32.const 592
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $8
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $2
-   local.get $14
-   memory.copy
-   local.get $1
-   local.get $14
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 592
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $3
-   local.get $13
-   memory.copy
-   local.get $1
-   local.get $13
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 2464
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $4
-   local.get $12
-   memory.copy
-   local.get $1
-   local.get $12
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 2496
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $5
-   local.get $11
-   memory.copy
-   local.get $1
-   local.get $11
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 2496
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $6
-   local.get $10
-   memory.copy
-   local.get $1
-   local.get $10
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 2528
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $7
-   local.get $9
-   memory.copy
-   local.get $1
-   local.get $9
-   i32.add
-   local.get $0
-   i32.add
-   i32.const 2560
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $0
-  else
-   i32.const 2432
-  end
-  local.set $0
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $14
+  local.get $1
+  local.get $13
+  memory.copy
+  local.get $13
+  local.get $14
+  i32.add
+  local.tee $1
+  i32.const 592
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $2
+  local.get $12
+  memory.copy
+  local.get $1
+  local.get $12
+  i32.add
+  local.tee $1
+  i32.const 592
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $3
+  local.get $11
+  memory.copy
+  local.get $1
+  local.get $11
+  i32.add
+  local.tee $1
+  i32.const 2464
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $4
+  local.get $10
+  memory.copy
+  local.get $1
+  local.get $10
+  i32.add
+  local.tee $1
+  i32.const 2496
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $5
+  local.get $9
+  memory.copy
+  local.get $1
+  local.get $9
+  i32.add
+  local.tee $1
+  i32.const 2496
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $6
+  local.get $8
+  memory.copy
+  local.get $1
+  local.get $8
+  i32.add
+  local.tee $1
+  i32.const 2528
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $0
+  local.get $7
+  memory.copy
+  local.get $1
+  local.get $7
+  i32.add
+  i32.const 2560
+  i32.load16_u align=1
+  i32.store16 align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 28
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $14
  )
  (func $~lib/util/string/compareImpl (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (local $4 i32)
@@ -2922,45 +2891,45 @@
   i32.const 5
   i32.const 3968
   call $~lib/rt/__newBuffer
-  local.set $3
+  local.set $1
   global.get $~lib/memory/__stack_pointer
-  local.get $3
+  local.get $1
   i32.store offset=8 align=1
   local.get $0
   i32.load
-  local.tee $1
+  local.tee $3
   local.get $0
   i32.load offset=4
-  local.tee $5
+  local.tee $4
   local.get $0
   i32.load offset=8
-  local.tee $0
+  local.tee $5
   call $~lib/date/dayOfWeek
   local.set $6
-  local.get $1
-  local.get $1
+  local.get $3
+  local.get $3
   i32.const 31
   i32.shr_s
-  local.tee $4
+  local.tee $0
   i32.add
-  local.get $4
+  local.get $0
   i32.xor
   i32.const 4
   call $~lib/date/stringify
-  local.set $4
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $3
-  local.get $5
+  local.get $1
+  local.get $4
   i32.const 1
   i32.sub
   i32.const 2
   i32.shl
   i32.add
   i32.load
-  local.tee $3
+  local.tee $1
   i32.store offset=8 align=1
   global.get $~lib/memory/__stack_pointer
   local.get $2
@@ -2971,111 +2940,98 @@
   i32.load
   local.tee $2
   i32.store offset=4 align=1
-  local.get $0
+  local.get $5
   i32.const 2
   call $~lib/date/stringify
-  local.set $5
+  local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $2
   i32.store offset=4 align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $3
+  local.get $1
   i32.store offset=16 align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $5
+  local.get $4
   i32.store offset=12 align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 4048
   i32.const 4080
-  local.get $1
+  local.get $3
   i32.const 0
   i32.lt_s
   select
-  local.tee $6
+  local.tee $3
   i32.store offset=8 align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $0
   i32.store align=1
-  local.get $4
+  local.get $0
   i32.const 20
   i32.sub
   i32.load offset=16
   local.tee $10
-  local.get $6
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  local.tee $7
-  local.get $5
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  local.tee $8
   local.get $3
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $9
+  local.tee $5
+  local.get $4
+  i32.const 20
+  i32.sub
+  i32.load offset=16
+  local.tee $6
+  local.get $1
+  i32.const 20
+  i32.sub
+  i32.load offset=16
+  local.tee $7
   local.get $2
   i32.const 20
   i32.sub
   i32.load offset=16
+  local.tee $8
+  i32.add
+  i32.add
+  i32.add
+  i32.add
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $9
+  local.get $2
+  local.get $8
+  memory.copy
+  local.get $8
+  local.get $9
+  i32.add
+  local.tee $2
+  local.get $1
+  local.get $7
+  memory.copy
+  local.get $2
+  local.get $7
+  i32.add
   local.tee $1
+  local.get $4
+  local.get $6
+  memory.copy
+  local.get $1
+  local.get $6
   i32.add
+  local.tee $1
+  local.get $3
+  local.get $5
+  memory.copy
+  local.get $1
+  local.get $5
   i32.add
-  i32.add
-  i32.add
-  local.tee $0
-  if (result i32)
-   local.get $0
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $0
-   local.get $2
-   local.get $1
-   memory.copy
-   local.get $0
-   local.get $1
-   i32.add
-   local.get $3
-   local.get $9
-   memory.copy
-   local.get $1
-   local.get $9
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $5
-   local.get $8
-   memory.copy
-   local.get $1
-   local.get $8
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $6
-   local.get $7
-   memory.copy
-   local.get $1
-   local.get $7
-   i32.add
-   local.get $0
-   i32.add
-   local.get $4
-   local.get $10
-   memory.copy
-   local.get $0
-  else
-   i32.const 2432
-  end
-  local.set $0
+  local.get $0
+  local.get $10
+  memory.copy
   global.get $~lib/memory/__stack_pointer
   i32.const 20
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $9
  )
  (func $~lib/date/Date#toTimeString (param $0 i32) (result i32)
   (local $1 i32)
@@ -3106,7 +3062,7 @@
   call $~lib/date/Date#getUTCSeconds
   i32.const 2
   call $~lib/date/stringify
-  local.set $3
+  local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store align=1
@@ -3114,9 +3070,9 @@
   local.get $2
   i32.store offset=8 align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $3
+  local.get $0
   i32.store offset=4 align=1
-  local.get $3
+  local.get $0
   i32.const 20
   i32.sub
   i32.load offset=16
@@ -3125,7 +3081,7 @@
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $5
+  local.tee $3
   local.get $1
   i32.const 20
   i32.sub
@@ -3135,57 +3091,44 @@
   i32.add
   i32.add
   i32.add
-  local.tee $0
-  if (result i32)
-   local.get $0
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $0
-   local.get $1
-   local.get $4
-   memory.copy
-   local.get $0
-   local.get $4
-   i32.add
-   i32.const 2496
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $4
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $2
-   local.get $5
-   memory.copy
-   local.get $1
-   local.get $5
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 2496
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.get $0
-   i32.add
-   local.get $3
-   local.get $6
-   memory.copy
-   local.get $0
-  else
-   i32.const 2432
-  end
-  local.set $0
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $5
+  local.get $1
+  local.get $4
+  memory.copy
+  local.get $4
+  local.get $5
+  i32.add
+  local.tee $1
+  i32.const 2496
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $2
+  local.get $3
+  memory.copy
+  local.get $1
+  local.get $3
+  i32.add
+  local.tee $1
+  i32.const 2496
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.get $0
+  local.get $6
+  memory.copy
   global.get $~lib/memory/__stack_pointer
   i32.const 12
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $5
  )
  (func $~lib/date/Date#toUTCString (param $0 i32) (result i32)
   (local $1 i32)
@@ -3224,17 +3167,17 @@
   i32.store offset=12 align=1
   local.get $0
   i32.load
-  local.tee $4
-  local.get $0
-  i32.load offset=4
   local.tee $5
   local.get $0
-  i32.load offset=8
+  i32.load offset=4
   local.tee $6
+  local.get $0
+  i32.load offset=8
+  local.tee $7
   call $~lib/date/dayOfWeek
-  local.set $7
-  local.get $4
-  local.get $4
+  local.set $4
+  local.get $5
+  local.get $5
   i32.const 31
   i32.shr_s
   local.tee $1
@@ -3249,7 +3192,7 @@
   i32.store offset=8 align=1
   global.get $~lib/memory/__stack_pointer
   local.get $3
-  local.get $5
+  local.get $6
   i32.const 1
   i32.sub
   i32.const 2
@@ -3260,14 +3203,14 @@
   i32.store offset=20 align=1
   global.get $~lib/memory/__stack_pointer
   local.get $2
-  local.get $7
+  local.get $4
   i32.const 2
   i32.shl
   i32.add
   i32.load
-  local.tee $7
+  local.tee $4
   i32.store offset=24 align=1
-  local.get $6
+  local.get $7
   i32.const 2
   call $~lib/date/stringify
   local.set $2
@@ -3286,17 +3229,17 @@
   call $~lib/date/Date#getUTCMinutes
   i32.const 2
   call $~lib/date/stringify
-  local.set $5
+  local.set $6
   global.get $~lib/memory/__stack_pointer
-  local.get $5
+  local.get $6
   i32.store offset=4 align=1
   local.get $0
   call $~lib/date/Date#getUTCSeconds
   i32.const 2
   call $~lib/date/stringify
-  local.set $6
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $7
+  local.get $4
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
   local.get $2
@@ -3307,11 +3250,11 @@
   global.get $~lib/memory/__stack_pointer
   i32.const 592
   i32.const 2432
-  local.get $4
+  local.get $5
   i32.const 0
   i32.lt_s
   select
-  local.tee $9
+  local.tee $5
   i32.store offset=20 align=1
   global.get $~lib/memory/__stack_pointer
   local.get $1
@@ -3320,51 +3263,51 @@
   local.get $3
   i32.store offset=16 align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $5
+  local.get $6
   i32.store offset=28 align=1
   global.get $~lib/memory/__stack_pointer
-  local.get $6
+  local.get $0
   i32.store offset=4 align=1
+  local.get $0
+  i32.const 20
+  i32.sub
+  i32.load offset=16
+  local.tee $7
   local.get $6
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $10
-  local.get $5
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  local.tee $11
+  local.tee $9
   local.get $3
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $12
+  local.tee $10
   local.get $1
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $13
-  local.get $9
+  local.tee $11
+  local.get $5
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $14
+  local.tee $12
   local.get $8
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $15
+  local.tee $13
   local.get $2
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $16
-  local.get $7
+  local.tee $14
+  local.get $4
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $4
+  local.tee $15
   i32.const 14
   i32.add
   i32.add
@@ -3374,120 +3317,93 @@
   i32.add
   i32.add
   i32.add
-  local.tee $0
-  if (result i32)
-   local.get $0
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $0
-   local.get $7
-   local.get $4
-   memory.copy
-   local.get $0
-   local.get $4
-   i32.add
-   local.get $2
-   local.get $16
-   memory.copy
-   local.get $4
-   local.get $16
-   i32.add
-   local.tee $2
-   local.get $0
-   i32.add
-   local.get $8
-   local.get $15
-   memory.copy
-   local.get $2
-   local.get $15
-   i32.add
-   local.tee $2
-   local.get $0
-   i32.add
-   local.get $9
-   local.get $14
-   memory.copy
-   local.get $2
-   local.get $14
-   i32.add
-   local.tee $2
-   local.get $0
-   i32.add
-   local.get $1
-   local.get $13
-   memory.copy
-   local.get $2
-   local.get $13
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 4080
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $3
-   local.get $12
-   memory.copy
-   local.get $1
-   local.get $12
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 2496
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $5
-   local.get $11
-   memory.copy
-   local.get $1
-   local.get $11
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   i32.const 2496
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-   i32.const 2
-   i32.add
-   local.tee $1
-   local.get $0
-   i32.add
-   local.get $6
-   local.get $10
-   memory.copy
-   local.get $1
-   local.get $10
-   i32.add
-   local.get $0
-   i32.add
-   i32.const 5136
-   i64.load align=1
-   i64.store align=1
-   local.get $0
-  else
-   i32.const 2432
-  end
-  local.set $0
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $16
+  local.get $4
+  local.get $15
+  memory.copy
+  local.get $15
+  local.get $16
+  i32.add
+  local.tee $4
+  local.get $2
+  local.get $14
+  memory.copy
+  local.get $4
+  local.get $14
+  i32.add
+  local.tee $2
+  local.get $8
+  local.get $13
+  memory.copy
+  local.get $2
+  local.get $13
+  i32.add
+  local.tee $2
+  local.get $5
+  local.get $12
+  memory.copy
+  local.get $2
+  local.get $12
+  i32.add
+  local.tee $2
+  local.get $1
+  local.get $11
+  memory.copy
+  local.get $2
+  local.get $11
+  i32.add
+  local.tee $1
+  i32.const 4080
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $3
+  local.get $10
+  memory.copy
+  local.get $1
+  local.get $10
+  i32.add
+  local.tee $1
+  i32.const 2496
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $6
+  local.get $9
+  memory.copy
+  local.get $1
+  local.get $9
+  i32.add
+  local.tee $1
+  i32.const 2496
+  i32.load16_u align=1
+  i32.store16 align=1
+  local.get $1
+  i32.const 2
+  i32.add
+  local.tee $1
+  local.get $0
+  local.get $7
+  memory.copy
+  local.get $1
+  local.get $7
+  i32.add
+  i32.const 5136
+  i64.load align=1
+  i64.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 32
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $16
  )
  (func $~lib/string/String#indexOf (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)

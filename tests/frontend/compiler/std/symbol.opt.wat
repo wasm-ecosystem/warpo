@@ -10,7 +10,7 @@
  (type $8 (func (param i32 i32 i64)))
  (type $9 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 34044))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 34012))
  (global $~lib/symbol/Symbol.nextId (mut i32) (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
@@ -66,16 +66,14 @@
  (data $17.1 (i32.const 968) "\02\00\00\00\0e\00\00\00S\00y\00m\00b\00o\00l\00(")
  (data $18 (i32.const 1004) "\1c")
  (data $18.1 (i32.const 1016) "\02\00\00\00\02\00\00\00)")
- (data $19 (i32.const 1036) "\1c")
- (data $19.1 (i32.const 1048) "\02")
- (data $20 (i32.const 1068) ",")
- (data $20.1 (i32.const 1080) "\02\00\00\00\16\00\00\00S\00y\00m\00b\00o\00l\00(\001\002\003\00)")
- (data $21 (i32.const 1116) ",")
- (data $21.1 (i32.const 1128) "\02\00\00\00\10\00\00\00i\00t\00e\00r\00a\00t\00o\00r")
- (data $22 (i32.const 1164) "<")
- (data $22.1 (i32.const 1176) "\02\00\00\00 \00\00\00S\00y\00m\00b\00o\00l\00(\00i\00t\00e\00r\00a\00t\00o\00r\00)")
- (data $23 (i32.const 1232) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10a\02")
- (data $23.1 (i32.const 1264) "$\t\00\00\10\01\82\00\10A\02")
+ (data $19 (i32.const 1036) ",")
+ (data $19.1 (i32.const 1048) "\02\00\00\00\16\00\00\00S\00y\00m\00b\00o\00l\00(\001\002\003\00)")
+ (data $20 (i32.const 1084) ",")
+ (data $20.1 (i32.const 1096) "\02\00\00\00\10\00\00\00i\00t\00e\00r\00a\00t\00o\00r")
+ (data $21 (i32.const 1132) "<")
+ (data $21.1 (i32.const 1144) "\02\00\00\00 \00\00\00S\00y\00m\00b\00o\00l\00(\00i\00t\00e\00r\00a\00t\00o\00r\00)")
+ (data $22 (i32.const 1200) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10a\02")
+ (data $22.1 (i32.const 1232) "$\t\00\00\10\01\82\00\10A\02")
  (export "memory" (memory $0))
  (export "_start" (func $~start))
  (func $~lib/rt/itcms/visitRoots
@@ -220,7 +218,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 34044
+    i32.const 34012
     i32.lt_u
     i32.and
     i32.eqz
@@ -269,7 +267,7 @@
    i32.const 1
   else
    local.get $0
-   i32.const 1232
+   i32.const 1200
    i32.load
    i32.gt_u
    if
@@ -283,7 +281,7 @@
    local.get $0
    i32.const 2
    i32.shl
-   i32.const 1236
+   i32.const 1204
    i32.add
    i32.load
    i32.const 32
@@ -850,10 +848,10 @@
   if
    unreachable
   end
-  i32.const 34048
+  i32.const 34016
   i32.const 0
   i32.store
-  i32.const 35616
+  i32.const 35584
   i32.const 0
   i32.store
   i32.const 0
@@ -866,7 +864,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 34048
+    i32.const 34016
     i32.add
     i32.const 0
     i32.store offset=4
@@ -884,7 +882,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 34048
+      i32.const 34016
       i32.add
       i32.const 0
       i32.store offset=96
@@ -902,14 +900,14 @@
     br $for-loop|0
    end
   end
-  i32.const 34048
-  i32.const 35620
+  i32.const 34016
+  i32.const 35588
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 34048
+  i32.const 34016
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1146,7 +1144,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 34044
+          i32.const 34012
           i32.lt_u
           if
            local.get $2
@@ -1242,7 +1240,7 @@
          unreachable
         end
         local.get $2
-        i32.const 34044
+        i32.const 34012
         i32.lt_u
         if
          local.get $2
@@ -1265,7 +1263,7 @@
          i32.const 4
          i32.add
          local.tee $3
-         i32.const 34044
+         i32.const 34012
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -2836,6 +2834,7 @@
  (func $~lib/symbol/symbol#toString (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
+  (local $3 i32)
   global.get $~lib/symbol/idToString
   local.get $0
   local.get $0
@@ -2892,42 +2891,33 @@
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.tee $2
+  local.tee $1
   i32.const 16
   i32.add
-  local.tee $1
-  if (result i32)
-   local.get $1
-   i32.const 2
-   call $~lib/rt/itcms/__new
-   local.tee $1
-   i32.const 976
-   i32.const 14
-   memory.copy
-   local.get $1
-   i32.const 14
-   i32.add
-   local.get $0
-   local.get $2
-   memory.copy
-   local.get $2
-   i32.const 14
-   i32.add
-   local.get $1
-   i32.add
-   i32.const 1024
-   i32.load16_u align=1
-   i32.store16 align=1
-   local.get $1
-  else
-   i32.const 1056
-  end
-  local.set $0
+  i32.const 2
+  call $~lib/rt/itcms/__new
+  local.tee $2
+  i32.const 976
+  i32.const 14
+  memory.copy
+  local.get $2
+  i32.const 14
+  i32.add
+  local.tee $3
+  local.get $0
+  local.get $1
+  memory.copy
+  local.get $1
+  local.get $3
+  i32.add
+  i32.const 1024
+  i32.load16_u align=1
+  i32.store16 align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $2
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
@@ -3149,7 +3139,7 @@
    memory.size
    i32.const 16
    i32.shl
-   i32.const 34044
+   i32.const 34012
    i32.sub
    i32.const 1
    i32.shr_u
@@ -3377,7 +3367,7 @@
    end
    global.get $std/symbol/sym3
    call $~lib/symbol/symbol#toString
-   i32.const 1088
+   i32.const 1056
    call $~lib/string/String.__eq
    i32.eqz
    if
@@ -3389,14 +3379,14 @@
     unreachable
    end
    i32.const 1
-   i32.const 1136
+   i32.const 1104
    call $~lib/symbol/ensureToMap
    global.set $~lib/symbol/Symbol.iterator
    global.get $~lib/symbol/Symbol.iterator
    global.set $std/symbol/iterator
    global.get $std/symbol/iterator
    call $~lib/symbol/symbol#toString
-   i32.const 1184
+   i32.const 1152
    call $~lib/string/String.__eq
    i32.eqz
    if
@@ -3489,7 +3479,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 1276
+  i32.const 1244
   i32.lt_s
   if
    unreachable

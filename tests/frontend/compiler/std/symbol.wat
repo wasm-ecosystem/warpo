@@ -41,10 +41,10 @@
  (global $std/symbol/key4 (mut i32) (i32.const 0))
  (global $~lib/symbol/Symbol.iterator (mut i32) (i32.const 0))
  (global $std/symbol/iterator (mut i32) (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 1232))
- (global $~lib/memory/__data_end i32 (i32.const 1276))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 34044))
- (global $~lib/memory/__heap_base i32 (i32.const 34044))
+ (global $~lib/rt/__rtti_base i32 (i32.const 1200))
+ (global $~lib/memory/__data_end i32 (i32.const 1244))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 34012))
+ (global $~lib/memory/__heap_base i32 (i32.const 34012))
  (global $~started (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\001\002\003\00\00\00\00\00\00\00")
@@ -66,11 +66,10 @@
  (data $16 (i32.const 908) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00S\00y\00m\00b\00o\00l\00(\00)\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $17 (i32.const 956) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\0e\00\00\00S\00y\00m\00b\00o\00l\00(\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $18 (i32.const 1004) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00)\00\00\00\00\00\00\00\00\00\00\00")
- (data $19 (i32.const 1036) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $20 (i32.const 1068) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00S\00y\00m\00b\00o\00l\00(\001\002\003\00)\00\00\00\00\00\00\00")
- (data $21 (i32.const 1116) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00i\00t\00e\00r\00a\00t\00o\00r\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $22 (i32.const 1164) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00S\00y\00m\00b\00o\00l\00(\00i\00t\00e\00r\00a\00t\00o\00r\00)\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $23 (i32.const 1232) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10a\02\00\00\00\00\00\00\00\00\00$\t\00\00\10\01\82\00\10A\02\00")
+ (data $19 (i32.const 1036) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00S\00y\00m\00b\00o\00l\00(\001\002\003\00)\00\00\00\00\00\00\00")
+ (data $20 (i32.const 1084) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00i\00t\00e\00r\00a\00t\00o\00r\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $21 (i32.const 1132) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00S\00y\00m\00b\00o\00l\00(\00i\00t\00e\00r\00a\00t\00o\00r\00)\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $22 (i32.const 1200) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10a\02\00\00\00\00\00\00\00\00\00$\t\00\00\10\01\82\00\10A\02\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -6682,7 +6681,6 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  (local $8 i32)
   (local.set $id
    (local.get $this)
   )
@@ -6750,76 +6748,52 @@
       (local.get $5)
      )
     )
-    (if (result i32)
-     (local.get $4)
-     (then
-      (local.set $6
-       (call $~lib/rt/__localtostack
-        (call $~lib/rt/itcms/__new
-         (local.get $4)
-         (i32.const 2)
-        )
+    (block (result i32)
+     (local.set $6
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (local.get $4)
+        (i32.const 2)
        )
       )
-      (local.set $7
-       (i32.const 0)
-      )
-      (local.set $8
-       (i32.const 14)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $6)
-        (local.get $7)
-       )
-       (i32.const 976)
-       (local.get $8)
-      )
-      (local.set $7
-       (i32.add
-        (local.get $7)
-        (local.get $8)
-       )
-      )
-      (local.set $8
-       (local.get $5)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $6)
-        (local.get $7)
-       )
-       (local.get $3)
-       (local.get $8)
-      )
-      (local.set $7
-       (i32.add
-        (local.get $7)
-        (local.get $8)
-       )
-      )
-      (local.set $8
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $6)
-        (local.get $7)
-       )
-       (i32.const 1024)
-       (local.get $8)
-      )
-      (local.set $7
-       (i32.add
-        (local.get $7)
-        (local.get $8)
-       )
-      )
+     )
+     (local.set $7
       (local.get $6)
      )
-     (else
-      (i32.const 1056)
+     (memory.copy
+      (local.get $7)
+      (i32.const 976)
+      (i32.const 14)
      )
+     (local.set $7
+      (i32.add
+       (local.get $7)
+       (i32.const 14)
+      )
+     )
+     (memory.copy
+      (local.get $7)
+      (local.get $3)
+      (local.get $5)
+     )
+     (local.set $7
+      (i32.add
+       (local.get $7)
+       (local.get $5)
+      )
+     )
+     (memory.copy
+      (local.get $7)
+      (i32.const 1024)
+      (i32.const 2)
+     )
+     (local.set $7
+      (i32.add
+       (local.get $7)
+       (i32.const 2)
+      )
+     )
+     (local.get $6)
     )
    )
   )
@@ -7103,7 +7077,7 @@
        (global.get $std/symbol/sym3)
       )
      )
-     (i32.const 1088)
+     (i32.const 1056)
     )
    )
    (then
@@ -7119,7 +7093,7 @@
   (global.set $~lib/symbol/Symbol.iterator
    (call $~lib/symbol/ensureToMap
     (i32.const 1)
-    (i32.const 1136)
+    (i32.const 1104)
    )
   )
   (global.set $std/symbol/iterator
@@ -7133,7 +7107,7 @@
        (global.get $std/symbol/iterator)
       )
      )
-     (i32.const 1184)
+     (i32.const 1152)
     )
    )
    (then

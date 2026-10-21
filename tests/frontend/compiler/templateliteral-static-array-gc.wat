@@ -31,10 +31,10 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 3))
- (global $~lib/rt/__rtti_base i32 (i32.const 1104))
- (global $~lib/memory/__data_end i32 (i32.const 1124))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33892))
- (global $~lib/memory/__heap_base i32 (i32.const 33892))
+ (global $~lib/rt/__rtti_base i32 (i32.const 1072))
+ (global $~lib/memory/__data_end i32 (i32.const 1092))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33860))
+ (global $~lib/memory/__heap_base i32 (i32.const 33860))
  (global $~started (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00d\00\00\00t\00o\00S\00t\00r\00i\00n\00g\00(\00)\00 \00r\00a\00d\00i\00x\00 \00a\00r\00g\00u\00m\00e\00n\00t\00 \00m\00u\00s\00t\00 \00b\00e\00 \00b\00e\00t\00w\00e\00e\00n\00 \002\00 \00a\00n\00d\00 \003\006\00\00\00\00\00\00\00\00\00")
@@ -52,10 +52,9 @@
  (data $12 (i32.const 732) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00B\00o\00r\00d\00e\00r\00 \00C\00o\00l\00o\00r\00:\00 \00")
  (data $13 (i32.const 780) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00,\00 \00A\00r\00e\00a\00:\00 \00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $14 (i32.const 828) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00,\00 \00P\00e\00r\00i\00m\00e\00t\00e\00r\00:\00 \00\00\00")
- (data $15 (i32.const 876) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $16 (i32.const 908) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00L\00\00\00B\00o\00r\00d\00e\00r\00 \00C\00o\00l\00o\00r\00:\00 \005\00,\00 \00A\00r\00e\00a\00:\00 \005\00,\00 \00P\00e\00r\00i\00m\00e\00t\00e\00r\00:\00 \005\00")
- (data $17 (i32.const 1004) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00D\00\00\00t\00e\00m\00p\00l\00a\00t\00e\00l\00i\00t\00e\00r\00a\00l\00-\00s\00t\00a\00t\00i\00c\00-\00a\00r\00r\00a\00y\00-\00g\00c\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $18 (i32.const 1104) "\04\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00")
+ (data $15 (i32.const 876) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00L\00\00\00B\00o\00r\00d\00e\00r\00 \00C\00o\00l\00o\00r\00:\00 \005\00,\00 \00A\00r\00e\00a\00:\00 \005\00,\00 \00P\00e\00r\00i\00m\00e\00t\00e\00r\00:\00 \005\00")
+ (data $16 (i32.const 972) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00D\00\00\00t\00e\00m\00p\00l\00a\00t\00e\00l\00i\00t\00e\00r\00a\00l\00-\00s\00t\00a\00t\00i\00c\00-\00a\00r\00r\00a\00y\00-\00g\00c\00.\00t\00s\00\00\00\00\00\00\00\00\00")
+ (data $17 (i32.const 1072) "\04\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3865,7 +3864,6 @@
   (local $7 i32)
   (local $8 i32)
   (local $9 i32)
-  (local $10 i32)
   (local $result i32)
   (local.set $iteration
    (i32.const 0)
@@ -3946,127 +3944,85 @@
           (local.get $7)
          )
         )
-        (if (result i32)
-         (local.get $4)
-         (then
-          (local.set $8
-           (call $~lib/rt/__localtostack
-            (call $~lib/rt/itcms/__new
-             (local.get $4)
-             (i32.const 2)
-            )
+        (block (result i32)
+         (local.set $8
+          (call $~lib/rt/__localtostack
+           (call $~lib/rt/itcms/__new
+            (local.get $4)
+            (i32.const 2)
            )
           )
-          (local.set $9
-           (i32.const 0)
-          )
-          (local.set $10
-           (i32.const 28)
-          )
-          (memory.copy
-           (i32.add
-            (local.get $8)
-            (local.get $9)
-           )
-           (i32.const 752)
-           (local.get $10)
-          )
-          (local.set $9
-           (i32.add
-            (local.get $9)
-            (local.get $10)
-           )
-          )
-          (local.set $10
-           (local.get $5)
-          )
-          (memory.copy
-           (i32.add
-            (local.get $8)
-            (local.get $9)
-           )
-           (local.get $1)
-           (local.get $10)
-          )
-          (local.set $9
-           (i32.add
-            (local.get $9)
-            (local.get $10)
-           )
-          )
-          (local.set $10
-           (i32.const 16)
-          )
-          (memory.copy
-           (i32.add
-            (local.get $8)
-            (local.get $9)
-           )
-           (i32.const 800)
-           (local.get $10)
-          )
-          (local.set $9
-           (i32.add
-            (local.get $9)
-            (local.get $10)
-           )
-          )
-          (local.set $10
-           (local.get $6)
-          )
-          (memory.copy
-           (i32.add
-            (local.get $8)
-            (local.get $9)
-           )
-           (local.get $2)
-           (local.get $10)
-          )
-          (local.set $9
-           (i32.add
-            (local.get $9)
-            (local.get $10)
-           )
-          )
-          (local.set $10
-           (i32.const 26)
-          )
-          (memory.copy
-           (i32.add
-            (local.get $8)
-            (local.get $9)
-           )
-           (i32.const 848)
-           (local.get $10)
-          )
-          (local.set $9
-           (i32.add
-            (local.get $9)
-            (local.get $10)
-           )
-          )
-          (local.set $10
-           (local.get $7)
-          )
-          (memory.copy
-           (i32.add
-            (local.get $8)
-            (local.get $9)
-           )
-           (local.get $3)
-           (local.get $10)
-          )
-          (local.set $9
-           (i32.add
-            (local.get $9)
-            (local.get $10)
-           )
-          )
+         )
+         (local.set $9
           (local.get $8)
          )
-         (else
-          (i32.const 896)
+         (memory.copy
+          (local.get $9)
+          (i32.const 752)
+          (i32.const 28)
          )
+         (local.set $9
+          (i32.add
+           (local.get $9)
+           (i32.const 28)
+          )
+         )
+         (memory.copy
+          (local.get $9)
+          (local.get $1)
+          (local.get $5)
+         )
+         (local.set $9
+          (i32.add
+           (local.get $9)
+           (local.get $5)
+          )
+         )
+         (memory.copy
+          (local.get $9)
+          (i32.const 800)
+          (i32.const 16)
+         )
+         (local.set $9
+          (i32.add
+           (local.get $9)
+           (i32.const 16)
+          )
+         )
+         (memory.copy
+          (local.get $9)
+          (local.get $2)
+          (local.get $6)
+         )
+         (local.set $9
+          (i32.add
+           (local.get $9)
+           (local.get $6)
+          )
+         )
+         (memory.copy
+          (local.get $9)
+          (i32.const 848)
+          (i32.const 26)
+         )
+         (local.set $9
+          (i32.add
+           (local.get $9)
+           (i32.const 26)
+          )
+         )
+         (memory.copy
+          (local.get $9)
+          (local.get $3)
+          (local.get $7)
+         )
+         (local.set $9
+          (i32.add
+           (local.get $9)
+           (local.get $7)
+          )
+         )
+         (local.get $8)
         )
        )
       )
@@ -4077,13 +4033,13 @@
         (call $~lib/rt/__tmptostack
          (local.get $result)
         )
-        (i32.const 928)
+        (i32.const 896)
        )
       )
       (then
        (call $~lib/builtins/abort
         (i32.const 0)
-        (i32.const 1024)
+        (i32.const 992)
         (i32.const 13)
         (i32.const 5)
        )

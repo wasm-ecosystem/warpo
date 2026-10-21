@@ -9511,8 +9511,8 @@ export class Compiler extends DiagnosticEmitter {
 
   private compileTemplateLiteral(expression: TemplateLiteralExpression, constraints: Constraints): ExpressionRef {
     let tag = expression.tag;
-    let parts = expression.parts;
-    let numParts = parts.length;
+    let literalParts = expression.parts;
+    let numParts = literalParts.length;
     let expressions = expression.expressions;
     let numExpressions = expressions.length;
     assert(numExpressions == numParts - 1);
@@ -9524,14 +9524,14 @@ export class Compiler extends DiagnosticEmitter {
     if (!tag) {
       // Shortcut if just a (multi-line) string
       if (numParts == 1) {
-        return this.ensureStaticString(parts[0]);
+        return this.ensureStaticString(literalParts[0]);
       }
 
       // Shortcut for `${expr}`, `<prefix>${expr}`, `${expr}<suffix>`
       if (numParts == 2) {
         let expression = expressions[0];
-        let lhsLen = parts[0].length;
-        let rhsLen = parts[1].length;
+        let lhsLen = literalParts[0].length;
+        let rhsLen = literalParts[1].length;
         // Shortcut for `${expr}`  ->   expr.toString()
         if (!lhsLen && !rhsLen) {
           return this.makeToString(this.compileExpression(expression, stringType), this.currentType, expression);
@@ -9546,12 +9546,12 @@ export class Compiler extends DiagnosticEmitter {
           let rhs: ExpressionRef;
           let expr = this.makeToString(this.compileExpression(expression, stringType), this.currentType, expression);
           if (hasPrefix) {
-            lhs = this.ensureStaticString(parts[0]);
+            lhs = this.ensureStaticString(literalParts[0]);
             rhs = expr;
           } else {
             // suffix
             lhs = expr;
-            rhs = this.ensureStaticString(parts[1]);
+            rhs = this.ensureStaticString(literalParts[1]);
           }
           let concatMethod = assert(stringInstance.getMethod("concat"));
           return this.makeCallDirect(concatMethod, [lhs, rhs], expression);
@@ -9559,7 +9559,7 @@ export class Compiler extends DiagnosticEmitter {
       }
 
       // Shortcut for `${exprA}${exprB}`  ->  exprA.toString() + exprB.toString()
-      if (numParts == 3 && !parts[0].length && !parts[1].length && !parts[2].length) {
+      if (numParts == 3 && !literalParts[0].length && !literalParts[1].length && !literalParts[2].length) {
         let exprA = expressions[0];
         let exprB = expressions[1];
 
@@ -9571,35 +9571,46 @@ export class Compiler extends DiagnosticEmitter {
 
       let flow = this.currentFlow;
       let stmts = new Array<ExpressionRef>();
-      let temps = new Array<Local>(numExpressions);
+      let resolvedExpressions = new Array<Local>(numExpressions);
+      // Resolve all expressions to temporary locals as strings
       for (let expressionIndex = 0; expressionIndex < numExpressions; ++expressionIndex) {
+        let resolvedExpression = flow.getTempLocal(stringType);
+        resolvedExpressions[expressionIndex] = resolvedExpression;
         let subExpression = expressions[expressionIndex];
-        let temp = flow.getTempLocal(stringType);
-        temps[expressionIndex] = temp;
         stmts.push(
           module.local_set(
-            temp.index,
+            resolvedExpression.index,
             this.makeToString(this.compileExpression(subExpression, stringType), this.currentType, subExpression),
             true
           )
         );
       }
+      let templateSlots = new Array<string | null>();
       let constantSize: i32 = 0;
+      // Get the template slots and calculate the constant size of the resulting string
       for (let partIndex = 0; partIndex < numParts; ++partIndex) {
-        constantSize += parts[partIndex].length << 1;
+        let part = literalParts[partIndex];
+        constantSize += part.length << 1;
+        templateSlots.push(part);
+        // null marks the slot for the resolved string except the last expression
+        if (partIndex < numExpressions) templateSlots.push(null);
       }
       // size cannot overflow i32, because the data being concatenated consists of existing objects
       // and the upper limit of linear memory is i32_max.
       let sizeLocal = flow.getTempLocal(Type.i32);
       stmts.push(module.local_set(sizeLocal.index, module.i32(constantSize), false));
-      let sizes = new Array<Local>(numExpressions);
-      let byteLength = this.program.requireFunction("~lib/string/String.UTF16.byteLength");
+      let resolvedExpressionSizes = new Array<Local>(numExpressions);
+      let getByteLength = this.program.requireFunction("~lib/string/String.UTF16.byteLength");
       for (let expressionIndex = 0; expressionIndex < numExpressions; ++expressionIndex) {
-        let temp = temps[expressionIndex];
+        let resolvedExpression = resolvedExpressions[expressionIndex];
         let size = flow.getTempLocal(Type.usize32);
-        sizes[expressionIndex] = size;
+        resolvedExpressionSizes[expressionIndex] = size;
         stmts.push(
-          module.local_set(size.index, this.makeCallDirect(byteLength, [this.makeLocalGet(temp)], expression), false)
+          module.local_set(
+            size.index,
+            this.makeCallDirect(getByteLength, [this.makeLocalGet(resolvedExpression)], expression),
+            false
+          )
         );
         stmts.push(
           module.local_set(
@@ -9610,8 +9621,7 @@ export class Compiler extends DiagnosticEmitter {
         );
       }
       let resultLocal = flow.getTempLocal(stringType);
-      let offsetLocal = flow.getTempLocal(Type.usize32);
-      let copySizeLocal = flow.getTempLocal(Type.usize32);
+      let cursorLocal = flow.getTempLocal(Type.usize32);
       let copies = new Array<ExpressionRef>();
       copies.push(
         module.local_set(
@@ -9624,58 +9634,34 @@ export class Compiler extends DiagnosticEmitter {
           true
         )
       );
-      copies.push(module.local_set(offsetLocal.index, module.usize(0), false));
-      // The parser keeps empty text parts: `A${x}${y}C` has parts ["A", "", "C"].
-      // Copy parts[i] followed by temps[i]; only the final part has no interpolation.
-      for (let partIndex = 0; partIndex < numParts; ++partIndex) {
-        let part = parts[partIndex];
-        if (part.length) {
-          copies.push(module.local_set(copySizeLocal.index, module.usize(part.length << 1), false));
-          copies.push(
-            makeMemoryCopy(
-              this,
-              this.makeAdd(this.makeLocalGet(resultLocal), this.makeLocalGet(offsetLocal), Type.usize32),
-              this.ensureStaticString(part),
-              this.makeLocalGet(copySizeLocal),
-              expression
-            )
-          );
-          copies.push(
-            module.local_set(
-              offsetLocal.index,
-              this.makeAdd(this.makeLocalGet(offsetLocal), this.makeLocalGet(copySizeLocal), Type.usize32),
-              false
-            )
-          );
+      copies.push(module.local_set(cursorLocal.index, this.makeLocalGet(resultLocal), false));
+      let resolvedExpressionIndex = 0;
+      // Copy each template slot into the result string, either from a static string or a resolved expression.
+      for (let slotIndex = 0; slotIndex < templateSlots.length; ++slotIndex) {
+        let slot = templateSlots[slotIndex];
+        let source: ExpressionRef;
+        let copySize: ExpressionRef;
+        if (slot != null) {
+          if (!slot.length) continue;
+          // static string
+          copySize = module.usize(slot.length << 1);
+          source = this.ensureStaticString(slot);
+        } else {
+          // resolved expression
+          copySize = this.makeLocalGet(resolvedExpressionSizes[resolvedExpressionIndex]);
+          source = this.makeLocalGet(resolvedExpressions[resolvedExpressionIndex++]);
         }
-        if (partIndex < numExpressions) {
-          copies.push(module.local_set(copySizeLocal.index, this.makeLocalGet(sizes[partIndex]), false));
-          copies.push(
-            makeMemoryCopy(
-              this,
-              this.makeAdd(this.makeLocalGet(resultLocal), this.makeLocalGet(offsetLocal), Type.usize32),
-              this.makeLocalGet(temps[partIndex]),
-              this.makeLocalGet(copySizeLocal),
-              expression
-            )
-          );
-          copies.push(
-            module.local_set(
-              offsetLocal.index,
-              this.makeAdd(this.makeLocalGet(offsetLocal), this.makeLocalGet(copySizeLocal), Type.usize32),
-              false
-            )
-          );
-        }
+        copies.push(makeMemoryCopy(this, this.makeLocalGet(cursorLocal), source, copySize, expression));
+        copies.push(
+          module.local_set(
+            cursorLocal.index,
+            this.makeAdd(this.makeLocalGet(cursorLocal), module.copyExpression(copySize), Type.usize32),
+            false
+          )
+        );
       }
       copies.push(this.makeLocalGet(resultLocal));
-      stmts.push(
-        module.if(
-          this.makeLocalGet(sizeLocal),
-          module.block(null, copies, stringType.toRef()),
-          this.ensureStaticString("")
-        )
-      );
+      stmts.push(module.block(null, copies, stringType.toRef()));
       this.currentType = stringType;
       return module.block(null, stmts, stringType.toRef());
     }
@@ -9687,7 +9673,7 @@ export class Compiler extends DiagnosticEmitter {
     assert(rawParts.length == numParts);
     let partExprs = new Array<ExpressionRef>(numParts);
     for (let i = 0; i < numParts; ++i) {
-      partExprs[i] = this.ensureStaticString(parts[i]);
+      partExprs[i] = this.ensureStaticString(literalParts[i]);
     }
     let rawExprs = new Array<ExpressionRef>(numParts);
     for (let i = 0; i < numParts; ++i) {

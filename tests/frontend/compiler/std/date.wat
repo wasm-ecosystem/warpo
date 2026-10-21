@@ -5251,7 +5251,6 @@
   (local $26 i32)
   (local $27 i32)
   (local $28 i32)
-  (local $29 i32)
   (local.set $yr
    (call $~lib/date/Date#get:year
     (call $~lib/rt/__tmptostack
@@ -5526,263 +5525,173 @@
       (local.get $26)
      )
     )
-    (if (result i32)
-     (local.get $19)
-     (then
-      (local.set $27
-       (call $~lib/rt/__localtostack
-        (call $~lib/rt/itcms/__new
-         (local.get $19)
-         (i32.const 2)
-        )
+    (block (result i32)
+     (local.set $27
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (local.get $19)
+        (i32.const 2)
        )
       )
-      (local.set $28
-       (i32.const 0)
-      )
-      (local.set $29
-       (local.get $20)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (local.get $12)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (i32.const 592)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (local.get $21)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (local.get $13)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (i32.const 592)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (local.get $22)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (local.get $14)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (i32.const 2464)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (local.get $23)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (local.get $15)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (i32.const 2496)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (local.get $24)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (local.get $16)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (i32.const 2496)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (local.get $25)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (local.get $17)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (i32.const 2528)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (local.get $26)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (local.get $18)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
-      (local.set $29
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-       (i32.const 2560)
-       (local.get $29)
-      )
-      (local.set $28
-       (i32.add
-        (local.get $28)
-        (local.get $29)
-       )
-      )
+     )
+     (local.set $28
       (local.get $27)
      )
-     (else
-      (i32.const 2432)
+     (memory.copy
+      (local.get $28)
+      (local.get $12)
+      (local.get $20)
      )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (local.get $20)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (i32.const 592)
+      (i32.const 2)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (local.get $13)
+      (local.get $21)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (local.get $21)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (i32.const 592)
+      (i32.const 2)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (local.get $14)
+      (local.get $22)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (local.get $22)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (i32.const 2464)
+      (i32.const 2)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (local.get $15)
+      (local.get $23)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (local.get $23)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (i32.const 2496)
+      (i32.const 2)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (local.get $16)
+      (local.get $24)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (local.get $24)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (i32.const 2496)
+      (i32.const 2)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (local.get $17)
+      (local.get $25)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (local.get $25)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (i32.const 2528)
+      (i32.const 2)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (local.get $18)
+      (local.get $26)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (local.get $26)
+      )
+     )
+     (memory.copy
+      (local.get $28)
+      (i32.const 2560)
+      (i32.const 2)
+     )
+     (local.set $28
+      (i32.add
+       (local.get $28)
+       (i32.const 2)
+      )
+     )
+     (local.get $27)
     )
    )
   )
@@ -6081,7 +5990,6 @@
   (local $25 i32)
   (local $26 i32)
   (local $27 i32)
-  (local $28 i32)
   (local.set $weeks
    (call $~lib/rt/__localtostack
     (call $~lib/rt/__newBuffer
@@ -6286,110 +6194,74 @@
       (local.get $25)
      )
     )
-    (if (result i32)
-     (local.get $20)
-     (then
-      (local.set $26
-       (call $~lib/rt/__localtostack
-        (call $~lib/rt/itcms/__new
-         (local.get $20)
-         (i32.const 2)
-        )
+    (block (result i32)
+     (local.set $26
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (local.get $20)
+        (i32.const 2)
        )
       )
-      (local.set $27
-       (i32.const 0)
-      )
-      (local.set $28
-       (local.get $21)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $26)
-        (local.get $27)
-       )
-       (local.get $15)
-       (local.get $28)
-      )
-      (local.set $27
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-      )
-      (local.set $28
-       (local.get $22)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $26)
-        (local.get $27)
-       )
-       (local.get $16)
-       (local.get $28)
-      )
-      (local.set $27
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-      )
-      (local.set $28
-       (local.get $23)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $26)
-        (local.get $27)
-       )
-       (local.get $17)
-       (local.get $28)
-      )
-      (local.set $27
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-      )
-      (local.set $28
-       (local.get $24)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $26)
-        (local.get $27)
-       )
-       (local.get $18)
-       (local.get $28)
-      )
-      (local.set $27
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-      )
-      (local.set $28
-       (local.get $25)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $26)
-        (local.get $27)
-       )
-       (local.get $19)
-       (local.get $28)
-      )
-      (local.set $27
-       (i32.add
-        (local.get $27)
-        (local.get $28)
-       )
-      )
+     )
+     (local.set $27
       (local.get $26)
      )
-     (else
-      (i32.const 2432)
+     (memory.copy
+      (local.get $27)
+      (local.get $15)
+      (local.get $21)
      )
+     (local.set $27
+      (i32.add
+       (local.get $27)
+       (local.get $21)
+      )
+     )
+     (memory.copy
+      (local.get $27)
+      (local.get $16)
+      (local.get $22)
+     )
+     (local.set $27
+      (i32.add
+       (local.get $27)
+       (local.get $22)
+      )
+     )
+     (memory.copy
+      (local.get $27)
+      (local.get $17)
+      (local.get $23)
+     )
+     (local.set $27
+      (i32.add
+       (local.get $27)
+       (local.get $23)
+      )
+     )
+     (memory.copy
+      (local.get $27)
+      (local.get $18)
+      (local.get $24)
+     )
+     (local.set $27
+      (i32.add
+       (local.get $27)
+       (local.get $24)
+      )
+     )
+     (memory.copy
+      (local.get $27)
+      (local.get $19)
+      (local.get $25)
+     )
+     (local.set $27
+      (i32.add
+       (local.get $27)
+       (local.get $25)
+      )
+     )
+     (local.get $26)
     )
    )
   )
@@ -6407,7 +6279,6 @@
   (local $10 i32)
   (local $11 i32)
   (local $12 i32)
-  (local $13 i32)
   (local.set $hours
    (call $~lib/rt/__localtostack
     (call $~lib/date/stringify
@@ -6503,110 +6374,74 @@
       (local.get $10)
      )
     )
-    (if (result i32)
-     (local.get $7)
-     (then
-      (local.set $11
-       (call $~lib/rt/__localtostack
-        (call $~lib/rt/itcms/__new
-         (local.get $7)
-         (i32.const 2)
-        )
+    (block (result i32)
+     (local.set $11
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (local.get $7)
+        (i32.const 2)
        )
       )
-      (local.set $12
-       (i32.const 0)
-      )
-      (local.set $13
-       (local.get $8)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $11)
-        (local.get $12)
-       )
-       (local.get $4)
-       (local.get $13)
-      )
-      (local.set $12
-       (i32.add
-        (local.get $12)
-        (local.get $13)
-       )
-      )
-      (local.set $13
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $11)
-        (local.get $12)
-       )
-       (i32.const 2496)
-       (local.get $13)
-      )
-      (local.set $12
-       (i32.add
-        (local.get $12)
-        (local.get $13)
-       )
-      )
-      (local.set $13
-       (local.get $9)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $11)
-        (local.get $12)
-       )
-       (local.get $5)
-       (local.get $13)
-      )
-      (local.set $12
-       (i32.add
-        (local.get $12)
-        (local.get $13)
-       )
-      )
-      (local.set $13
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $11)
-        (local.get $12)
-       )
-       (i32.const 2496)
-       (local.get $13)
-      )
-      (local.set $12
-       (i32.add
-        (local.get $12)
-        (local.get $13)
-       )
-      )
-      (local.set $13
-       (local.get $10)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $11)
-        (local.get $12)
-       )
-       (local.get $6)
-       (local.get $13)
-      )
-      (local.set $12
-       (i32.add
-        (local.get $12)
-        (local.get $13)
-       )
-      )
+     )
+     (local.set $12
       (local.get $11)
      )
-     (else
-      (i32.const 2432)
+     (memory.copy
+      (local.get $12)
+      (local.get $4)
+      (local.get $8)
      )
+     (local.set $12
+      (i32.add
+       (local.get $12)
+       (local.get $8)
+      )
+     )
+     (memory.copy
+      (local.get $12)
+      (i32.const 2496)
+      (i32.const 2)
+     )
+     (local.set $12
+      (i32.add
+       (local.get $12)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $12)
+      (local.get $5)
+      (local.get $9)
+     )
+     (local.set $12
+      (i32.add
+       (local.get $12)
+       (local.get $9)
+      )
+     )
+     (memory.copy
+      (local.get $12)
+      (i32.const 2496)
+      (i32.const 2)
+     )
+     (local.set $12
+      (i32.add
+       (local.get $12)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $12)
+      (local.get $6)
+      (local.get $10)
+     )
+     (local.set $12
+      (i32.add
+       (local.get $12)
+       (local.get $10)
+      )
+     )
+     (local.get $11)
     )
    )
   )
@@ -6648,7 +6483,6 @@
   (local $34 i32)
   (local $35 i32)
   (local $36 i32)
-  (local $37 i32)
   (local.set $weeks
    (call $~lib/rt/__localtostack
     (call $~lib/rt/__newBuffer
@@ -6943,229 +6777,151 @@
       (local.get $34)
      )
     )
-    (if (result i32)
-     (local.get $26)
-     (then
-      (local.set $35
-       (call $~lib/rt/__localtostack
-        (call $~lib/rt/itcms/__new
-         (local.get $26)
-         (i32.const 2)
-        )
+    (block (result i32)
+     (local.set $35
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (local.get $26)
+        (i32.const 2)
        )
       )
-      (local.set $36
-       (i32.const 0)
-      )
-      (local.set $37
-       (local.get $27)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $18)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (local.get $28)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $19)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (local.get $29)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $20)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (local.get $30)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $21)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (local.get $31)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $22)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (i32.const 4080)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (local.get $32)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $23)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (i32.const 2496)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (local.get $33)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $24)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (i32.const 2)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (i32.const 2496)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (local.get $34)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (local.get $25)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
-      (local.set $37
-       (i32.const 8)
-      )
-      (memory.copy
-       (i32.add
-        (local.get $35)
-        (local.get $36)
-       )
-       (i32.const 5136)
-       (local.get $37)
-      )
-      (local.set $36
-       (i32.add
-        (local.get $36)
-        (local.get $37)
-       )
-      )
+     )
+     (local.set $36
       (local.get $35)
      )
-     (else
-      (i32.const 2432)
+     (memory.copy
+      (local.get $36)
+      (local.get $18)
+      (local.get $27)
      )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $27)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (local.get $19)
+      (local.get $28)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $28)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (local.get $20)
+      (local.get $29)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $29)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (local.get $21)
+      (local.get $30)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $30)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (local.get $22)
+      (local.get $31)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $31)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (i32.const 4080)
+      (i32.const 2)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (local.get $23)
+      (local.get $32)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $32)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (i32.const 2496)
+      (i32.const 2)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (local.get $24)
+      (local.get $33)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $33)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (i32.const 2496)
+      (i32.const 2)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (i32.const 2)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (local.get $25)
+      (local.get $34)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (local.get $34)
+      )
+     )
+     (memory.copy
+      (local.get $36)
+      (i32.const 5136)
+      (i32.const 8)
+     )
+     (local.set $36
+      (i32.add
+       (local.get $36)
+       (i32.const 8)
+      )
+     )
+     (local.get $35)
     )
    )
   )
