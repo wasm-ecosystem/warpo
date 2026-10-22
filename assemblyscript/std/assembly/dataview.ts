@@ -30,7 +30,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetFloat32(byteOffset: i32, littleEndian: bool = false): f32 {
     return littleEndian
       ? load<f32>(this.dataStart + <usize>byteOffset)
@@ -43,7 +43,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetFloat64(byteOffset: i32, littleEndian: bool = false): f64 {
     return littleEndian
       ? load<f64>(this.dataStart + <usize>byteOffset)
@@ -56,7 +56,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetInt8(byteOffset: i32): i8 {
     return load<i8>(this.dataStart + <usize>byteOffset);
   }
@@ -67,7 +67,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetInt16(byteOffset: i32, littleEndian: bool = false): i16 {
     let result: i16 = load<i16>(this.dataStart + <usize>byteOffset);
     return littleEndian ? result : bswap<u16>(result);
@@ -79,7 +79,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetInt32(byteOffset: i32, littleEndian: bool = false): i32 {
     let result: i32 = load<i32>(this.dataStart + <usize>byteOffset);
     return littleEndian ? result : bswap<u32>(result);
@@ -91,7 +91,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetUint8(byteOffset: i32): u8 {
     return load<u8>(this.dataStart + <usize>byteOffset);
   }
@@ -102,7 +102,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetUint16(byteOffset: i32, littleEndian: bool = false): u16 {
     let result: u16 = load<u16>(this.dataStart + <usize>byteOffset);
     return littleEndian ? result : bswap<u16>(result);
@@ -114,7 +114,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetUint32(byteOffset: i32, littleEndian: bool = false): u32 {
     let result: u32 = load<u32>(this.dataStart + <usize>byteOffset);
     return littleEndian ? result : bswap<u32>(result);
@@ -126,7 +126,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetFloat32(byteOffset: i32, value: f32, littleEndian: bool = false): void {
     if (littleEndian) store<f32>(this.dataStart + <usize>byteOffset, value);
     else store<u32>(this.dataStart + <usize>byteOffset, bswap<u32>(reinterpret<u32>(value)));
@@ -138,7 +138,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetFloat64(byteOffset: i32, value: f64, littleEndian: bool = false): void {
     if (littleEndian) store<f64>(this.dataStart + <usize>byteOffset, value);
     else store<u64>(this.dataStart + <usize>byteOffset, bswap<u64>(reinterpret<u64>(value)));
@@ -150,7 +150,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetInt8(byteOffset: i32, value: i8): void {
     store<i8>(this.dataStart + <usize>byteOffset, value);
   }
@@ -161,7 +161,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetInt16(byteOffset: i32, value: i16, littleEndian: bool = false): void {
     store<i16>(this.dataStart + <usize>byteOffset, littleEndian ? value : bswap<u16>(value));
   }
@@ -172,7 +172,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetInt32(byteOffset: i32, value: i32, littleEndian: bool = false): void {
     store<i32>(this.dataStart + <usize>byteOffset, littleEndian ? value : bswap<u32>(value));
   }
@@ -183,7 +183,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetUint8(byteOffset: i32, value: u8): void {
     store<u8>(this.dataStart + <usize>byteOffset, value);
   }
@@ -194,7 +194,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetUint16(byteOffset: i32, value: u16, littleEndian: bool = false): void {
     store<u16>(this.dataStart + <usize>byteOffset, littleEndian ? value : bswap<u16>(value));
   }
@@ -205,7 +205,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetUint32(byteOffset: i32, value: u32, littleEndian: bool = false): void {
     store<u32>(this.dataStart + <usize>byteOffset, littleEndian ? value : bswap<u32>(value));
   }
@@ -218,7 +218,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetInt64(byteOffset: i32, littleEndian: bool = false): i64 {
     let result: i64 = load<i64>(this.dataStart + <usize>byteOffset);
     return littleEndian ? result : bswap<u64>(result);
@@ -230,7 +230,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   ugetUint64(byteOffset: i32, littleEndian: bool = false): u64 {
     let result = load<u64>(this.dataStart + <usize>byteOffset);
     return littleEndian ? result : bswap<u64>(result);
@@ -242,7 +242,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetInt64(byteOffset: i32, value: i64, littleEndian: bool = false): void {
     store<i64>(this.dataStart + <usize>byteOffset, littleEndian ? value : bswap<u64>(value));
   }
@@ -253,7 +253,7 @@ export class DataView {
   }
 
 
-  @unsafe @inline
+  @unsafe
   usetUint64(byteOffset: i32, value: u64, littleEndian: bool = false): void {
     store<u64>(this.dataStart + <usize>byteOffset, littleEndian ? value : bswap<u64>(value));
   }
