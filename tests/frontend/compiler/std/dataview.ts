@@ -107,6 +107,18 @@
   assert(view.getUint64(0, true) == 6864441868736323830);
   assert(view.getUint64(0, false) == 17789315970224178015);
 
+  let uncheckedView = new DataView(array.buffer, 0, 0);
+  assert(uncheckedView.ugetFloat32(0, true) == view.getFloat32(0, true));
+  assert(uncheckedView.ugetFloat64(0, false) == view.getFloat64(0, false));
+  assert(uncheckedView.ugetInt8(0) == view.getInt8(0));
+  assert(uncheckedView.ugetInt16(0, true) == view.getInt16(0, true));
+  assert(uncheckedView.ugetInt32(0, false) == view.getInt32(0, false));
+  assert(uncheckedView.ugetUint8(0) == view.getUint8(0));
+  assert(uncheckedView.ugetUint16(0, false) == view.getUint16(0, false));
+  assert(uncheckedView.ugetUint32(0, true) == view.getUint32(0, true));
+  assert(uncheckedView.ugetInt64(0, true) == view.getInt64(0, true));
+  assert(uncheckedView.ugetUint64(0, false) == view.getUint64(0, false));
+
   view.setFloat32(0, 1.5976661625240943e-18, true);
   assert(view.getFloat32(0, true) == 1.5976661625240943e-18);
 
@@ -159,6 +171,46 @@
   assert(view.getUint64(0, true) == 2334704782995986958);
 
   view.setUint64(0, 11323557176419695287, false);
+  assert(view.getUint64(0, false) == 11323557176419695287);
+
+  uncheckedView.usetFloat32(0, 1.5976661625240943e-18, true);
+  assert(view.getFloat32(0, true) == 1.5976661625240943e-18);
+  uncheckedView.usetFloat32(0, 1.9762819733816963e21, false);
+  assert(view.getFloat32(0, false) == 1.9762819733816963e21);
+
+  uncheckedView.usetFloat64(0, -1.094252199637739e148, true);
+  assert(view.getFloat64(0, true) == -1.094252199637739e148);
+  uncheckedView.usetFloat64(0, 6.022586634778589e-103, false);
+  assert(view.getFloat64(0, false) == 6.022586634778589e-103);
+
+  uncheckedView.usetInt8(0, 108);
+  assert(view.getInt8(0) == 108);
+  uncheckedView.usetInt16(0, -13360, true);
+  assert(view.getInt16(0, true) == -13360);
+  uncheckedView.usetInt16(0, 14689, false);
+  assert(view.getInt16(0, false) == 14689);
+  uncheckedView.usetInt32(0, 1204680201, true);
+  assert(view.getInt32(0, true) == 1204680201);
+  uncheckedView.usetInt32(0, 660673230, false);
+  assert(view.getInt32(0, false) == 660673230);
+  uncheckedView.usetInt64(0, -3290739641816099749, true);
+  assert(view.getInt64(0, true) == -3290739641816099749);
+  uncheckedView.usetInt64(0, 8178932412950708047, false);
+  assert(view.getInt64(0, false) == 8178932412950708047);
+
+  uncheckedView.usetUint8(0, 238);
+  assert(view.getUint8(0) == 238);
+  uncheckedView.usetUint16(0, 58856, true);
+  assert(view.getUint16(0, true) == 58856);
+  uncheckedView.usetUint16(0, 60400, false);
+  assert(view.getUint16(0, false) == 60400);
+  uncheckedView.usetUint32(0, 3448161552, true);
+  assert(view.getUint32(0, true) == 3448161552);
+  uncheckedView.usetUint32(0, 2784175665, false);
+  assert(view.getUint32(0, false) == 2784175665);
+  uncheckedView.usetUint64(0, 2334704782995986958, true);
+  assert(view.getUint64(0, true) == 2334704782995986958);
+  uncheckedView.usetUint64(0, 11323557176419695287, false);
   assert(view.getUint64(0, false) == 11323557176419695287);
 
   view = new DataView(array.buffer);

@@ -1,22 +1,22 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32 i32)))
- (type $4 (func (param i32 i32) (result i32)))
- (type $5 (func (param i32 i32 i32 i32)))
- (type $6 (func (param i32 i32 i32) (result i32)))
+ (type $2 (func (param i32 i32 i32 i32)))
+ (type $3 (func (param i32 i32 i32) (result i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32) (result i32)))
+ (type $6 (func (param i32)))
  (type $7 (func))
- (type $8 (func (param i32 i32 i32 i32) (result i32)))
- (type $9 (func (param i32 i32 i32) (result i64)))
- (type $10 (func (param i32 i32 i64 i32)))
- (type $11 (func (param i32 i32 i64) (result i32)))
- (type $12 (func (result i32)))
- (type $13 (func (param i32 i32 i32) (result f32)))
- (type $14 (func (param i64) (result i64)))
- (type $15 (func (param i32 i32 i32) (result f64)))
- (type $16 (func (param i32 i32 f32 i32)))
- (type $17 (func (param i32 i32 f64 i32)))
+ (type $8 (func (param i32 i32 i32) (result i64)))
+ (type $9 (func (param i32 i32 i64 i32)))
+ (type $10 (func (param i32 i32 i32 i32) (result i32)))
+ (type $11 (func (param i32 i32 i32) (result f32)))
+ (type $12 (func (param i32 i32 i32) (result f64)))
+ (type $13 (func (param i32 i32 f32 i32)))
+ (type $14 (func (param i32 i32 f64 i32)))
+ (type $15 (func (param i32 i32 i64) (result i32)))
+ (type $16 (func (result i32)))
+ (type $17 (func (param i64) (result i64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -3332,35 +3332,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#getFloat32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result f32)
-  (if
-   (i32.or
-    (i32.shr_u
-     (local.get $byteOffset)
-     (i32.const 31)
-    )
-    (i32.gt_s
-     (i32.add
-      (local.get $byteOffset)
-      (i32.const 4)
-     )
-     (call $~lib/dataview/DataView#get:byteLength
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 336)
-     (i32.const 608)
-     (i32.const 28)
-     (i32.const 70)
-    )
-    (unreachable)
-   )
-  )
+ (func $~lib/dataview/DataView#ugetFloat32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result f32)
   (return
    (if (result f32)
     (local.get $littleEndian)
@@ -3392,6 +3364,45 @@
       )
      )
     )
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#getFloat32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result f32)
+  (if
+   (i32.or
+    (i32.shr_u
+     (local.get $byteOffset)
+     (i32.const 31)
+    )
+    (i32.gt_s
+     (i32.add
+      (local.get $byteOffset)
+      (i32.const 4)
+     )
+     (call $~lib/dataview/DataView#get:byteLength
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 336)
+     (i32.const 608)
+     (i32.const 28)
+     (i32.const 70)
+    )
+    (unreachable)
+   )
+  )
+  (return
+   (call $~lib/dataview/DataView#ugetFloat32
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
    )
   )
  )
@@ -3482,35 +3493,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#getFloat64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result f64)
-  (if
-   (i32.or
-    (i32.shr_u
-     (local.get $byteOffset)
-     (i32.const 31)
-    )
-    (i32.gt_s
-     (i32.add
-      (local.get $byteOffset)
-      (i32.const 8)
-     )
-     (call $~lib/dataview/DataView#get:byteLength
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 336)
-     (i32.const 608)
-     (i32.const 35)
-     (i32.const 70)
-    )
-    (unreachable)
-   )
-  )
+ (func $~lib/dataview/DataView#ugetFloat64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result f64)
   (return
    (if (result f64)
     (local.get $littleEndian)
@@ -3545,6 +3528,59 @@
    )
   )
  )
+ (func $~lib/dataview/DataView#getFloat64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result f64)
+  (if
+   (i32.or
+    (i32.shr_u
+     (local.get $byteOffset)
+     (i32.const 31)
+    )
+    (i32.gt_s
+     (i32.add
+      (local.get $byteOffset)
+      (i32.const 8)
+     )
+     (call $~lib/dataview/DataView#get:byteLength
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 336)
+     (i32.const 608)
+     (i32.const 41)
+     (i32.const 70)
+    )
+    (unreachable)
+   )
+  )
+  (return
+   (call $~lib/dataview/DataView#ugetFloat64
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#ugetInt8 (param $this i32) (param $byteOffset i32) (result i32)
+  (return
+   (i32.load8_s
+    (i32.add
+     (call $~lib/dataview/DataView#get:dataStart
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (local.get $byteOffset)
+    )
+   )
+  )
+ )
  (func $~lib/dataview/DataView#getInt8 (param $this i32) (param $byteOffset i32) (result i32)
   (if
    (i32.ge_u
@@ -3559,22 +3595,18 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 42)
+     (i32.const 54)
      (i32.const 50)
     )
     (unreachable)
    )
   )
   (return
-   (i32.load8_s
-    (i32.add
-     (call $~lib/dataview/DataView#get:dataStart
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (local.get $byteOffset)
+   (call $~lib/dataview/DataView#ugetInt8
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
     )
+    (local.get $byteOffset)
    )
   )
  )
@@ -3618,36 +3650,8 @@
    )
   )
  )
- (func $~lib/dataview/DataView#getInt16 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
+ (func $~lib/dataview/DataView#ugetInt16 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
   (local $result i32)
-  (if
-   (i32.or
-    (i32.shr_u
-     (local.get $byteOffset)
-     (i32.const 31)
-    )
-    (i32.gt_s
-     (i32.add
-      (local.get $byteOffset)
-      (i32.const 2)
-     )
-     (call $~lib/dataview/DataView#get:byteLength
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 336)
-     (i32.const 608)
-     (i32.const 47)
-     (i32.const 70)
-    )
-    (unreachable)
-   )
-  )
   (local.set $result
    (i32.load16_s
     (i32.add
@@ -3674,8 +3678,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#getInt32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
-  (local $result i32)
+ (func $~lib/dataview/DataView#getInt16 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
   (if
    (i32.or
     (i32.shr_u
@@ -3685,7 +3688,7 @@
     (i32.gt_s
      (i32.add
       (local.get $byteOffset)
-      (i32.const 4)
+      (i32.const 2)
      )
      (call $~lib/dataview/DataView#get:byteLength
       (call $~lib/rt/__tmptostack
@@ -3698,12 +3701,24 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 53)
+     (i32.const 65)
      (i32.const 70)
     )
     (unreachable)
    )
   )
+  (return
+   (call $~lib/dataview/DataView#ugetInt16
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#ugetInt32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
+  (local $result i32)
   (local.set $result
    (i32.load
     (i32.add
@@ -3730,8 +3745,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#getInt64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i64)
-  (local $result i64)
+ (func $~lib/dataview/DataView#getInt32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
   (if
    (i32.or
     (i32.shr_u
@@ -3741,7 +3755,7 @@
     (i32.gt_s
      (i32.add
       (local.get $byteOffset)
-      (i32.const 8)
+      (i32.const 4)
      )
      (call $~lib/dataview/DataView#get:byteLength
       (call $~lib/rt/__tmptostack
@@ -3754,12 +3768,24 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 120)
+     (i32.const 77)
      (i32.const 70)
     )
     (unreachable)
    )
   )
+  (return
+   (call $~lib/dataview/DataView#ugetInt32
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#ugetInt64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i64)
+  (local $result i64)
   (local.set $result
    (i64.load
     (i32.add
@@ -3786,6 +3812,59 @@
    )
   )
  )
+ (func $~lib/dataview/DataView#getInt64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i64)
+  (if
+   (i32.or
+    (i32.shr_u
+     (local.get $byteOffset)
+     (i32.const 31)
+    )
+    (i32.gt_s
+     (i32.add
+      (local.get $byteOffset)
+      (i32.const 8)
+     )
+     (call $~lib/dataview/DataView#get:byteLength
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 336)
+     (i32.const 608)
+     (i32.const 216)
+     (i32.const 70)
+    )
+    (unreachable)
+   )
+  )
+  (return
+   (call $~lib/dataview/DataView#ugetInt64
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#ugetUint8 (param $this i32) (param $byteOffset i32) (result i32)
+  (return
+   (i32.load8_u
+    (i32.add
+     (call $~lib/dataview/DataView#get:dataStart
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (local.get $byteOffset)
+    )
+   )
+  )
+ )
  (func $~lib/dataview/DataView#getUint8 (param $this i32) (param $byteOffset i32) (result i32)
   (if
    (i32.ge_u
@@ -3800,55 +3879,23 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 59)
+     (i32.const 89)
      (i32.const 50)
     )
     (unreachable)
    )
   )
   (return
-   (i32.load8_u
-    (i32.add
-     (call $~lib/dataview/DataView#get:dataStart
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (local.get $byteOffset)
+   (call $~lib/dataview/DataView#ugetUint8
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
     )
+    (local.get $byteOffset)
    )
   )
  )
- (func $~lib/dataview/DataView#getUint16 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
+ (func $~lib/dataview/DataView#ugetUint16 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
   (local $result i32)
-  (if
-   (i32.or
-    (i32.shr_u
-     (local.get $byteOffset)
-     (i32.const 31)
-    )
-    (i32.gt_s
-     (i32.add
-      (local.get $byteOffset)
-      (i32.const 2)
-     )
-     (call $~lib/dataview/DataView#get:byteLength
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 336)
-     (i32.const 608)
-     (i32.const 64)
-     (i32.const 70)
-    )
-    (unreachable)
-   )
-  )
   (local.set $result
    (i32.load16_u
     (i32.add
@@ -3875,8 +3922,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#getUint32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
-  (local $result i32)
+ (func $~lib/dataview/DataView#getUint16 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
   (if
    (i32.or
     (i32.shr_u
@@ -3886,7 +3932,7 @@
     (i32.gt_s
      (i32.add
       (local.get $byteOffset)
-      (i32.const 4)
+      (i32.const 2)
      )
      (call $~lib/dataview/DataView#get:byteLength
       (call $~lib/rt/__tmptostack
@@ -3899,12 +3945,24 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 70)
+     (i32.const 100)
      (i32.const 70)
     )
     (unreachable)
    )
   )
+  (return
+   (call $~lib/dataview/DataView#ugetUint16
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#ugetUint32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
+  (local $result i32)
   (local.set $result
    (i32.load
     (i32.add
@@ -3931,8 +3989,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#getUint64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i64)
-  (local $result i64)
+ (func $~lib/dataview/DataView#getUint32 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i32)
   (if
    (i32.or
     (i32.shr_u
@@ -3942,7 +3999,7 @@
     (i32.gt_s
      (i32.add
       (local.get $byteOffset)
-      (i32.const 8)
+      (i32.const 4)
      )
      (call $~lib/dataview/DataView#get:byteLength
       (call $~lib/rt/__tmptostack
@@ -3955,12 +4012,24 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 126)
+     (i32.const 112)
      (i32.const 70)
     )
     (unreachable)
    )
   )
+  (return
+   (call $~lib/dataview/DataView#ugetUint32
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#ugetUint64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i64)
+  (local $result i64)
   (local.set $result
    (i64.load
     (i32.add
@@ -3987,7 +4056,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#setFloat32 (param $this i32) (param $byteOffset i32) (param $value f32) (param $littleEndian i32)
+ (func $~lib/dataview/DataView#getUint64 (param $this i32) (param $byteOffset i32) (param $littleEndian i32) (result i64)
   (if
    (i32.or
     (i32.shr_u
@@ -3997,7 +4066,7 @@
     (i32.gt_s
      (i32.add
       (local.get $byteOffset)
-      (i32.const 4)
+      (i32.const 8)
      )
      (call $~lib/dataview/DataView#get:byteLength
       (call $~lib/rt/__tmptostack
@@ -4010,12 +4079,23 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 76)
+     (i32.const 228)
      (i32.const 70)
     )
     (unreachable)
    )
   )
+  (return
+   (call $~lib/dataview/DataView#ugetUint64
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $byteOffset)
+    (local.get $littleEndian)
+   )
+  )
+ )
+ (func $~lib/dataview/DataView#usetFloat32 (param $this i32) (param $byteOffset i32) (param $value f32) (param $littleEndian i32)
   (if
    (local.get $littleEndian)
    (then
@@ -4050,7 +4130,7 @@
    )
   )
  )
- (func $~lib/dataview/DataView#setFloat64 (param $this i32) (param $byteOffset i32) (param $value f64) (param $littleEndian i32)
+ (func $~lib/dataview/DataView#setFloat32 (param $this i32) (param $byteOffset i32) (param $value f32) (param $littleEndian i32)
   (if
    (i32.or
     (i32.shr_u
@@ -4060,7 +4140,7 @@
     (i32.gt_s
      (i32.add
       (local.get $byteOffset)
-      (i32.const 8)
+      (i32.const 4)
      )
      (call $~lib/dataview/DataView#get:byteLength
       (call $~lib/rt/__tmptostack
@@ -4073,12 +4153,22 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 82)
+     (i32.const 124)
      (i32.const 70)
     )
     (unreachable)
    )
   )
+  (call $~lib/dataview/DataView#usetFloat32
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
+  )
+ )
+ (func $~lib/dataview/DataView#usetFloat64 (param $this i32) (param $byteOffset i32) (param $value f64) (param $littleEndian i32)
   (if
    (local.get $littleEndian)
    (then
@@ -4113,6 +4203,57 @@
    )
   )
  )
+ (func $~lib/dataview/DataView#setFloat64 (param $this i32) (param $byteOffset i32) (param $value f64) (param $littleEndian i32)
+  (if
+   (i32.or
+    (i32.shr_u
+     (local.get $byteOffset)
+     (i32.const 31)
+    )
+    (i32.gt_s
+     (i32.add
+      (local.get $byteOffset)
+      (i32.const 8)
+     )
+     (call $~lib/dataview/DataView#get:byteLength
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 336)
+     (i32.const 608)
+     (i32.const 136)
+     (i32.const 70)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/dataview/DataView#usetFloat64
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
+  )
+ )
+ (func $~lib/dataview/DataView#usetInt8 (param $this i32) (param $byteOffset i32) (param $value i32)
+  (i32.store8
+   (i32.add
+    (call $~lib/dataview/DataView#get:dataStart
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (local.get $byteOffset)
+   )
+   (local.get $value)
+  )
+ )
  (func $~lib/dataview/DataView#setInt8 (param $this i32) (param $byteOffset i32) (param $value i32)
   (if
    (i32.ge_u
@@ -4127,13 +4268,22 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 88)
+     (i32.const 148)
      (i32.const 50)
     )
     (unreachable)
    )
   )
-  (i32.store8
+  (call $~lib/dataview/DataView#usetInt8
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+  )
+ )
+ (func $~lib/dataview/DataView#usetInt16 (param $this i32) (param $byteOffset i32) (param $value i32) (param $littleEndian i32)
+  (i32.store16
    (i32.add
     (call $~lib/dataview/DataView#get:dataStart
      (call $~lib/rt/__tmptostack
@@ -4142,7 +4292,17 @@
     )
     (local.get $byteOffset)
    )
-   (local.get $value)
+   (if (result i32)
+    (local.get $littleEndian)
+    (then
+     (local.get $value)
+    )
+    (else
+     (call $~lib/polyfills/bswap<u16>
+      (local.get $value)
+     )
+    )
+   )
   )
  )
  (func $~lib/dataview/DataView#setInt16 (param $this i32) (param $byteOffset i32) (param $value i32) (param $littleEndian i32)
@@ -4168,13 +4328,23 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 93)
+     (i32.const 159)
      (i32.const 70)
     )
     (unreachable)
    )
   )
-  (i32.store16
+  (call $~lib/dataview/DataView#usetInt16
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
+  )
+ )
+ (func $~lib/dataview/DataView#usetInt32 (param $this i32) (param $byteOffset i32) (param $value i32) (param $littleEndian i32)
+  (i32.store
    (i32.add
     (call $~lib/dataview/DataView#get:dataStart
      (call $~lib/rt/__tmptostack
@@ -4189,7 +4359,7 @@
      (local.get $value)
     )
     (else
-     (call $~lib/polyfills/bswap<u16>
+     (call $~lib/polyfills/bswap<u32>
       (local.get $value)
      )
     )
@@ -4219,13 +4389,23 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 98)
+     (i32.const 170)
      (i32.const 70)
     )
     (unreachable)
    )
   )
-  (i32.store
+  (call $~lib/dataview/DataView#usetInt32
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
+  )
+ )
+ (func $~lib/dataview/DataView#usetInt64 (param $this i32) (param $byteOffset i32) (param $value i64) (param $littleEndian i32)
+  (i64.store
    (i32.add
     (call $~lib/dataview/DataView#get:dataStart
      (call $~lib/rt/__tmptostack
@@ -4234,13 +4414,13 @@
     )
     (local.get $byteOffset)
    )
-   (if (result i32)
+   (if (result i64)
     (local.get $littleEndian)
     (then
      (local.get $value)
     )
     (else
-     (call $~lib/polyfills/bswap<u32>
+     (call $~lib/polyfills/bswap<u64>
       (local.get $value)
      )
     )
@@ -4270,13 +4450,23 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 132)
+     (i32.const 240)
      (i32.const 70)
     )
     (unreachable)
    )
   )
-  (i64.store
+  (call $~lib/dataview/DataView#usetInt64
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
+  )
+ )
+ (func $~lib/dataview/DataView#usetUint8 (param $this i32) (param $byteOffset i32) (param $value i32)
+  (i32.store8
    (i32.add
     (call $~lib/dataview/DataView#get:dataStart
      (call $~lib/rt/__tmptostack
@@ -4285,17 +4475,7 @@
     )
     (local.get $byteOffset)
    )
-   (if (result i64)
-    (local.get $littleEndian)
-    (then
-     (local.get $value)
-    )
-    (else
-     (call $~lib/polyfills/bswap<u64>
-      (local.get $value)
-     )
-    )
-   )
+   (local.get $value)
   )
  )
  (func $~lib/dataview/DataView#setUint8 (param $this i32) (param $byteOffset i32) (param $value i32)
@@ -4312,13 +4492,22 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 103)
+     (i32.const 181)
      (i32.const 50)
     )
     (unreachable)
    )
   )
-  (i32.store8
+  (call $~lib/dataview/DataView#usetUint8
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+  )
+ )
+ (func $~lib/dataview/DataView#usetUint16 (param $this i32) (param $byteOffset i32) (param $value i32) (param $littleEndian i32)
+  (i32.store16
    (i32.add
     (call $~lib/dataview/DataView#get:dataStart
      (call $~lib/rt/__tmptostack
@@ -4327,7 +4516,17 @@
     )
     (local.get $byteOffset)
    )
-   (local.get $value)
+   (if (result i32)
+    (local.get $littleEndian)
+    (then
+     (local.get $value)
+    )
+    (else
+     (call $~lib/polyfills/bswap<u16>
+      (local.get $value)
+     )
+    )
+   )
   )
  )
  (func $~lib/dataview/DataView#setUint16 (param $this i32) (param $byteOffset i32) (param $value i32) (param $littleEndian i32)
@@ -4353,13 +4552,23 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 108)
+     (i32.const 192)
      (i32.const 70)
     )
     (unreachable)
    )
   )
-  (i32.store16
+  (call $~lib/dataview/DataView#usetUint16
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
+  )
+ )
+ (func $~lib/dataview/DataView#usetUint32 (param $this i32) (param $byteOffset i32) (param $value i32) (param $littleEndian i32)
+  (i32.store
    (i32.add
     (call $~lib/dataview/DataView#get:dataStart
      (call $~lib/rt/__tmptostack
@@ -4374,7 +4583,7 @@
      (local.get $value)
     )
     (else
-     (call $~lib/polyfills/bswap<u16>
+     (call $~lib/polyfills/bswap<u32>
       (local.get $value)
      )
     )
@@ -4404,13 +4613,23 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 113)
+     (i32.const 203)
      (i32.const 70)
     )
     (unreachable)
    )
   )
-  (i32.store
+  (call $~lib/dataview/DataView#usetUint32
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
+  )
+ )
+ (func $~lib/dataview/DataView#usetUint64 (param $this i32) (param $byteOffset i32) (param $value i64) (param $littleEndian i32)
+  (i64.store
    (i32.add
     (call $~lib/dataview/DataView#get:dataStart
      (call $~lib/rt/__tmptostack
@@ -4419,13 +4638,13 @@
     )
     (local.get $byteOffset)
    )
-   (if (result i32)
+   (if (result i64)
     (local.get $littleEndian)
     (then
      (local.get $value)
     )
     (else
-     (call $~lib/polyfills/bswap<u32>
+     (call $~lib/polyfills/bswap<u64>
       (local.get $value)
      )
     )
@@ -4455,32 +4674,19 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 608)
-     (i32.const 137)
+     (i32.const 251)
      (i32.const 70)
     )
     (unreachable)
    )
   )
-  (i64.store
-   (i32.add
-    (call $~lib/dataview/DataView#get:dataStart
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-    (local.get $byteOffset)
+  (call $~lib/dataview/DataView#usetUint64
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (if (result i64)
-    (local.get $littleEndian)
-    (then
-     (local.get $value)
-    )
-    (else
-     (call $~lib/polyfills/bswap<u64>
-      (local.get $value)
-     )
-    )
-   )
+   (local.get $byteOffset)
+   (local.get $value)
+   (local.get $littleEndian)
   )
  )
  (func $~lib/dataview/DataView#constructor@varargs (param $this i32) (param $buffer i32) (param $byteOffset i32) (param $byteLength i32) (result i32)
@@ -4613,6 +4819,7 @@
  (func $start:std/dataview
   (local $array i32)
   (local $view i32)
+  (local $uncheckedView i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -6633,6 +6840,323 @@
      (unreachable)
     )
    )
+   (local.set $uncheckedView
+    (call $~lib/rt/__localtostack
+     (call $~lib/dataview/DataView#constructor
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 5)
+       )
+      )
+      (call $~lib/rt/__tmptostack
+       (call $~lib/arraybuffer/ArrayBufferView#get:buffer
+        (call $~lib/rt/__tmptostack
+         (local.get $array)
+        )
+       )
+      )
+      (i32.const 0)
+      (i32.const 0)
+     )
+    )
+   )
+   (if
+    (i32.eqz
+     (f32.eq
+      (call $~lib/dataview/DataView#ugetFloat32
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (call $~lib/dataview/DataView#getFloat32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 111)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (f64.eq
+      (call $~lib/dataview/DataView#ugetFloat64
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (call $~lib/dataview/DataView#getFloat64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 112)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#ugetInt8
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+      )
+      (call $~lib/dataview/DataView#getInt8
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 113)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (i32.extend16_s
+       (call $~lib/dataview/DataView#ugetInt16
+        (call $~lib/rt/__tmptostack
+         (local.get $uncheckedView)
+        )
+        (i32.const 0)
+        (i32.const 1)
+       )
+      )
+      (i32.extend16_s
+       (call $~lib/dataview/DataView#getInt16
+        (call $~lib/rt/__tmptostack
+         (local.get $view)
+        )
+        (i32.const 0)
+        (i32.const 1)
+       )
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 114)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#ugetInt32
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (call $~lib/dataview/DataView#getInt32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 115)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#ugetUint8
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+      )
+      (call $~lib/dataview/DataView#getUint8
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 116)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (i32.and
+       (call $~lib/dataview/DataView#ugetUint16
+        (call $~lib/rt/__tmptostack
+         (local.get $uncheckedView)
+        )
+        (i32.const 0)
+        (i32.const 0)
+       )
+       (i32.const 65535)
+      )
+      (i32.and
+       (call $~lib/dataview/DataView#getUint16
+        (call $~lib/rt/__tmptostack
+         (local.get $view)
+        )
+        (i32.const 0)
+        (i32.const 0)
+       )
+       (i32.const 65535)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 117)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#ugetUint32
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (call $~lib/dataview/DataView#getUint32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 118)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i64.eq
+      (call $~lib/dataview/DataView#ugetInt64
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (call $~lib/dataview/DataView#getInt64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 119)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (if
+    (i32.eqz
+     (i64.eq
+      (call $~lib/dataview/DataView#ugetUint64
+       (call $~lib/rt/__tmptostack
+        (local.get $uncheckedView)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (call $~lib/dataview/DataView#getUint64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 120)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
    (call $~lib/dataview/DataView#setFloat32
     (call $~lib/rt/__tmptostack
      (local.get $view)
@@ -6658,7 +7182,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 111)
+      (i32.const 123)
       (i32.const 3)
      )
      (unreachable)
@@ -6689,7 +7213,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 114)
+      (i32.const 126)
       (i32.const 3)
      )
      (unreachable)
@@ -6720,7 +7244,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 117)
+      (i32.const 129)
       (i32.const 3)
      )
      (unreachable)
@@ -6751,7 +7275,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 120)
+      (i32.const 132)
       (i32.const 3)
      )
      (unreachable)
@@ -6780,7 +7304,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 123)
+      (i32.const 135)
       (i32.const 3)
      )
      (unreachable)
@@ -6813,7 +7337,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 126)
+      (i32.const 138)
       (i32.const 3)
      )
      (unreachable)
@@ -6846,7 +7370,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 129)
+      (i32.const 141)
       (i32.const 3)
      )
      (unreachable)
@@ -6877,7 +7401,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 132)
+      (i32.const 144)
       (i32.const 3)
      )
      (unreachable)
@@ -6908,7 +7432,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 135)
+      (i32.const 147)
       (i32.const 3)
      )
      (unreachable)
@@ -6939,7 +7463,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 138)
+      (i32.const 150)
       (i32.const 3)
      )
      (unreachable)
@@ -6970,7 +7494,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 141)
+      (i32.const 153)
       (i32.const 3)
      )
      (unreachable)
@@ -6999,7 +7523,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 144)
+      (i32.const 156)
       (i32.const 3)
      )
      (unreachable)
@@ -7033,7 +7557,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 147)
+      (i32.const 159)
       (i32.const 3)
      )
      (unreachable)
@@ -7067,7 +7591,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 150)
+      (i32.const 162)
       (i32.const 3)
      )
      (unreachable)
@@ -7098,7 +7622,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 153)
+      (i32.const 165)
       (i32.const 3)
      )
      (unreachable)
@@ -7129,7 +7653,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 156)
+      (i32.const 168)
       (i32.const 3)
      )
      (unreachable)
@@ -7160,7 +7684,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 159)
+      (i32.const 171)
       (i32.const 3)
      )
      (unreachable)
@@ -7191,7 +7715,571 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 162)
+      (i32.const 174)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetFloat32
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (f32.const 1.5976661625240943e-18)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (f32.eq
+      (call $~lib/dataview/DataView#getFloat32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (f32.const 1.5976661625240943e-18)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 177)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetFloat32
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (f32.const 1976281973381696323584)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (f32.eq
+      (call $~lib/dataview/DataView#getFloat32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (f32.const 1976281973381696323584)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 179)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetFloat64
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (f64.const -1094252199637739024055454e124)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (f64.eq
+      (call $~lib/dataview/DataView#getFloat64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (f64.const -1094252199637739024055454e124)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 182)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetFloat64
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (f64.const 6.022586634778589e-103)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (f64.eq
+      (call $~lib/dataview/DataView#getFloat64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (f64.const 6.022586634778589e-103)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 184)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetInt8
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const 108)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#getInt8
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+      )
+      (i32.const 108)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 187)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetInt16
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const -13360)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (i32.extend16_s
+       (call $~lib/dataview/DataView#getInt16
+        (call $~lib/rt/__tmptostack
+         (local.get $view)
+        )
+        (i32.const 0)
+        (i32.const 1)
+       )
+      )
+      (i32.const -13360)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 189)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetInt16
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const 14689)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (i32.extend16_s
+       (call $~lib/dataview/DataView#getInt16
+        (call $~lib/rt/__tmptostack
+         (local.get $view)
+        )
+        (i32.const 0)
+        (i32.const 0)
+       )
+      )
+      (i32.const 14689)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 191)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetInt32
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const 1204680201)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#getInt32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (i32.const 1204680201)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 193)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetInt32
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const 660673230)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#getInt32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (i32.const 660673230)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 195)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetInt64
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i64.const -3290739641816099749)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (i64.eq
+      (call $~lib/dataview/DataView#getInt64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (i64.const -3290739641816099749)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 197)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetInt64
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i64.const 8178932412950708047)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (i64.eq
+      (call $~lib/dataview/DataView#getInt64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (i64.const 8178932412950708047)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 199)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetUint8
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const 238)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#getUint8
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+      )
+      (i32.const 238)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 202)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetUint16
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const 58856)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (i32.and
+       (call $~lib/dataview/DataView#getUint16
+        (call $~lib/rt/__tmptostack
+         (local.get $view)
+        )
+        (i32.const 0)
+        (i32.const 1)
+       )
+       (i32.const 65535)
+      )
+      (i32.const 58856)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 204)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetUint16
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const 60400)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (i32.and
+       (call $~lib/dataview/DataView#getUint16
+        (call $~lib/rt/__tmptostack
+         (local.get $view)
+        )
+        (i32.const 0)
+        (i32.const 0)
+       )
+       (i32.const 65535)
+      )
+      (i32.const 60400)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 206)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetUint32
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const -846805744)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#getUint32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (i32.const -846805744)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 208)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetUint32
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i32.const -1510791631)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $~lib/dataview/DataView#getUint32
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (i32.const -1510791631)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 210)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetUint64
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i64.const 2334704782995986958)
+    (i32.const 1)
+   )
+   (if
+    (i32.eqz
+     (i64.eq
+      (call $~lib/dataview/DataView#getUint64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 1)
+      )
+      (i64.const 2334704782995986958)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 212)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $~lib/dataview/DataView#usetUint64
+    (call $~lib/rt/__tmptostack
+     (local.get $uncheckedView)
+    )
+    (i32.const 0)
+    (i64.const -7123186897289856329)
+    (i32.const 0)
+   )
+   (if
+    (i32.eqz
+     (i64.eq
+      (call $~lib/dataview/DataView#getUint64
+       (call $~lib/rt/__tmptostack
+        (local.get $view)
+       )
+       (i32.const 0)
+       (i32.const 0)
+      )
+      (i64.const -7123186897289856329)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 672)
+      (i32.const 214)
       (i32.const 3)
      )
      (unreachable)
@@ -7238,7 +8326,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 165)
+      (i32.const 217)
       (i32.const 3)
      )
      (unreachable)
@@ -7259,7 +8347,7 @@
      (call $~lib/builtins/abort
       (i32.const 0)
       (i32.const 672)
-      (i32.const 166)
+      (i32.const 218)
       (i32.const 3)
      )
      (unreachable)
