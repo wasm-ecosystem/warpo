@@ -3091,9 +3091,7 @@
      )
     )
     (call $~lib/function/Function<%28incremental-gc/call-indirect/A%29=>i32>#get:index
-     (call $~lib/rt/__tmptostack
-      (i32.const 432)
-     )
+     (i32.const 432)
     )
    )
   )

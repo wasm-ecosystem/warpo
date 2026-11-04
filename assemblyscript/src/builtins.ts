@@ -63,7 +63,10 @@ import {
   getConstValueI32,
   getConstValueF32,
   getConstValueF64,
+  getConstValueInteger,
   getLocalGetIndex,
+  getGlobalInit,
+  isGlobalMutable,
   createType,
   ExpressionRunnerFlags,
   mustPreserveSideEffects,
@@ -9718,6 +9721,19 @@ export function compileVisitGlobals(compiler: Compiler): void {
           )
         );
       } else {
+        let globalRef = module.getGlobal(global.internalName);
+        if (!isGlobalMutable(globalRef)) {
+          let initExpr = getGlobalInit(globalRef);
+          if (initExpr && getExpressionId(initExpr) == ExpressionId.Const) {
+            let value = getConstValueInteger(initExpr);
+            if (
+              staticGcObjectOffsets.has(i64_high(value)) &&
+              assert(staticGcObjectOffsets.get(i64_high(value))).has(i64_low(value))
+            ) {
+              continue;
+            }
+          }
+        }
         exprs.push(
           module.if(
             module.local_tee(

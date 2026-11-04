@@ -55,8 +55,6 @@
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
-  i32.const 32
-  call $~lib/rt/itcms/__visit
   global.get $~lib/rt/itcms/pinSpace
   local.tee $1
   i32.load offset=4
@@ -154,7 +152,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$84
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$83
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -178,7 +176,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$84
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$83
      end
      local.get $0
      i32.load offset=8
@@ -992,12 +990,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$67
     i32.const 2048
     local.set $1
     loop $do-loop|0
      local.get $1
-     block $__inlined_func$~lib/rt/itcms/step$89 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$88 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1013,7 +1011,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$89
+         br $__inlined_func$~lib/rt/itcms/step$88
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1052,7 +1050,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$89
+           br $__inlined_func$~lib/rt/itcms/step$88
           end
           local.get $1
           i32.load offset=4
@@ -1144,7 +1142,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$89
+        br $__inlined_func$~lib/rt/itcms/step$88
        end
        global.get $~lib/rt/itcms/iter
        local.tee $1
@@ -1243,7 +1241,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$89
+        br $__inlined_func$~lib/rt/itcms/step$88
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1267,7 +1265,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$67
      end
      local.get $1
      i32.const 0
