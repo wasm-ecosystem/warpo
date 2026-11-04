@@ -332,9 +332,7 @@
      (call $function-types/doAddWithFn<i32>
       (i32.const 4)
       (i32.const 5)
-      (call $~lib/rt/__tmptostack
-       (i32.const 192)
-      )
+      (i32.const 192)
      )
      (i32.const 9)
     )

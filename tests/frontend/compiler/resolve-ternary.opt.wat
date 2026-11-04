@@ -110,10 +110,6 @@
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
-  i32.const 3472
-  call $~lib/rt/itcms/__visit
-  i32.const 3504
-  call $~lib/rt/itcms/__visit
   global.get $~lib/rt/itcms/pinSpace
   local.tee $1
   i32.load offset=4
@@ -211,7 +207,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$82
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$81
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -235,7 +231,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$82
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$81
      end
      local.get $0
      i32.load offset=8
@@ -1049,12 +1045,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$67
+   block $__inlined_func$~lib/rt/itcms/interrupt$66
     i32.const 2048
     local.set $1
     loop $do-loop|0
      local.get $1
-     block $__inlined_func$~lib/rt/itcms/step$87 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$86 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1070,7 +1066,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$87
+         br $__inlined_func$~lib/rt/itcms/step$86
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1109,7 +1105,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$87
+           br $__inlined_func$~lib/rt/itcms/step$86
           end
           local.get $1
           i32.load offset=4
@@ -1180,7 +1176,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$87
+        br $__inlined_func$~lib/rt/itcms/step$86
        end
        global.get $~lib/rt/itcms/iter
        local.tee $1
@@ -1279,7 +1275,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$87
+        br $__inlined_func$~lib/rt/itcms/step$86
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1303,7 +1299,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$67
+      br $__inlined_func$~lib/rt/itcms/interrupt$66
      end
      local.get $1
      i32.const 0
@@ -1696,7 +1692,7 @@
    i32.const 0
    return
   end
-  block $__inlined_func$~lib/util/string/compareImpl$73 (result i32)
+  block $__inlined_func$~lib/util/string/compareImpl$72 (result i32)
    local.get $0
    local.tee $2
    i32.const 7
@@ -1756,7 +1752,7 @@
       local.get $3
       local.get $4
       i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$73
+      br $__inlined_func$~lib/util/string/compareImpl$72
      end
      local.get $2
      i32.const 2
@@ -1911,7 +1907,7 @@
   i64.const 1
   i64.sub
   local.set $12
-  block $__inlined_func$~lib/util/number/prettify$75 (result i32)
+  block $__inlined_func$~lib/util/number/prettify$74 (result i32)
    local.get $5
    i64.const 4294967295
    i64.and
@@ -1934,7 +1930,7 @@
    i64.add
    i64.add
    local.set $5
-   block $__inlined_func$~lib/util/number/genDigits$74 (result i32)
+   block $__inlined_func$~lib/util/number/genDigits$73 (result i32)
     local.get $12
     local.get $8
     i64.const 4294966784
@@ -2212,7 +2208,7 @@
        local.get $0
        i32.store16
        local.get $1
-       br $__inlined_func$~lib/util/number/genDigits$74
+       br $__inlined_func$~lib/util/number/genDigits$73
       end
       br $while-continue|0
      end
@@ -2342,7 +2338,7 @@
     local.get $1
     i32.const 2
     i32.add
-    br $__inlined_func$~lib/util/number/prettify$75
+    br $__inlined_func$~lib/util/number/prettify$74
    end
    local.get $1
    local.get $4

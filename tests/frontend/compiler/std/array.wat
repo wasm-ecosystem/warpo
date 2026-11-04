@@ -19923,9 +19923,7 @@
        )
       )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 10160)
-     )
+     (i32.const 10160)
     )
    )
   )
@@ -44518,9 +44516,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5648)
-     )
+     (i32.const 5648)
     )
    )
    (if
@@ -44545,9 +44541,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5680)
-     )
+     (i32.const 5680)
     )
    )
    (if
@@ -44572,9 +44566,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5712)
-     )
+     (i32.const 5712)
     )
    )
    (if
@@ -44599,9 +44591,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5744)
-     )
+     (i32.const 5744)
     )
    )
    (if
@@ -44647,9 +44637,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5776)
-     )
+     (i32.const 5776)
     )
    )
    (if
@@ -44702,9 +44690,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5808)
-     )
+     (i32.const 5808)
     )
    )
    (if
@@ -44778,9 +44764,7 @@
      (call $~lib/rt/__tmptostack
       (local.get $intArr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5888)
-     )
+     (i32.const 5888)
     )
    )
    (if
@@ -44805,9 +44789,7 @@
      (call $~lib/rt/__tmptostack
       (local.get $intArr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5920)
-     )
+     (i32.const 5920)
     )
    )
    (if
@@ -44832,9 +44814,7 @@
      (call $~lib/rt/__tmptostack
       (local.get $intArr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5952)
-     )
+     (i32.const 5952)
     )
    )
    (if
@@ -44859,9 +44839,7 @@
      (call $~lib/rt/__tmptostack
       (local.get $intArr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 5984)
-     )
+     (i32.const 5984)
     )
    )
    (if
@@ -44888,9 +44866,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6016)
-     )
+     (i32.const 6016)
     )
    )
    (if
@@ -44915,9 +44891,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6048)
-     )
+     (i32.const 6048)
     )
    )
    (if
@@ -44942,9 +44916,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6080)
-     )
+     (i32.const 6080)
     )
    )
    (if
@@ -44990,9 +44962,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6112)
-     )
+     (i32.const 6112)
     )
    )
    (if
@@ -45045,9 +45015,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6144)
-     )
+     (i32.const 6144)
     )
    )
    (if
@@ -45111,9 +45079,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6176)
-     )
+     (i32.const 6176)
     )
    )
    (if
@@ -45138,9 +45104,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6208)
-     )
+     (i32.const 6208)
     )
    )
    (if
@@ -45165,9 +45129,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6240)
-     )
+     (i32.const 6240)
     )
    )
    (if
@@ -45213,9 +45175,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6272)
-     )
+     (i32.const 6272)
     )
    )
    (if
@@ -45268,9 +45228,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 6304)
-     )
+     (i32.const 6304)
     )
    )
    (if
@@ -45336,9 +45294,7 @@
     (call $~lib/rt/__tmptostack
      (global.get $std/array/arr)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 6336)
-    )
+    (i32.const 6336)
    )
    (if
     (i32.eqz
@@ -45364,9 +45320,7 @@
     (call $~lib/rt/__tmptostack
      (global.get $std/array/arr)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 6368)
-    )
+    (i32.const 6368)
    )
    (if
     (i32.eqz
@@ -45413,9 +45367,7 @@
     (call $~lib/rt/__tmptostack
      (global.get $std/array/arr)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 6400)
-    )
+    (i32.const 6400)
    )
    (if
     (i32.eqz
@@ -45469,9 +45421,7 @@
     (call $~lib/rt/__tmptostack
      (global.get $std/array/arr)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 6432)
-    )
+    (i32.const 6432)
    )
    (if
     (i32.eqz
@@ -45531,9 +45481,7 @@
     (call $~lib/rt/__tmptostack
      (global.get $std/array/arr)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 6464)
-    )
+    (i32.const 6464)
    )
    (if
     (i32.eqz
@@ -45623,9 +45571,7 @@
       (call $~lib/rt/__tmptostack
        (global.get $std/array/arr)
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 8272)
-      )
+      (i32.const 8272)
      )
     )
    )
@@ -45635,9 +45581,7 @@
       (call $~lib/rt/__tmptostack
        (global.get $std/array/arr)
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 8304)
-      )
+      (i32.const 8304)
      )
     )
    )
@@ -45699,9 +45643,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8336)
-     )
+     (i32.const 8336)
     )
    )
    (if
@@ -45750,9 +45692,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8368)
-     )
+     (i32.const 8368)
     )
    )
    (if
@@ -45808,9 +45748,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8400)
-     )
+     (i32.const 8400)
     )
    )
    (if
@@ -45875,9 +45813,7 @@
       (call $~lib/rt/__tmptostack
        (global.get $std/array/arr)
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 8432)
-      )
+      (i32.const 8432)
      )
     )
    )
@@ -45910,9 +45846,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8464)
-     )
+     (i32.const 8464)
     )
    )
    (if
@@ -45961,9 +45895,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8496)
-     )
+     (i32.const 8496)
     )
    )
    (if
@@ -46019,9 +45951,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8528)
-     )
+     (i32.const 8528)
     )
    )
    (if
@@ -46085,9 +46015,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8560)
-     )
+     (i32.const 8560)
      (i32.const 0)
     )
    )
@@ -46113,9 +46041,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8592)
-     )
+     (i32.const 8592)
      (i32.const 4)
     )
    )
@@ -46141,9 +46067,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8624)
-     )
+     (i32.const 8624)
      (i32.const 0)
     )
    )
@@ -46172,9 +46096,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8656)
-     )
+     (i32.const 8656)
      (i32.const 0)
     )
    )
@@ -46203,9 +46125,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8688)
-     )
+     (i32.const 8688)
      (i32.const 0)
     )
    )
@@ -46252,9 +46172,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8720)
-     )
+     (i32.const 8720)
      (i32.const 0)
     )
    )
@@ -46308,9 +46226,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8752)
-     )
+     (i32.const 8752)
      (i32.const 0)
     )
    )
@@ -46375,9 +46291,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8784)
-     )
+     (i32.const 8784)
      (i32.const 0)
     )
    )
@@ -46403,9 +46317,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8816)
-     )
+     (i32.const 8816)
      (i32.const 4)
     )
    )
@@ -46431,9 +46343,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8848)
-     )
+     (i32.const 8848)
      (i32.const 0)
     )
    )
@@ -46462,9 +46372,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8880)
-     )
+     (i32.const 8880)
      (i32.const 0)
     )
    )
@@ -46493,9 +46401,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8912)
-     )
+     (i32.const 8912)
      (i32.const 0)
     )
    )
@@ -46542,9 +46448,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8944)
-     )
+     (i32.const 8944)
      (i32.const 0)
     )
    )
@@ -46598,9 +46502,7 @@
      (call $~lib/rt/__tmptostack
       (global.get $std/array/arr)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8976)
-     )
+     (i32.const 8976)
      (i32.const 0)
     )
    )
@@ -48020,33 +47922,25 @@
     (call $~lib/rt/__tmptostack
      (local.get $randomized64)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 10192)
-    )
+    (i32.const 10192)
    )
    (call $std/array/assertSorted<i32>
     (call $~lib/rt/__tmptostack
      (local.get $randomized64)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 10224)
-    )
+    (i32.const 10224)
    )
    (call $std/array/assertSorted<i32>
     (call $~lib/rt/__tmptostack
      (local.get $randomized257)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 10256)
-    )
+    (i32.const 10256)
    )
    (call $std/array/assertSorted<i32>
     (call $~lib/rt/__tmptostack
      (local.get $randomized257)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 10288)
-    )
+    (i32.const 10288)
    )
   )
   (block
@@ -48061,9 +47955,7 @@
     (call $~lib/rt/__tmptostack
      (local.get $reversedNested512)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 10320)
-    )
+    (i32.const 10320)
    )
   )
   (block
@@ -48078,9 +47970,7 @@
     (call $~lib/rt/__tmptostack
      (local.get $reversedElements512)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 10352)
-    )
+    (i32.const 10352)
    )
   )
   (block
@@ -49433,9 +49323,7 @@
         (call $~lib/rt/__tmptostack
          (local.get $mapTarget)
         )
-        (call $~lib/rt/__tmptostack
-         (i32.const 14928)
-        )
+        (i32.const 14928)
        )
       )
      )
@@ -49570,17 +49458,6 @@
   (if
    (local.tee $1
     (global.get $std/array/arr)
-   )
-   (then
-    (call $~lib/rt/itcms/__visit
-     (local.get $1)
-     (local.get $0)
-    )
-   )
-  )
-  (if
-   (local.tee $1
-    (global.get $std/array/charset)
    )
    (then
     (call $~lib/rt/itcms/__visit

@@ -4732,7 +4732,7 @@
    i64.store
    global.get $~lib/memory/__stack_pointer
    local.get $2
-   i32.store offset=12 align=1
+   i32.store offset=16 align=1
    local.get $2
    i32.const 0
    i32.store
@@ -4929,9 +4929,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4864
-   i32.store offset=16 align=1
    i32.const 0
    local.set $0
    i32.const 4
@@ -5012,9 +5009,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4896
-   i32.store offset=16 align=1
    i32.const 4
    call $~lib/rt/__decrease_sp
    global.get $~lib/memory/__stack_pointer
@@ -5193,7 +5187,7 @@
    i32.store
    global.get $~lib/memory/__stack_pointer
    local.get $0
-   i32.store offset=16 align=1
+   i32.store offset=12 align=1
    i32.const 0
    local.set $1
    i32.const 4
@@ -5285,9 +5279,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4960
-   i32.store offset=12 align=1
    i32.const 0
    local.set $0
    i32.const 4
@@ -5378,9 +5369,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4992
-   i32.store offset=12 align=1
    i32.const 0
    local.set $0
    i32.const 4
@@ -5487,9 +5475,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5072
-   i32.store offset=12 align=1
    i32.const 0
    local.set $0
    i32.const 8
@@ -5570,9 +5555,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5104
-   i32.store offset=12 align=1
    i32.const 8
    call $~lib/rt/__decrease_sp
    global.get $~lib/memory/__stack_pointer
@@ -5646,9 +5628,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5168
-   i32.store offset=12 align=1
    i32.const 0
    local.set $0
    i32.const 4
@@ -5729,9 +5708,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5200
-   i32.store offset=12 align=1
    i32.const 0
    local.set $0
    i32.const 4

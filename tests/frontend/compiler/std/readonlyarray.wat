@@ -4141,9 +4141,7 @@
       (call $~lib/rt/__tmptostack
        (local.get $values)
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 592)
-      )
+      (i32.const 592)
      )
      (i32.const 2)
     )
@@ -4165,9 +4163,7 @@
       (call $~lib/rt/__tmptostack
        (local.get $values)
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 624)
-      )
+      (i32.const 624)
      )
      (i32.const 3)
     )
@@ -4332,9 +4328,7 @@
       (call $~lib/rt/__tmptostack
        (local.get $values)
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 656)
-      )
+      (i32.const 656)
      )
      (i32.const 0)
     )
@@ -4356,9 +4350,7 @@
       (call $~lib/rt/__tmptostack
        (local.get $values)
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 688)
-      )
+      (i32.const 688)
      )
      (i32.const 0)
     )
@@ -4379,9 +4371,7 @@
      (call $~lib/rt/__tmptostack
       (local.get $values)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 720)
-     )
+     (i32.const 720)
     )
    )
   )

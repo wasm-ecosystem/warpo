@@ -3344,9 +3344,7 @@
        (i32.const 9)
       )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 1008)
-     )
+     (i32.const 1008)
     )
    )
   )
@@ -3566,9 +3564,7 @@
    (i32.eqz
     (i32.eq
      (call $function-expression/testOmitted
-      (call $~lib/rt/__tmptostack
-       (i32.const 224)
-      )
+      (i32.const 224)
      )
      (i32.const 3)
     )
@@ -3587,9 +3583,7 @@
    (i32.eqz
     (i32.eq
      (call $function-expression/testOmitted
-      (call $~lib/rt/__tmptostack
-       (i32.const 256)
-      )
+      (i32.const 256)
      )
      (i32.const 1)
     )
@@ -3608,9 +3602,7 @@
    (i32.eqz
     (i32.eq
      (call $function-expression/testOmitted
-      (call $~lib/rt/__tmptostack
-       (i32.const 288)
-      )
+      (i32.const 288)
      )
      (i32.const 42)
     )

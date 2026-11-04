@@ -3425,9 +3425,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 720
-  i32.store offset=4 align=1
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#filter@override$99 (result i32)
    local.get $0
    i32.const 8

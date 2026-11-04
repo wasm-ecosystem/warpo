@@ -2248,10 +2248,16 @@ export class Compiler extends DiagnosticEmitter {
       assert(rtInstance.writeField("_index", index, buf));
       assert(rtInstance.writeField("_env", 0, buf));
       instance.memorySegment = memorySegment = this.addRuntimeMemorySegment(buf);
-      markDataElementImmutable(
-        i64_add(memorySegment.offset, i64_new(program.totalOverhead)),
-        rtInstance.nextMemoryOffset
-      );
+      let functionOffset = i64_add(memorySegment.offset, i64_new(program.totalOverhead));
+      markDataElementImmutable(functionOffset, rtInstance.nextMemoryOffset);
+      let staticGcObjectOffsets = this.staticGcObjectOffsets;
+      if (staticGcObjectOffsets.has(i64_high(functionOffset))) {
+        assert(staticGcObjectOffsets.get(i64_high(functionOffset))).add(i64_low(functionOffset));
+      } else {
+        let offsets = new Set<i32>();
+        offsets.add(i64_low(functionOffset));
+        staticGcObjectOffsets.set(i64_high(functionOffset), offsets);
+      }
     }
     return i64_add(memorySegment.offset, i64_new(program.totalOverhead));
   }
