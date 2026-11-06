@@ -27,7 +27,7 @@ const wasmBytes = Array.from(wasmBuf)
 writeFileSync(
   join(target_folder, "assemblyscript.inc"),
   `
-unsigned char asc_wasm[] = {${wasmBytes}};
+constexpr unsigned char asc_wasm[] = {${wasmBytes}};
   `
 );
 
