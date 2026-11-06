@@ -3239,6 +3239,61 @@
   (local $1 i32)
   (if
    (local.tee $1
+    (global.get $function-call/fnVoid)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-call/faVoid)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-call/fnRet)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-call/faRet)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-call/fnThis)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
     (global.get $function-call/foo)
    )
    (then

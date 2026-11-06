@@ -19,7 +19,7 @@ Computed Property Names 是 TypeScript/JavaScript 的一个特性：允许我们
 ### 将计算属性名用作方法名
 
 <p style="display: flex; gap: 10px;">
-	<img src="/version/2.3.0.svg" alt="2.3.0" />
+	<Badge type="info" text="2.3.0" />
 	<img src="/stability/stable.svg" alt="stable" />
 </p>
 

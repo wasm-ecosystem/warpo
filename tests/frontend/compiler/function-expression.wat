@@ -3344,9 +3344,7 @@
        (i32.const 9)
       )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 1008)
-     )
+     (i32.const 1008)
     )
    )
   )
@@ -3566,9 +3564,7 @@
    (i32.eqz
     (i32.eq
      (call $function-expression/testOmitted
-      (call $~lib/rt/__tmptostack
-       (i32.const 224)
-      )
+      (i32.const 224)
      )
      (i32.const 3)
     )
@@ -3587,9 +3583,7 @@
    (i32.eqz
     (i32.eq
      (call $function-expression/testOmitted
-      (call $~lib/rt/__tmptostack
-       (i32.const 256)
-      )
+      (i32.const 256)
      )
      (i32.const 1)
     )
@@ -3608,9 +3602,7 @@
    (i32.eqz
     (i32.eq
      (call $function-expression/testOmitted
-      (call $~lib/rt/__tmptostack
-       (i32.const 288)
-      )
+      (i32.const 288)
      )
      (i32.const 42)
     )
@@ -3792,7 +3784,61 @@
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
-  (nop)
+  (if
+   (local.tee $1
+    (global.get $function-expression/f1)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-expression/f2)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-expression/f3)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-expression/f4)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $function-expression/globalFunc)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
  )
  (func $~lib/arraybuffer/ArrayBufferView~visit (param $0 i32) (param $1 i32)
   (local $2 i32)

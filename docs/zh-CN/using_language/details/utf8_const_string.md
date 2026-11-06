@@ -1,7 +1,7 @@
 # utf8 const string
 
 <p style="display: flex; gap: 10px;">
-	<img src="/version/2.2.4.svg" alt="2.2.4" />
+	<Badge type="info" text="2.2.4" />
 	<img src="/stability/rc.svg" alt="rc" />
 </p>
 

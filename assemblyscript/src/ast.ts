@@ -1674,8 +1674,19 @@ export class UnaryPrefixExpression extends UnaryExpression {
 
 // statements
 
+/** Represents a modifier as it appeared in the source. */
+export class ModifierInfo {
+  constructor(
+    public token: Token,
+    public range: Range
+  ) {}
+}
+
 /** Base class of all statement nodes. */
-export abstract class Statement extends Node {}
+export abstract class Statement extends Node {
+  /** Modifiers in source order, including their source ranges. */
+  public modifiers: ModifierInfo[] = [];
+}
 
 /** Indicates the specific kind of a source. */
 export const enum SourceKind {

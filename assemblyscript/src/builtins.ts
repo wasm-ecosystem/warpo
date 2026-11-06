@@ -30,6 +30,7 @@ import { Compiler, Constraints, RuntimeFeatures, UncheckedBehavior } from "./com
 import { DiagnosticCode, DiagnosticCategory } from "./diagnostics";
 
 import {
+  Node,
   Expression,
   LiteralKind,
   StringLiteralExpression,
@@ -62,7 +63,10 @@ import {
   getConstValueI32,
   getConstValueF32,
   getConstValueF64,
+  getConstValueInteger,
   getLocalGetIndex,
+  getGlobalInit,
+  isGlobalMutable,
   createType,
   ExpressionRunnerFlags,
   mustPreserveSideEffects,
@@ -2881,6 +2885,23 @@ function builtin_memory_grow(ctx: BuiltinFunctionContext): ExpressionRef {
 }
 builtinFunctions.set(BuiltinNames.memory_grow, builtin_memory_grow);
 
+export function makeMemoryCopy(
+  compiler: Compiler,
+  dest: ExpressionRef,
+  source: ExpressionRef,
+  size: ExpressionRef,
+  reportNode: Node
+): ExpressionRef {
+  let module = compiler.module;
+  compiler.currentType = Type.void;
+  if (compiler.options.hasFeature(Feature.BulkMemory)) {
+    return module.memory_copy(dest, source, size);
+  }
+  let instance = compiler.program.requireFunction(BuiltinNames.memory_copy);
+  if (!compiler.compileFunction(instance, true)) return module.unreachable();
+  return compiler.makeCallDirect(instance, [dest, source, size], reportNode);
+}
+
 // memory.copy(dest: usize, src: usize: n: usize) -> void
 function builtin_memory_copy(ctx: BuiltinFunctionContext): ExpressionRef {
   let compiler = ctx.compiler;
@@ -2888,19 +2909,11 @@ function builtin_memory_copy(ctx: BuiltinFunctionContext): ExpressionRef {
   compiler.currentType = Type.void;
   if (checkTypeAbsent(ctx) | checkArgsRequired(ctx, 3)) return module.unreachable();
   let operands = ctx.operands;
-  if (!compiler.options.hasFeature(Feature.BulkMemory)) {
-    // use stdlib alternative if not supported
-    let instance = compiler.resolver.resolveFunction(ctx.prototype, null); // reports
-    compiler.currentType = Type.void;
-    if (!instance || !compiler.compileFunction(instance, true)) return module.unreachable();
-    return compiler.compileCallDirect(instance, operands, ctx.reportNode);
-  }
   let usizeType = Type.usize32;
   let arg0 = compiler.compileExpression(operands[0], usizeType, Constraints.ConvImplicit);
   let arg1 = compiler.compileExpression(operands[1], usizeType, Constraints.ConvImplicit);
   let arg2 = compiler.compileExpression(operands[2], usizeType, Constraints.ConvImplicit);
-  compiler.currentType = Type.void;
-  return module.memory_copy(arg0, arg1, arg2);
+  return makeMemoryCopy(compiler, arg0, arg1, arg2, ctx.reportNode);
 }
 builtinFunctions.set(BuiltinNames.memory_copy, builtin_memory_copy);
 
@@ -9685,8 +9698,7 @@ export function compileVisitGlobals(compiler: Compiler): void {
     if (element.kind != ElementKind.Global) continue;
     let global = <Global>element;
     let globalType = global.type;
-    let classReference = globalType.getClass();
-    if (classReference && !classReference.hasDecorator(DecoratorFlags.Unmanaged) && global.is(CommonFlags.Compiled)) {
+    if (globalType.isManaged && global.is(CommonFlags.Compiled)) {
       if (global.is(CommonFlags.Inlined)) {
         let value = global.constantIntegerValue;
         if (i64_low(value) == 0 && i64_high(value) == 0) {
@@ -9709,6 +9721,19 @@ export function compileVisitGlobals(compiler: Compiler): void {
           )
         );
       } else {
+        let globalRef = module.getGlobal(global.internalName);
+        if (!isGlobalMutable(globalRef)) {
+          let initExpr = getGlobalInit(globalRef);
+          if (initExpr && getExpressionId(initExpr) == ExpressionId.Const) {
+            let value = getConstValueInteger(initExpr);
+            if (
+              staticGcObjectOffsets.has(i64_high(value)) &&
+              assert(staticGcObjectOffsets.get(i64_high(value))).has(i64_low(value))
+            ) {
+              continue;
+            }
+          }
+        }
         exprs.push(
           module.if(
             module.local_tee(

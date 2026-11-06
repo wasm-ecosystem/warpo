@@ -4696,6 +4696,10 @@
        )
       )
      )
+     (f64.store offset=8
+      (local.get $3)
+      (f64.const 0)
+     )
      (call $object-literal/MixedOmitted#set:simpleType
       (call $~lib/rt/__tmptostack
        (local.get $3)
@@ -4707,10 +4711,6 @@
        (local.get $3)
       )
       (i32.const 608)
-     )
-     (f64.store offset=8
-      (local.get $3)
-      (f64.const 0)
      )
      (local.get $3)
     )

@@ -1,0 +1,6 @@
+{
+  "stderr": [
+    "TS1029: 'export' modifier must precede 'default' modifier.",
+    "TS1319: A default export can only be used in a module."
+  ]
+}

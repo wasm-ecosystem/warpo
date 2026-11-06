@@ -1232,6 +1232,7 @@ export class Program extends DiagnosticEmitter {
       let statements = source.statements;
       for (let j = 0, l = statements.length; j < l; ++j) {
         let statement = statements[j];
+        this.checkModifierOrder(statement);
         switch (statement.kind) {
           case NodeKind.Export: {
             this.initializeExports(<ExportStatement>statement, file, queuedExports, queuedExportsStar);
@@ -3144,7 +3145,18 @@ export class Program extends DiagnosticEmitter {
     let members = declaration.members;
     for (let i = 0, k = members.length; i < k; ++i) {
       let member = members[i];
+      this.checkModifierOrder(member);
       switch (member.kind) {
+        case NodeKind.ExportDefault: {
+          this.error(DiagnosticCode.A_default_export_can_only_be_used_in_a_module, member.range);
+          break;
+        }
+        case NodeKind.Import: {
+          this.error(DiagnosticCode.Import_declarations_in_a_namespace_cannot_reference_a_module, member.range);
+          break;
+        }
+        case NodeKind.Expression:
+          break;
         case NodeKind.ClassDeclaration: {
           this.initializeClass(<ClassDeclaration>member, original, queuedExtends, queuedImplements);
           break;
@@ -3179,6 +3191,46 @@ export class Program extends DiagnosticEmitter {
     }
     if (original != element) copyMembers(original, element); // keep original parent
     return element;
+  }
+
+  private checkModifierOrder(statement: Statement): void {
+    if (statement.kind == NodeKind.ExportDefault) statement = (<ExportDefaultStatement>statement).declaration;
+    let modifiers = statement.modifiers;
+    for (let i = 0, k = modifiers.length; i < k; ++i) {
+      let earlierModifier = modifiers[i];
+      let earlierOrder = this.modifierOrder(earlierModifier.token);
+      for (let j = i + 1; j < k; ++j) {
+        let laterModifier = modifiers[j];
+        if (earlierModifier.token == laterModifier.token) {
+          this.error(DiagnosticCode._0_modifier_already_seen, laterModifier.range, laterModifier.range.toString());
+          return;
+        }
+        if (earlierOrder > this.modifierOrder(laterModifier.token)) {
+          this.error(
+            DiagnosticCode._0_modifier_must_precede_1_modifier,
+            laterModifier.range,
+            laterModifier.range.toString(),
+            earlierModifier.range.toString()
+          );
+          return;
+        }
+      }
+    }
+  }
+
+  private modifierOrder(token: Token): i32 {
+    switch (token) {
+      case Token.Export:
+        return 0;
+      case Token.Default:
+        return 1;
+      case Token.Declare:
+        return 2;
+      case Token.Abstract:
+        return 3;
+      default:
+        return -1;
+    }
   }
 
   /** Initializes a namespace. */

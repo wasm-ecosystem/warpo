@@ -66,9 +66,7 @@
  (func $start:return
   (call $return/testVoidReturnFunction
    (i32.const 1)
-   (call $~lib/rt/__tmptostack
-    (i32.const 32)
-   )
+   (i32.const 32)
   )
  )
  (func $return/testVoidReturn (param $cond i32)

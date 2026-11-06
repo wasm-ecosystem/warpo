@@ -1589,7 +1589,19 @@
  )
  (func $closure-functype-param-shadow/make<closure-functype-param-shadow/C1>~anonymous|0 (param $0 i32)
   (local $1 i32)
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 772
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 12
   i32.const 5
   call $~lib/rt/itcms/__new
@@ -1691,7 +1703,19 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 772
+  i32.lt_s
+  if
+   unreachable
+  end
   memory.size
   i32.const 16
   i32.shl
@@ -1737,9 +1761,21 @@
   global.get $~lib/memory/__stack_pointer
   global.get $closure-functype-param-shadow/foo
   i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 772
+  i32.lt_s
+  if
+   unreachable
+  end
   global.get $closure-functype-param-shadow/foo
   local.set $0
-  call $~lib/rt/__decrease_sp
   i32.const 16
   i32.const 5
   call $~lib/rt/itcms/__new
@@ -1770,10 +1806,6 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 432
-  i32.store align=1
   local.get $0
   i32.load offset=4
   global.set $~lib/rt/closure/env
@@ -1781,10 +1813,6 @@
   local.get $0
   i32.load
   call_indirect (type $0)
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
@@ -1831,20 +1859,5 @@
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 772
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

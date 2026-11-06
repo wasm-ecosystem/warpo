@@ -3181,9 +3181,7 @@
  )
  (func $closure-functype-param-shadow/run (param $cb i32)
   (call_indirect (type $2)
-   (call $~lib/rt/__tmptostack
-    (i32.const 432)
-   )
+   (i32.const 432)
    (block (result i32)
     (call $~lib/rt/closure/setClosureEnv
      (i32.load offset=4

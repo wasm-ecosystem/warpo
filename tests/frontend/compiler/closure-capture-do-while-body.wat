@@ -3429,6 +3429,28 @@
   (local $1 i32)
   (if
    (local.tee $1
+    (global.get $closure-capture-do-while-body/func1)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $closure-capture-do-while-body/func2)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
     (global.get $~lib/rt/closure/env)
    )
    (then

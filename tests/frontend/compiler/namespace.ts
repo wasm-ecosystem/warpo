@@ -34,3 +34,9 @@ namespace Joined {
 }
 
 Joined.anotherFunc();
+
+let aaa = 0;
+namespace N {
+  aaa++;
+}
+assert(aaa == 1);

@@ -2123,11 +2123,11 @@
   i32.const 21
   call $~lib/rt/itcms/__new
   local.tee $0
-  i32.const 1
-  i32.store
-  local.get $0
   i32.const 0
   i32.store offset=4
+  local.get $0
+  i32.const 1
+  i32.store
   local.get $0
   i32.load
   i32.const 1
@@ -2157,14 +2157,14 @@
   i32.const 21
   call $~lib/rt/itcms/__new
   local.tee $0
+  i32.const 0
+  i32.store
+  local.get $0
   i32.const 624
   i32.store offset=4
   local.get $0
   i32.const 624
   call $~lib/rt/itcms/__link
-  local.get $0
-  i32.const 0
-  i32.store
   local.get $0
   i32.load
   if
@@ -2229,17 +2229,17 @@
   i32.const 22
   call $~lib/rt/itcms/__new
   local.tee $0
-  i32.const 688
-  i32.store offset=8
-  local.get $0
-  i32.const 688
-  call $~lib/rt/itcms/__link
-  local.get $0
   i32.const 0
   i32.store
   local.get $0
   i32.const 0
   i32.store offset=4
+  local.get $0
+  i32.const 688
+  i32.store offset=8
+  local.get $0
+  i32.const 688
+  call $~lib/rt/itcms/__link
   local.get $0
   i32.load
   if

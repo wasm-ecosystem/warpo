@@ -25581,7 +25581,7 @@
                                                                       f64.const 6
                                                                       f64.ne
                                                                       br_if $folding-inner4
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 4
@@ -25589,7 +25589,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25602,9 +25602,6 @@
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int8Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2576
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $4
                                                                       i32.const 12
@@ -25693,10 +25690,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 5
@@ -25704,7 +25701,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25717,9 +25714,6 @@
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2608
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $4
                                                                       i32.const 12
@@ -25808,10 +25802,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 6
@@ -25819,7 +25813,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25832,9 +25826,6 @@
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2640
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $4
                                                                       i32.const 12
@@ -25923,10 +25914,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 7
@@ -25934,7 +25925,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25947,9 +25938,6 @@
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2672
-                                                                      i32.store align=1
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -26044,10 +26032,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 8
@@ -26055,7 +26043,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -26068,9 +26056,6 @@
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2704
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -26167,10 +26152,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 9
@@ -26178,7 +26163,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -26191,9 +26176,6 @@
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2736
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -26290,10 +26272,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 10
@@ -26301,7 +26283,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -26314,9 +26296,6 @@
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2768
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -26413,10 +26392,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 11
@@ -26424,7 +26403,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -26437,9 +26416,6 @@
                                                                       i32.const 2
                                                                       i64.const 3
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2800
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -26536,10 +26512,10 @@
                                                                       i64.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 12
@@ -26547,7 +26523,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -26560,9 +26536,6 @@
                                                                       i32.const 2
                                                                       i64.const 3
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2832
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -26659,10 +26632,10 @@
                                                                       i64.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 13
@@ -26670,7 +26643,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       f32.const 1
@@ -26683,9 +26656,6 @@
                                                                       i32.const 2
                                                                       f32.const 3
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2864
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -26782,10 +26752,10 @@
                                                                       f32.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 3
                                                                       i32.const 14
@@ -26793,7 +26763,7 @@
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 0
                                                                       f64.const 1
@@ -26806,9 +26776,6 @@
                                                                       i32.const 2
                                                                       f64.const 3
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2896
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -26905,10 +26872,10 @@
                                                                       f64.ne
                                                                       br_if $folding-inner7
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 4
@@ -26916,7 +26883,7 @@
                                                                       local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $3
                                                                       i32.const 0
                                                                       i32.const 1
@@ -26937,9 +26904,6 @@
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Int8Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2928
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $2
                                                                       i32.const 0
@@ -27050,10 +27014,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 5
@@ -27061,7 +27025,7 @@
                                                                       local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $3
                                                                       i32.const 0
                                                                       i32.const 1
@@ -27082,9 +27046,6 @@
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2960
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $2
                                                                       i32.const 0
@@ -27195,10 +27156,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 6
@@ -27206,7 +27167,7 @@
                                                                       local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $3
                                                                       i32.const 0
                                                                       i32.const 1
@@ -27227,9 +27188,6 @@
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 2992
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $2
                                                                       i32.const 0
@@ -27340,10 +27298,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 7
@@ -27351,7 +27309,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
@@ -27372,9 +27330,6 @@
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3024
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -27498,10 +27453,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 8
@@ -27509,7 +27464,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
@@ -27530,9 +27485,6 @@
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3056
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -27656,10 +27608,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 9
@@ -27667,7 +27619,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
@@ -27688,9 +27640,6 @@
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3088
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -27814,10 +27763,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 10
@@ -27825,7 +27774,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
@@ -27846,9 +27795,6 @@
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3120
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -27972,10 +27918,10 @@
                                                                       i32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 11
@@ -27983,7 +27929,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       i64.const 1
@@ -28004,9 +27950,6 @@
                                                                       i32.const 5
                                                                       i64.const 5
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3152
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -28130,10 +28073,10 @@
                                                                       i64.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 12
@@ -28141,7 +28084,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       i64.const 1
@@ -28162,9 +28105,6 @@
                                                                       i32.const 5
                                                                       i64.const 5
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3184
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -28288,10 +28228,10 @@
                                                                       i64.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 13
@@ -28299,7 +28239,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       f32.const 1
@@ -28320,9 +28260,6 @@
                                                                       i32.const 5
                                                                       f32.const 5
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3216
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -28446,10 +28383,10 @@
                                                                       f32.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       call $~lib/rt/__decrease_sp
                                                                       i32.const 6
                                                                       i32.const 14
@@ -28457,7 +28394,7 @@
                                                                       local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $2
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       local.get $2
                                                                       i32.const 0
                                                                       f64.const 1
@@ -28478,9 +28415,6 @@
                                                                       i32.const 5
                                                                       f64.const 5
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 3248
-                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $3
                                                                       i32.const 12
@@ -28604,7 +28538,7 @@
                                                                       f64.ne
                                                                       br_if $folding-inner12
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 8
+                                                                      i32.const 4
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 3

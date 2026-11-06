@@ -48,9 +48,7 @@
    (i32.eqz
     (i32.eq
      (call $class-static-function/call
-      (call $~lib/rt/__tmptostack
-       (i32.const 32)
-      )
+      (i32.const 32)
      )
      (i32.const 42)
     )

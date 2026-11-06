@@ -54,6 +54,16 @@
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
+  i32.const 32
+  call $~lib/rt/itcms/__visit
+  i32.const 64
+  call $~lib/rt/itcms/__visit
+  i32.const 96
+  call $~lib/rt/itcms/__visit
+  i32.const 192
+  call $~lib/rt/itcms/__visit
+  i32.const 224
+  call $~lib/rt/itcms/__visit
   global.get $function-call/foo
   local.tee $0
   if

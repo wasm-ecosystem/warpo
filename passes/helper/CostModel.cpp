@@ -217,8 +217,9 @@ float CostModel::getSizeCostByExpr(wasm::Module *m, wasm::Expression *expr) cons
   case wasm::Expression::LocalGetId:
     return getSizeCostByOpcode(Opcode::LOCAL_GET);
   case wasm::Expression::LocalSetId:
-    return expr->cast<wasm::LocalSet>()->isTee() ? getSizeCostByOpcode(Opcode::LOCAL_TEE)
-                                                 : getSizeCostByOpcode(Opcode::LOCAL_SET);
+    return expr->cast<wasm::LocalSet>()->isTee() && expr->type != wasm::Type::unreachable
+               ? getSizeCostByOpcode(Opcode::LOCAL_TEE)
+               : getSizeCostByOpcode(Opcode::LOCAL_SET);
   case wasm::Expression::GlobalGetId:
     return getSizeCostByOpcode(Opcode::GLOBAL_GET);
   case wasm::Expression::GlobalSetId:
@@ -226,6 +227,8 @@ float CostModel::getSizeCostByExpr(wasm::Module *m, wasm::Expression *expr) cons
   case wasm::Expression::LoadId: {
     auto *load = expr->cast<wasm::Load>();
     switch (load->type.getBasic()) {
+    case wasm::Type::unreachable:
+      return 0.0F;
     case wasm::Type::i32:
       return getSizeCostByOpcode(Opcode::I32_LOAD);
     case wasm::Type::i64:
@@ -626,3 +629,153 @@ float warpo::passes::getFunctionPerformanceCost() {
 float warpo::passes::getOpcodePerformanceCost(Opcode opcode) {
   return CostModel::ins().getPerformanceCostByOpcode(opcode);
 }
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <array>
+#include <gtest/gtest.h>
+#include <memory>
+
+#include "../Runner.hpp"
+#include "parser/wat-parser.h"
+#include "wasm-stack.h"
+
+namespace warpo::passes::ut {
+
+TEST(CostModelTest, UnreachableLoad) {
+  auto m = loadWat(R"(
+    (module
+      (memory $0 1)
+      (func $test (result f32)
+        (f32.load $0 (unreachable))
+      )
+    )
+  )");
+  wasm::Expression *const expression = m->getFunction("test")->body;
+  ASSERT_TRUE(expression->is<wasm::Load>());
+  ASSERT_EQ(expression->type, wasm::Type::unreachable);
+  EXPECT_FLOAT_EQ(getOpcodeSizeCost(m.get(), expression), 0.0F);
+  EXPECT_FLOAT_EQ(measureSizeCost(m.get(), expression), getOpcodeSizeCost(Opcode::UNREACHABLE));
+}
+
+TEST(CostModelTest, UnreachableLoadCountsPointerCost) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "effect" (func $effect))
+      (memory $0 1)
+      (func $test (result f32)
+        (f32.load $0
+          (block
+            (call $effect)
+            (unreachable)
+          )
+        )
+      )
+    )
+  )");
+  wasm::Expression *const expression = m->getFunction("test")->body;
+  ASSERT_TRUE(expression->is<wasm::Load>());
+  ASSERT_EQ(expression->type, wasm::Type::unreachable);
+  EXPECT_FLOAT_EQ(getOpcodeSizeCost(m.get(), expression), 0.0F);
+  EXPECT_FLOAT_EQ(measureSizeCost(m.get(), expression),
+                  getOpcodeSizeCost(Opcode::BLOCK) + getOpcodeSizeCost(Opcode::END) + getOpcodeSizeCost(Opcode::CALL) +
+                      getOpcodeSizeCost(Opcode::UNREACHABLE));
+}
+
+TEST(CostModelTest, ConcreteLoad) {
+  auto m = loadWat(R"(
+    (module
+      (memory $0 1)
+      (func $test (result f32)
+        (f32.load $0 (i32.const 0))
+      )
+    )
+  )");
+  wasm::Expression *const expression = m->getFunction("test")->body;
+  ASSERT_TRUE(expression->is<wasm::Load>());
+  ASSERT_EQ(expression->type, wasm::Type::f32);
+  EXPECT_FLOAT_EQ(getOpcodeSizeCost(m.get(), expression), getOpcodeSizeCost(Opcode::F32_LOAD));
+  EXPECT_FLOAT_EQ(measureSizeCost(m.get(), expression),
+                  getOpcodeSizeCost(Opcode::I32_CONST) + getOpcodeSizeCost(Opcode::F32_LOAD));
+}
+
+TEST(CostModelTest, OtherUnreachableExpressions) {
+  auto m = std::make_unique<wasm::Module>();
+  m->features.setBulkMemory();
+  m->features.setBulkMemoryOpt();
+  auto parsed = wasm::WATParser::parseModule(*m, R"(
+    (module
+      (type $signature (func (param i32) (result i32)))
+      (memory $0 1)
+      (table $0 1 funcref)
+      (data $data "x")
+      (global $global (mut i32) (i32.const 0))
+      (func $callee (param i32) (result i32) (local.get 0))
+      (func $store-pointer (f32.store $0 (unreachable) (f32.const 0)))
+      (func $store-value (f32.store $0 (i32.const 0) (unreachable)))
+      (func $call (result i32) (call $callee (unreachable)))
+      (func $call-indirect-argument (result i32)
+        (call_indirect $0 (type $signature) (unreachable) (i32.const 0)))
+      (func $call-indirect-target (result i32)
+        (call_indirect $0 (type $signature) (i32.const 0) (unreachable)))
+      (func $local-set (local i32) (local.set 0 (unreachable)))
+      (func $local-tee (result i32) (local i32) (local.tee 0 (unreachable)))
+      (func $global-set (global.set $global (unreachable)))
+      (func $unary (result i32) (i32.eqz (unreachable)))
+      (func $binary-left (result i32) (i32.add (unreachable) (i32.const 1)))
+      (func $binary-right (result i32) (i32.add (i32.const 1) (unreachable)))
+      (func $select (result i32) (select (i32.const 1) (i32.const 2) (unreachable)))
+      (func $drop (drop (unreachable)))
+      (func $return (result i32) (return (i32.const 1)))
+      (func $block (block (unreachable)))
+      (func $if (if (i32.const 1) (then (unreachable)) (else (unreachable))))
+      (func $loop (loop $forever (br $forever)))
+      (func $memory-grow (result i32) (memory.grow $0 (unreachable)))
+      (func $memory-init (memory.init $0 $data (unreachable) (i32.const 0) (i32.const 0)))
+      (func $memory-copy (memory.copy $0 $0 (unreachable) (i32.const 0) (i32.const 0)))
+      (func $memory-fill (memory.fill $0 (unreachable) (i32.const 0) (i32.const 0)))
+    )
+  )");
+  ASSERT_FALSE(parsed.getErr());
+  ASSERT_TRUE(wasm::WasmValidator{}.validate(*m));
+
+  struct TestCase {
+    char const *functionName;
+    float opcodeCost;
+  };
+  auto const cases = std::to_array<TestCase>({
+      {"store-pointer", getOpcodeSizeCost(Opcode::F32_STORE)},
+      {"store-value", getOpcodeSizeCost(Opcode::F32_STORE)},
+      {"call", getOpcodeSizeCost(Opcode::CALL)},
+      {"call-indirect-argument", getOpcodeSizeCost(Opcode::CALL_INDIRECT)},
+      {"call-indirect-target", getOpcodeSizeCost(Opcode::CALL_INDIRECT)},
+      {"local-set", getOpcodeSizeCost(Opcode::LOCAL_SET)},
+      {"local-tee", getOpcodeSizeCost(Opcode::LOCAL_SET)},
+      {"global-set", getOpcodeSizeCost(Opcode::GLOBAL_SET)},
+      {"unary", getOpcodeSizeCost(Opcode::I32_EQZ)},
+      {"binary-left", getOpcodeSizeCost(Opcode::I32_ADD)},
+      {"binary-right", getOpcodeSizeCost(Opcode::I32_ADD)},
+      {"select", getOpcodeSizeCost(Opcode::SELECT)},
+      {"drop", getOpcodeSizeCost(Opcode::DROP)},
+      {"return", getOpcodeSizeCost(Opcode::RETURN)},
+      {"block", getOpcodeSizeCost(Opcode::BLOCK) + getOpcodeSizeCost(Opcode::END)},
+      {"if", getOpcodeSizeCost(Opcode::IF) + getOpcodeSizeCost(Opcode::ELSE) + getOpcodeSizeCost(Opcode::END)},
+      {"loop", getOpcodeSizeCost(Opcode::LOOP) + getOpcodeSizeCost(Opcode::END)},
+      {"memory-grow", getOpcodeSizeCost(Opcode::MEMORY_GROW)},
+      {"memory-init", getOpcodeSizeCost(Opcode::MEMORY_INIT)},
+      {"memory-copy", getOpcodeSizeCost(Opcode::MEMORY_COPY)},
+      {"memory-fill", getOpcodeSizeCost(Opcode::MEMORY_FILL)},
+  });
+  for (TestCase const &testCase : cases) {
+    SCOPED_TRACE(testCase.functionName);
+    wasm::Expression *const expression = m->getFunction(testCase.functionName)->body;
+    ASSERT_EQ(expression->type, wasm::Type::unreachable);
+    EXPECT_FLOAT_EQ(getOpcodeSizeCost(m.get(), expression), testCase.opcodeCost);
+    EXPECT_NO_THROW(measureSizeCost(m.get(), expression));
+  }
+  EXPECT_EQ(m->getFunction("store-value")->body->cast<wasm::Store>()->valueType, wasm::Type::f32);
+}
+
+} // namespace warpo::passes::ut
+
+#endif

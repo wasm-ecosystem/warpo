@@ -19,7 +19,9 @@ class Features {
     BulkMemory = 1U << 3U,
     MultiValue = 1U << 4U,
     TailCall = 1U << 5U,
-    All = static_cast<uint32_t>(-1),
+    ReturnToBr = 1U << 6U,
+    Default = MutableGlobals | SignExtension | NontrappingF2I | BulkMemory | MultiValue,
+    All = (1U << 7U) - 1U,
   };
 
   FeaturesEnum features;
@@ -31,13 +33,14 @@ public:
   static Features fromCLI();
   constexpr static Features none() { return Features{FeaturesEnum::None}; }
   constexpr static Features all() { return Features{FeaturesEnum::All}; }
-  static Features defaultFeatures() { return all() & ~tailCall(); }
+  constexpr static Features defaultFeatures() { return Features{FeaturesEnum::Default}; }
   constexpr static Features mutableGlobals() { return Features{FeaturesEnum::MutableGlobals}; }
   constexpr static Features signExtension() { return Features{FeaturesEnum::SignExtension}; }
   constexpr static Features nontrappingF2I() { return Features{FeaturesEnum::NontrappingF2I}; }
   constexpr static Features bulkMemory() { return Features{FeaturesEnum::BulkMemory}; }
   constexpr static Features multiValue() { return Features{FeaturesEnum::MultiValue}; }
   constexpr static Features tailCall() { return Features{FeaturesEnum::TailCall}; }
+  constexpr static Features returnToBr() { return Features{FeaturesEnum::ReturnToBr}; }
 
   Features operator|(Features other) const {
     return Features{static_cast<FeaturesEnum>(static_cast<uint32_t>(features) | static_cast<uint32_t>(other.features))};

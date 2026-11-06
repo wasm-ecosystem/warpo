@@ -50,6 +50,24 @@
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
+  global.get $closure-capture-for-of-mixed/funcA1
+  local.tee $0
+  if
+   local.get $0
+   call $~lib/rt/itcms/__visit
+  end
+  global.get $closure-capture-for-of-mixed/funcB1
+  local.tee $0
+  if
+   local.get $0
+   call $~lib/rt/itcms/__visit
+  end
+  global.get $closure-capture-for-of-mixed/funcB2
+  local.tee $0
+  if
+   local.get $0
+   call $~lib/rt/itcms/__visit
+  end
   global.get $~lib/rt/closure/env
   local.tee $0
   if

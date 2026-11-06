@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
-#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
@@ -26,6 +25,7 @@
 #include "pass.h"
 #include "passes/passes.h"
 #include "support/name.h"
+#include "warpo/common/Features.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm.h"
 
@@ -126,7 +126,8 @@ void OptLower::run(wasm::Module *m) {
   std::shared_ptr<InsertPositionHints const> const stackInsertPositions =
       enableShrinkWrap ? ShrinkWrapAnalysis::addToPass(runner, livenessInfo) : ShrinkWrapAnalysis::dummy(runner);
   runner.add(std::unique_ptr<wasm::Pass>(
-      new PrologEpilogInserter(stackInsertPositions, MaxShadowStackOffsetsFromStackPositions::create(stackPositions))));
+      new PrologEpilogInserter(stackInsertPositions, MaxShadowStackOffsetsFromStackPositions::create(stackPositions),
+                               common::Features::fromCLI().has(common::Features::returnToBr()))));
   runner.add(std::unique_ptr<wasm::Pass>(new ToStackReplacer(stackPositions)));
 
   runner.run();

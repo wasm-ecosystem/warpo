@@ -169,6 +169,8 @@
   (local $1 i32)
   i32.const 240
   call $~lib/rt/itcms/__visit
+  i32.const 304
+  call $~lib/rt/itcms/__visit
   global.get $typeof/c
   local.tee $0
   if

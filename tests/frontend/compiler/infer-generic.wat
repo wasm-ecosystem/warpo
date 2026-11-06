@@ -3111,9 +3111,7 @@
     (call $~lib/rt/__tmptostack
      (global.get $infer-generic/arr)
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 176)
-    )
+    (i32.const 176)
     (i32.const 0)
    )
   )

@@ -621,8 +621,6 @@
    local.get $0
    call $~lib/rt/itcms/__visit
   end
-  i32.const 9008
-  call $~lib/rt/itcms/__visit
   global.get $std/array/inputStabArr
   local.tee $0
   if
@@ -9268,7 +9266,7 @@
     local.get $7
     i32.gt_s
     if
-     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$58 (result i32)
+     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$59 (result i32)
       local.get $0
       local.get $2
       i32.const 1
@@ -9291,7 +9289,7 @@
        i32.or
        i32.store16
        i32.const 1
-       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$58
+       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$59
       end
       local.get $8
       local.get $4
@@ -9328,7 +9326,7 @@
      br $for-loop|0
     end
    end
-   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$59 (result i32)
+   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$60 (result i32)
     local.get $0
     local.get $2
     i32.const 1
@@ -9351,7 +9349,7 @@
      i32.or
      i32.store16
      i32.const 1
-     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$59
+     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$60
     end
     local.get $3
     local.get $1
@@ -15907,9 +15905,6 @@
    call $~lib/array/Array<i32>#__set
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5648
    i32.store align=1
    global.get $std/array/arr
    i32.const 5648
@@ -15926,9 +15921,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5680
    i32.store align=1
    global.get $std/array/arr
    i32.const 5680
@@ -15947,9 +15939,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5712
    i32.store align=1
    global.get $std/array/arr
    i32.const 5712
@@ -15968,9 +15957,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5744
    i32.store align=1
    global.get $std/array/arr
    i32.const 5744
@@ -16001,9 +15987,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5776
    i32.store align=1
    global.get $std/array/arr
    i32.const 5776
@@ -16034,9 +16017,6 @@
    drop
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5808
    i32.store align=1
    global.get $std/array/arr
    i32.const 5808
@@ -16086,9 +16066,6 @@
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5888
-   i32.store offset=4 align=1
    local.get $0
    i32.const 5888
    call $~lib/array/Array<i32>#findLastIndex
@@ -16102,9 +16079,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5920
-   i32.store offset=4 align=1
    local.get $0
    i32.const 5920
    call $~lib/array/Array<i32>#findLastIndex
@@ -16120,9 +16094,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5952
-   i32.store offset=4 align=1
    local.get $0
    i32.const 5952
    call $~lib/array/Array<i32>#findLastIndex
@@ -16138,9 +16109,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 5984
-   i32.store offset=4 align=1
    local.get $0
    i32.const 5984
    call $~lib/array/Array<i32>#findLastIndex
@@ -16158,9 +16126,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6016
    i32.store align=1
    global.get $std/array/arr
    i32.const 6016
@@ -16177,9 +16142,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6048
    i32.store align=1
    global.get $std/array/arr
    i32.const 6048
@@ -16194,9 +16156,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6080
    i32.store align=1
    global.get $std/array/arr
    i32.const 6080
@@ -16225,9 +16184,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6112
    i32.store align=1
    global.get $std/array/arr
    i32.const 6112
@@ -16254,9 +16210,6 @@
    drop
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6144
    i32.store align=1
    global.get $std/array/arr
    i32.const 6144
@@ -16297,9 +16250,6 @@
    call $~lib/array/Array<i32>#push
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6176
    i32.store align=1
    global.get $std/array/arr
    i32.const 6176
@@ -16316,9 +16266,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6208
    i32.store align=1
    global.get $std/array/arr
    i32.const 6208
@@ -16333,9 +16280,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6240
    i32.store align=1
    global.get $std/array/arr
    i32.const 6240
@@ -16362,9 +16306,6 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6272
    i32.store align=1
    global.get $std/array/arr
    i32.const 6272
@@ -16393,9 +16334,6 @@
    drop
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6304
    i32.store align=1
    global.get $std/array/arr
    i32.const 6304
@@ -16436,9 +16374,6 @@
    global.set $std/array/i
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6336
    i32.store align=1
    global.get $std/array/arr
    i32.const 6336
@@ -16458,9 +16393,6 @@
    global.set $std/array/i
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6368
    i32.store align=1
    global.get $std/array/arr
    i32.const 6368
@@ -16492,9 +16424,6 @@
    global.set $std/array/i
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6400
    i32.store align=1
    global.get $std/array/arr
    i32.const 6400
@@ -16526,9 +16455,6 @@
    global.set $std/array/i
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6432
    i32.store align=1
    global.get $std/array/arr
    i32.const 6432
@@ -16570,9 +16496,6 @@
    call $~lib/array/Array<i32>#push
    global.get $~lib/memory/__stack_pointer
    global.get $std/array/arr
-   i32.store offset=4 align=1
-   global.get $~lib/memory/__stack_pointer
-   i32.const 6464
    i32.store align=1
    global.get $std/array/arr
    i32.const 6464
@@ -22018,7 +21941,7 @@
  )
  (func $byn$mgfn-shared$~lib/util/number/itoa_buffered<u16> (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$73 (result i32)
+  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$74 (result i32)
    local.get $1
    local.get $2
    i32.and
@@ -22032,7 +21955,7 @@
     i32.or
     i32.store16
     i32.const 1
-    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$73
+    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>$74
    end
    local.get $1
    local.get $2

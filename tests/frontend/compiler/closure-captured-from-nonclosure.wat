@@ -3237,9 +3237,7 @@
  (func $closure-captured-from-nonclosure/call (param $fn i32) (result i32)
   (return
    (call_indirect (type $0)
-    (call $~lib/rt/__tmptostack
-     (i32.const 432)
-    )
+    (i32.const 432)
     (block (result i32)
      (call $~lib/rt/closure/setClosureEnv
       (i32.load offset=4

@@ -110,16 +110,25 @@ public:
 
   void visitCall(wasm::Call *const curr) {
     if (curr->target == setClosureEnvName) {
-      auto *const load = curr->operands[0]->dynCast<wasm::Load>();
-      assert(load && "first operand of setClosureEnv must be i32.load");
-      constexpr uint32_t kForbiddenEffects =
-          wasm::EffectAnalyzer::SideEffects::WritesLocal | wasm::EffectAnalyzer::SideEffects::Calls |
-          wasm::EffectAnalyzer::SideEffects::Branches | wasm::EffectAnalyzer::SideEffects::WritesMemory |
-          wasm::EffectAnalyzer::SideEffects::WritesGlobal;
-      static_cast<void>(load);
-      static_cast<void>(kForbiddenEffects);
-      assert(!(wasm::EffectAnalyzer(getPassOptions(), *getModule(), load->ptr).getSideEffects() & kForbiddenEffects) &&
-             "address of i32.load must not write locals/globals/memory, call, or branch");
+      // The frontend emits only two operand forms for setClosureEnv:
+      // i32.load reads the function object's saved _env for an indirect call;
+      // i32.const 0 supplies an empty incoming environment for a direct call.
+      auto *const operand = curr->operands[0];
+      if (auto *const constant = operand->dynCast<wasm::Const>(); constant != nullptr) {
+        assert(constant->value == wasm::Literal(int32_t{0}));
+      } else {
+        auto *const load = operand->dynCast<wasm::Load>();
+        assert(load != nullptr);
+        constexpr uint32_t kForbiddenEffects =
+            wasm::EffectAnalyzer::SideEffects::WritesLocal | wasm::EffectAnalyzer::SideEffects::Calls |
+            wasm::EffectAnalyzer::SideEffects::Branches | wasm::EffectAnalyzer::SideEffects::WritesMemory |
+            wasm::EffectAnalyzer::SideEffects::WritesGlobal;
+        static_cast<void>(load);
+        static_cast<void>(kForbiddenEffects);
+        assert(
+            !(wasm::EffectAnalyzer(getPassOptions(), *getModule(), load->ptr).getSideEffects() & kForbiddenEffects) &&
+            "address of i32.load must not write locals/globals/memory, call, or branch");
+      }
       wasm::Builder b{*getModule()};
       replaceCurrent(b.makeNop());
     }
@@ -608,6 +617,30 @@ TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
 
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
+
+  wasm::Function *const caller = m->getFunctionOrNull("caller");
+  ASSERT_NE(caller, nullptr);
+  EXPECT_TRUE(caller->body->is<wasm::Nop>());
+}
+
+TEST(ClosureLower, SetOnlyRemovesZeroConstantCallsAndFunctions) {
+  auto m = loadWat(R"(
+      (module
+        (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
+        (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+        (func $caller
+          (call $~lib/rt/closure/setClosureEnv (i32.const 0))
+        )
+      )
+    )");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(nullptr)});
+  runner.run();
+
+  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
+  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
+  EXPECT_EQ(m->getGlobalOrNull("~lib/rt/closure/env"), nullptr);
 
   wasm::Function *const caller = m->getFunctionOrNull("caller");
   ASSERT_NE(caller, nullptr);

@@ -8,7 +8,7 @@ warpo 提供两种运行时（runtime），可在编译时通过命令行选项�
 ## 接口
 
 <p style="display: flex; gap: 10px;">
-	<img src="/version/2.3.0.svg" alt="2.3.0" />
+	<Badge type="info" text="2.3.0" />
 	<img src="/stability/stable.svg" alt="stable" />
 </p>
 

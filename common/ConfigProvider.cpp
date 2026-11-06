@@ -136,10 +136,11 @@ cli::Opt<std::vector<std::string>> enableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--enable-feature",
     [](argparse::Argument &arg) -> void {
-      arg.help("enable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, "
-               "multi-value, tail-call")
+      arg.help("enable features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, "
+               "multi-value, tail-call, return-to-br")
           .nargs(argparse::nargs_pattern::at_least_one)
-          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call")
+          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call",
+                   "return-to-br")
           .append();
     },
 };
@@ -148,10 +149,11 @@ cli::Opt<std::vector<std::string>> disableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--disable-feature",
     [](argparse::Argument &arg) -> void {
-      arg.help("disable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, "
-               "multi-value, tail-call")
+      arg.help("disable features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, "
+               "multi-value, tail-call, return-to-br")
           .nargs(argparse::nargs_pattern::at_least_one)
-          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call")
+          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call",
+                   "return-to-br")
           .append();
     },
 };
