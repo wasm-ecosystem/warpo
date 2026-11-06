@@ -64,7 +64,10 @@ jobs:
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
       - run: npm ci
-      - run: npm run build:ts
+      - run: |
+          npm run build:ts
+          cmake -S . -B build -DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel --target warpo_frontend_asc_wasm
       - id: release_info
         uses: actions/github-script@v7
         with:

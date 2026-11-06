@@ -23,11 +23,11 @@ jobs:
           cache: "npm"
       - run: npm ci
       - name: generate compile_commands.json
-        # build custom target to generate necessary headers
+        # Generate the frontend Wasm alongside the compilation database.
         run: |
           set -e
           cmake -B build -S .
-          cmake --build build --parallel --target warpo_frontend_asc_wasm_hpp
+          cmake --build build --parallel --target warpo_frontend_asc_wasm
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
