@@ -12,13 +12,13 @@
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <map>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "ASC/ASC.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
 #include "ModuleResolver.hpp"
@@ -170,24 +170,27 @@ FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin)
     : r{this}, moduleResolver_(plugin, config.packageSearchPaths),
       libraryPath_{findPackageRoot() / "assemblyscript" / "std" / "assembly"},
       extensionLibraryPath_{findPackageRoot() / "warpo_extension" / "std"}, config_{config} {
-  if (config.ascWasmPath) [[unlikely]] {
-    support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
-    std::string const wasmBytes = readBinaryFile(*config.ascWasmPath);
-    r.initFromBytecode(vb::Span<const uint8_t>{reinterpret_cast<uint8_t const *>(wasmBytes.data()), wasmBytes.size()},
-                       vb::Span<vb::NativeSymbol const>{warpo::frontend::getLinkedAPI().data(),
-                                                        warpo::frontend::getLinkedAPI().size()},
-                       true);
-  } else {
-    support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
-    static vb::WasmModule::CompileResult const embedJitCode =
-        r.compile(vb::Span<const uint8_t>{embed_asc_wasm.data(), embed_asc_wasm.size()},
-                  vb::Span<vb::NativeSymbol const>{warpo::frontend::getLinkedAPI().data(),
-                                                   warpo::frontend::getLinkedAPI().size()});
-    r.initFromCompiledBinary(
-        vb::Span<uint8_t const>{embedJitCode.getModule().data(), embedJitCode.getModule().size()},
-        vb::Span<vb::NativeSymbol const>{},
-        vb::Span<uint8_t const>{embedJitCode.getDebugSymbol().data(), embedJitCode.getDebugSymbol().size()});
+  support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
+  std::filesystem::path const wasmPath =
+      config.ascWasmPath ? std::filesystem::path{*config.ascWasmPath} : findPackageRoot() / "dist" / "asc.wasm";
+  static std::map<std::filesystem::path, vb::WasmModule::CompileResult> jitCache;
+  static std::mutex jitCacheMutex;
+  std::lock_guard const lock{jitCacheMutex};
+  std::filesystem::path const cacheKey = std::filesystem::canonical(wasmPath);
+  auto cached = jitCache.find(cacheKey);
+  if (cached == jitCache.end()) {
+    std::string const wasmBytes = readBinaryFile(cacheKey);
+    cached = jitCache
+                 .emplace(cacheKey,
+                          r.compile(vb::Span<uint8_t const>{reinterpret_cast<uint8_t const *>(wasmBytes.data()),
+                                                            wasmBytes.size()},
+                                    vb::Span<vb::NativeSymbol const>{getLinkedAPI().data(), getLinkedAPI().size()}))
+                 .first;
   }
+  vb::WasmModule::CompileResult const &jitCode = cached->second;
+  r.initFromCompiledBinary(vb::Span<uint8_t const>{jitCode.getModule().data(), jitCode.getModule().size()},
+                           vb::Span<vb::NativeSymbol const>{},
+                           vb::Span<uint8_t const>{jitCode.getDebugSymbol().data(), jitCode.getDebugSymbol().size()});
 }
 
 warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::string> const &entryFilePaths) {

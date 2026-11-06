@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import assert from "node:assert";
 import { project_root } from "./helper.mjs";
@@ -11,24 +11,17 @@ import { generateDiagnostics } from "./diag.mjs";
 
 const target_folder = process.argv[2];
 const build_target = process.argv[3];
+const wasm_path = process.argv[4] ?? join(target_folder, `assemblyscript.${build_target}.wasm`);
 assert(build_target === "debug" || build_target === "release", "invalid build target");
 
+mkdirSync(target_folder, { recursive: true });
 generateDiagnostics();
 
 execSync(
-  `npx asc --config asconfig.json --target ${build_target} -o ${target_folder}/assemblyscript.${build_target}.wasm -t ${target_folder}/assemblyscript.${build_target}.wast`,
+  `npx asc --config asconfig.json --target ${build_target} -o ${wasm_path} -t ${target_folder}/assemblyscript.${build_target}.wast`,
   { cwd: project_root }
 );
 
-const wasmBuf = readFileSync(join(target_folder, `assemblyscript.${build_target}.wasm`));
-const wasmBytes = Array.from(wasmBuf)
-  .map((byte) => "0x" + byte.toString(16).padStart(2, "0"))
-  .join(", ");
-writeFileSync(
-  join(target_folder, "assemblyscript.inc"),
-  `
-constexpr unsigned char asc_wasm[] = {${wasmBytes}};
-  `
-);
+const wasmBuf = readFileSync(wasm_path);
 
 console.log(`AS wasm size: ${wasmBuf.length} bytes`);
