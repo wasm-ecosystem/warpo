@@ -4672,7 +4672,7 @@ export class Function extends TypedElement {
         let parameterType = parameterTypes[i];
         let parameterName = this.getParameterName(i);
         let tupleIndex = -1;
-        if (isClosureFunction) {
+        if (isClosureFunction && i < paramsNodeList.length) {
           let closureVariables = prototype.closureVariables;
           const paramNode = paramsNodeList[i];
           if (closureVariables.has(paramNode.name)) {
