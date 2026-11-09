@@ -12,7 +12,7 @@
     "update": "cmake -S . -B build && cmake --build build --parallel --target warpo_binaryen_enums_gen && ./build/bin/warpo_binaryen_enums_gen",
     "build:ts": "tsc -p tools/tsconfig.json",
     "build:parser:ts": "node assemblyscript/scripts/build-parser.js",
-    "build:cpp": "cmake -S . -B build && cmake --build build --parallel 4",
+    "build:cpp": "cmake -S . -B build && cmake --build build --parallel ",
     "build": "npm run build:ts && npm run build:cpp",
     "build:cpp:release": "cmake -S . -B build -DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel 6",
     "build:release": "npm run build:ts && npm run build:cpp:release",
