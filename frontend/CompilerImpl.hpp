@@ -26,6 +26,8 @@
 
 namespace warpo::frontend {
 
+std::filesystem::path findPackageRoot();
+
 class FrontendCompiler final {
   enum class IsEntry : uint32_t { NO, YES };
 
@@ -51,7 +53,7 @@ public:
   static void init() { vb::WasmModule::initEnvironment(&malloc, &realloc, &free); }
   static void deinit() { vb::WasmModule::destroyEnvironment(); }
 
-  explicit FrontendCompiler(Config const &config, Pluggable *plugin);
+  explicit FrontendCompiler(Config const &config, Pluggable *plugin, vb::WasmModule::CompileResult const &jitCode);
   FrontendCompiler(FrontendCompiler const &) = delete;
   FrontendCompiler &operator=(FrontendCompiler const &) = delete;
   FrontendCompiler(FrontendCompiler &&) = delete;

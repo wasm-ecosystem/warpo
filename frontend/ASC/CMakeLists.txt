@@ -27,23 +27,17 @@ file(GLOB_RECURSE asc_sources
 set_source_files_properties(${asc_sources})
 
 set(asc_target_folder "${CMAKE_BINARY_DIR}/build-as")
+set(asc_wasm_file "${PROJECT_SOURCE_DIR}/dist/asc.wasm")
 
-# Ensure the build-as directory exists
-file(MAKE_DIRECTORY ${asc_target_folder})
+file(MAKE_DIRECTORY ${asc_target_folder} ${PROJECT_SOURCE_DIR}/dist)
 add_custom_command(
   COMMENT "Build ASC<${AS_BUILD_TARGET}> to WASM"
-  OUTPUT ${asc_target_folder}/assemblyscript.inc
+  OUTPUT ${asc_wasm_file}
   DEPENDS ${asc_sources} ${CMAKE_CURRENT_SOURCE_DIR}/gen.mjs ${PROJECT_SOURCE_DIR}/asconfig.json
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 
   COMMAND node
-  ARGS gen.mjs ${asc_target_folder} ${AS_BUILD_TARGET}
+  ARGS gen.mjs ${asc_target_folder} ${AS_BUILD_TARGET} ${asc_wasm_file}
 )
 
-add_custom_target(warpo_frontend_asc_wasm_hpp ALL DEPENDS ${asc_target_folder}/assemblyscript.inc)
-
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} warpo_frontend_asc_sources)
-
-add_library(warpo_frontend_asc ${warpo_frontend_asc_sources})
-add_dependencies(warpo_frontend_asc warpo_frontend_asc_wasm_hpp)
-target_include_directories(warpo_frontend_asc PRIVATE ${asc_target_folder})
+add_custom_target(warpo_frontend_asc_wasm ALL DEPENDS ${asc_wasm_file})

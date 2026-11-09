@@ -11,14 +11,12 @@
 #include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <map>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "ASC/ASC.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
 #include "ModuleResolver.hpp"
@@ -35,10 +33,6 @@
 
 namespace warpo::frontend {
 
-namespace {
-
-enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
-
 std::filesystem::path findPackageRoot() {
   std::filesystem::path const executablePath = cli::getExecutablePath();
 
@@ -51,6 +45,10 @@ std::filesystem::path findPackageRoot() {
   }
   throw std::runtime_error{fmt::format("cannot find assemblyscript/std for executable '{}'", executablePath.string())};
 }
+
+namespace {
+
+enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
 
 std::optional<std::filesystem::path> findLibraryFile(std::filesystem::path const &libraryPath,
                                                      std::string const &libraryName, bool const index) {
@@ -166,28 +164,15 @@ FrontendCompiler::~FrontendCompiler() {
   }
 }
 
-FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin)
+FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin,
+                                   vb::WasmModule::CompileResult const &jitCode)
     : r{this}, moduleResolver_(plugin, config.packageSearchPaths),
       libraryPath_{findPackageRoot() / "assemblyscript" / "std" / "assembly"},
       extensionLibraryPath_{findPackageRoot() / "warpo_extension" / "std"}, config_{config} {
-  if (config.ascWasmPath) [[unlikely]] {
-    support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
-    std::string const wasmBytes = readBinaryFile(*config.ascWasmPath);
-    r.initFromBytecode(vb::Span<const uint8_t>{reinterpret_cast<uint8_t const *>(wasmBytes.data()), wasmBytes.size()},
-                       vb::Span<vb::NativeSymbol const>{warpo::frontend::getLinkedAPI().data(),
-                                                        warpo::frontend::getLinkedAPI().size()},
-                       true);
-  } else {
-    support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
-    static vb::WasmModule::CompileResult const embedJitCode =
-        r.compile(vb::Span<const uint8_t>{embed_asc_wasm.data(), embed_asc_wasm.size()},
-                  vb::Span<vb::NativeSymbol const>{warpo::frontend::getLinkedAPI().data(),
-                                                   warpo::frontend::getLinkedAPI().size()});
-    r.initFromCompiledBinary(
-        vb::Span<uint8_t const>{embedJitCode.getModule().data(), embedJitCode.getModule().size()},
-        vb::Span<vb::NativeSymbol const>{},
-        vb::Span<uint8_t const>{embedJitCode.getDebugSymbol().data(), embedJitCode.getDebugSymbol().size()});
-  }
+  support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
+  r.initFromCompiledBinary(vb::Span<uint8_t const>{jitCode.getModule().data(), jitCode.getModule().size()},
+                           vb::Span<vb::NativeSymbol const>{},
+                           vb::Span<uint8_t const>{jitCode.getDebugSymbol().data(), jitCode.getDebugSymbol().size()});
 }
 
 warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::string> const &entryFilePaths) {
