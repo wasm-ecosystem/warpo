@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "CompilerImpl.hpp"
+#include "LinkedAPI.hpp"
 #include "warpo/common/ConfigProvider.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Color.hpp"
+#include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 #include "warpo/support/Statistics.hpp"
 
@@ -104,12 +106,26 @@ namespace warpo {
 
 void frontend::init() { FrontendCompiler::init(); }
 
+static vb::WasmModule::CompileResult compileFrontendWasm(frontend::Config const &config) {
+  support::PerfRAII const prepare{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
+  std::optional<std::string> const selectedPath =
+      config.ascWasmPath ? config.ascWasmPath : frontend::convertEmptyStringToNullOpt(frontend::ascWasmOption.get());
+  std::filesystem::path const wasmPath =
+      selectedPath ? std::filesystem::path{*selectedPath} : frontend::findPackageRoot() / "dist" / "asc.wasm";
+  std::string const wasmBytes = readBinaryFile(wasmPath);
+  WarpRunner runner{nullptr};
+  return runner.compile(
+      vb::Span<uint8_t const>{reinterpret_cast<uint8_t const *>(wasmBytes.data()), wasmBytes.size()},
+      vb::Span<vb::NativeSymbol const>{frontend::getLinkedAPI().data(), frontend::getLinkedAPI().size()});
+}
+
 frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std::string> const &entryFilePaths,
                                               Config const &config) {
   if (entryFilePaths.empty())
     throw std::runtime_error("No entry files specified for compilation.");
   support::PerfRAII const r(support::PerfItemKind::CompilationHIR);
-  FrontendCompiler compiler{config, plugin};
+  static vb::WasmModule::CompileResult const jitCode = compileFrontendWasm(config);
+  FrontendCompiler compiler{config, plugin, jitCode};
   return compiler.compile(entryFilePaths);
 }
 
