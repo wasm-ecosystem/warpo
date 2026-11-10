@@ -53,7 +53,8 @@ jobs:
       - uses: ./.github/action/build
         with:
           OS_ID: ${{ matrix.os }}
-          CMAKE_ARGS: ${{ matrix.os == 'ubuntu-latest' && '-DCMAKE_BUILD_TYPE=RelWithDebInfo -DWARPO_SANITIZE=ON' || '-DCMAKE_BUILD_TYPE=RelWithDebInfo' }}
+          # MSVC AddressSanitizer supports x86/x64, not native Windows ARM64.
+          CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=RelWithDebInfo -DWARPO_SANITIZE=${{ matrix.os == 'windows-11-arm' && 'OFF' || 'ON' }}"
       - run: npm run build:ts
       - run: npm run build:parser:ts
       # test
