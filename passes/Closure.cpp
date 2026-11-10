@@ -2,13 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
-#include <array>
 #include <atomic>
 #include <cassert>
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -19,7 +17,6 @@
 #include "helper/ExprInserter.hpp"
 #include "helper/FindExpr.hpp"
 #include "ir/effects.h"
-#include "warpo/support/Opt.hpp"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm-type.h"
@@ -33,11 +30,6 @@ static constexpr const char *const kGetClosureEnvByLevel = "~lib/rt/closure/getC
 static constexpr const char *const kSetFFIClosureEnv = "~lib/warpo/ffi/ffi.set_ffi_closure_env";
 
 static constexpr const char *const kClosureEnvGlobal = "~lib/rt/closure/env";
-
-static std::array<const char *const, 2> kClosureImportBases = {
-    kSetClosureEnv,
-    kGetClosureEnvByLevel,
-};
 
 namespace {
 
@@ -94,22 +86,13 @@ ClosureCallSummary scanClosureCalls(wasm::Module *const m, wasm::PassRunner *con
   };
 }
 
-void removeClosureImports(wasm::Module *const m) {
-  for (const char *const name : kClosureImportBases)
-    m->removeFunction(name);
-  if (m->getFunctionOrNull(kSetFFIClosureEnv) != nullptr)
-    m->removeFunction(kSetFFIClosureEnv);
-}
-
 class SetClosureEnvRemover : public wasm::WalkerPass<wasm::PostWalker<SetClosureEnvRemover>> {
 public:
-  explicit SetClosureEnvRemover(wasm::Name setClosureEnvName) : setClosureEnvName(std::move(setClosureEnvName)) {}
-
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<SetClosureEnvRemover>(setClosureEnvName); }
+  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<SetClosureEnvRemover>(); }
 
   void visitCall(wasm::Call *const curr) {
-    if (curr->target == setClosureEnvName) {
+    if (curr->target == kSetClosureEnv) {
       // The frontend emits only two operand forms for setClosureEnv:
       // i32.load reads the function object's saved _env for an indirect call;
       // i32.const 0 supplies an empty incoming environment for a direct call.
@@ -133,14 +116,11 @@ public:
       replaceCurrent(b.makeNop());
     }
   }
-
-private:
-  wasm::Name setClosureEnvName;
 };
 
 void runSetClosureEnvRemoval(wasm::PassRunner *const parentRunner) {
   wasm::PassRunner runner{parentRunner};
-  runner.add(std::make_unique<SetClosureEnvRemover>(kSetClosureEnv));
+  runner.add(std::make_unique<SetClosureEnvRemover>());
   runner.run();
 }
 
@@ -551,8 +531,6 @@ void FastLower::run(wasm::Module *m) {
   } else if (summary.needsSetOnlyRemoval()) {
     runSetClosureEnvRemoval(parentRunner);
   }
-
-  removeClosureImports(m);
 }
 
 void OptLower::run(wasm::Module *m) {
@@ -583,8 +561,6 @@ void OptLower::run(wasm::Module *m) {
   } else if (summary.needsSetOnlyRemoval()) {
     runSetClosureEnvRemoval(parentRunner);
   }
-
-  removeClosureImports(m);
 }
 
 } // namespace warpo::passes::closure
@@ -596,10 +572,11 @@ void OptLower::run(wasm::Module *m) {
 #include "Runner.hpp"
 #include "helper/Matcher.hpp"
 #include "pass.h"
+#include "wasm-validator.h"
 
 namespace warpo::passes::ut {
 namespace {
-TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
+TEST(ClosureLower, SetOnlyRemovesCalls) {
   auto m = loadWat(R"(
     (module
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
@@ -615,15 +592,12 @@ TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(nullptr)});
   runner.run();
 
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
-
   wasm::Function *const caller = m->getFunctionOrNull("caller");
   ASSERT_NE(caller, nullptr);
   EXPECT_TRUE(caller->body->is<wasm::Nop>());
 }
 
-TEST(ClosureLower, SetOnlyRemovesZeroConstantCallsAndFunctions) {
+TEST(ClosureLower, SetOnlyRemovesZeroConstantCalls) {
   auto m = loadWat(R"(
       (module
         (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
@@ -638,8 +612,6 @@ TEST(ClosureLower, SetOnlyRemovesZeroConstantCallsAndFunctions) {
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(nullptr)});
   runner.run();
 
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
   EXPECT_EQ(m->getGlobalOrNull("~lib/rt/closure/env"), nullptr);
 
   wasm::Function *const caller = m->getFunctionOrNull("caller");
@@ -647,23 +619,30 @@ TEST(ClosureLower, SetOnlyRemovesZeroConstantCallsAndFunctions) {
   EXPECT_TRUE(caller->body->is<wasm::Nop>());
 }
 
-TEST(ClosureLower, NoClosureCallsKeepsFunctions) {
-  auto m = loadWat(R"(
-    (module
-      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
-      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
-      (func $caller
-        nop
+TEST(ClosureLower, GetterOnlyKeepsCallTarget) {
+  for (bool const optimize : {false, true}) {
+    SCOPED_TRACE(optimize);
+    auto m = loadWat(R"(
+      (module
+        (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+        (global $~lib/rt/closure/env (mut i32) (i32.const 0))
+        (func $caller (export "caller") (result i32)
+          (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 1))
+        )
       )
-    )
-  )");
+    )");
 
-  wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(nullptr)});
-  runner.run();
+    wasm::PassRunner runner{m.get()};
+    if (optimize) {
+      runner.add(std::make_unique<closure::OptLower>(nullptr));
+    } else {
+      runner.add(std::make_unique<closure::FastLower>(nullptr));
+    }
+    runner.run();
 
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
+    EXPECT_NE(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
+    EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
+  }
 }
 
 TEST(ClosureLower, BothGetAndSetLowersToGlobalAndLocal) {
@@ -692,9 +671,6 @@ TEST(ClosureLower, BothGetAndSetLowersToGlobalAndLocal) {
   wasm::PassRunner runner{m.get()};
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(&variableInfo)});
   runner.run();
-
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
 
   EXPECT_NE(m->getGlobalOrNull("~lib/rt/closure/env"), nullptr);
 
@@ -775,8 +751,6 @@ TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
   wasm::PassRunner runner{m.get()};
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(&variableInfo)});
   runner.run();
-
-  EXPECT_EQ(m->getFunctionOrNull("~lib/warpo/ffi/ffi.set_ffi_closure_env"), nullptr);
 
   wasm::Function *const callback = m->getFunctionOrNull("callback");
   ASSERT_NE(callback, nullptr);
