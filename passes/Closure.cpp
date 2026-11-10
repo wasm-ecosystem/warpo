@@ -640,6 +640,8 @@ TEST(ClosureLower, GetterOnlyKeepsCallTarget) {
     }
     runner.run();
 
+    // Keep helper imports until later passes prove them unused.
+    // FFI callbacks without an environment setter are a subset of this case.
     EXPECT_NE(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
     EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
   }
