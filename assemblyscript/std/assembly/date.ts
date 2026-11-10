@@ -344,14 +344,9 @@ function dateFromEpoch(ms: i64): i32 {
   let dm1 = <u32>u1 / 11758980;
   let n1 = 2141 * dm1 + 197913;
   let year = 100 * q0 + i32(u1 >>> 32);
-  let mo = n1 >>> 16;
   _day = (n1 & 0xffff) / 2141 + 1; // [1, 31]
-  if (dm1 >= 306) {
-    mo -= 12;
-    ++year;
-  }
-  _month = mo; // [1, 12]
-  return year;
+  _month = (n1 >>> 16) - (dm1 >= 306 ? 12 : 0); // [1, 12]
+  return year + (dm1 >= 306 ? 1 : 0);
 }
 
 // http://howardhinnant.github.io/date_algorithms.html#days_from_civil
@@ -368,8 +363,9 @@ function daysSinceEpoch(y: i32, m: i32, d: i32): i64 {
 function dayOfWeek(year: i32, month: i32, day: i32): i32 {
   const tab = memory.data<u8>([0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4]);
 
-  year -= i32(month < 3);
-  year += floorDiv(year, 4) - floorDiv(year, 100) + floorDiv(year, YEARS_PER_EPOCH);
+  year -= i32(month <= 2);
+  const cent = floorDiv(year >> 2, 100 >> 2);
+  year += (year >> 2) - cent + (cent >> 2);
   month = <i32>load<u8>(tab + month - 1);
   return euclidRem(year + month + day, 7);
 }

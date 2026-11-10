@@ -442,7 +442,6 @@
   (local $dm1 i32)
   (local $n1 i32)
   (local $year i32)
-  (local $mo i32)
   (local.set $da
    (i32.or
     (i32.add
@@ -522,12 +521,6 @@
     )
    )
   )
-  (local.set $mo
-   (i32.shr_u
-    (local.get $n1)
-    (i32.const 16)
-   )
-  )
   (global.set $~lib/date/_day
    (i32.add
     (i32.div_s
@@ -540,31 +533,42 @@
     (i32.const 1)
    )
   )
-  (if
-   (i32.ge_u
-    (local.get $dm1)
-    (i32.const 306)
-   )
-   (then
-    (local.set $mo
-     (i32.sub
-      (local.get $mo)
+  (global.set $~lib/date/_month
+   (i32.sub
+    (i32.shr_u
+     (local.get $n1)
+     (i32.const 16)
+    )
+    (if (result i32)
+     (i32.ge_u
+      (local.get $dm1)
+      (i32.const 306)
+     )
+     (then
       (i32.const 12)
      )
-    )
-    (local.set $year
-     (i32.add
-      (local.get $year)
-      (i32.const 1)
+     (else
+      (i32.const 0)
      )
     )
    )
   )
-  (global.set $~lib/date/_month
-   (local.get $mo)
-  )
   (return
-   (local.get $year)
+   (i32.add
+    (local.get $year)
+    (if (result i32)
+     (i32.ge_u
+      (local.get $dm1)
+      (i32.const 306)
+     )
+     (then
+      (i32.const 1)
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
   )
  )
  (func $~lib/date/Date#set:year (param $this i32) (param $year i32)
@@ -4014,12 +4018,25 @@
   )
  )
  (func $~lib/date/dayOfWeek (param $year i32) (param $month i32) (param $day i32) (result i32)
+  (local $cent i32)
   (local.set $year
    (i32.sub
     (local.get $year)
-    (i32.lt_s
+    (i32.le_s
      (local.get $month)
-     (i32.const 3)
+     (i32.const 2)
+    )
+   )
+  )
+  (local.set $cent
+   (call $~lib/date/floorDiv<i32>
+    (i32.shr_s
+     (local.get $year)
+     (i32.const 2)
+    )
+    (i32.shr_s
+     (i32.const 100)
+     (i32.const 2)
     )
    )
   )
@@ -4028,18 +4045,15 @@
     (local.get $year)
     (i32.add
      (i32.sub
-      (call $~lib/date/floorDiv<i32>
+      (i32.shr_s
        (local.get $year)
-       (i32.const 4)
+       (i32.const 2)
       )
-      (call $~lib/date/floorDiv<i32>
-       (local.get $year)
-       (i32.const 100)
-      )
+      (local.get $cent)
      )
-     (call $~lib/date/floorDiv<i32>
-      (local.get $year)
-      (i32.const 400)
+     (i32.shr_s
+      (local.get $cent)
+      (i32.const 2)
      )
     )
    )
