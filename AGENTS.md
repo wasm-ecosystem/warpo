@@ -24,9 +24,8 @@ Please follow these instructions after modifying the code.
 ## Quality instructions
 
 - Don't write meaningless comments.
-- After changing the C++ code, please use clang-tidy to check code quality. The database file is located in `build` folder.</br>
-  Example command is `clang-tidy -p build <file>`.
-- After changing code, please use clang-format to ensure the format for C++ and prettier for ts/js.
+- Do not search for, check the availability of, or run `clang-format` or `clang-tidy` unless explicitly requested by the user. Skip these tools by default to save time.
+- After changing ts/js code, please use prettier to ensure the format.
 - Prefer to use east const style.
 - In C++ naming, do not use module keywords (such as `module`) as variable names.
   - For variables of type `wasm::Module`, use `m` as the variable name.
