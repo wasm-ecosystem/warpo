@@ -66,7 +66,21 @@ if(MSVC)
   add_compile_options(/FC)
 endif()
 
+if(WARPO_SANITIZE)
+  if(MSVC)
+    add_compile_options(/fsanitize=address)
+    add_link_options(/INCREMENTAL:NO)
+  else()
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
+  endif()
+endif()
+
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
+
+if(MSVC AND WARPO_SANITIZE)
+  target_compile_definitions(binaryen PRIVATE __builtin_trap=__debugbreak)
+endif()
 
 if(MSVC)
   add_compile_options(/Zc:__cplusplus)
@@ -77,12 +91,6 @@ if(MSVC)
     add_compile_options(/WX)
   endif()
 
-  if(WARPO_SANITIZE)
-    add_compile_options(/fsanitize=address)
-    add_link_options(/INCREMENTAL:NO)
-    target_compile_definitions(binaryen PRIVATE __builtin_trap=__debugbreak)
-  endif()
-
   set(CMAKE_SUPPRESS_REGENERATION ON)
 
 else()
@@ -91,11 +99,6 @@ else()
 
   if(WARPO_ENABLE_PERF)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
-  endif()
-
-  if(WARPO_SANITIZE)
-    add_compile_options(-fsanitize=address)
-    add_link_options(-fsanitize=address)
   endif()
 
   add_compile_options(
