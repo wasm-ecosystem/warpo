@@ -77,6 +77,12 @@ if(MSVC)
     add_compile_options(/WX)
   endif()
 
+  if(WARPO_SANITIZE)
+    add_compile_options(/fsanitize=address)
+    add_link_options(/INCREMENTAL:NO)
+    target_compile_definitions(binaryen PRIVATE __builtin_trap=__debugbreak)
+  endif()
+
   set(CMAKE_SUPPRESS_REGENERATION ON)
 
 else()

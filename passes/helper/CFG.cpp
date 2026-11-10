@@ -208,18 +208,30 @@ DynBitset CFG::getBlockInsideLoop() const {
 
       active_.set(index, true);
       stack_.push_back(bb);
-      for (BasicBlock const *const succ : bb->succs()) {
+      std::vector<size_t> successorIndices{0U};
+      while (!stack_.empty()) {
+        BasicBlock const *const current = stack_.back();
+        if (successorIndices.back() == current->succs().size()) {
+          active_.set(current->getIndex(), false);
+          visited_.set(current->getIndex(), true);
+          stack_.pop_back();
+          successorIndices.pop_back();
+          continue;
+        }
+
+        BasicBlock const *const succ = current->succs()[successorIndices.back()++];
         size_t const succIndex = succ->getIndex();
         // back edge means loop, back edge targeted bb is loop entry
         if (active_.get(succIndex)) {
           markLoop(succ);
-        } else {
-          visit(succ);
+        } else if (insideLoop_.get(succIndex)) {
+          markLoop(insideLoopMappedLoopEntry_.at(succ));
+        } else if (!visited_.get(succIndex)) {
+          active_.set(succIndex, true);
+          stack_.push_back(succ);
+          successorIndices.push_back(0U);
         }
       }
-      stack_.pop_back();
-      active_.set(index, false);
-      visited_.set(index, true);
     }
 
   private:
@@ -247,6 +259,30 @@ DynBitset CFG::getBlockInsideLoop() const {
 #include <gtest/gtest.h>
 
 namespace warpo::passes::ut {
+
+TEST(CFGTestGetBlockInsideLoop, DeepChainWithBackEdge) {
+  CFGTestWrapper cfg{};
+  size_t constexpr blockCount = 16384U;
+  CFGForTest::blocks(cfg.raw_).reserve(blockCount);
+  for (size_t index = 1U; index < blockCount - 1U; ++index)
+    cfg.addBB();
+  size_t const exit = cfg.addExitBB();
+  for (size_t index = 0U; index < exit; ++index)
+    cfg.linkBBs(index, index + 1U);
+
+  DynBitset const acyclic = cfg.raw_.getBlockInsideLoop();
+  ASSERT_EQ(acyclic.size(), blockCount);
+  for (size_t index = 0U; index < blockCount; ++index)
+    EXPECT_FALSE(acyclic.get(index));
+
+  cfg.linkBBs(exit - 1U, 1U);
+  DynBitset const cyclic = cfg.raw_.getBlockInsideLoop();
+  ASSERT_EQ(cyclic.size(), blockCount);
+  EXPECT_FALSE(cyclic.get(cfg.entry_));
+  EXPECT_FALSE(cyclic.get(exit));
+  for (size_t index = 1U; index < exit; ++index)
+    EXPECT_TRUE(cyclic.get(index));
+}
 
 TEST(CFGTestGetBlockInsideLoop, Loop) {
   CFGTestWrapper cfg{};
