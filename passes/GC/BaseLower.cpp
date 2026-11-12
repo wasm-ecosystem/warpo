@@ -11,19 +11,12 @@
 
 void warpo::passes::gc::addStackStackOperationFunction(wasm::Module *m) {
   wasm::Builder b{*m};
-  wasm::Name const memoryName = m->memories.front()->name;
   wasm::Type const i32 = wasm::Type::i32;
 
-  wasm::Expression *clearStack;
-  if (m->features.hasBulkMemoryOpt()) {
-    clearStack = b.makeMemoryFill(b.makeGlobalGet(VarStackPointer, i32), b.makeConst(wasm::Literal::makeZero(i32)),
-                                  b.makeLocalGet(0, i32), memoryName);
-  } else {
-    clearStack = b.makeCall(
-        FnMemoryFill,
-        {b.makeGlobalGet(VarStackPointer, i32), b.makeConst(wasm::Literal::makeZero(i32)), b.makeLocalGet(0, i32)},
-        wasm::Type::none);
-  }
+  wasm::Expression *const clearStack = b.makeCall(
+      FnMemoryFill,
+      {b.makeGlobalGet(VarStackPointer, i32), b.makeConst(wasm::Literal::makeZero(i32)), b.makeLocalGet(0, i32)},
+      wasm::Type::none);
 
   m->addFunction(wasm::Builder::makeFunction(
       FnDecreaseSP, wasm::Signature(i32, wasm::Type::none), {},
@@ -55,7 +48,7 @@ void warpo::passes::gc::addStackStackOperationFunction(wasm::Module *m) {
 
 namespace warpo::passes::gc::ut {
 
-TEST(BaseLowerTest, StackClearingRespectsBulkMemory) {
+TEST(BaseLowerTest, StackClearingCallsFrontendMemoryFill) {
   for (bool const bulkMemory : {false, true}) {
     SCOPED_TRACE(bulkMemory);
     auto m = loadWat(R"(
@@ -67,21 +60,15 @@ TEST(BaseLowerTest, StackClearingRespectsBulkMemory) {
             )
         )");
     m->features.setBulkMemoryOpt(bulkMemory);
-    if (bulkMemory)
-      m->removeFunction(FnMemoryFill);
     addStackStackOperationFunction(m.get());
 
     auto *const body = m->getFunction(FnDecreaseSP)->body->cast<wasm::Block>();
-    if (bulkMemory) {
-      EXPECT_TRUE(body->list[1]->is<wasm::MemoryFill>());
-    } else {
-      auto *const call = body->list[1]->cast<wasm::Call>();
-      EXPECT_EQ(call->target, FnMemoryFill);
-      ASSERT_EQ(call->operands.size(), 3U);
-      EXPECT_EQ(call->operands[0]->cast<wasm::GlobalGet>()->name, VarStackPointer);
-      EXPECT_EQ(call->operands[1]->cast<wasm::Const>()->value.geti32(), 0);
-      EXPECT_EQ(call->operands[2]->cast<wasm::LocalGet>()->index, 0U);
-    }
+    auto *const call = body->list[1]->cast<wasm::Call>();
+    EXPECT_EQ(call->target, FnMemoryFill);
+    ASSERT_EQ(call->operands.size(), 3U);
+    EXPECT_EQ(call->operands[0]->cast<wasm::GlobalGet>()->name, VarStackPointer);
+    EXPECT_EQ(call->operands[1]->cast<wasm::Const>()->value.geti32(), 0);
+    EXPECT_EQ(call->operands[2]->cast<wasm::LocalGet>()->index, 0U);
     ASSERT_TRUE(wasm::WasmValidator{}.validate(*m));
     wasm::PassRunner runner{m.get()};
     runner.add("optimize-instructions");

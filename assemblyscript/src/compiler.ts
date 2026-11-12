@@ -13,6 +13,7 @@ import {
   compileVisitMembers,
   compileRTTI,
   makeMemoryCopy,
+  makeMemoryFill,
 } from "./builtins";
 import * as mir from "./mir";
 import { Range, DiagnosticCode, DiagnosticCategory, DiagnosticEmitter } from "./diagnostics";
@@ -556,9 +557,23 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
-    // Compile the memory.fill fallback for GC stack clearing without bulk memory.
-    if (!options.hasFeature(Feature.BulkMemory)) {
-      this.compileFunction(program.requireFunction(BuiltinNames.memory_fill), true);
+    let memoryFill = program.requireFunction(BuiltinNames.memory_fill);
+    let memoryFillBody = makeMemoryFill(
+      this,
+      module.local_get(0, TypeRef.I32),
+      module.local_get(1, TypeRef.I32),
+      module.local_get(2, TypeRef.I32),
+      memoryFill.identifierNode
+    );
+    if (!module.getFunction(memoryFill.internalName)) {
+      memoryFill.ref = module.addFunction(
+        memoryFill.internalName,
+        memoryFill.signature.paramRefs,
+        memoryFill.signature.resultRefs,
+        null,
+        memoryFillBody
+      );
+      memoryFill.set(CommonFlags.Compiled);
     }
 
     // compile lazy functions

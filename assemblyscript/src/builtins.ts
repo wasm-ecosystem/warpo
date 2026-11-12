@@ -2917,6 +2917,23 @@ function builtin_memory_copy(ctx: BuiltinFunctionContext): ExpressionRef {
 }
 builtinFunctions.set(BuiltinNames.memory_copy, builtin_memory_copy);
 
+export function makeMemoryFill(
+  compiler: Compiler,
+  dest: ExpressionRef,
+  value: ExpressionRef,
+  size: ExpressionRef,
+  reportNode: Node
+): ExpressionRef {
+  let module = compiler.module;
+  compiler.currentType = Type.void;
+  if (compiler.options.hasFeature(Feature.BulkMemory)) {
+    return module.memory_fill(dest, value, size);
+  }
+  let instance = compiler.program.requireFunction(BuiltinNames.memory_fill);
+  if (!compiler.compileFunction(instance, true)) return module.unreachable();
+  return compiler.makeCallDirect(instance, [dest, value, size], reportNode);
+}
+
 // memory.fill(dest: usize, value: u8, n: usize) -> void
 function builtin_memory_fill(ctx: BuiltinFunctionContext): ExpressionRef {
   let compiler = ctx.compiler;
@@ -2924,19 +2941,11 @@ function builtin_memory_fill(ctx: BuiltinFunctionContext): ExpressionRef {
   compiler.currentType = Type.void;
   if (checkTypeAbsent(ctx) | checkArgsRequired(ctx, 3)) return module.unreachable();
   let operands = ctx.operands;
-  if (!compiler.options.hasFeature(Feature.BulkMemory)) {
-    // use stdlib alternative if not supported
-    let instance = compiler.resolver.resolveFunction(ctx.prototype, null); // reports
-    compiler.currentType = Type.void;
-    if (!instance || !compiler.compileFunction(instance, true)) return module.unreachable();
-    return compiler.compileCallDirect(instance, operands, ctx.reportNode);
-  }
   let usizeType = Type.usize32;
   let arg0 = compiler.compileExpression(operands[0], usizeType, Constraints.ConvImplicit);
   let arg1 = compiler.compileExpression(operands[1], Type.u8, Constraints.ConvImplicit);
   let arg2 = compiler.compileExpression(operands[2], usizeType, Constraints.ConvImplicit);
-  compiler.currentType = Type.void;
-  return module.memory_fill(arg0, arg1, arg2);
+  return makeMemoryFill(compiler, arg0, arg1, arg2, ctx.reportNode);
 }
 builtinFunctions.set(BuiltinNames.memory_fill, builtin_memory_fill);
 
