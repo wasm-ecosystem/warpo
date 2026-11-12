@@ -4,9 +4,9 @@
  (type $2 (func (param i32 i32) (result i32)))
  (type $3 (func (param i32 i32 i32 i32 i32) (result i32)))
  (type $4 (func (param i32)))
- (type $5 (func))
- (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func))
+ (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i32 i32) (result i32)))
  (type $9 (func (param i32 i32 i32) (result i32)))
  (type $10 (func (param i32 i32 i64) (result i32)))
@@ -4596,6 +4596,13 @@
  (func $start:host/wasi_preview1
   (call $~lib/wasi_snapshot_preview1/wasi_console/wasi_console.log
    (i32.const 32)
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

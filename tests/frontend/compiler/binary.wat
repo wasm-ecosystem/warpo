@@ -13,6 +13,7 @@
  (type $11 (func (param f64 f64 i32) (result f64)))
  (type $12 (func (param i32 f32) (result f32)))
  (type $13 (func (param f64 i32) (result f32)))
+ (type $14 (func (param i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $binary/b (mut i32) (i32.const 0))
@@ -4319,6 +4320,13 @@
     (global.get $binary/F)
     (f64.const 1)
    )
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

@@ -4158,6 +4158,13 @@
   (call $std/array-iterator/reduce_arr_length)
   (call $std/array-iterator/replace_arr)
  )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
+ )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
   (nop)

@@ -41,6 +41,7 @@
  (type $39 (func (param f64)))
  (type $40 (func (param i64 i64 i64 i64 i64 i32) (result i32)))
  (type $41 (func (param i32 i32) (result i32)))
+ (type $42 (func (param i32 i32 i32)))
  (import "env" "Math.E" (global $std/math/JSMath.E f64))
  (import "env" "Math.LN2" (global $std/math/JSMath.LN2 f64))
  (import "env" "Math.LN10" (global $std/math/JSMath.LN10 f64))
@@ -79255,6 +79256,13 @@
     )
     (unreachable)
    )
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

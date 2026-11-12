@@ -8,6 +8,7 @@
  (type $6 (func (param f32 f32) (result f32)))
  (type $7 (func (param f32 f32) (result i32)))
  (type $8 (func (param f32 f32 f32) (result i32)))
+ (type $9 (func (param i32 i32 i32)))
  (import "mod" "mod" (func $std/mod/mod (param f64 f64) (result f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
@@ -3406,6 +3407,13 @@
     )
     (unreachable)
    )
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

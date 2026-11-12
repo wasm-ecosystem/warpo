@@ -150,7 +150,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$179
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$180
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -174,7 +174,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$179
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$180
    end
    local.get $0
    i32.load offset=8
@@ -1009,7 +1009,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$184 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$185 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1025,7 +1025,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$184
+         br $__inlined_func$~lib/rt/itcms/step$185
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1064,7 +1064,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$184
+           br $__inlined_func$~lib/rt/itcms/step$185
           end
           local.get $2
           i32.load offset=4
@@ -1156,7 +1156,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$184
+        br $__inlined_func$~lib/rt/itcms/step$185
        end
        global.get $~lib/rt/itcms/iter
        local.tee $2
@@ -1255,7 +1255,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$184
+        br $__inlined_func$~lib/rt/itcms/step$185
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -2209,7 +2209,7 @@
   local.get $1
   call $"~lib/map/Map<~lib/string/String,usize>#constructor"
   global.set $~lib/symbol/idToString
-  block $__inlined_func$~lib/symbol/Symbol.for$201 (result i32)
+  block $__inlined_func$~lib/symbol/Symbol.for$202 (result i32)
    global.get $~lib/symbol/stringToId
    i32.const 32
    call $~lib/util/hash/HASH<~lib/string/String>
@@ -2231,7 +2231,7 @@
     end
     local.get $1
     i32.load offset=4
-    br $__inlined_func$~lib/symbol/Symbol.for$201
+    br $__inlined_func$~lib/symbol/Symbol.for$202
    end
    global.get $~lib/symbol/Symbol.nextId
    local.tee $10
@@ -2510,7 +2510,7 @@
    end
    i32.const 0
    local.set $4
-   block $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$187" (result i32)
+   block $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$188" (result i32)
     global.get $~lib/symbol/idToString
     local.tee $0
     i32.load
@@ -2568,7 +2568,7 @@
        i32.load
        i32.eq
       end
-      br_if $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$187"
+      br_if $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$188"
       drop
       local.get $5
       i32.const -2

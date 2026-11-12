@@ -4195,6 +4195,13 @@
   (call $std/string-iterator/string_iterator_surrogate_pair)
   (call $std/string-iterator/string_iterator_4byte_utf16_char)
  )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
+ )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
   (nop)

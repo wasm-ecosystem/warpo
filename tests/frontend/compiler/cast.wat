@@ -4,6 +4,7 @@
  (type $2 (func (param i64) (result i32)))
  (type $3 (func (param i64) (result i64)))
  (type $4 (func))
+ (type $5 (func (param i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/memory/__data_end i32 (i32.const 8))
@@ -1280,6 +1281,13 @@
    (call $"cast/test<bool,bool>"
     (i32.const 0)
    )
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

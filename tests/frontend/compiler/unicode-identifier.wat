@@ -1,5 +1,6 @@
 (module
  (type $0 (func (param i32) (result i32)))
+ (type $1 (func (param i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $"unicode-identifier/\c3\80\c3\88" (mut i32) (i32.const 0))
@@ -15,4 +16,11 @@
  (export "\e5\8f\98\e9\87\8f" (global $"unicode-identifier/\e5\8f\98\e9\87\8f"))
  (export "\f0\a0\9c\8e\f0\a0\9c\b1" (global $"unicode-identifier/\f0\a0\9c\8e\f0\a0\9c\b1"))
  (export "memory" (memory $0))
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
+ )
 )

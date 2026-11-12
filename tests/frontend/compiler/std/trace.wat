@@ -2,6 +2,7 @@
  (type $0 (func))
  (type $1 (func (param i32) (result i32)))
  (type $2 (func (param i32 i32 f64 f64 f64 f64 f64)))
+ (type $3 (func (param i32 i32 i32)))
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -94,6 +95,13 @@
    (f64.const 3.3)
    (f64.const 4.4)
    (f64.const 5.5)
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

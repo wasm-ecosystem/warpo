@@ -1,3 +1,10 @@
+;; ====================
+(func $~lib/memory/memory.fill (param i32 i32 i32))
+    local.get $0
+    local.get $1
+    local.get $2
+  memory.fill $0
+)
 ;; ======remove=======
 ;;(func $~lib/rt/__localtostack (param i32) (result i32))
 ;; =========add========
@@ -36,7 +43,7 @@
       global.get $~lib/memory/__stack_pointer
       i32.const 0
       local.get $0
-    memory.fill $0
+    call $~lib/memory/memory.fill
     if ;;none
         global.get $~lib/memory/__stack_pointer
         global.get $~lib/memory/__data_end

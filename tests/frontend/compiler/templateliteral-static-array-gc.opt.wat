@@ -1714,17 +1714,17 @@
      local.get $2
      local.get $7
      memory.copy
-     block $__inlined_func$~lib/string/String.__eq$90 (result i32)
+     block $__inlined_func$~lib/string/String.__eq$91 (result i32)
       i32.const 1
       local.get $3
       i32.const 896
       i32.eq
-      br_if $__inlined_func$~lib/string/String.__eq$90
+      br_if $__inlined_func$~lib/string/String.__eq$91
       drop
       i32.const 0
       local.get $3
       i32.eqz
-      br_if $__inlined_func$~lib/string/String.__eq$90
+      br_if $__inlined_func$~lib/string/String.__eq$91
       drop
       i32.const 0
       local.get $3
@@ -1739,7 +1739,7 @@
       i32.const 1
       i32.shr_u
       i32.ne
-      br_if $__inlined_func$~lib/string/String.__eq$90
+      br_if $__inlined_func$~lib/string/String.__eq$91
       drop
       block $__inlined_func$~lib/util/string/compareImpl$75 (result i32)
        i32.const 896

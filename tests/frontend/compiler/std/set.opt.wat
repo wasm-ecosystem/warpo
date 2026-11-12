@@ -141,7 +141,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$573
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$574
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -165,7 +165,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$573
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$574
    end
    local.get $0
    i32.load offset=8
@@ -1983,7 +1983,7 @@
    local.get $0
    i32.load
    local.tee $2
-   block $__inlined_func$~lib/rt/itcms/__renew$578 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$579 (result i32)
     local.get $3
     if
      i32.const 1073741820
@@ -2019,7 +2019,7 @@
      local.get $1
      i32.store offset=16
      local.get $2
-     br $__inlined_func$~lib/rt/itcms/__renew$578
+     br $__inlined_func$~lib/rt/itcms/__renew$579
     end
     local.get $1
     local.get $3
@@ -5289,7 +5289,7 @@
   local.get $1
   i32.store offset=8 align=1
   block $folding-inner17
-   block $__inlined_func$start:std/set$676
+   block $__inlined_func$start:std/set$677
     block $folding-inner16
      block $folding-inner15
       block $folding-inner14
@@ -8204,7 +8204,7 @@
                      i32.const 1024
                      i32.add
                      global.set $~lib/rt/itcms/threshold
-                     br $__inlined_func$start:std/set$676
+                     br $__inlined_func$start:std/set$677
                     end
                     i32.const 0
                     i32.const 544

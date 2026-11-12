@@ -1,6 +1,6 @@
 (module
- (type $0 (func (param i32) (result i32)))
- (type $1 (func (param i32 i32 i32)))
+ (type $0 (func (param i32 i32 i32)))
+ (type $1 (func (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $resolve-nested/Outer.Inner.a (mut i32) (i32.const 0))
@@ -27,5 +27,12 @@
  (export "memory" (memory $0))
  (func $resolve-nested/outer (param $a i32) (param $b i32) (param $c i32)
   (nop)
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
  )
 )

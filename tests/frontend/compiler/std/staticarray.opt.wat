@@ -304,7 +304,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$132
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$133
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -328,7 +328,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$132
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$133
    end
    local.get $0
    i32.load offset=8
@@ -5151,7 +5151,7 @@
       local.get $8
       i32.load
       local.tee $9
-      block $__inlined_func$~lib/rt/itcms/__renew$140 (result i32)
+      block $__inlined_func$~lib/rt/itcms/__renew$141 (result i32)
        i32.const 1073741820
        local.get $0
        i32.const 1
@@ -5191,7 +5191,7 @@
         local.get $11
         i32.store offset=16
         local.get $9
-        br $__inlined_func$~lib/rt/itcms/__renew$140
+        br $__inlined_func$~lib/rt/itcms/__renew$141
        end
        local.get $11
        local.get $0
@@ -5566,7 +5566,7 @@
   global.set $~argumentsLength
   i32.const 0
   local.set $0
-  block $__inlined_func$~lib/util/sort/SORT<i32>$141
+  block $__inlined_func$~lib/util/sort/SORT<i32>$142
    local.get $7
    i32.const 20
    i32.sub
@@ -5580,7 +5580,7 @@
     local.get $5
     i32.const 1
     i32.le_u
-    br_if $__inlined_func$~lib/util/sort/SORT<i32>$141
+    br_if $__inlined_func$~lib/util/sort/SORT<i32>$142
     block $break|0
      block $case1|0
       local.get $5
@@ -5671,7 +5671,7 @@
      local.get $0
      select
      i32.store offset=4
-     br $__inlined_func$~lib/util/sort/SORT<i32>$141
+     br $__inlined_func$~lib/util/sort/SORT<i32>$142
     end
     local.get $7
     i32.const 0
@@ -5680,7 +5680,7 @@
     i32.sub
     i32.const 0
     call $~lib/util/sort/insertionSort<i32>
-    br $__inlined_func$~lib/util/sort/SORT<i32>$141
+    br $__inlined_func$~lib/util/sort/SORT<i32>$142
    end
    i32.const 33
    local.get $5
