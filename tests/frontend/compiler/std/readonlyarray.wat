@@ -5194,6 +5194,13 @@
    )
   )
  )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
+ )
  (func $~lib/array/Array<i32>#at (param $this i32) (param $index i32) (result i32)
   (local $len i32)
   (local $value i32)

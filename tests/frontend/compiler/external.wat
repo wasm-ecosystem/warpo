@@ -1,6 +1,7 @@
 (module
  (type $0 (func))
  (type $1 (func (param i32) (result i32)))
+ (type $2 (func (param i32 i32 i32)))
  (import "foo" "var" (global $external/var_ i32))
  (import "external" "foo" (func $external/foo))
  (import "external" "bar" (func $external/two))
@@ -18,4 +19,11 @@
  (export "three" (func $external/three))
  (export "var_" (global $external/var_))
  (export "memory" (memory $0))
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
+ )
 )

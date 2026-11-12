@@ -3,8 +3,8 @@
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (result i32)))
- (type $5 (func (param i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (result i32)))
  (type $6 (func))
  (type $7 (func (param i32 i32 i32) (result i32)))
  (type $8 (func (param i32 i32 i32 i32)))
@@ -3767,7 +3767,7 @@
         )
        )
       )
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (block (result i32)
         (call $~lib/rt/closure/setClosureEnv
          (i32.load offset=4
@@ -3855,7 +3855,7 @@
         )
        )
       )
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (block (result i32)
         (call $~lib/rt/closure/setClosureEnv
          (i32.load offset=4
@@ -3909,7 +3909,7 @@
         )
        )
       )
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (block (result i32)
         (call $~lib/rt/closure/setClosureEnv
          (i32.load offset=4
@@ -3937,6 +3937,13 @@
     )
     (unreachable)
    )
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~lib/rt/__visit_globals (param $0 i32)

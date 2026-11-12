@@ -6,6 +6,7 @@
  (type $4 (func (param i32 i32 i32 i32)))
  (type $5 (func (param i32 i32 f64 f64 f64 f64 f64)))
  (type $6 (func))
+ (type $7 (func (param i32 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
  (global $~lib/@as/custom/lib/index/v i32 (i32.const 32))
@@ -238,6 +239,12 @@
   f64.const 0
   call $~lib/builtins/trace
  )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  local.get $0
+  local.get $1
+  local.get $2
+  memory.fill
+ )
  (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
   local.get $1
@@ -262,7 +269,7 @@
   global.get $~lib/memory/__stack_pointer
   i32.const 0
   local.get $0
-  memory.fill
+  call $~lib/memory/memory.fill
   global.get $~lib/memory/__stack_pointer
   global.get $~lib/memory/__data_end
   i32.lt_s

@@ -152,7 +152,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$1028
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$1029
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -176,7 +176,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$1028
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$1029
    end
    local.get $0
    i32.load offset=8
@@ -2070,7 +2070,7 @@
    local.get $0
    i32.load
    local.tee $2
-   block $__inlined_func$~lib/rt/itcms/__renew$1034 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$1035 (result i32)
     local.get $3
     if
      i32.const 1073741820
@@ -2106,7 +2106,7 @@
      local.get $1
      i32.store offset=16
      local.get $2
-     br $__inlined_func$~lib/rt/itcms/__renew$1034
+     br $__inlined_func$~lib/rt/itcms/__renew$1035
     end
     local.get $1
     local.get $3
@@ -6304,7 +6304,7 @@
   (local $24 i64)
   (local $25 f32)
   (local $26 f64)
-  block $__inlined_func$start:std/map$1167
+  block $__inlined_func$start:std/map$1168
    memory.size
    i32.const 16
    i32.shl
@@ -6602,7 +6602,7 @@
                              br_if $folding-inner10
                              i32.const 0
                              local.set $5
-                             block $"__inlined_func$~lib/map/Map<i8,i8>#find$1035" (result i32)
+                             block $"__inlined_func$~lib/map/Map<i8,i8>#find$1036" (result i32)
                               local.get $3
                               i32.load
                               local.get $10
@@ -6635,7 +6635,7 @@
                                  i32.and
                                  i32.eq
                                 end
-                                br_if $"__inlined_func$~lib/map/Map<i8,i8>#find$1035"
+                                br_if $"__inlined_func$~lib/map/Map<i8,i8>#find$1036"
                                 drop
                                 local.get $6
                                 i32.const -2
@@ -7244,7 +7244,7 @@
                              br_if $folding-inner10
                              i32.const 0
                              local.set $5
-                             block $"__inlined_func$~lib/map/Map<u8,u8>#find$1037" (result i32)
+                             block $"__inlined_func$~lib/map/Map<u8,u8>#find$1038" (result i32)
                               local.get $3
                               i32.load
                               local.get $10
@@ -7275,7 +7275,7 @@
                                  local.get $10
                                  i32.eq
                                 end
-                                br_if $"__inlined_func$~lib/map/Map<u8,u8>#find$1037"
+                                br_if $"__inlined_func$~lib/map/Map<u8,u8>#find$1038"
                                 drop
                                 local.get $6
                                 i32.const -2
@@ -7888,7 +7888,7 @@
                              br_if $folding-inner10
                              i32.const 0
                              local.set $5
-                             block $"__inlined_func$~lib/map/Map<i16,i16>#find$1039" (result i32)
+                             block $"__inlined_func$~lib/map/Map<i16,i16>#find$1040" (result i32)
                               local.get $3
                               i32.load
                               local.get $10
@@ -7921,7 +7921,7 @@
                                  i32.and
                                  i32.eq
                                 end
-                                br_if $"__inlined_func$~lib/map/Map<i16,i16>#find$1039"
+                                br_if $"__inlined_func$~lib/map/Map<i16,i16>#find$1040"
                                 drop
                                 local.get $6
                                 i32.const -2
@@ -8534,7 +8534,7 @@
                              br_if $folding-inner10
                              i32.const 0
                              local.set $5
-                             block $"__inlined_func$~lib/map/Map<u16,u16>#find$1041" (result i32)
+                             block $"__inlined_func$~lib/map/Map<u16,u16>#find$1042" (result i32)
                               local.get $3
                               i32.load
                               local.get $10
@@ -8565,7 +8565,7 @@
                                  local.get $10
                                  i32.eq
                                 end
-                                br_if $"__inlined_func$~lib/map/Map<u16,u16>#find$1041"
+                                br_if $"__inlined_func$~lib/map/Map<u16,u16>#find$1042"
                                 drop
                                 local.get $6
                                 i32.const -2
@@ -10102,7 +10102,7 @@
                              br_if $folding-inner10
                              i32.const 0
                              local.set $2
-                             block $"__inlined_func$~lib/map/Map<i64,i64>#find$1044" (result i32)
+                             block $"__inlined_func$~lib/map/Map<i64,i64>#find$1045" (result i32)
                               local.get $4
                               i32.load
                               local.get $7
@@ -10133,7 +10133,7 @@
                                  i64.load
                                  i64.eq
                                 end
-                                br_if $"__inlined_func$~lib/map/Map<i64,i64>#find$1044"
+                                br_if $"__inlined_func$~lib/map/Map<i64,i64>#find$1045"
                                 drop
                                 local.get $6
                                 i32.const -2
@@ -10752,7 +10752,7 @@
                              br_if $folding-inner10
                              i32.const 0
                              local.set $2
-                             block $"__inlined_func$~lib/map/Map<u64,u64>#find$1046" (result i32)
+                             block $"__inlined_func$~lib/map/Map<u64,u64>#find$1047" (result i32)
                               local.get $4
                               i32.load
                               local.get $7
@@ -10783,7 +10783,7 @@
                                  i64.load
                                  i64.eq
                                 end
-                                br_if $"__inlined_func$~lib/map/Map<u64,u64>#find$1046"
+                                br_if $"__inlined_func$~lib/map/Map<u64,u64>#find$1047"
                                 drop
                                 local.get $6
                                 i32.const -2
@@ -12061,7 +12061,7 @@
                              br_if $folding-inner10
                              i32.const 0
                              local.set $2
-                             block $"__inlined_func$~lib/map/Map<f64,f64>#find$1051" (result i32)
+                             block $"__inlined_func$~lib/map/Map<f64,f64>#find$1052" (result i32)
                               local.get $4
                               i32.load
                               local.get $12
@@ -12092,7 +12092,7 @@
                                  f64.load
                                  f64.eq
                                 end
-                                br_if $"__inlined_func$~lib/map/Map<f64,f64>#find$1051"
+                                br_if $"__inlined_func$~lib/map/Map<f64,f64>#find$1052"
                                 drop
                                 local.get $6
                                 i32.const -2
@@ -12491,7 +12491,7 @@
                            i32.const 1024
                            i32.add
                            global.set $~lib/rt/itcms/threshold
-                           br $__inlined_func$start:std/map$1167
+                           br $__inlined_func$start:std/map$1168
                           end
                           i32.const 0
                           i32.const 544

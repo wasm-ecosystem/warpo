@@ -451,7 +451,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$249
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$250
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -475,7 +475,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$249
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$250
    end
    local.get $0
    i32.load offset=8
@@ -1310,7 +1310,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$254 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$255 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1326,7 +1326,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$254
+         br $__inlined_func$~lib/rt/itcms/step$255
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1365,7 +1365,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$254
+           br $__inlined_func$~lib/rt/itcms/step$255
           end
           local.get $2
           i32.load offset=4
@@ -1457,7 +1457,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$254
+        br $__inlined_func$~lib/rt/itcms/step$255
        end
        global.get $~lib/rt/itcms/iter
        local.tee $2
@@ -1556,7 +1556,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$254
+        br $__inlined_func$~lib/rt/itcms/step$255
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -3960,7 +3960,7 @@
    local.get $0
    i32.load
    local.tee $3
-   block $__inlined_func$~lib/rt/itcms/__renew$258 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$259 (result i32)
     i32.const 1073741820
     local.get $2
     i32.const 1
@@ -4000,7 +4000,7 @@
      local.get $1
      i32.store offset=16
      local.get $3
-     br $__inlined_func$~lib/rt/itcms/__renew$258
+     br $__inlined_func$~lib/rt/itcms/__renew$259
     end
     local.get $1
     local.get $2
@@ -4095,7 +4095,7 @@
    i32.const 2147483647
    local.set $5
   end
-  block $__inlined_func$~lib/string/String#split$270 (result i32)
+  block $__inlined_func$~lib/string/String#split$271 (result i32)
    i32.const 12
    call $~lib/rt/__decrease_sp
    block $folding-inner1
@@ -4136,7 +4136,7 @@
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $1
-      br $__inlined_func$~lib/string/String#split$270
+      br $__inlined_func$~lib/string/String#split$271
      end
      local.get $0
      i32.const 20
@@ -4167,7 +4167,7 @@
        i32.add
        global.set $~lib/memory/__stack_pointer
        local.get $0
-       br $__inlined_func$~lib/string/String#split$270
+       br $__inlined_func$~lib/string/String#split$271
       end
      else
       local.get $3
@@ -4229,7 +4229,7 @@
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $2
-      br $__inlined_func$~lib/string/String#split$270
+      br $__inlined_func$~lib/string/String#split$271
      end
      i32.const 0
      call $~lib/rt/__newArray
@@ -4344,7 +4344,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/string/String#split$270
+    br $__inlined_func$~lib/string/String#split$271
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 12
@@ -4929,7 +4929,7 @@
   if
    i32.const 1
    global.set $~started
-   block $__inlined_func$start:std/date$265
+   block $__inlined_func$start:std/date$266
     block $folding-inner0
      i32.const 1970
      i32.const 1
@@ -7216,7 +7216,7 @@
       call $~lib/builtins/abort
       unreachable
      end
-     br $__inlined_func$start:std/date$265
+     br $__inlined_func$start:std/date$266
     end
     i32.const 32
     i32.const 80

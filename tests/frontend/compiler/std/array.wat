@@ -3,8 +3,8 @@
  (type $1 (func (param i32) (result i32)))
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32 i32 i32) (result i32)))
- (type $4 (func (param i32 i32 i32 i32) (result i32)))
- (type $5 (func (param i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32 i32) (result i32)))
  (type $6 (func (param i32 i32 i32 i32 i32)))
  (type $7 (func (param f32 f32) (result i32)))
  (type $8 (func (param f64 f64) (result i32)))
@@ -9097,7 +9097,7 @@
      (local.set $6
       (local.get $fn)
      )
-     (call_indirect (type $5)
+     (call_indirect (type $4)
       (i32.load
        (i32.add
         (call $~lib/array/Array<i32>#get:dataStart
@@ -10867,7 +10867,7 @@
     )
     (then
      (local.set $acc
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (local.get $acc)
        (i32.load
         (i32.add
@@ -10989,7 +10989,7 @@
     )
     (then
      (local.set $acc
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (local.get $acc)
        (i32.load
         (i32.add
@@ -11121,7 +11121,7 @@
     )
     (then
      (local.set $acc
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (local.get $acc)
        (i32.load
         (i32.add
@@ -11216,7 +11216,7 @@
     )
     (then
      (local.set $acc
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (local.get $acc)
        (i32.load
         (i32.add
@@ -49452,6 +49452,13 @@
    (global.get $~lib/memory/__heap_base)
   )
   (call $~lib/rt/itcms/__collect)
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)

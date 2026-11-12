@@ -24,4 +24,6 @@ constexpr size_t ShadowStackElementSize = 4U;
 constexpr const char *FnDecreaseSP = "~lib/rt/__decrease_sp";
 constexpr const char *FnIncreaseSP = "~lib/rt/__increase_sp";
 
+constexpr const char *FnMemoryFill = "~lib/memory/memory.fill";
+
 } // namespace warpo::passes::gc

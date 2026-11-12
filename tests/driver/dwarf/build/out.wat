@@ -2,6 +2,7 @@
  (type $0 (func (param i32 i32) (result i32)))
  (type $1 (func (param i32)))
  (type $2 (func))
+ (type $3 (func (param i32 i32 i32)))
  (global $~lib/memory/__data_end i32 (i32.const 8))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 32776))
  (global $~lib/memory/__heap_base i32 (i32.const 32776))
@@ -14,6 +15,12 @@
   (local $a i32)
   i32.const 1
   local.set $a
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  local.get $0
+  local.get $1
+  local.get $2
+  memory.fill
  )
  (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -39,7 +46,7 @@
   global.get $~lib/memory/__stack_pointer
   i32.const 0
   local.get $0
-  memory.fill
+  call $~lib/memory/memory.fill
   global.get $~lib/memory/__stack_pointer
   global.get $~lib/memory/__data_end
   i32.lt_s

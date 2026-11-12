@@ -7,6 +7,7 @@
  (type $5 (func (param i32)))
  (type $6 (func (param i32 i32 i32 i32 i32) (result i32)))
  (type $7 (func (param i32 i32 f64 f64 f64 f64 f64)))
+ (type $8 (func (param i32 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
@@ -5144,6 +5145,13 @@
  )
  (func $builtins/test
   (nop)
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
  )
  (func $~start
   (call $start:builtins)

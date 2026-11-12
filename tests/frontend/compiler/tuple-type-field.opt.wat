@@ -1716,7 +1716,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/string/String.__eq$93 (result i32)
+  block $__inlined_func$~lib/string/String.__eq$94 (result i32)
    i32.const 1
    global.get $tuple-type-field/a
    i32.load
@@ -1726,12 +1726,12 @@
    local.tee $1
    i32.const 432
    i32.eq
-   br_if $__inlined_func$~lib/string/String.__eq$93
+   br_if $__inlined_func$~lib/string/String.__eq$94
    drop
    i32.const 0
    local.get $1
    i32.eqz
-   br_if $__inlined_func$~lib/string/String.__eq$93
+   br_if $__inlined_func$~lib/string/String.__eq$94
    drop
    i32.const 0
    local.get $1
@@ -1746,7 +1746,7 @@
    i32.const 1
    i32.shr_u
    i32.ne
-   br_if $__inlined_func$~lib/string/String.__eq$93
+   br_if $__inlined_func$~lib/string/String.__eq$94
    drop
    block $__inlined_func$~lib/util/string/compareImpl$76 (result i32)
     i32.const 432

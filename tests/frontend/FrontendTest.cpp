@@ -109,6 +109,8 @@ public:
           config.host = frontend::HostKind::WasiSnapshotPreview1;
         else if (flag == "--bindings raw")
           static_cast<void>(0); // do nothing, raw binding is default
+        else if (flag == "--disable bulk-memory")
+          config.features = config.features & ~common::Features::bulkMemory();
         else if (flag == "--shrinkLevel 3")
           config.shrinkLevel = 3;
         else

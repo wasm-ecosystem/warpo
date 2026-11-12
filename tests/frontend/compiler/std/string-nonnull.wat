@@ -3,6 +3,7 @@
  (type $1 (func (param i32 i32) (result i32)))
  (type $2 (func))
  (type $3 (func (param i32 i32 i32 i32 i32) (result i32)))
+ (type $4 (func (param i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
@@ -413,6 +414,13 @@
      )
     )
    )
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

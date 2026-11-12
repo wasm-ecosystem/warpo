@@ -5,6 +5,7 @@
  (type $3 (func (result i64)))
  (type $4 (func (result f32)))
  (type $5 (func (result f64)))
+ (type $6 (func (param i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $infer-type/i i32 (i32.const 10))
@@ -141,6 +142,13 @@
   )
   (drop
    (i32.const 1)
+  )
+ )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
   )
  )
  (func $~start

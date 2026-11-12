@@ -5778,6 +5778,13 @@
   )
   (call $computed-property-class-static-field/computed_property_class_static_field.test)
  )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
+ )
  (func $"computed-property-class-static-field/computed_property_class_static_field.Fn#[computed-property-class-static-field/computed_property_class_static_field.SymbolWrapper.symbol]" (param $this i32) (result i32)
   (return
    (i32.const 752)

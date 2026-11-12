@@ -12121,6 +12121,13 @@
   (call $templateliteral/test_raw)
   (call $templateliteral/test_recursive)
  )
+ (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
+  (memory.fill
+   (local.get $0)
+   (local.get $1)
+   (local.get $2)
+  )
+ )
  (func $~lib/array/ArrayIterator<~lib/string/String>#get:current (param $this i32) (result i32)
   (i32.load
    (local.get $this)
