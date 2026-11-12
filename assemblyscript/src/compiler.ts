@@ -556,6 +556,11 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
+    // Compile the memory.fill fallback for GC stack clearing without bulk memory.
+    if (!options.hasFeature(Feature.BulkMemory)) {
+      this.compileFunction(program.requireFunction(BuiltinNames.memory_fill), true);
+    }
+
     // compile lazy functions
     let lazyFunctions = this.lazyFunctions;
     do {
