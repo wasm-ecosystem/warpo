@@ -27,16 +27,13 @@ if(NOT WARPO_RELEASE)
     WARPO_ENABLE_UNIT_TESTS
   )
   target_link_libraries(${LIB_NAME}_test
-    PUBLIC fmt::fmt
+    PUBLIC fmt::fmt binaryen_headers
   )
   target_include_directories(${LIB_NAME}_test
     PUBLIC "${PROJECT_SOURCE_DIR}/include"
   )
   target_include_directories(${LIB_NAME}_test
     SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
-  )
-  target_include_directories(${LIB_NAME}_test
-    SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
   )
   target_link_libraries(${LIB_NAME}_test PUBLIC
     gtest_main
@@ -52,13 +49,10 @@ add_library(${LIB_NAME}
   ${${LIB_NAME}_sources}
 )
 target_link_libraries(${LIB_NAME}
-  PUBLIC fmt::fmt
+  PUBLIC fmt::fmt binaryen_headers
 )
 target_include_directories(${LIB_NAME}
   PUBLIC "${PROJECT_SOURCE_DIR}/include"
-)
-target_include_directories(${LIB_NAME}
-  SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
 )
 target_include_directories(${LIB_NAME}
   SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
