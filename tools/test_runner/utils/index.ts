@@ -26,18 +26,32 @@ export function isFunctionInsideFile(fileName: string, functionName: string) {
   // `.`: parent is Class, this is static
   // `<`: generic
   // `~`: parent is Function
-  const regex = new RegExp(`^(start:)?${fileName.slice(0, -3)}[/~](?<rest>.+)`);
-  const matchPrefix = regex.exec(functionName);
-  const groups = matchPrefix?.groups as { rest?: string } | undefined;
-  const rest = groups?.rest ?? null;
-  if (rest === null) {
+  const pureFileName = fileName.slice(0, -3);
+  if (functionName.startsWith("start:")) {
+    const pureFunctionName = functionName.slice(6);
+    const anonymousIndex = pureFunctionName.indexOf("~");
+    const functionFileName = anonymousIndex === -1 ? pureFunctionName : pureFunctionName.slice(0, anonymousIndex);
+    return functionFileName === pureFileName;
+  }
+
+  const anonymousPrefix = `${pureFileName}~`;
+  if (functionName.startsWith(anonymousPrefix)) {
+    return functionName.length > anonymousPrefix.length;
+  }
+
+  const filePrefix = `${pureFileName}/`;
+  if (!functionName.startsWith(filePrefix)) {
     return false;
   }
-  const specialCharIndex = rest.search(/[/#.<~]/g);
-  if (specialCharIndex === -1) {
-    return true;
+
+  const rest = functionName.slice(filePrefix.length);
+  if (rest.length === 0) {
+    return false;
   }
-  return rest[specialCharIndex] !== "/";
+
+  const pathSeparatorIndex = rest.indexOf("/");
+  const functionSyntaxIndex = rest.search(/[#<~]/);
+  return pathSeparatorIndex === -1 || (functionSyntaxIndex !== -1 && functionSyntaxIndex < pathSeparatorIndex);
 }
 
 export function checkGenerics(functionName: string): string | undefined {
