@@ -1,0 +1,25 @@
+{
+  "stderr": [
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1109: Expression expected.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1110: Type expected.",
+    "ERROR TS1109: Expression expected.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1109: Expression expected.",
+    "ERROR TS1109: Expression expected.",
+    "ERROR TS1109: Expression expected.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS1012: Unexpected token.",
+    "ERROR TS6054: File '~lib/module.ts' not found."
+  ]
+}
