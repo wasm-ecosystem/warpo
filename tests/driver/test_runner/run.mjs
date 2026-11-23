@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import expect from "expect";
 import { diff } from "../diff.js";
 import { exec } from "node:child_process";
+import { isFunctionInsideFile } from "../../../dist/test_runner/utils/index.js";
 
 const __dirname = import.meta.dirname;
 const repoRoot = path.resolve(__dirname, "../../..");
@@ -44,6 +45,27 @@ function checkStdoutSnapshot(name, stdout, stderr) {
 }
 
 describe("test runner", () => {
+  it("isFunctionInsideFile", () => {
+    expect(isFunctionInsideFile("source/api.ts", "source/api/myMethod")).toBe(true);
+    expect(isFunctionInsideFile("source/api.ts", "source/api~anonymous|0")).toBe(true);
+    expect(isFunctionInsideFile("source/api.ts", "source/api~")).toBe(false);
+    expect(isFunctionInsideFile("source/api.ts", "source/api/")).toBe(false);
+    expect(isFunctionInsideFile("source/api.ts", "source/other/myMethod")).toBe(false);
+    expect(isFunctionInsideFile("source/api.ts", "start:source/api~anonymous|3~anonymous|1")).toBe(true);
+    expect(isFunctionInsideFile("source/api.ts", "source/api/index/myFunc")).toBe(false);
+    expect(isFunctionInsideFile("source/api.v1.ts", "source/api.v1/myMethod")).toBe(true);
+    expect(isFunctionInsideFile("source/api.v1.ts", "source/apiXv1/myMethod")).toBe(false);
+    expect(isFunctionInsideFile("source/api.ts", "source/api/Client.Service/myMethod")).toBe(false);
+    expect(isFunctionInsideFile("source/api/Client.Service.ts", "source/api/Client.Service/myMethod")).toBe(true);
+    expect(isFunctionInsideFile("source/api.ts", "start:source/api/Client.Service~anonymous|0")).toBe(false);
+    expect(isFunctionInsideFile("source/api/Client.Service.ts", "start:source/api/Client.Service~anonymous|0")).toBe(
+      true
+    );
+    expect(isFunctionInsideFile("source/api.ts", "source/api/toJson<~lib/array/Array<i32>>")).toBe(true);
+    expect(isFunctionInsideFile("source/api/Service.ts", "start:source/api/Service")).toBe(true);
+    expect(isFunctionInsideFile("source/api.ts", "start:source/api/Service")).toBe(false);
+  });
+
   it("assertFailed", async () => {
     const { code, stdout, stderr } = await runAsTest({ name: "assertFailed" });
     checkStdoutSnapshot("assertFailed", stdout, stderr);
