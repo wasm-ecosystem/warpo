@@ -2866,7 +2866,7 @@
   i32.store align=1
   global.get $std/readonlyarray/values
   local.set $0
-  i32.const 12
+  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 20
   i32.const 5
@@ -2878,7 +2878,7 @@
   i64.store
   global.get $~lib/memory/__stack_pointer
   local.get $2
-  i32.store offset=8 align=1
+  i32.store offset=4 align=1
   local.get $2
   i32.const 0
   i32.store
@@ -3215,7 +3215,7 @@
   i32.store
   global.get $~lib/memory/__stack_pointer
   local.get $3
-  i32.store offset=4 align=1
+  i32.store align=1
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#forEach@override$96
    local.get $0
    i32.const 8
@@ -3634,7 +3634,7 @@
   end
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store offset=4 align=1
+  i32.store align=1
   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<i32>#concat@override$102 (result i32)
    local.get $0
    i32.const 8
@@ -3769,7 +3769,7 @@
   local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store offset=4 align=1
+  i32.store align=1
   block $"__inlined_func$~lib/iterator/Iterable<i32>#[~lib/symbol/Symbol.iterator]@override$105" (result i32)
    local.get $0
    i32.const 8
@@ -3796,13 +3796,13 @@
   local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $3
-  i32.store offset=8 align=1
+  i32.store offset=4 align=1
   local.get $3
   call $~lib/iterator/Iterator<i32>#next@override
   local.set $2
   global.get $~lib/memory/__stack_pointer
   local.get $2
-  i32.store offset=4 align=1
+  i32.store align=1
   loop $for-of-loop|0
    local.get $2
    if
@@ -3845,7 +3845,7 @@
    unreachable
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 12
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
   i32.const 16

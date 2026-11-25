@@ -28,10 +28,7 @@
 namespace warpo::passes::gc {
 
 uint32_t MaxShadowStackOffsetsFromStackPositions::at(wasm::Function *func) const {
-  StackPosition const &stackPosition = stackPositions_->at(func);
-  auto const maxElement = std::max_element(stackPosition.begin(), stackPosition.end(),
-                                           [](auto const &a, auto const &b) { return a.second < b.second; });
-  return maxElement != stackPosition.end() ? maxElement->second + ShadowStackElementSize : 0U;
+  return stackPositions_->at(func).getFrameSize();
 }
 
 void PrologEpilogInserter::runOnFunction(wasm::Module *m, wasm::Function *func) {

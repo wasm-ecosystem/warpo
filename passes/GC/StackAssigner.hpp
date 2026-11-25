@@ -22,11 +22,12 @@ struct StackPosition : private std::unordered_map<wasm::Call *, uint32_t> {
   using Super::end;
   using Super::find;
   using Super::insert_or_assign;
+  uint32_t getFrameSize() const;
 };
 using StackPositions = std::unordered_map<wasm::Function *, StackPosition>;
 
 struct StackAssigner : public wasm::Pass {
-  enum class Mode { Vanilla, GreedyConflictGraph };
+  enum class Mode { Vanilla, GreedyConflictGraph, BestOfGreedyAndMCS };
   static StackPositions createResults(wasm::Module *m) {
     StackPositions ret{};
     for (std::unique_ptr<wasm::Function> const &f : m->functions) {

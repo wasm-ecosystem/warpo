@@ -49,3 +49,4 @@ Comparison with AS, we support some new features and breaks.
 - unused field store elimination
 - [shared GC return epilogue (`return-to-br`)](/en/using_compiler/config#return-to-br)
 - [class object literal initialization order](/en/using_language/details/object_literal_initialization)
+- [GC root-slot coloring with an MCS candidate](/tech/lower/gc/coloring)

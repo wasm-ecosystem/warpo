@@ -2,12 +2,14 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
 #include <fmt/base.h>
 #include <optional>
 #include <unordered_map>
+#include <utility>
 
 #include "../helper/Matcher.hpp"
 #include "../helper/ToString.hpp"
@@ -23,6 +25,13 @@
 #define PASS_NAME "GCStackAssigner"
 
 namespace warpo::passes::gc {
+
+uint32_t StackPosition::getFrameSize() const {
+  auto const maxElement = std::max_element(begin(), end(), [](auto const &a, auto const &b) {
+    return a.second < b.second;
+  });
+  return maxElement != end() ? maxElement->second + ShadowStackElementSize : 0U;
+}
 
 namespace {
 
@@ -105,9 +114,31 @@ static void calStackPositionWithVanillaAlgorithm(wasm::Function *func, StackPosi
 }
 
 static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *func, StackPosition &stackPosition,
-                                                             LivenessMap const &livenessMap) {
+                                                             LivenessMap const &livenessMap, bool tryMCS) {
   ConflictGraph const conflictGraph = ConflictGraph::create(livenessMap);
-  ColorVec const color = conflictGraph.color();
+  ColorVec color = conflictGraph.color();
+  GreedyAssigner assigner{color};
+  Process process{*func, assigner, livenessMap, stackPosition};
+  process.walkFunction(func);
+  uint32_t const legacyBytes = stackPosition.getFrameSize();
+  uint32_t mcsBytes = legacyBytes;
+  if (tryMCS && legacyBytes > ShadowStackElementSize) {
+    ColorVec mcsColor = conflictGraph.colorMCS();
+    StackPosition candidate;
+    GreedyAssigner mcsAssigner{mcsColor};
+    Process mcsProcess{*func, mcsAssigner, livenessMap, candidate};
+    mcsProcess.walkFunction(func);
+    mcsBytes = candidate.getFrameSize();
+    // Only emitted marker slots determine frame size; caller-managed nodes may also be colored.
+    if (mcsBytes < legacyBytes) {
+      stackPosition = std::move(candidate);
+      color = std::move(mcsColor);
+    }
+  }
+  if (support::isDebug("GCColoring", func->name.view())) {
+    fmt::println("GCColoring {} legacy={} mcs={} selected={} nodes={}", func->name.view(), legacyBytes, mcsBytes,
+                 stackPosition.getFrameSize(), livenessMap.getDimension());
+  }
   if (support::isDebug(PASS_NAME, func->name.view())) {
     fmt::println("=========ConflictGraph=========");
     fmt::println("{}", func->name.view());
@@ -115,9 +146,6 @@ static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *fun
     color.dump();
     fmt::println("===============================");
   }
-  GreedyAssigner assigner{color};
-  Process process{*func, assigner, livenessMap, stackPosition};
-  process.walkFunction(func);
 }
 
 void StackAssigner::runOnFunction(wasm::Module *const m, wasm::Function *const func) {
@@ -130,9 +158,93 @@ void StackAssigner::runOnFunction(wasm::Module *const m, wasm::Function *const f
     calStackPositionWithVanillaAlgorithm(func, stackPosition, livenessMap);
     break;
   case Mode::GreedyConflictGraph:
-    calStackPositionWithGreedyConflictGraphAlgorithm(func, stackPosition, livenessMap);
+    calStackPositionWithGreedyConflictGraphAlgorithm(func, stackPosition, livenessMap, false);
+    break;
+  case Mode::BestOfGreedyAndMCS:
+    calStackPositionWithGreedyConflictGraphAlgorithm(func, stackPosition, livenessMap, true);
     break;
   }
 }
 
 } // namespace warpo::passes::gc
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+#include "../Runner.hpp"
+#include "wasm-builder.h"
+
+namespace warpo::passes::gc::ut {
+
+struct StackColoringTest : testing::Test {
+  std::unique_ptr<wasm::Module> m = loadWat(R"(
+    (module
+      (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
+      (func $test (local i32 i32 i32 i32 i32 i32)
+        (local.set 0 (call $~lib/rt/__localtostack (i32.const 16)))
+        (local.set 1 (call $~lib/rt/__localtostack (i32.const 32)))
+        (local.set 2 (call $~lib/rt/__localtostack (i32.const 48)))
+        (local.set 3 (call $~lib/rt/__localtostack (i32.const 64)))
+        (local.set 4 (call $~lib/rt/__localtostack (i32.const 80)))
+        (local.set 5 (call $~lib/rt/__localtostack (i32.const 96)))
+      )
+    )
+  )");
+
+  LivenessMap pathLiveness(bool onlyNodeFour) {
+    wasm::Function *const func = m->getFunction("test");
+    LivenessMap live{SSAMap::create(func)};
+    auto *const body = func->body->cast<wasm::Block>();
+    for (size_t const node : Range{6U}) {
+      live.ensureExpression(body->list[node]);
+      if (!onlyNodeFour || node == 4U)
+        live.set(body->list[node], LivenessMap::Pos::After, node, true);
+    }
+    wasm::Builder b{*m};
+    for (auto const &[a, c] : {std::pair{1U, 5U}, {5U, 3U}, {3U, 2U}, {2U, 4U}, {4U, 0U}}) {
+      wasm::Expression *const point = b.makeNop();
+      body->list.push_back(point);
+      live.ensureExpression(point);
+      for (auto const pos : {LivenessMap::Pos::Before, LivenessMap::Pos::After}) {
+        live.set(point, pos, a, true);
+        live.set(point, pos, c, true);
+      }
+    }
+    return live;
+  }
+};
+
+TEST_F(StackColoringTest, ChoosesSmallerEmittedFrame) {
+  LivenessMap const live = pathLiveness(false);
+  StackPosition legacy;
+  StackPosition best;
+  calStackPositionWithGreedyConflictGraphAlgorithm(m->getFunction("test"), legacy, live, false);
+  calStackPositionWithGreedyConflictGraphAlgorithm(m->getFunction("test"), best, live, true);
+  EXPECT_EQ(legacy.getFrameSize(), 12U);
+  EXPECT_EQ(best.getFrameSize(), 8U);
+}
+
+TEST_F(StackColoringTest, RejectsFewerColorsWithLargerEmittedFrame) {
+  LivenessMap const live = pathLiveness(true);
+  EXPECT_EQ(ConflictGraph::create(live).colorMCS().getColor(4U), 1U);
+  StackPosition best;
+  calStackPositionWithGreedyConflictGraphAlgorithm(m->getFunction("test"), best, live, true);
+  EXPECT_EQ(best.getFrameSize(), 4U);
+}
+
+TEST_F(StackColoringTest, KeepsLegacyOffsetsOnEqualEmittedFrames) {
+  LivenessMap live = pathLiveness(true);
+  auto *const body = m->getFunction("test")->body->cast<wasm::Block>();
+  live.set(body->list[0], LivenessMap::Pos::After, 0U, true);
+  StackPosition best;
+  calStackPositionWithGreedyConflictGraphAlgorithm(m->getFunction("test"), best, live, true);
+  auto *const marker = body->list[4]->cast<wasm::LocalSet>()->value->cast<wasm::Call>();
+  EXPECT_EQ(best.getFrameSize(), 8U);
+  ASSERT_NE(best.find(marker), best.end());
+  EXPECT_EQ(best.find(marker)->second, 0U);
+}
+
+} // namespace warpo::passes::gc::ut
+
+#endif

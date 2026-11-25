@@ -5461,7 +5461,7 @@
   (local $10 i32)
   (local $11 i32)
   (local $12 i32)
-  i32.const 20
+  i32.const 16
   call $~lib/rt/__decrease_sp
   block $folding-inner2
    local.get $0
@@ -5614,7 +5614,7 @@
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 0
-    i32.store offset=8 align=1
+    i32.store offset=12 align=1
     local.get $7
     local.set $4
     loop $while-continue|2
@@ -5637,7 +5637,7 @@
        local.set $3
        global.get $~lib/memory/__stack_pointer
        local.get $3
-       i32.store offset=4 align=1
+       i32.store offset=8 align=1
       end
       local.get $10
       local.get $6
@@ -5668,7 +5668,7 @@
        local.set $3
        global.get $~lib/memory/__stack_pointer
        local.get $3
-       i32.store align=1
+       i32.store offset=4 align=1
       end
       local.get $3
       local.get $8
@@ -5737,7 +5737,7 @@
       local.set $3
       global.get $~lib/memory/__stack_pointer
       local.get $3
-      i32.store offset=16 align=1
+      i32.store align=1
      end
      local.get $1
      if
@@ -5775,14 +5775,14 @@
     br $folding-inner2
    end
    global.get $~lib/memory/__stack_pointer
-   i32.const 20
+   i32.const 16
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $3
    return
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 20
+  i32.const 16
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
@@ -6173,7 +6173,7 @@
   (local $8 i32)
   (local $9 i32)
   (local $10 i32)
-  i32.const 12
+  i32.const 8
   call $~lib/rt/__decrease_sp
   block $folding-inner3
    block $folding-inner2
@@ -6191,7 +6191,7 @@
       local.set $1
       global.get $~lib/memory/__stack_pointer
       local.get $1
-      i32.store offset=4 align=1
+      i32.store align=1
       local.get $1
       i32.load offset=12
       i32.eqz
@@ -6212,7 +6212,7 @@
       i32.const 1
       call $~lib/rt/itcms/__link
       global.get $~lib/memory/__stack_pointer
-      i32.const 12
+      i32.const 8
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $1
@@ -6270,7 +6270,7 @@
       local.set $2
       global.get $~lib/memory/__stack_pointer
       local.get $2
-      i32.store offset=4 align=1
+      i32.store align=1
       local.get $2
       i32.load offset=4
       local.set $5
@@ -6345,7 +6345,7 @@
         local.set $6
         global.get $~lib/memory/__stack_pointer
         local.get $6
-        i32.store offset=8 align=1
+        i32.store align=1
         local.get $6
         local.get $0
         local.get $4
@@ -6400,7 +6400,7 @@
       local.set $1
       global.get $~lib/memory/__stack_pointer
       local.get $1
-      i32.store offset=8 align=1
+      i32.store align=1
       local.get $1
       local.get $0
       local.get $4
@@ -6426,14 +6426,14 @@
     local.set $0
    end
    global.get $~lib/memory/__stack_pointer
-   i32.const 12
+   i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $0
    return
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 12
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $2

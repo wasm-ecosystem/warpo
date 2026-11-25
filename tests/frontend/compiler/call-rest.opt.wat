@@ -1,8 +1,8 @@
 (module
  (type $0 (func (param i32 i32) (result i32)))
- (type $1 (func (param i32)))
+ (type $1 (func))
  (type $2 (func (param i32 i32)))
- (type $3 (func))
+ (type $3 (func (param i32)))
  (type $4 (func (param i32 i32 i32)))
  (type $5 (func (param i32 i32 i32) (result i32)))
  (type $6 (func (param i32 i32 i32 i32)))
@@ -1642,7 +1642,6 @@
  (func $~lib/rt/__newArray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
   (local $4 i32)
-  i32.const 4
   call $~lib/rt/__decrease_sp
   local.get $0
   i32.const 2
@@ -1856,7 +1855,6 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  i32.const 12
   call $~lib/rt/__decrease_sp
   i32.const 2
   i32.const 4
@@ -1865,7 +1863,7 @@
   local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $3
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $3
   i32.const 0
   i32.const 1
@@ -1894,7 +1892,7 @@
     local.get $0
     i32.load
     local.tee $3
-    i32.store offset=8 align=1
+    i32.store align=1
     local.get $2
     local.get $1
     call $~lib/array/Array<i32>#__get
@@ -1926,14 +1924,13 @@
    end
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 12
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $call-rest/Foo#constructor@varargs (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
-  i32.const 4
   call $~lib/rt/__decrease_sp
   block $2of2
    block $1of2
@@ -2182,7 +2179,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 1
   i32.const 4
@@ -2284,7 +2280,6 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 7
@@ -2322,7 +2317,6 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 7
@@ -2419,15 +2413,14 @@
    unreachable
   end
  )
- (func $~lib/rt/__decrease_sp (param $0 i32)
+ (func $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 1112
   i32.lt_s

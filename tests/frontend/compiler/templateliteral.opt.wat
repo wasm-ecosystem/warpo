@@ -3222,13 +3222,13 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 16
+  i32.const 12
   call $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
   local.get $3
   i32.load
   local.tee $2
-  i32.store offset=4 align=1
+  i32.store offset=8 align=1
   global.get $~lib/memory/__stack_pointer
   local.get $2
   i32.const 4
@@ -3236,20 +3236,20 @@
   local.tee $3
   i32.load
   local.tee $4
-  i32.store align=1
+  i32.store offset=4 align=1
   local.get $0
   local.get $1
   call $~lib/number/I32#toString
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store offset=12 align=1
+  i32.store align=1
   local.get $0
   call $~lib/string/String#concat
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $3
   local.get $4
   local.get $0
@@ -3270,7 +3270,7 @@
   i32.add
   i32.store
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 12
   i32.add
   global.set $~lib/memory/__stack_pointer
  )

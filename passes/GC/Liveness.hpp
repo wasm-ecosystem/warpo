@@ -109,6 +109,7 @@ public:
   bool isAdjacent(size_t a, size_t b) const { return conflictAdjacencyMatrix_.get(a * dim_ + b); }
 
   ColorVec color() const;
+  ColorVec colorMCS() const;
 
   static ConflictGraph create(LivenessMap const &livenessMap);
   void dump() const;

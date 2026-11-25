@@ -2244,7 +2244,7 @@
  )
  (func $std/string-encoding/testRoundtrip (param $0 i32)
   (local $1 i32)
-  i32.const 8
+  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 1
   global.set $~argumentsLength
@@ -2254,7 +2254,7 @@
   local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $1
-  i32.store offset=4 align=1
+  i32.store align=1
   local.get $1
   i32.const 0
   call $~lib/string/String.UTF8.decode
@@ -2274,7 +2274,7 @@
   local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $1
-  i32.store offset=4 align=1
+  i32.store align=1
   local.get $1
   local.get $1
   i32.const 20
@@ -2293,7 +2293,7 @@
    unreachable
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )

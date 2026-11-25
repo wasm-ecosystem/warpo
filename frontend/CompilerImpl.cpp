@@ -48,6 +48,12 @@ std::filesystem::path findPackageRoot() {
 
 namespace {
 
+static cli::Opt<bool> frontendGCMetricsOption{
+    cli::Category::Frontend,
+    "--frontend-gc-metrics",
+    [](argparse::Argument &arg) { arg.help("Read counters from a GC-profiled frontend").flag().hidden(); },
+};
+
 enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
 
 std::optional<std::filesystem::path> findLibraryFile(std::filesystem::path const &libraryPath,
@@ -296,6 +302,16 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     asModule_.variableInfo_.finalizeMemoryExposure();
 
     compileStat.release();
+    if (frontendGCMetricsOption.get()) {
+      static constexpr std::array<std::string_view, 10> metrics{
+          "peakBytes", "reservedBytes", "zeroFillBytes", "zeroStoreBytes", "scanBytes",
+          "scanPasses", "otherRootReadBytes", "lastOtherReader", "memoryPages", "finalBytes",
+      };
+      fmt::print("GCDynamic");
+      for (uint32_t i = 0; i < metrics.size(); ++i)
+        fmt::print(" {}={}", metrics[i], r.callExportedFunctionWithName<1>("__gc_metric", i)[0].i64);
+      fmt::println("");
+    }
     return {.m = std::move(asModule_), .errorMessage = errorMessage_};
   } catch (vb::TrapException const &e) {
     r.getLogger() << "Error: " << e.what() << vb::endStatement;

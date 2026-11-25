@@ -4096,7 +4096,7 @@
    local.set $5
   end
   block $__inlined_func$~lib/string/String#split$271 (result i32)
-   i32.const 12
+   i32.const 8
    call $~lib/rt/__decrease_sp
    block $folding-inner1
     block $folding-inner0
@@ -4111,7 +4111,7 @@
       local.set $1
       global.get $~lib/memory/__stack_pointer
       local.get $1
-      i32.store offset=4 align=1
+      i32.store align=1
       local.get $1
       i32.load offset=12
       i32.eqz
@@ -4132,7 +4132,7 @@
       i32.const 1
       call $~lib/rt/itcms/__link
       global.get $~lib/memory/__stack_pointer
-      i32.const 12
+      i32.const 8
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $1
@@ -4163,7 +4163,7 @@
        i32.const 2432
        i32.store
        global.get $~lib/memory/__stack_pointer
-       i32.const 12
+       i32.const 8
        i32.add
        global.set $~lib/memory/__stack_pointer
        local.get $0
@@ -4184,7 +4184,7 @@
       local.set $2
       global.get $~lib/memory/__stack_pointer
       local.get $2
-      i32.store offset=4 align=1
+      i32.store align=1
       local.get $2
       i32.load offset=4
       local.set $5
@@ -4225,7 +4225,7 @@
        end
       end
       global.get $~lib/memory/__stack_pointer
-      i32.const 12
+      i32.const 8
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $2
@@ -4262,7 +4262,7 @@
         local.set $6
         global.get $~lib/memory/__stack_pointer
         local.get $6
-        i32.store offset=8 align=1
+        i32.store align=1
         local.get $6
         local.get $0
         local.get $4
@@ -4317,7 +4317,7 @@
       local.set $1
       global.get $~lib/memory/__stack_pointer
       local.get $1
-      i32.store offset=8 align=1
+      i32.store align=1
       local.get $1
       local.get $0
       local.get $4
@@ -4340,14 +4340,14 @@
     call $~lib/rt/__newArray
     local.set $0
     global.get $~lib/memory/__stack_pointer
-    i32.const 12
+    i32.const 8
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
     br $__inlined_func$~lib/string/String#split$271
    end
    global.get $~lib/memory/__stack_pointer
-   i32.const 12
+   i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $2

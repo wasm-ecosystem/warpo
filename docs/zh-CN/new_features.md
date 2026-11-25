@@ -49,3 +49,4 @@
 - 未使用字段存储消除
 - [共享 GC 返回 epilogue（`return-to-br`）](/zh-CN/using_compiler/config#return-to-br)
 - [类对象字面量的初始化顺序](/zh-CN/using_language/details/object_literal_initialization)
+- [GC 根槽着色：MCS 候选择优](/tech/lower/gc/coloring)

@@ -2,6 +2,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
@@ -177,6 +178,34 @@ ColorVec ConflictGraph::color() const {
   return nodeColor;
 }
 
+ColorVec ConflictGraph::colorMCS() const {
+  ColorVec colors{dim_};
+  std::vector<size_t> weights(dim_, 0U);
+  for (size_t const step : Range{dim_}) {
+    static_cast<void>(step);
+    size_t selected = dim_;
+    for (size_t const node : Range{dim_}) {
+      if (!colors.hasColor(node) && (selected == dim_ || weights[node] >= weights[selected]))
+        selected = node;
+    }
+    assert(selected < dim_);
+    DynBitset usedColors{dim_};
+    for (size_t const neighbor : Range{dim_}) {
+      if (isAdjacent(selected, neighbor) && colors.hasColor(neighbor))
+        usedColors.set(colors.getColor(neighbor), true);
+    }
+    size_t color = 0;
+    while (usedColors.get(color))
+      ++color;
+    colors.setColor(selected, color);
+    for (size_t const neighbor : Range{dim_}) {
+      if (isAdjacent(selected, neighbor) && !colors.hasColor(neighbor))
+        ++weights[neighbor];
+    }
+  }
+  return colors;
+}
+
 } // namespace warpo::passes::gc
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
@@ -219,6 +248,52 @@ TEST(ConflictGraphTest, Color2) {
   ColorVec const color = graph.color();
   EXPECT_EQ(color.getColor(0), 1);
   EXPECT_EQ(color.getColor(1), 0);
+}
+
+TEST(ConflictGraphTest, MCSImprovesDegreeOrdering) {
+  ConflictGraph graph{6};
+  graph.addEdge(1, 5);
+  graph.addEdge(5, 3);
+  graph.addEdge(3, 2);
+  graph.addEdge(2, 4);
+  graph.addEdge(4, 0);
+  ColorVec const legacy = graph.color();
+  ColorVec const mcs = graph.colorMCS();
+  size_t legacyMax = 0;
+  size_t mcsMax = 0;
+  for (size_t const node : Range{6U}) {
+    legacyMax = std::max(legacyMax, legacy.getColor(node));
+    mcsMax = std::max(mcsMax, mcs.getColor(node));
+  }
+  EXPECT_EQ(legacyMax + 1U, 3U);
+  EXPECT_EQ(mcsMax + 1U, 2U);
+}
+
+TEST(ConflictGraphTest, MCSColorsSmallGraphsIncludingSelfEdges) {
+  for (size_t nodes = 0; nodes <= 5; ++nodes) {
+    size_t const edgeCount = nodes == 0 ? 0 : nodes * (nodes - 1U) / 2U;
+    for (size_t mask = 0; mask < (size_t{1} << edgeCount); ++mask) {
+      ConflictGraph graph{nodes};
+      size_t edge = 0;
+      for (size_t a = 0; a < nodes; ++a) {
+        graph.addEdge(a, a);
+        for (size_t b = a + 1; b < nodes; ++b, ++edge) {
+          if ((mask & (size_t{1} << edge)) != 0)
+            graph.addEdge(a, b);
+        }
+      }
+      ColorVec const colors = graph.colorMCS();
+      ColorVec const repeated = graph.colorMCS();
+      for (size_t a = 0; a < nodes; ++a) {
+        ASSERT_TRUE(colors.hasColor(a));
+        EXPECT_EQ(colors.getColor(a), repeated.getColor(a));
+        for (size_t b = a + 1; b < nodes; ++b) {
+          if (graph.isAdjacent(a, b))
+            EXPECT_NE(colors.getColor(a), colors.getColor(b));
+        }
+      }
+    }
+  }
 }
 
 } // namespace warpo::passes::ut

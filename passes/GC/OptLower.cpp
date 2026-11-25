@@ -65,6 +65,11 @@ static cli::Opt<bool> GCShrinkWrap{
     "--gc-shrink-wrap",
     [](argparse::Argument &arg) { arg.help("Enable shrink wrap during GC lowering").flag().hidden(); },
 };
+static cli::Opt<bool> GCLegacyColoring{
+    cli::Category::Optimization,
+    "--gc-legacy-coloring",
+    [](argparse::Argument &arg) { arg.help("Use degree-only GC root coloring for comparison").flag().hidden(); },
+};
 
 static cli::Opt<bool> TestOnlyControlGroup{
     cli::Category::OnlyForTest,
@@ -120,7 +125,9 @@ void OptLower::run(wasm::Module *m) {
   LeafFunctionFilter::addToPass(runner, leafFunc, livenessInfo);
 
   StackAssigner::Mode const stackAssignerMode =
-      enableOptimizedStackPositionAssigner ? StackAssigner::Mode::GreedyConflictGraph : StackAssigner::Mode::Vanilla;
+      !enableOptimizedStackPositionAssigner ? StackAssigner::Mode::Vanilla
+      : GCLegacyColoring.get()              ? StackAssigner::Mode::GreedyConflictGraph
+                                            : StackAssigner::Mode::BestOfGreedyAndMCS;
   std::shared_ptr<StackPositions const> const stackPositions =
       StackAssigner::addToPass(runner, stackAssignerMode, livenessInfo);
   std::shared_ptr<InsertPositionHints const> const stackInsertPositions =
