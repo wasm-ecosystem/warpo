@@ -3477,12 +3477,23 @@ export class Parser extends DiagnosticEmitter {
     let expr = this.parseExpressionStart(tn);
     if (!expr) return null;
     let startPos = expr.range.start;
+    let inOptionalChain = false;
 
     // precedence climbing
     // see: http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm#climbing
     let nextPrecedence: Precedence;
     while ((nextPrecedence = determinePrecedence(tn.peek())) >= precedence) {
       let token = tn.next();
+      if (
+        inOptionalChain &&
+        token != Token.Dot &&
+        token != Token.Question_Dot &&
+        token != Token.OpenBracket &&
+        token != Token.Exclamation
+      ) {
+        expr = Node.createOptionalChainExpression(expr, expr.range);
+        inOptionalChain = false;
+      }
       switch (token) {
         // AssertionExpression
         case Token.As: {
@@ -3581,8 +3592,31 @@ export class Parser extends DiagnosticEmitter {
             }
           }
           if (tn.skip(Token.TemplateLiteral)) {
+            if (inOptionalChain) {
+              this.error(DiagnosticCode.Not_implemented_0, tn.range(), "Tagged templates in optional chains");
+              return null;
+            }
             expr = this.parseTemplateLiteral(tn, expr);
             if (!expr) return null;
+          } else {
+            expr = this.maybeParseCallExpression(tn, expr, true);
+          }
+          break;
+        }
+        // Optional property access expression
+        case Token.Question_Dot: {
+          let questionDotRange = tn.range();
+          inOptionalChain = true;
+          if (tn.skipIdentifier(IdentifierHandling.Always)) {
+            let next = Node.createIdentifierExpression(tn.readIdentifier(), tn.range());
+            expr = Node.createPropertyAccessExpression(expr, next, tn.range(startPos, tn.pos), true, questionDotRange);
+          } else {
+            this.error(DiagnosticCode.Identifier_expected, tn.range(tn.nextTokenPos));
+            return null;
+          }
+          if (tn.skip(Token.TemplateLiteral)) {
+            this.error(DiagnosticCode.Not_implemented_0, tn.range(), "Tagged templates in optional chains");
+            return null;
           } else {
             expr = this.maybeParseCallExpression(tn, expr, true);
           }
@@ -3650,7 +3684,7 @@ export class Parser extends DiagnosticEmitter {
           assert(false); // filtered by determinePrecedence
       }
     }
-    return expr;
+    return inOptionalChain ? Node.createOptionalChainExpression(expr, expr.range) : expr;
   }
 
   private parseTemplateLiteral(tn: Tokenizer, tag: Expression | null = null): Expression | null {
@@ -3923,6 +3957,7 @@ function determinePrecedence(kind: Token): Precedence {
     case Token.Minus_Minus:
       return Precedence.UnaryPostfix;
     case Token.Dot:
+    case Token.Question_Dot:
     case Token.OpenBracket:
     case Token.Exclamation:
       return Precedence.MemberAccess;

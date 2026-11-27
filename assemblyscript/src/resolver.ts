@@ -943,6 +943,12 @@ export class Resolver extends DiagnosticEmitter {
       // skip
       node = (<ParenthesizedExpression>node).expression;
     }
+    if (node.kind == NodeKind.OptionalChain) {
+      if (reportMode == ReportMode.Report) {
+        this.error(DiagnosticCode.Not_implemented_0, node.range, "Optional chaining");
+      }
+      return null;
+    }
     switch (node.kind) {
       case NodeKind.Assertion: {
         return this.lookupAssertionExpression(<AssertionExpression>node, ctxFlow, ctxType, reportMode);
@@ -1032,6 +1038,12 @@ export class Resolver extends DiagnosticEmitter {
     while (node.kind == NodeKind.Parenthesized) {
       // skip
       node = (<ParenthesizedExpression>node).expression;
+    }
+    if (node.kind == NodeKind.OptionalChain) {
+      if (reportMode == ReportMode.Report) {
+        this.error(DiagnosticCode.Not_implemented_0, node.range, "Optional chaining");
+      }
+      return null;
     }
     switch (node.kind) {
       case NodeKind.Assertion: {

@@ -4004,6 +4004,10 @@ export class Compiler extends DiagnosticEmitter {
     }
     this.currentType = contextualType;
     if (contextualType == Type.void) constraints |= Constraints.WillDrop;
+    if (expression.kind == NodeKind.OptionalChain) {
+      this.error(DiagnosticCode.Not_implemented_0, expression.range, "Optional chaining");
+      return this.module.unreachable();
+    }
     let expr: ExpressionRef;
     switch (expression.kind) {
       case NodeKind.Assertion: {

@@ -50,6 +50,7 @@ import {
   Node,
   ObjectLiteralExpression,
   OmittedExpression,
+  OptionalChainExpression,
   ParameterNode,
   ParenthesizedExpression,
   PropertyAccessExpression,
@@ -106,6 +107,7 @@ export interface IVisitor {
   visitNullExpression(node: NullExpression): void;
   visitObjectLiteralExpression(node: ObjectLiteralExpression): void;
   visitOmittedExpression(node: OmittedExpression): void;
+  visitOptionalChainExpression(node: OptionalChainExpression): void;
   visitParenthesizedExpression(node: ParenthesizedExpression): void;
   visitPropertyAccessExpression(node: PropertyAccessExpression): void;
   visitRegexpLiteralExpression(node: RegexpLiteralExpression): void;
@@ -274,6 +276,10 @@ export class BaseVisitor implements IVisitor {
   }
 
   visitOmittedExpression(node: OmittedExpression): void {}
+
+  visitOptionalChainExpression(node: OptionalChainExpression): void {
+    this.visitNode(node.expression);
+  }
 
   visitParenthesizedExpression(node: ParenthesizedExpression): void {
     this.visitNode(node.expression);
