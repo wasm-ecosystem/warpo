@@ -1741,10 +1741,7 @@
    i32.const 1
    i32.shr_u
    local.tee $0
-   i32.const 428
-   i32.load
-   i32.const 1
-   i32.shr_u
+   i32.const 4
    i32.ne
    br_if $__inlined_func$~lib/string/String.__eq$94
    drop
@@ -1755,10 +1752,6 @@
     i32.const 7
     i32.and
     i32.eqz
-    local.get $0
-    i32.const 4
-    i32.ge_u
-    i32.and
     if
      loop $do-loop|0
       local.get $1

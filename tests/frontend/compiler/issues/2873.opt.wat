@@ -3049,7 +3049,6 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   memory.size
   i32.const 16
   i32.shl
@@ -3156,18 +3155,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinFloatArray<f32>$77
    end
-   i32.const 2156
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $5
-   i32.const 28
-   i32.add
    local.get $2
+   i32.const 29
    i32.mul
    i32.const 28
    i32.add
-   local.tee $6
+   local.tee $5
    i32.const 1
    i32.shl
    call $~lib/rt/itcms/__new
@@ -3183,6 +3176,7 @@
     i32.gt_s
     if
      local.get $1
+     local.get $1
      local.get $0
      i32.const 1
      i32.shl
@@ -3196,24 +3190,17 @@
      call $~lib/util/number/dtoa_buffered<f32>
      local.get $0
      i32.add
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 2160
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
+     i32.const 1
+     i32.add
      local.set $0
-     local.get $5
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 2160
-      local.get $5
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $5
-      i32.add
-      local.set $0
-     end
      local.get $3
      i32.const 1
      i32.add
@@ -3236,7 +3223,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $6
+   local.get $5
    i32.lt_s
    if
     local.get $1
@@ -3317,18 +3304,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinFloatArray<f64>$80
    end
-   i32.const 2156
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $5
-   i32.const 28
-   i32.add
    local.get $2
+   i32.const 29
    i32.mul
    i32.const 28
    i32.add
-   local.tee $6
+   local.tee $5
    i32.const 1
    i32.shl
    call $~lib/rt/itcms/__new
@@ -3344,6 +3325,7 @@
     i32.gt_s
     if
      local.get $1
+     local.get $1
      local.get $0
      i32.const 1
      i32.shl
@@ -3357,24 +3339,17 @@
      call $~lib/util/number/dtoa_buffered<f64>
      local.get $0
      i32.add
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 2160
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
+     i32.const 1
+     i32.add
      local.set $0
-     local.get $5
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 2160
-      local.get $5
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $5
-      i32.add
-      local.set $0
-     end
      local.get $3
      i32.const 1
      i32.add
@@ -3397,7 +3372,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $6
+   local.get $5
    i32.lt_s
    if
     local.get $1

@@ -9888,7 +9888,6 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<i8>$326 (result i32)
    local.get $0
    i32.load offset=4
@@ -9926,18 +9925,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<i8>$326
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $4
-   i32.const 11
-   i32.add
    local.get $2
+   i32.const 12
    i32.mul
    i32.const 11
    i32.add
-   local.tee $6
+   local.tee $5
    i32.const 1
    i32.shl
    i32.const 2
@@ -9950,43 +9943,37 @@
    local.set $0
    loop $for-loop|0
     local.get $2
-    local.get $5
+    local.get $4
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $3
-     local.get $5
+     local.get $4
      i32.add
      i32.load8_s
      call $~lib/util/number/itoa_buffered<i8>
      local.get $0
      i32.add
-     local.set $0
-     local.get $4
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $4
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $4
-      i32.add
-      local.set $0
-     end
-     local.get $5
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $5
+     local.set $0
+     local.get $4
+     i32.const 1
+     i32.add
+     local.set $4
      br $for-loop|0
     end
    end
@@ -10003,7 +9990,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $6
+   local.get $5
    i32.lt_s
    if
     local.get $1
@@ -10173,7 +10160,6 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<u8>$330 (result i32)
    local.get $0
    i32.load offset=4
@@ -10211,18 +10197,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<u8>$330
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $4
-   i32.const 10
-   i32.add
    local.get $2
+   i32.const 11
    i32.mul
    i32.const 10
    i32.add
-   local.tee $6
+   local.tee $5
    i32.const 1
    i32.shl
    i32.const 2
@@ -10235,43 +10215,37 @@
    local.set $0
    loop $for-loop|0
     local.get $2
-    local.get $5
+    local.get $4
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $3
-     local.get $5
+     local.get $4
      i32.add
      i32.load8_u
      call $~lib/util/number/itoa_buffered<u8>
      local.get $0
      i32.add
-     local.set $0
-     local.get $4
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $4
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $4
-      i32.add
-      local.set $0
-     end
-     local.get $5
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $5
+     local.set $0
+     local.get $4
+     i32.const 1
+     i32.add
+     local.set $4
      br $for-loop|0
     end
    end
@@ -10288,7 +10262,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $6
+   local.get $5
    i32.lt_s
    if
     local.get $1
@@ -10384,7 +10358,6 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<i16>$334 (result i32)
    local.get $0
    i32.load offset=4
@@ -10424,18 +10397,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<i16>$334
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $4
-   i32.const 11
-   i32.add
    local.get $2
+   i32.const 12
    i32.mul
    i32.const 11
    i32.add
-   local.tee $6
+   local.tee $5
    i32.const 1
    i32.shl
    i32.const 2
@@ -10448,16 +10415,17 @@
    local.set $0
    loop $for-loop|0
     local.get $2
-    local.get $5
+    local.get $4
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $3
-     local.get $5
+     local.get $4
      i32.const 1
      i32.shl
      i32.add
@@ -10465,28 +10433,21 @@
      call $~lib/util/number/itoa_buffered<i16>
      local.get $0
      i32.add
-     local.set $0
-     local.get $4
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $4
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $4
-      i32.add
-      local.set $0
-     end
-     local.get $5
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $5
+     local.set $0
+     local.get $4
+     i32.const 1
+     i32.add
+     local.set $4
      br $for-loop|0
     end
    end
@@ -10505,7 +10466,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $6
+   local.get $5
    i32.lt_s
    if
     local.get $1
@@ -10538,7 +10499,6 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<u16>$337 (result i32)
    local.get $0
    i32.load offset=4
@@ -10578,18 +10538,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<u16>$337
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $4
-   i32.const 10
-   i32.add
    local.get $2
+   i32.const 11
    i32.mul
    i32.const 10
    i32.add
-   local.tee $6
+   local.tee $5
    i32.const 1
    i32.shl
    i32.const 2
@@ -10602,16 +10556,17 @@
    local.set $0
    loop $for-loop|0
     local.get $2
-    local.get $5
+    local.get $4
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $3
-     local.get $5
+     local.get $4
      i32.const 1
      i32.shl
      i32.add
@@ -10619,28 +10574,21 @@
      call $~lib/util/number/itoa_buffered<u16>
      local.get $0
      i32.add
-     local.set $0
-     local.get $4
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $4
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $4
-      i32.add
-      local.set $0
-     end
-     local.get $5
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $5
+     local.set $0
+     local.get $4
+     i32.const 1
+     i32.add
+     local.set $4
      br $for-loop|0
     end
    end
@@ -10659,7 +10607,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $6
+   local.get $5
    i32.lt_s
    if
     local.get $1
@@ -10731,7 +10679,6 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<i32>$340 (result i32)
    local.get $0
    i32.load offset=4
@@ -10771,18 +10718,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<i32>$340
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $4
-   i32.const 11
-   i32.add
    local.get $2
+   i32.const 12
    i32.mul
    i32.const 11
    i32.add
-   local.tee $6
+   local.tee $5
    i32.const 1
    i32.shl
    i32.const 2
@@ -10795,16 +10736,17 @@
    local.set $0
    loop $for-loop|0
     local.get $2
-    local.get $5
+    local.get $4
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $3
-     local.get $5
+     local.get $4
      i32.const 2
      i32.shl
      i32.add
@@ -10812,28 +10754,21 @@
      call $~lib/util/number/itoa_buffered<i32>
      local.get $0
      i32.add
-     local.set $0
-     local.get $4
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $4
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $4
-      i32.add
-      local.set $0
-     end
-     local.get $5
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $5
+     local.set $0
+     local.get $4
+     i32.const 1
+     i32.add
+     local.set $4
      br $for-loop|0
     end
    end
@@ -10852,7 +10787,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $6
+   local.get $5
    i32.lt_s
    if
     local.get $1
@@ -10881,7 +10816,6 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  (local $8 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<u32>$343 (result i32)
    local.get $0
    i32.load offset=4
@@ -10921,42 +10855,37 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<u32>$343
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $2
-   i32.const 10
-   i32.add
    local.get $1
+   i32.const 11
    i32.mul
    i32.const 10
    i32.add
-   local.tee $8
+   local.tee $7
    i32.const 1
    i32.shl
    i32.const 2
    call $~lib/rt/itcms/__new
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store align=1
    i32.const 0
    local.set $0
    loop $for-loop|0
     local.get $1
-    local.get $6
+    local.get $3
     i32.gt_s
     if
+     local.get $2
      block $__inlined_func$~lib/util/number/itoa_buffered<u32>$200 (result i32)
-      local.get $3
+      local.get $2
       local.get $0
       i32.const 1
       i32.shl
       i32.add
-      local.set $7
+      local.set $6
       local.get $5
-      local.get $6
+      local.get $3
       i32.const 2
       i32.shl
       i32.add
@@ -10965,7 +10894,7 @@
       i32.const 10
       i32.lt_u
       if
-       local.get $7
+       local.get $6
        local.get $4
        i32.const 48
        i32.or
@@ -10973,7 +10902,7 @@
        i32.const 1
        br $__inlined_func$~lib/util/number/itoa_buffered<u32>$200
       end
-      local.get $7
+      local.get $6
       local.get $4
       local.get $4
       call $~lib/util/number/decimalCount32
@@ -10983,38 +10912,31 @@
      end
      local.get $0
      i32.add
-     local.set $0
-     local.get $2
-     if
-      local.get $3
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $2
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $2
-      i32.add
-      local.set $0
-     end
-     local.get $6
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $6
+     local.set $0
+     local.get $3
+     i32.const 1
+     i32.add
+     local.set $3
      br $for-loop|0
     end
    end
    block $__inlined_func$~lib/util/number/itoa_buffered<u32>$201 (result i32)
-    local.get $3
+    local.get $2
     local.get $0
     i32.const 1
     i32.shl
     i32.add
-    local.set $2
+    local.set $3
     local.get $5
     local.get $1
     i32.const 2
@@ -11025,7 +10947,7 @@
     i32.const 10
     i32.lt_u
     if
-     local.get $2
+     local.get $3
      local.get $1
      i32.const 48
      i32.or
@@ -11033,7 +10955,7 @@
      i32.const 1
      br $__inlined_func$~lib/util/number/itoa_buffered<u32>$201
     end
-    local.get $2
+    local.get $3
     local.get $1
     local.get $1
     call $~lib/util/number/decimalCount32
@@ -11044,10 +10966,10 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $8
+   local.get $7
    i32.lt_s
    if
-    local.get $3
+    local.get $2
     local.get $0
     call $~lib/string/String#substring
     local.set $0
@@ -11062,7 +10984,7 @@
    i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
   end
  )
  (func $~lib/util/number/decimalCount64High (param $0 i64) (result i32)
@@ -11268,7 +11190,6 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779 (result i32)
    local.get $0
    i32.load offset=4
@@ -11371,18 +11292,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $5
-   i32.const 21
-   i32.add
    local.get $2
+   i32.const 22
    i32.mul
    i32.const 21
    i32.add
-   local.tee $7
+   local.tee $6
    i32.const 1
    i32.shl
    i32.const 2
@@ -11395,16 +11310,17 @@
    local.set $0
    loop $for-loop|0
     local.get $2
-    local.get $6
+    local.get $5
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $4
-     local.get $6
+     local.get $5
      i32.const 3
      i32.shl
      i32.add
@@ -11412,28 +11328,21 @@
      call $~lib/util/number/itoa_buffered<i64>
      local.get $0
      i32.add
-     local.set $0
-     local.get $5
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $5
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $5
-      i32.add
-      local.set $0
-     end
-     local.get $6
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $6
+     local.set $0
+     local.get $5
+     i32.const 1
+     i32.add
+     local.set $5
      br $for-loop|0
     end
    end
@@ -11452,7 +11361,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $7
+   local.get $6
    i32.lt_s
    if
     local.get $1
@@ -11520,7 +11429,6 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i32)
   block $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780 (result i32)
    local.get $0
    i32.load offset=4
@@ -11596,18 +11504,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $5
-   i32.const 20
-   i32.add
    local.get $2
+   i32.const 21
    i32.mul
    i32.const 20
    i32.add
-   local.tee $7
+   local.tee $6
    i32.const 1
    i32.shl
    i32.const 2
@@ -11620,16 +11522,17 @@
    local.set $0
    loop $for-loop|0
     local.get $2
-    local.get $6
+    local.get $5
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $4
-     local.get $6
+     local.get $5
      i32.const 3
      i32.shl
      i32.add
@@ -11637,28 +11540,21 @@
      call $~lib/util/number/itoa_buffered<u64>
      local.get $0
      i32.add
-     local.set $0
-     local.get $5
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $5
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $5
-      i32.add
-      local.set $0
-     end
-     local.get $6
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $6
+     local.set $0
+     local.get $5
+     i32.const 1
+     i32.add
+     local.set $5
      br $for-loop|0
     end
    end
@@ -11677,7 +11573,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $7
+   local.get $6
    i32.lt_s
    if
     local.get $1
@@ -12697,7 +12593,6 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i32)
   block $__inlined_func$~lib/util/string/joinFloatArray<f32>$781 (result i32)
    local.get $0
    i32.load offset=4
@@ -12779,18 +12674,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinFloatArray<f32>$781
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $5
-   i32.const 28
-   i32.add
    local.get $3
+   i32.const 29
    i32.mul
    i32.const 28
    i32.add
-   local.tee $7
+   local.tee $6
    i32.const 1
    i32.shl
    i32.const 2
@@ -12803,16 +12692,17 @@
    local.set $0
    loop $for-loop|0
     local.get $3
-    local.get $6
+    local.get $5
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $4
-     local.get $6
+     local.get $5
      i32.const 2
      i32.shl
      i32.add
@@ -12820,28 +12710,21 @@
      call $~lib/util/number/dtoa_buffered<f32>
      local.get $0
      i32.add
-     local.set $0
-     local.get $5
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $5
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $5
-      i32.add
-      local.set $0
-     end
-     local.get $6
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $6
+     local.set $0
+     local.get $5
+     i32.const 1
+     i32.add
+     local.set $5
      br $for-loop|0
     end
    end
@@ -12860,7 +12743,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $7
+   local.get $6
    i32.lt_s
    if
     local.get $1
@@ -12961,7 +12844,6 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  (local $7 i32)
   block $__inlined_func$~lib/util/string/joinFloatArray<f64>$782 (result i32)
    local.get $0
    i32.load offset=4
@@ -13042,18 +12924,12 @@
     local.get $0
     br $__inlined_func$~lib/util/string/joinFloatArray<f64>$782
    end
-   i32.const 8556
-   i32.load
-   i32.const 1
-   i32.shr_u
-   local.tee $5
-   i32.const 28
-   i32.add
    local.get $3
+   i32.const 29
    i32.mul
    i32.const 28
    i32.add
-   local.tee $7
+   local.tee $6
    i32.const 1
    i32.shl
    i32.const 2
@@ -13066,16 +12942,17 @@
    local.set $0
    loop $for-loop|0
     local.get $3
-    local.get $6
+    local.get $5
     i32.gt_s
     if
+     local.get $1
      local.get $1
      local.get $0
      i32.const 1
      i32.shl
      i32.add
      local.get $4
-     local.get $6
+     local.get $5
      i32.const 3
      i32.shl
      i32.add
@@ -13083,28 +12960,21 @@
      call $~lib/util/number/dtoa_buffered<f64>
      local.get $0
      i32.add
-     local.set $0
-     local.get $5
-     if
-      local.get $1
-      local.get $0
-      i32.const 1
-      i32.shl
-      i32.add
-      i32.const 8560
-      local.get $5
-      i32.const 1
-      i32.shl
-      memory.copy
-      local.get $0
-      local.get $5
-      i32.add
-      local.set $0
-     end
-     local.get $6
+     local.tee $0
+     i32.const 1
+     i32.shl
+     i32.add
+     i32.const 8560
+     i32.load16_u align=1
+     i32.store16 align=1
+     local.get $0
      i32.const 1
      i32.add
-     local.set $6
+     local.set $0
+     local.get $5
+     i32.const 1
+     i32.add
+     local.set $5
      br $for-loop|0
     end
    end
@@ -13123,7 +12993,7 @@
    local.get $0
    i32.add
    local.tee $0
-   local.get $7
+   local.get $6
    i32.lt_s
    if
     local.get $1

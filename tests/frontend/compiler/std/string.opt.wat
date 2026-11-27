@@ -4672,16 +4672,8 @@
   (local $6 i32)
   i32.const 3856
   local.set $2
-  i32.const 3852
-  i32.load
-  i32.const 1
-  i32.shr_u
-  local.tee $1
-  i32.eqz
-  if
-   i32.const 0
-   return
-  end
+  i32.const 10
+  local.set $1
   i32.const 3856
   i32.load16_u
   local.set $0
@@ -4891,16 +4883,8 @@
   (local $6 i64)
   i32.const 3904
   local.set $2
-  i32.const 3900
-  i32.load
-  i32.const 1
-  i32.shr_u
-  local.tee $1
-  i32.eqz
-  if
-   i64.const 0
-   return
-  end
+  i32.const 18
+  local.set $1
   i32.const 3904
   i32.load16_u
   local.set $0
@@ -8512,7 +8496,6 @@
   (local $1 f64)
   (local $2 i32)
   (local $3 f32)
-  (local $4 i32)
   global.get $std/string/str
   i32.const 32
   i32.ne
@@ -8993,26 +8976,22 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1148
-  i32.load
-  i32.const 1
-  i32.shr_u
-  local.tee $0
   global.get $std/string/str
-  local.tee $2
+  local.tee $0
   i32.const 20
   i32.sub
   i32.load offset=16
   i32.const 1
   i32.shr_u
-  i32.gt_s
+  i32.const 2
+  i32.lt_u
   if (result i32)
    i32.const 1
   else
-   local.get $2
+   local.get $0
    i32.const 0
    i32.const 1152
-   local.get $0
+   i32.const 2
    call $~lib/util/string/compareImpl
   end
   if
@@ -9038,22 +9017,18 @@
   i32.const 536870910
   i32.gt_u
   select
-  i32.const 1180
-  i32.load
-  i32.const 1
-  i32.shr_u
-  local.tee $2
+  i32.const 6
   i32.sub
-  local.tee $4
+  local.tee $2
   i32.const 0
   i32.lt_s
   if (result i32)
    i32.const 1
   else
    local.get $0
-   local.get $4
-   i32.const 1184
    local.get $2
+   i32.const 1184
+   i32.const 6
    call $~lib/util/string/compareImpl
   end
   if
@@ -13043,20 +13018,6 @@
    i32.const 96
    i32.const 441
    i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 1372
-  i32.load
-  i32.const 1
-  i32.shr_u
-  i32.const 3
-  i32.ne
-  if
-   i32.const 0
-   i32.const 96
-   i32.const 444
-   i32.const 1
    call $~lib/builtins/abort
    unreachable
   end

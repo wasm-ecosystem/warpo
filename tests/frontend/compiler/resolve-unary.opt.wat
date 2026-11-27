@@ -2161,8 +2161,5 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2716
-  i32.load
-  drop
  )
 )
