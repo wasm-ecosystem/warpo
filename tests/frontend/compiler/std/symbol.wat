@@ -6663,16 +6663,6 @@
    )
   )
  )
- (func $~lib/string/String.UTF16.byteLength (param $str i32) (result i32)
-  (return
-   (call $~lib/rt/common/OBJECT#get:rtSize
-    (i32.sub
-     (local.get $str)
-     (i32.const 20)
-    )
-   )
-  )
- )
  (func $~lib/symbol/symbol#toString (param $this i32) (result i32)
   (local $id i32)
   (local $str i32)
@@ -6736,9 +6726,10 @@
      (i32.const 16)
     )
     (local.set $5
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $3)
+       (i32.const 4)
       )
      )
     )

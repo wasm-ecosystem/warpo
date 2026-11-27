@@ -189,7 +189,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$111
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$109
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -213,7 +213,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$111
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$109
      end
      local.get $0
      i32.load offset=8
@@ -1032,7 +1032,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$116 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$114 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1048,7 +1048,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$116
+         br $__inlined_func$~lib/rt/itcms/step$114
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1087,7 +1087,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$116
+           br $__inlined_func$~lib/rt/itcms/step$114
           end
           local.get $2
           i32.load offset=4
@@ -1158,7 +1158,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$116
+        br $__inlined_func$~lib/rt/itcms/step$114
        end
        global.get $~lib/rt/itcms/iter
        local.tee $2
@@ -1257,7 +1257,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$116
+        br $__inlined_func$~lib/rt/itcms/step$114
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1888,8 +1888,7 @@
   i32.store
   i32.const 544
   global.set $~lib/rt/itcms/fromSpace
-  i32.const -1
-  call $~lib/util/number/itoa32
+  i32.const 2208
   i32.const 2208
   call $~lib/string/String.__eq
   i32.eqz
@@ -1901,8 +1900,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $~lib/util/number/itoa32
+  i32.const 2304
   i32.const 2304
   call $~lib/string/String.__eq
   i32.eqz
@@ -2161,8 +2159,5 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2716
-  i32.load
-  drop
  )
 )

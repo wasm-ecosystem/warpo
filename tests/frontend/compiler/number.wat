@@ -5871,12 +5871,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/F64#toString
-       (f64.const 2)
-       (i32.const 0)
-      )
-     )
+     (i32.const 3424)
      (i32.const 3424)
     )
    )
@@ -5893,12 +5888,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const 3)
-       (i32.const 10)
-      )
-     )
+     (i32.const 3456)
      (i32.const 3456)
     )
    )
@@ -5915,12 +5905,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const -5)
-       (i32.const 10)
-      )
-     )
+     (i32.const 3488)
      (i32.const 3488)
     )
    )
@@ -5937,12 +5922,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const 4)
-       (i32.const 10)
-      )
-     )
+     (i32.const 3520)
      (i32.const 3520)
     )
    )
@@ -6019,14 +5999,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.eqz
-        (i32.const 0)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 3584)
      (i32.const 3584)
     )
    )
@@ -6043,14 +6016,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.eqz
-        (i32.const 1)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 3616)
      (i32.const 3616)
     )
    )

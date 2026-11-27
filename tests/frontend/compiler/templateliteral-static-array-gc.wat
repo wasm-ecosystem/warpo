@@ -31,10 +31,10 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 3))
- (global $~lib/rt/__rtti_base i32 (i32.const 1072))
- (global $~lib/memory/__data_end i32 (i32.const 1092))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33860))
- (global $~lib/memory/__heap_base i32 (i32.const 33860))
+ (global $~lib/rt/__rtti_base i32 (i32.const 1104))
+ (global $~lib/memory/__data_end i32 (i32.const 1124))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33892))
+ (global $~lib/memory/__heap_base i32 (i32.const 33892))
  (global $~started (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00d\00\00\00t\00o\00S\00t\00r\00i\00n\00g\00(\00)\00 \00r\00a\00d\00i\00x\00 \00a\00r\00g\00u\00m\00e\00n\00t\00 \00m\00u\00s\00t\00 \00b\00e\00 \00b\00e\00t\00w\00e\00e\00n\00 \002\00 \00a\00n\00d\00 \003\006\00\00\00\00\00\00\00\00\00")
@@ -49,12 +49,13 @@
  (data $9 (i32.const 544) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $10 (i32.const 572) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $11 (i32.const 636) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00H\00\00\000\001\002\003\004\005\006\007\008\009\00a\00b\00c\00d\00e\00f\00g\00h\00i\00j\00k\00l\00m\00n\00o\00p\00q\00r\00s\00t\00u\00v\00w\00x\00y\00z\00\00\00\00\00")
- (data $12 (i32.const 732) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00B\00o\00r\00d\00e\00r\00 \00C\00o\00l\00o\00r\00:\00 \00")
- (data $13 (i32.const 780) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00,\00 \00A\00r\00e\00a\00:\00 \00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $14 (i32.const 828) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00,\00 \00P\00e\00r\00i\00m\00e\00t\00e\00r\00:\00 \00\00\00")
- (data $15 (i32.const 876) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00L\00\00\00B\00o\00r\00d\00e\00r\00 \00C\00o\00l\00o\00r\00:\00 \005\00,\00 \00A\00r\00e\00a\00:\00 \005\00,\00 \00P\00e\00r\00i\00m\00e\00t\00e\00r\00:\00 \005\00")
- (data $16 (i32.const 972) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00D\00\00\00t\00e\00m\00p\00l\00a\00t\00e\00l\00i\00t\00e\00r\00a\00l\00-\00s\00t\00a\00t\00i\00c\00-\00a\00r\00r\00a\00y\00-\00g\00c\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $17 (i32.const 1072) "\04\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00")
+ (data $12 (i32.const 732) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\005\00\00\00\00\00\00\00\00\00\00\00")
+ (data $13 (i32.const 764) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00B\00o\00r\00d\00e\00r\00 \00C\00o\00l\00o\00r\00:\00 \00")
+ (data $14 (i32.const 812) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00,\00 \00A\00r\00e\00a\00:\00 \00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $15 (i32.const 860) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00,\00 \00P\00e\00r\00i\00m\00e\00t\00e\00r\00:\00 \00\00\00")
+ (data $16 (i32.const 908) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00L\00\00\00B\00o\00r\00d\00e\00r\00 \00C\00o\00l\00o\00r\00:\00 \005\00,\00 \00A\00r\00e\00a\00:\00 \005\00,\00 \00P\00e\00r\00i\00m\00e\00t\00e\00r\00:\00 \005\00")
+ (data $17 (i32.const 1004) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00D\00\00\00t\00e\00m\00p\00l\00a\00t\00e\00l\00i\00t\00e\00r\00a\00l\00-\00s\00t\00a\00t\00i\00c\00-\00a\00r\00r\00a\00y\00-\00g\00c\00.\00t\00s\00\00\00\00\00\00\00\00\00")
+ (data $18 (i32.const 1104) "\04\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3598,16 +3599,6 @@
    (local.get $this)
   )
  )
- (func $~lib/string/String.UTF16.byteLength (param $str i32) (result i32)
-  (return
-   (call $~lib/rt/common/OBJECT#get:rtSize
-    (i32.sub
-     (local.get $str)
-     (i32.const 20)
-    )
-   )
-  )
- )
  (func $~lib/string/String#get:length (param $this i32) (result i32)
   (return
    (i32.shr_u
@@ -3880,35 +3871,27 @@
        (block (result i32)
         (local.set $1
          (call $~lib/rt/__localtostack
-          (call $~lib/number/I32#toString
-           (i32.const 5)
-           (i32.const 10)
-          )
+          (i32.const 752)
          )
         )
         (local.set $2
          (call $~lib/rt/__localtostack
-          (call $~lib/number/I32#toString
-           (i32.const 5)
-           (i32.const 10)
-          )
+          (i32.const 752)
          )
         )
         (local.set $3
          (call $~lib/rt/__localtostack
-          (call $~lib/number/I32#toString
-           (i32.const 5)
-           (i32.const 10)
-          )
+          (i32.const 752)
          )
         )
         (local.set $4
          (i32.const 70)
         )
         (local.set $5
-         (call $~lib/string/String.UTF16.byteLength
-          (call $~lib/rt/__tmptostack
+         (i32.load
+          (i32.sub
            (local.get $1)
+           (i32.const 4)
           )
          )
         )
@@ -3919,9 +3902,10 @@
          )
         )
         (local.set $6
-         (call $~lib/string/String.UTF16.byteLength
-          (call $~lib/rt/__tmptostack
+         (i32.load
+          (i32.sub
            (local.get $2)
+           (i32.const 4)
           )
          )
         )
@@ -3932,9 +3916,10 @@
          )
         )
         (local.set $7
-         (call $~lib/string/String.UTF16.byteLength
-          (call $~lib/rt/__tmptostack
+         (i32.load
+          (i32.sub
            (local.get $3)
+           (i32.const 4)
           )
          )
         )
@@ -3958,7 +3943,7 @@
          )
          (memory.copy
           (local.get $9)
-          (i32.const 752)
+          (i32.const 784)
           (i32.const 28)
          )
          (local.set $9
@@ -3980,7 +3965,7 @@
          )
          (memory.copy
           (local.get $9)
-          (i32.const 800)
+          (i32.const 832)
           (i32.const 16)
          )
          (local.set $9
@@ -4002,7 +3987,7 @@
          )
          (memory.copy
           (local.get $9)
-          (i32.const 848)
+          (i32.const 880)
           (i32.const 26)
          )
          (local.set $9
@@ -4033,13 +4018,13 @@
         (call $~lib/rt/__tmptostack
          (local.get $result)
         )
-        (i32.const 896)
+        (i32.const 928)
        )
       )
       (then
        (call $~lib/builtins/abort
         (i32.const 0)
-        (i32.const 992)
+        (i32.const 1024)
         (i32.const 13)
         (i32.const 5)
        )

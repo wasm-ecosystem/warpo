@@ -7621,15 +7621,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.lt_s
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 32)
      (i32.const 32)
     )
    )
@@ -7646,15 +7638,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.gt_s
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 64)
      (i32.const 64)
     )
    )
@@ -7671,15 +7655,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.le_s
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 32)
      (i32.const 32)
     )
    )
@@ -7696,15 +7672,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.ge_s
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 64)
      (i32.const 64)
     )
    )
@@ -7721,15 +7689,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.eq
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 64)
      (i32.const 64)
     )
    )
@@ -7746,15 +7706,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/Bool#toString
-       (i32.ne
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 0)
-      )
-     )
+     (i32.const 32)
      (i32.const 32)
     )
    )
@@ -8191,15 +8143,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.add
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 9760)
      (i32.const 9760)
     )
    )
@@ -8216,15 +8160,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.sub
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 9792)
      (i32.const 9792)
     )
    )
@@ -8241,15 +8177,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.mul
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 2368)
      (i32.const 2368)
     )
    )
@@ -8266,15 +8194,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.div_s
-        (i32.const 4)
-        (i32.const 2)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 2368)
      (i32.const 2368)
     )
    )
@@ -8291,15 +8211,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.rem_s
-        (i32.const 3)
-        (i32.const 2)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 2336)
      (i32.const 2336)
     )
    )
@@ -8391,15 +8303,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.shl
-        (i32.const 2)
-        (i32.const 1)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 9728)
      (i32.const 9728)
     )
    )
@@ -8416,15 +8320,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.shr_s
-        (i32.const 2)
-        (i32.const 1)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 2336)
      (i32.const 2336)
     )
    )
@@ -8441,15 +8337,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.shr_u
-        (i32.const -1)
-        (i32.const 30)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 9760)
      (i32.const 9760)
     )
    )
@@ -8466,15 +8354,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.and
-        (i32.const 3)
-        (i32.const 1)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 2336)
      (i32.const 2336)
     )
    )
@@ -8491,15 +8371,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.or
-        (i32.const 1)
-        (i32.const 2)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 9760)
      (i32.const 9760)
     )
    )
@@ -8516,15 +8388,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.xor
-        (i32.const 1)
-        (i32.const 3)
-       )
-       (i32.const 10)
-      )
-     )
+     (i32.const 2368)
      (i32.const 2368)
     )
    )
@@ -8541,12 +8405,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const 2)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2368)
      (i32.const 2368)
     )
    )
@@ -8563,12 +8422,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const 0)
-       (i32.const 10)
-      )
-     )
+     (i32.const 352)
      (i32.const 352)
     )
    )
@@ -8585,12 +8439,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const 1)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2336)
      (i32.const 2336)
     )
    )
@@ -8607,12 +8456,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const 2)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2368)
      (i32.const 2368)
     )
    )

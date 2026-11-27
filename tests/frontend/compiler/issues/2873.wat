@@ -5971,12 +5971,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/F32#toString
-       (f32.const 1.100000023841858)
-       (i32.const 0)
-      )
-     )
+     (i32.const 1968)
      (i32.const 1968)
     )
    )
@@ -5993,12 +5988,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/F64#toString
-       (f64.const 1.1)
-       (i32.const 0)
-      )
-     )
+     (i32.const 1968)
      (i32.const 1968)
     )
    )

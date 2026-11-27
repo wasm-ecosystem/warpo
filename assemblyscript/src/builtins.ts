@@ -74,6 +74,7 @@ import {
 
 import {
   ElementKind,
+  Function,
   FunctionPrototype,
   Global,
   DecoratorFlags,
@@ -735,6 +736,89 @@ export const builtinFunctions = new Map<string, (ctx: BuiltinFunctionContext) =>
 /** Builtin variables map. */
 export const builtinVariables_onCompile = new Map<string, (ctx: BuiltinVariableContext) => void>();
 export const builtinVariables_onAccess = new Map<string, (ctx: BuiltinVariableContext) => ExpressionRef>();
+
+export type DirectCallBuilder = (
+  compiler: Compiler,
+  instance: Function,
+  operands: ExpressionRef[] | null,
+  returnType: TypeRef,
+  shouldInline: bool
+) => ExpressionRef;
+
+export function makeNumericToStringCall(
+  compiler: Compiler,
+  instance: Function,
+  operands: ExpressionRef[] | null,
+  returnType: TypeRef,
+  shouldInline: bool
+): ExpressionRef {
+  let precomputed = tryFoldNumericToString(compiler, instance, assert(operands));
+  if (precomputed) return precomputed;
+  return FunctionPrototype.makeDefaultCall(compiler, instance, operands, returnType, shouldInline);
+}
+
+/** Tries to fold a numeric string conversion without discarding effects. */
+function tryFoldNumericToString(compiler: Compiler, instance: Function, operands: ExpressionRef[]): ExpressionRef {
+  let type = instance.signature.thisType;
+  if (!type || !type.isNumericValue || operands.length != 2) return 0;
+
+  let module = compiler.module;
+  let radix = module.runExpression(operands[1], ExpressionRunnerFlags.PreserveSideeffects);
+  if (!radix) return 0;
+  let base = getConstValueI32(radix);
+  if (type.isIntegerValue && type != Type.bool && (base < 2 || base > 36)) return 0;
+  let value = module.runExpression(operands[0], ExpressionRunnerFlags.PreserveSideeffects);
+  if (!value) return 0;
+
+  let result: string;
+  switch (type.kind) {
+    case TypeKind.Bool:
+      result = getConstValueI32(value) ? "true" : "false";
+      break;
+    case TypeKind.I8:
+      result = (<i8>getConstValueI32(value)).toString(base);
+      break;
+    case TypeKind.I16:
+      result = (<i16>getConstValueI32(value)).toString(base);
+      break;
+    case TypeKind.I32:
+      result = getConstValueI32(value).toString(base);
+      break;
+    case TypeKind.U8:
+      result = (<u8>getConstValueI32(value)).toString(base);
+      break;
+    case TypeKind.U16:
+      result = (<u16>getConstValueI32(value)).toString(base);
+      break;
+    case TypeKind.U32:
+      result = (<u32>(getConstValueI32(value) >>> 0)).toString(base);
+      break;
+    case TypeKind.I64:
+      result = getConstValueI64(value).toString(base);
+      break;
+    case TypeKind.U64:
+      result = (<u64>getConstValueI64(value)).toString(base);
+      break;
+    case TypeKind.Isize:
+      result = type.byteSize == 4 ? getConstValueI32(value).toString(base) : getConstValueI64(value).toString(base);
+      break;
+    case TypeKind.Usize:
+      result =
+        type.byteSize == 4
+          ? (<u32>(getConstValueI32(value) >>> 0)).toString(base)
+          : (<u64>getConstValueI64(value)).toString(base);
+      break;
+    case TypeKind.F32:
+      result = getConstValueF32(value).toString();
+      break;
+    case TypeKind.F64:
+      result = getConstValueF64(value).toString();
+      break;
+    default:
+      return 0;
+  }
+  return compiler.ensureStaticString(result);
+}
 
 // === Builtin Types ==========================================================================
 function builtin_resolveNativeType(ctx: BuiltinTypesContext): Type | null {

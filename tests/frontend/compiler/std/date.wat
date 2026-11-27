@@ -5226,16 +5226,6 @@
    )
   )
  )
- (func $~lib/string/String.UTF16.byteLength (param $str i32) (result i32)
-  (return
-   (call $~lib/rt/common/OBJECT#get:rtSize
-    (i32.sub
-     (local.get $str)
-     (i32.const 20)
-    )
-   )
-  )
- )
  (func $~lib/date/Date#toISOString (param $this i32) (result i32)
   (local $yr i32)
   (local $isNeg i32)
@@ -5449,9 +5439,10 @@
      (i32.const 14)
     )
     (local.set $20
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $12)
+       (i32.const 4)
       )
      )
     )
@@ -5462,9 +5453,10 @@
      )
     )
     (local.set $21
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $13)
+       (i32.const 4)
       )
      )
     )
@@ -5475,9 +5467,10 @@
      )
     )
     (local.set $22
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $14)
+       (i32.const 4)
       )
      )
     )
@@ -5488,9 +5481,10 @@
      )
     )
     (local.set $23
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $15)
+       (i32.const 4)
       )
      )
     )
@@ -5501,9 +5495,10 @@
      )
     )
     (local.set $24
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $16)
+       (i32.const 4)
       )
      )
     )
@@ -5514,9 +5509,10 @@
      )
     )
     (local.set $25
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $17)
+       (i32.const 4)
       )
      )
     )
@@ -5527,9 +5523,10 @@
      )
     )
     (local.set $26
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $18)
+       (i32.const 4)
       )
      )
     )
@@ -6144,9 +6141,10 @@
      (i32.const 0)
     )
     (local.set $21
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $15)
+       (i32.const 4)
       )
      )
     )
@@ -6157,9 +6155,10 @@
      )
     )
     (local.set $22
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $16)
+       (i32.const 4)
       )
      )
     )
@@ -6170,9 +6169,10 @@
      )
     )
     (local.set $23
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $17)
+       (i32.const 4)
       )
      )
     )
@@ -6183,9 +6183,10 @@
      )
     )
     (local.set $24
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $18)
+       (i32.const 4)
       )
      )
     )
@@ -6196,9 +6197,10 @@
      )
     )
     (local.set $25
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $19)
+       (i32.const 4)
       )
      )
     )
@@ -6350,9 +6352,10 @@
      (i32.const 4)
     )
     (local.set $8
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $4)
+       (i32.const 4)
       )
      )
     )
@@ -6363,9 +6366,10 @@
      )
     )
     (local.set $9
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $5)
+       (i32.const 4)
       )
      )
     )
@@ -6376,9 +6380,10 @@
      )
     )
     (local.set $10
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $6)
+       (i32.const 4)
       )
      )
     )
@@ -6688,9 +6693,10 @@
      (i32.const 14)
     )
     (local.set $27
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $18)
+       (i32.const 4)
       )
      )
     )
@@ -6701,9 +6707,10 @@
      )
     )
     (local.set $28
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $19)
+       (i32.const 4)
       )
      )
     )
@@ -6714,9 +6721,10 @@
      )
     )
     (local.set $29
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $20)
+       (i32.const 4)
       )
      )
     )
@@ -6727,9 +6735,10 @@
      )
     )
     (local.set $30
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $21)
+       (i32.const 4)
       )
      )
     )
@@ -6740,9 +6749,10 @@
      )
     )
     (local.set $31
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $22)
+       (i32.const 4)
       )
      )
     )
@@ -6753,9 +6763,10 @@
      )
     )
     (local.set $32
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $23)
+       (i32.const 4)
       )
      )
     )
@@ -6766,9 +6777,10 @@
      )
     )
     (local.set $33
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $24)
+       (i32.const 4)
       )
      )
     )
@@ -6779,9 +6791,10 @@
      )
     )
     (local.set $34
-     (call $~lib/string/String.UTF16.byteLength
-      (call $~lib/rt/__tmptostack
+     (i32.load
+      (i32.sub
        (local.get $25)
+       (i32.const 4)
       )
      )
     )

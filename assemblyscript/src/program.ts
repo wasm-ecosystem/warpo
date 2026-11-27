@@ -99,8 +99,15 @@ import { ReportMode, Resolver, TupleTypeBuilder } from "./resolver";
 import { Flow, LocalFlags } from "./flow";
 
 import { Parser } from "./parser";
+import { Compiler } from "./compiler";
 
-import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./builtins";
+import {
+  BuiltinNames,
+  DirectCallBuilder,
+  builtinFunctions,
+  builtinVariables_onAccess,
+  makeNumericToStringCall,
+} from "./builtins";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
 import {
   mangleComputedPropertyName,
@@ -112,6 +119,7 @@ import {
 } from "./mangle";
 import { Lookup } from "./lookup";
 import * as mir from "./mir";
+import { markCallInlined } from "./warpo";
 
 import { ClosureFunctionInfo, ClosureScanner } from "./ast/closureScanner";
 
@@ -2059,6 +2067,12 @@ export class Program extends DiagnosticEmitter {
     let classElement = assert(this.resolver.resolveClass(<ClassPrototype>element, null));
     classElement.wrappedType = type;
     wrapperClasses.set(type, classElement);
+    if (type.isNumericValue) {
+      let toString = classElement.getMember("toString");
+      if (toString && toString.kind == ElementKind.FunctionPrototype) {
+        (<FunctionPrototype>toString).makeCall = makeNumericToStringCall;
+      }
+    }
   }
 
   /** Registers a constant integer value within the global scope. */
@@ -4372,6 +4386,20 @@ export class CompiledNameNode extends Node {
 
 /** A yet unresolved function prototype. */
 export class FunctionPrototype extends DeclaredElement {
+  static makeDefaultCall(
+    compiler: Compiler,
+    instance: Function,
+    operands: ExpressionRef[] | null,
+    returnType: TypeRef,
+    shouldInline: bool
+  ): ExpressionRef {
+    let expr = compiler.module.call(instance.internalName, operands, returnType);
+    if (shouldInline) markCallInlined(expr);
+    return expr;
+  }
+
+  /** Call builder selected when the prototype is constructed or registered. */
+  makeCall: DirectCallBuilder = FunctionPrototype.makeDefaultCall;
   /** Operator kind, if an overload. */
   operatorKind: OperatorKind = OperatorKind.Invalid;
   /** Already resolved instances. */

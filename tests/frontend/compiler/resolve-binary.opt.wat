@@ -3056,8 +3056,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 3
-  call $~lib/number/I32#toString
+  i32.const 9760
   i32.const 9760
   call $~lib/string/String.__eq
   i32.eqz
@@ -3069,8 +3068,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const -1
-  call $~lib/number/I32#toString
+  i32.const 9792
   i32.const 9792
   call $~lib/string/String.__eq
   i32.eqz
@@ -3082,8 +3080,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $~lib/number/I32#toString
+  i32.const 2368
   i32.const 2368
   call $~lib/string/String.__eq
   i32.eqz
@@ -3095,8 +3092,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $~lib/number/I32#toString
+  i32.const 2368
   i32.const 2368
   call $~lib/string/String.__eq
   i32.eqz
@@ -3108,8 +3104,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $~lib/number/I32#toString
+  i32.const 2336
   i32.const 2336
   call $~lib/string/String.__eq
   i32.eqz
@@ -3158,8 +3153,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
-  call $~lib/number/I32#toString
+  i32.const 9728
   i32.const 9728
   call $~lib/string/String.__eq
   i32.eqz
@@ -3171,8 +3165,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $~lib/number/I32#toString
+  i32.const 2336
   i32.const 2336
   call $~lib/string/String.__eq
   i32.eqz
@@ -3184,8 +3177,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 3
-  call $~lib/number/I32#toString
+  i32.const 9760
   i32.const 9760
   call $~lib/string/String.__eq
   i32.eqz
@@ -3197,8 +3189,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $~lib/number/I32#toString
+  i32.const 2336
   i32.const 2336
   call $~lib/string/String.__eq
   i32.eqz
@@ -3210,8 +3201,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 3
-  call $~lib/number/I32#toString
+  i32.const 9760
   i32.const 9760
   call $~lib/string/String.__eq
   i32.eqz
@@ -3223,8 +3213,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $~lib/number/I32#toString
+  i32.const 2368
   i32.const 2368
   call $~lib/string/String.__eq
   i32.eqz
@@ -3236,8 +3225,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $~lib/number/I32#toString
+  i32.const 2368
   i32.const 2368
   call $~lib/string/String.__eq
   i32.eqz
@@ -3249,8 +3237,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  call $~lib/number/I32#toString
+  i32.const 352
   i32.const 352
   call $~lib/string/String.__eq
   i32.eqz
@@ -3262,8 +3249,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 1
-  call $~lib/number/I32#toString
+  i32.const 2336
   i32.const 2336
   call $~lib/string/String.__eq
   i32.eqz
@@ -3275,8 +3261,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  call $~lib/number/I32#toString
+  i32.const 2368
   i32.const 2368
   call $~lib/string/String.__eq
   i32.eqz

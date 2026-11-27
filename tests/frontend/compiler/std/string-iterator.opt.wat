@@ -1827,10 +1827,7 @@
   i32.const 32
   call $~lib/rt/itcms/__link
   local.get $0
-  i32.const 28
-  i32.load
-  i32.const 1
-  i32.shr_u
+  i32.const 3
   i32.store offset=4
   global.get $~lib/memory/__stack_pointer
   local.get $0

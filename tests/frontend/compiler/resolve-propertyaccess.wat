@@ -4103,12 +4103,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (global.get $resolve-propertyaccess/Namespace.member)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2208)
      (i32.const 2208)
     )
    )
@@ -4125,12 +4120,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (global.get $resolve-propertyaccess/Namespace.lazyMember)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2320)
      (i32.const 2320)
     )
    )
@@ -4147,12 +4137,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (global.get $resolve-propertyaccess/MergedNamespace.member)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2352)
      (i32.const 2352)
     )
    )
@@ -4169,12 +4154,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (global.get $resolve-propertyaccess/MergedNamespace.lazyMember)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2384)
      (i32.const 2384)
     )
    )
@@ -4191,12 +4171,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (global.get $resolve-propertyaccess/TypedNamespace.member)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2416)
      (i32.const 2416)
     )
    )
@@ -4213,12 +4188,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (global.get $resolve-propertyaccess/TypedNamespace.lazyMember)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2448)
      (i32.const 2448)
     )
    )
@@ -4235,12 +4205,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (global.get $resolve-propertyaccess/Enum.VALUE)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2480)
      (i32.const 2480)
     )
    )

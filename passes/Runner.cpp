@@ -144,6 +144,8 @@ static void optimize(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Optimization};
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
+    // Expose constant addresses in loads introduced by AdvancedInlining.
+    passRunner->add("precompute-propagate");
     passRunner->add(std::unique_ptr<wasm::Pass>{createImmutableLoadEliminatingPass(m.immutableRanges_)});
     passRunner->add(std::unique_ptr<wasm::Pass>{createExtractMostFrequentlyUsedGlobalsPass()});
     passRunner->add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});

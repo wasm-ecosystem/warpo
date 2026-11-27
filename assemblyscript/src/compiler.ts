@@ -2104,6 +2104,8 @@ export class Compiler extends DiagnosticEmitter {
         writeI16(stringValue.charCodeAt(i), buf, totalOverhead + (i << 1));
       }
       stringSegment = this.addRuntimeMemorySegment(buf);
+      // The length is immutable
+      markDataElementImmutable(i64_add(stringSegment.offset, i64_new(program.OBJECTInstance.offsetof("rtSize"))), 4);
       segments.set(stringValue, stringSegment);
     }
     let stringOffset = i64_add(stringSegment.offset, i64_new(totalOverhead));
@@ -8346,8 +8348,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     if (operands) this.operandsTostack(instance.signature, operands);
-    let expr = module.call(instance.internalName, operands, returnType.toRef());
-    if (shouldInlined) markCallInlined(expr);
+    let expr = instance.prototype.makeCall(this, instance, operands, returnType.toRef(), shouldInlined);
     this.currentType = returnType;
     if (instance.isClosureFunction()) {
       const closureEnvExpr = this.setClosureEnv(module.i32(0));
@@ -9622,7 +9623,7 @@ export class Compiler extends DiagnosticEmitter {
       let sizeLocal = flow.getTempLocal(Type.i32);
       stmts.push(module.local_set(sizeLocal.index, module.i32(constantSize), false));
       let resolvedExpressionSizes = new Array<Local>(numExpressions);
-      let getByteLength = this.program.requireFunction("~lib/string/String.UTF16.byteLength");
+      let rtSizeOffset = this.program.totalOverhead - this.program.OBJECTInstance.offsetof("rtSize");
       for (let expressionIndex = 0; expressionIndex < numExpressions; ++expressionIndex) {
         let resolvedExpression = resolvedExpressions[expressionIndex];
         let size = flow.getTempLocal(Type.usize32);
@@ -9630,7 +9631,12 @@ export class Compiler extends DiagnosticEmitter {
         stmts.push(
           module.local_set(
             size.index,
-            this.makeCallDirect(getByteLength, [this.makeLocalGet(resolvedExpression)], expression),
+            module.load(
+              4,
+              false,
+              module.binary(BinaryOp.SubI32, this.makeLocalGet(resolvedExpression), module.i32(rtSizeOffset)),
+              TypeRef.I32
+            ),
             false
           )
         );

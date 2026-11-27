@@ -5606,9 +5606,7 @@
       local.get $5
       local.get $5
       local.get $1
-      i32.const 2848
-      i32.load
-      call_indirect (type $0)
+      i32.sub
       i32.const 0
       i32.gt_s
       local.tee $0
@@ -5625,9 +5623,7 @@
       select
       local.tee $1
       local.get $3
-      i32.const 2848
-      i32.load
-      call_indirect (type $0)
+      i32.sub
       i32.const 0
       i32.gt_s
       local.set $0
@@ -5657,9 +5653,7 @@
      local.get $3
      local.get $3
      local.get $1
-     i32.const 2848
-     i32.load
-     call_indirect (type $0)
+     i32.sub
      i32.const 0
      i32.gt_s
      local.tee $0

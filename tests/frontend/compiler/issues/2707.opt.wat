@@ -1,8 +1,8 @@
 (module
- (type $0 (func (param i32) (result i32)))
- (type $1 (func))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32)))
+ (type $0 (func))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32) (result i32)))
  (type $4 (func (param i32 i32 i32 i32)))
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
@@ -33,13 +33,8 @@
  (data $9 (i32.const 428) "<")
  (data $9.1 (i32.const 440) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $10 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $start:issues/2707~anonymous|0)
  (export "memory" (memory $0))
  (start $~start)
- (func $start:issues/2707~anonymous|0 (param $0 i32) (result i32)
-  i32.const 1
- )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
@@ -1526,11 +1521,6 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  local.get $0
-  i32.const 32
-  i32.load
-  call_indirect (type $0)
-  drop
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add

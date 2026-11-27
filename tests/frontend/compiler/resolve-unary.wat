@@ -4182,12 +4182,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const -1)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2208)
      (i32.const 2208)
     )
    )
@@ -4204,12 +4199,7 @@
   (if
    (i32.eqz
     (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/number/I32#toString
-       (i32.const 1)
-       (i32.const 10)
-      )
-     )
+     (i32.const 2304)
      (i32.const 2304)
     )
    )
