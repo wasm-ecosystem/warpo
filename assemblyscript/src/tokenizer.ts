@@ -128,6 +128,7 @@ export const enum Token {
   Ampersand_Ampersand,
   Bar_Bar,
   Question,
+  Question_Dot,
   Colon,
   Equals,
   Plus_Equals,
@@ -396,6 +397,8 @@ export function operatorTokenToString(token: Token): string {
       return "yield";
     case Token.Dot_Dot_Dot:
       return "...";
+    case Token.Question_Dot:
+      return "?.";
     case Token.Comma:
       return ",";
     case Token.LessThan:
@@ -845,7 +848,17 @@ export class Tokenizer extends DiagnosticEmitter {
           return Token.GreaterThan;
         }
         case CharCode.Question: {
-          this.pos = pos + 1;
+          ++pos;
+          if (
+            maxTokenLength > 1 &&
+            pos < end &&
+            text.charCodeAt(pos) == CharCode.Dot &&
+            (pos + 1 == end || !isDecimal(text.charCodeAt(pos + 1)))
+          ) {
+            this.pos = pos + 1;
+            return Token.Question_Dot;
+          }
+          this.pos = pos;
           return Token.Question;
         }
         case CharCode.OpenBracket: {

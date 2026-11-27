@@ -136,4 +136,17 @@ describe("ASTPrinter", () => {
       "class Point {\n  x: i32;\n  constructor(x: i32) {\n    this.x = x;\n  }\n}\n"
     );
   });
+
+  test("prints optional property links from flags independently of operator ranges", () => {
+    let source = new Source(SourceKind.User, "printer.test.ts", "");
+    let range = makeRange(source);
+    let receiver = makeId("a", range);
+    let property = Node.createPropertyAccessExpression(receiver, makeId("b", range), range, true);
+    let call = Node.createCallExpression(property, null, [], range);
+    expect(ASTPrinter.build(Node.createOptionalChainExpression(property, range))).equal("a?.b");
+    expect(ASTPrinter.build(Node.createOptionalChainExpression(call, range))).equal("a?.b()");
+    property.isOptional = false;
+    property.questionDotRange = range;
+    expect(ASTPrinter.build(property)).equal("a.b");
+  });
 });

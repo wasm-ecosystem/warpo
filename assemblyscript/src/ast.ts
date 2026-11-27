@@ -100,6 +100,9 @@ export const enum NodeKind {
 
   // name
   ComputedPropertyName,
+
+  // expressions (appended to preserve existing values)
+  OptionalChain,
 }
 
 export interface INode {
@@ -283,6 +286,10 @@ export abstract class Node implements INode {
     return new OmittedExpression(range);
   }
 
+  static createOptionalChainExpression(expression: Expression, range: Range): OptionalChainExpression {
+    return new OptionalChainExpression(expression, range);
+  }
+
   static createParenthesizedExpression(expression: Expression, range: Range): ParenthesizedExpression {
     return new ParenthesizedExpression(expression, range);
   }
@@ -290,9 +297,11 @@ export abstract class Node implements INode {
   static createPropertyAccessExpression(
     expression: Expression,
     property: IdentifierExpression,
-    range: Range
+    range: Range,
+    isOptional: bool = false,
+    questionDotRange: Range | null = null
   ): PropertyAccessExpression {
-    return new PropertyAccessExpression(expression, property, range);
+    return new PropertyAccessExpression(expression, property, range, isOptional, questionDotRange);
   }
 
   static createRegexpLiteralExpression(pattern: string, patternFlags: string, range: Range): RegexpLiteralExpression {
@@ -1450,6 +1459,22 @@ export class OmittedExpression extends Expression {
   }
 }
 
+/** Bounds a contiguous optional chain. Parentheses terminate this boundary. */
+export class OptionalChainExpression extends Expression {
+  constructor(
+    /** Access/call chain, including any non-null assertions. */
+    public expression: Expression,
+    /** Source range. */
+    range: Range
+  ) {
+    super(NodeKind.OptionalChain, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitOptionalChainExpression(this);
+  }
+}
+
 /** Represents a parenthesized expression. */
 export class ParenthesizedExpression extends Expression {
   constructor(
@@ -1474,7 +1499,11 @@ export class PropertyAccessExpression extends Expression {
     /** Property of the expression being accessed. */
     public property: IdentifierExpression,
     /** Source range. */
-    range: Range
+    range: Range,
+    /** Whether this link explicitly uses `?.`. */
+    public isOptional: bool = false,
+    /** Source range of this link's `?.`, when available. */
+    public questionDotRange: Range | null = null
   ) {
     super(NodeKind.PropertyAccess, range);
   }

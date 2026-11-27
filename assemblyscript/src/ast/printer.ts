@@ -542,7 +542,7 @@ export class ASTPrinter extends BaseVisitor {
 
   visitPropertyAccessExpression(node: PropertyAccessExpression): void {
     this.visitNode(node.expression);
-    this.sb.push(".");
+    this.sb.push(node.isOptional ? "?." : ".");
     this.visitIdentifierExpression(node.property);
   }
 
