@@ -442,7 +442,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$220
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$219
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -466,7 +466,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$220
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$219
    end
    local.get $0
    i32.load offset=8
@@ -1301,7 +1301,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$225 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$224 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1317,7 +1317,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$225
+         br $__inlined_func$~lib/rt/itcms/step$224
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1356,7 +1356,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$225
+           br $__inlined_func$~lib/rt/itcms/step$224
           end
           local.get $2
           i32.load offset=4
@@ -1448,7 +1448,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$225
+        br $__inlined_func$~lib/rt/itcms/step$224
        end
        global.get $~lib/rt/itcms/iter
        local.tee $2
@@ -1547,7 +1547,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$225
+        br $__inlined_func$~lib/rt/itcms/step$224
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -2259,7 +2259,7 @@
    i64.const 1
    i64.sub
    local.set $16
-   block $__inlined_func$~lib/util/number/prettify$76 (result i32)
+   block $__inlined_func$~lib/util/number/prettify$75 (result i32)
     local.get $15
     i32.const 1
     i32.shl
@@ -2308,7 +2308,7 @@
     i64.add
     i64.add
     local.set $13
-    block $__inlined_func$~lib/util/number/genDigits$75 (result i32)
+    block $__inlined_func$~lib/util/number/genDigits$74 (result i32)
      local.get $16
      local.get $8
      global.get $~lib/util/number/_frc_minus
@@ -2595,7 +2595,7 @@
         local.get $1
         i32.store16
         local.get $2
-        br $__inlined_func$~lib/util/number/genDigits$75
+        br $__inlined_func$~lib/util/number/genDigits$74
        end
        br $while-continue|0
       end
@@ -2727,7 +2727,7 @@
      local.get $2
      i32.const 2
      i32.add
-     br $__inlined_func$~lib/util/number/prettify$76
+     br $__inlined_func$~lib/util/number/prettify$75
     end
     local.get $2
     local.get $5
@@ -3355,7 +3355,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinStringArray$120 (result i32)
+  block $__inlined_func$~lib/util/string/joinStringArray$119 (result i32)
    local.get $0
    i32.load offset=4
    local.set $5
@@ -3368,7 +3368,7 @@
    local.tee $6
    i32.const 0
    i32.lt_s
-   br_if $__inlined_func$~lib/util/string/joinStringArray$120
+   br_if $__inlined_func$~lib/util/string/joinStringArray$119
    drop
    local.get $6
    i32.eqz
@@ -3381,7 +3381,7 @@
     else
      i32.const 160
     end
-    br $__inlined_func$~lib/util/string/joinStringArray$120
+    br $__inlined_func$~lib/util/string/joinStringArray$119
    end
    loop $for-loop|0
     local.get $0
@@ -3551,7 +3551,7 @@
    local.get $0
    i32.load
    local.tee $4
-   block $__inlined_func$~lib/rt/itcms/__renew$233 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$232 (result i32)
     i32.const 1073741820
     local.get $3
     i32.const 1
@@ -3591,7 +3591,7 @@
      local.get $2
      i32.store offset=16
      local.get $4
-     br $__inlined_func$~lib/rt/itcms/__renew$233
+     br $__inlined_func$~lib/rt/itcms/__renew$232
     end
     local.get $2
     local.get $3
@@ -3694,7 +3694,7 @@
   i32.load offset=4
   local.tee $0
   i32.store align=1
-  block $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#join@override$184 (result i32)
+  block $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#join@override$183 (result i32)
    block $case1
     local.get $0
     i32.const 8
@@ -3713,7 +3713,7 @@
     local.get $0
     i32.const 160
     call $~lib/array/Array<~lib/string/String>#join
-    br $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#join@override$184
+    br $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#join@override$183
    end
    i32.const 4
    call $~lib/rt/__decrease_sp
@@ -3776,14 +3776,14 @@
   local.get $0
   i32.store offset=4 align=1
   local.get $0
-  i32.const 20
+  i32.const 4
   i32.sub
-  i32.load offset=16
+  i32.load
   local.tee $4
   local.get $2
-  i32.const 20
+  i32.const 4
   i32.sub
-  i32.load offset=16
+  i32.load
   local.tee $1
   i32.const 2
   i32.add
@@ -3848,7 +3848,7 @@
   i32.const 16
   i32.eq
   if
-   block $__inlined_func$~lib/array/ArrayIterator<~lib/string/String>#next$276 (result i32)
+   block $__inlined_func$~lib/array/ArrayIterator<~lib/string/String>#next$275 (result i32)
     local.get $0
     i32.load
     local.set $1
@@ -3864,7 +3864,7 @@
     i32.load offset=4
     i32.load offset=12
     i32.ge_s
-    br_if $__inlined_func$~lib/array/ArrayIterator<~lib/string/String>#next$276
+    br_if $__inlined_func$~lib/array/ArrayIterator<~lib/string/String>#next$275
     drop
     i32.const 4
     call $~lib/rt/__decrease_sp
@@ -4087,30 +4087,22 @@
    global.get $~lib/memory/__stack_pointer
    i32.const 64
    i32.store offset=4 align=1
-   i32.const 60
-   i32.load
-   local.tee $0
-   i32.const 28
-   i32.load
-   local.tee $1
-   i32.const 16
-   i32.add
-   i32.add
+   i32.const 20
    i32.const 2
    call $~lib/rt/itcms/__new
-   local.tee $2
+   local.tee $0
    i32.const 624
    i32.const 6
    memory.copy
-   local.get $2
+   local.get $0
    i32.const 6
    i32.add
-   local.tee $3
+   local.tee $1
    i32.const 32
+   i32.load16_u align=1
+   i32.store16 align=1
    local.get $1
-   memory.copy
-   local.get $1
-   local.get $3
+   i32.const 2
    i32.add
    local.tee $1
    i32.const 656
@@ -4121,15 +4113,15 @@
    i32.add
    local.tee $1
    i32.const 64
-   local.get $0
-   memory.copy
-   local.get $0
+   i32.load16_u align=1
+   i32.store16 align=1
    local.get $1
+   i32.const 2
    i32.add
    i32.const 688
    i32.load16_u align=1
    i32.store16 align=1
-   local.get $2
+   local.get $0
    i32.const 720
    call $~lib/string/String.__eq
    i32.eqz
@@ -4199,14 +4191,14 @@
    local.get $1
    i32.store align=1
    local.get $1
-   i32.const 20
+   i32.const 4
    i32.sub
-   i32.load offset=16
+   i32.load
    local.tee $2
    local.get $0
-   i32.const 20
+   i32.const 4
    i32.sub
-   i32.load offset=16
+   i32.load
    local.tee $3
    i32.const 16
    i32.add
@@ -4316,14 +4308,14 @@
    local.get $1
    i32.store align=1
    local.get $1
-   i32.const 20
+   i32.const 4
    i32.sub
-   i32.load offset=16
+   i32.load
    local.tee $2
    local.get $0
-   i32.const 20
+   i32.const 4
    i32.sub
-   i32.load offset=16
+   i32.load
    local.tee $3
    i32.const 16
    i32.add
@@ -4573,14 +4565,14 @@
    local.get $1
    i32.store align=1
    local.get $1
-   i32.const 20
+   i32.const 4
    i32.sub
-   i32.load offset=16
+   i32.load
    local.tee $2
    local.get $0
-   i32.const 20
+   i32.const 4
    i32.sub
-   i32.load offset=16
+   i32.load
    local.tee $3
    i32.const 16
    i32.add
@@ -4660,16 +4652,12 @@
    global.get $~lib/memory/__stack_pointer
    i32.const 4336
    i32.store offset=4 align=1
-   i32.const 4332
-   i32.load
-   local.tee $3
    local.get $0
-   i32.const 20
+   i32.const 4
    i32.sub
-   i32.load offset=16
+   i32.load
    local.tee $1
-   i32.const 16
-   i32.add
+   i32.const 24
    i32.add
    i32.const 2
    call $~lib/rt/itcms/__new
@@ -4680,12 +4668,12 @@
    local.get $2
    i32.const 6
    i32.add
-   local.tee $4
+   local.tee $3
    local.get $0
    local.get $1
    memory.copy
    local.get $1
-   local.get $4
+   local.get $3
    i32.add
    local.tee $0
    i32.const 4400
@@ -4695,8 +4683,8 @@
    i32.const 10
    i32.add
    i32.const 4336
-   local.get $3
-   memory.copy
+   i64.load align=1
+   i64.store align=1
    local.get $2
    i32.const 4432
    call $~lib/string/String.__eq
@@ -4756,7 +4744,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#get:length@override$173 (result i32)
+   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#get:length@override$172 (result i32)
     block $case1
      local.get $0
      i32.const 8
@@ -4774,7 +4762,7 @@
      end
      local.get $0
      i32.load offset=12
-     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#get:length@override$173
+     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#get:length@override$172
     end
     local.get $0
     i32.load
@@ -4892,7 +4880,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#at@override$174 (result i32)
+   block $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#at@override$173 (result i32)
     block $case10
      local.get $0
      i32.const 8
@@ -4911,7 +4899,7 @@
      local.get $0
      i32.const 1
      call $~lib/array/Array<~lib/string/String>#at
-     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#at@override$174
+     br $__inlined_func$~lib/readonlyarray/ReadonlyArray<~lib/string/String>#at@override$173
     end
     local.get $0
     i32.load
@@ -4938,7 +4926,7 @@
    i32.load
    local.tee $1
    i32.store align=1
-   block $__inlined_func$~lib/array/Array<~lib/string/String>#findIndex$228 (result i32)
+   block $__inlined_func$~lib/array/Array<~lib/string/String>#findIndex$227 (result i32)
     i32.const 4
     call $~lib/rt/__decrease_sp
     local.get $1
@@ -4978,7 +4966,7 @@
        i32.add
        global.set $~lib/memory/__stack_pointer
        local.get $0
-       br $__inlined_func$~lib/array/Array<~lib/string/String>#findIndex$228
+       br $__inlined_func$~lib/array/Array<~lib/string/String>#findIndex$227
       end
       local.get $0
       i32.const 1
@@ -5016,7 +5004,7 @@
    i32.load
    local.tee $1
    i32.store align=1
-   block $__inlined_func$~lib/array/Array<~lib/string/String>#findLastIndex$229 (result i32)
+   block $__inlined_func$~lib/array/Array<~lib/string/String>#findLastIndex$228 (result i32)
     i32.const 4
     call $~lib/rt/__decrease_sp
     local.get $1
@@ -5051,7 +5039,7 @@
        i32.add
        global.set $~lib/memory/__stack_pointer
        local.get $0
-       br $__inlined_func$~lib/array/Array<~lib/string/String>#findLastIndex$229
+       br $__inlined_func$~lib/array/Array<~lib/string/String>#findLastIndex$228
       end
       local.get $0
       i32.const 1
@@ -5108,7 +5096,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   block $__inlined_func$~lib/array/Array<~lib/string/String>#lastIndexOf$230 (result i32)
+   block $__inlined_func$~lib/array/Array<~lib/string/String>#lastIndexOf$229 (result i32)
     i32.const -1
     i32.const 4656
     i32.load
@@ -5116,7 +5104,7 @@
     i32.load offset=12
     local.tee $0
     i32.eqz
-    br_if $__inlined_func$~lib/array/Array<~lib/string/String>#lastIndexOf$230
+    br_if $__inlined_func$~lib/array/Array<~lib/string/String>#lastIndexOf$229
     drop
     local.get $0
     i32.const 1
@@ -5139,7 +5127,7 @@
       i32.load
       i32.const 32
       call $~lib/string/String.__eq
-      br_if $__inlined_func$~lib/array/Array<~lib/string/String>#lastIndexOf$230
+      br_if $__inlined_func$~lib/array/Array<~lib/string/String>#lastIndexOf$229
       drop
       local.get $0
       i32.const 1
@@ -5637,7 +5625,7 @@
    i32.load
    local.tee $1
    i32.store align=1
-   block $__inlined_func$~lib/array/Array<~lib/string/String>#every$237 (result i32)
+   block $__inlined_func$~lib/array/Array<~lib/string/String>#every$236 (result i32)
     i32.const 4
     call $~lib/rt/__decrease_sp
     local.get $1
@@ -5678,7 +5666,7 @@
        i32.add
        global.set $~lib/memory/__stack_pointer
        i32.const 0
-       br $__inlined_func$~lib/array/Array<~lib/string/String>#every$237
+       br $__inlined_func$~lib/array/Array<~lib/string/String>#every$236
       end
       local.get $0
       i32.const 1
@@ -5717,7 +5705,7 @@
    i32.load
    local.tee $1
    i32.store align=1
-   block $__inlined_func$~lib/array/Array<~lib/string/String>#some$238 (result i32)
+   block $__inlined_func$~lib/array/Array<~lib/string/String>#some$237 (result i32)
     i32.const 4
     call $~lib/rt/__decrease_sp
     local.get $1
@@ -5757,7 +5745,7 @@
        i32.add
        global.set $~lib/memory/__stack_pointer
        i32.const 1
-       br $__inlined_func$~lib/array/Array<~lib/string/String>#some$238
+       br $__inlined_func$~lib/array/Array<~lib/string/String>#some$237
       end
       local.get $0
       i32.const 1

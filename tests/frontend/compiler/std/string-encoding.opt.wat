@@ -2318,18 +2318,6 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
-  i32.const 28
-  i32.load
-  i32.const 12
-  i32.ne
-  if
-   i32.const 0
-   i32.const 64
-   i32.const 8
-   i32.const 3
-   call $~lib/builtins/abort
-   unreachable
-  end
   memory.size
   i32.const 16
   i32.shl
@@ -2566,11 +2554,7 @@
   i32.store align=1
   i32.const 32
   call $~lib/string/String.UTF16.encode
-  local.set $0
-  i32.const 28
-  i32.load
-  local.set $1
-  local.get $0
+  local.tee $0
   i32.const 0
   call $~lib/string/String.UTF16.decodeUnsafe
   i32.const 528
@@ -2585,7 +2569,7 @@
    unreachable
   end
   local.get $0
-  local.get $1
+  i32.const 12
   call $~lib/string/String.UTF16.decodeUnsafe
   i32.const 32
   call $~lib/string/String.__eq

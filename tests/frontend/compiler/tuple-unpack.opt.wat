@@ -1267,7 +1267,7 @@
   i32.and
   i32.const 44
   i32.sub
-  local.tee $3
+  local.tee $4
   i32.const 16
   i32.ge_u
   if
@@ -1282,7 +1282,7 @@
    i32.const 48
    i32.add
    local.tee $2
-   local.get $3
+   local.get $4
    i32.const 4
    i32.sub
    i32.const 1
@@ -1417,49 +1417,40 @@
   block $__inlined_func$~lib/string/String.__eq$89 (result i32)
    i32.const 1
    local.get $2
-   local.tee $0
+   local.tee $1
    i32.const 432
    i32.eq
    br_if $__inlined_func$~lib/string/String.__eq$89
    drop
    i32.const 0
-   local.get $0
+   local.get $1
    i32.eqz
    br_if $__inlined_func$~lib/string/String.__eq$89
    drop
    i32.const 0
-   local.get $0
+   local.get $1
    i32.const 20
    i32.sub
    i32.load offset=16
    i32.const 1
    i32.shr_u
-   local.tee $3
-   i32.const 428
-   i32.load
-   i32.const 1
-   i32.shr_u
+   local.tee $0
+   i32.const 5
    i32.ne
    br_if $__inlined_func$~lib/string/String.__eq$89
    drop
    block $__inlined_func$~lib/util/string/compareImpl$74 (result i32)
     i32.const 432
-    local.set $4
-    local.get $0
-    local.tee $1
+    local.set $3
+    local.get $1
     i32.const 7
     i32.and
     i32.eqz
-    local.get $3
-    local.tee $0
-    i32.const 4
-    i32.ge_u
-    i32.and
     if
      loop $do-loop|00
       local.get $1
       i64.load
-      local.get $4
+      local.get $3
       i64.load
       i64.eq
       if
@@ -1467,10 +1458,10 @@
        i32.const 8
        i32.add
        local.set $1
-       local.get $4
+       local.get $3
        i32.const 8
        i32.add
-       local.set $4
+       local.set $3
        local.get $0
        i32.const 4
        i32.sub
@@ -1483,21 +1474,21 @@
     end
     loop $while-continue|11
      local.get $0
-     local.tee $3
+     local.tee $4
      i32.const 1
      i32.sub
      local.set $0
-     local.get $3
+     local.get $4
      if
       local.get $1
       i32.load16_u
-      local.tee $3
-      local.get $4
+      local.tee $4
+      local.get $3
       i32.load16_u
       local.tee $6
       i32.ne
       if
-       local.get $3
+       local.get $4
        local.get $6
        i32.sub
        br $__inlined_func$~lib/util/string/compareImpl$74
@@ -1506,10 +1497,10 @@
       i32.const 2
       i32.add
       local.set $1
-      local.get $4
+      local.get $3
       i32.const 2
       i32.add
-      local.set $4
+      local.set $3
       br $while-continue|11
      end
     end

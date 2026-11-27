@@ -148,7 +148,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$85
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$84
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -172,7 +172,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$85
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$84
      end
      local.get $0
      i32.load offset=8
@@ -1657,19 +1657,19 @@
      local.get $2
      i32.store align=1
      local.get $2
-     i32.const 20
+     i32.const 4
      i32.sub
-     i32.load offset=16
+     i32.load
      local.tee $7
      local.get $1
-     i32.const 20
+     i32.const 4
      i32.sub
-     i32.load offset=16
+     i32.load
      local.tee $4
      local.get $0
-     i32.const 20
+     i32.const 4
      i32.sub
-     i32.load offset=16
+     i32.load
      local.tee $6
      i32.const 70
      i32.add
@@ -1714,17 +1714,17 @@
      local.get $2
      local.get $7
      memory.copy
-     block $__inlined_func$~lib/string/String.__eq$91 (result i32)
+     block $__inlined_func$~lib/string/String.__eq$90 (result i32)
       i32.const 1
       local.get $3
       i32.const 896
       i32.eq
-      br_if $__inlined_func$~lib/string/String.__eq$91
+      br_if $__inlined_func$~lib/string/String.__eq$90
       drop
       i32.const 0
       local.get $3
       i32.eqz
-      br_if $__inlined_func$~lib/string/String.__eq$91
+      br_if $__inlined_func$~lib/string/String.__eq$90
       drop
       i32.const 0
       local.get $3
@@ -1734,14 +1734,11 @@
       i32.const 1
       i32.shr_u
       local.tee $0
-      i32.const 892
-      i32.load
-      i32.const 1
-      i32.shr_u
+      i32.const 38
       i32.ne
-      br_if $__inlined_func$~lib/string/String.__eq$91
+      br_if $__inlined_func$~lib/string/String.__eq$90
       drop
-      block $__inlined_func$~lib/util/string/compareImpl$75 (result i32)
+      block $__inlined_func$~lib/util/string/compareImpl$74 (result i32)
        i32.const 896
        local.set $2
        loop $while-continue|0
@@ -1763,7 +1760,7 @@
           local.get $1
           local.get $4
           i32.sub
-          br $__inlined_func$~lib/util/string/compareImpl$75
+          br $__inlined_func$~lib/util/string/compareImpl$74
          end
          local.get $3
          i32.const 2

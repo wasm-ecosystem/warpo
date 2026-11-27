@@ -3598,16 +3598,6 @@
    (local.get $this)
   )
  )
- (func $~lib/string/String.UTF16.byteLength (param $str i32) (result i32)
-  (return
-   (call $~lib/rt/common/OBJECT#get:rtSize
-    (i32.sub
-     (local.get $str)
-     (i32.const 20)
-    )
-   )
-  )
- )
  (func $~lib/string/String#get:length (param $this i32) (result i32)
   (return
    (i32.shr_u
@@ -3906,9 +3896,10 @@
          (i32.const 70)
         )
         (local.set $5
-         (call $~lib/string/String.UTF16.byteLength
-          (call $~lib/rt/__tmptostack
+         (i32.load
+          (i32.sub
            (local.get $1)
+           (i32.const 4)
           )
          )
         )
@@ -3919,9 +3910,10 @@
          )
         )
         (local.set $6
-         (call $~lib/string/String.UTF16.byteLength
-          (call $~lib/rt/__tmptostack
+         (i32.load
+          (i32.sub
            (local.get $2)
+           (i32.const 4)
           )
          )
         )
@@ -3932,9 +3924,10 @@
          )
         )
         (local.set $7
-         (call $~lib/string/String.UTF16.byteLength
-          (call $~lib/rt/__tmptostack
+         (i32.load
+          (i32.sub
            (local.get $3)
+           (i32.const 4)
           )
          )
         )

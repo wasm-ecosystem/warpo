@@ -1998,10 +1998,7 @@
   i32.const 1
   i32.shr_u
   local.tee $3
-  i32.const 508
-  i32.load
   i32.const 1
-  i32.shr_u
   i32.ne
   if
    i32.const 0
@@ -2011,41 +2008,9 @@
    i32.const 512
    local.set $1
    local.get $0
-   local.tee $2
-   i32.const 7
-   i32.and
-   i32.eqz
+   local.set $2
    local.get $3
-   local.tee $0
-   i32.const 4
-   i32.ge_u
-   i32.and
-   if
-    loop $do-loop|0
-     local.get $2
-     i64.load
-     local.get $1
-     i64.load
-     i64.eq
-     if
-      local.get $2
-      i32.const 8
-      i32.add
-      local.set $2
-      local.get $1
-      i32.const 8
-      i32.add
-      local.set $1
-      local.get $0
-      i32.const 4
-      i32.sub
-      local.tee $0
-      i32.const 4
-      i32.ge_u
-      br_if $do-loop|0
-     end
-    end
-   end
+   local.set $0
    loop $while-continue|1
     local.get $0
     local.tee $3
